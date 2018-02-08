@@ -1,0 +1,6 @@
+# commandlinefu.com - questions/comments: tech@commandlinefu.com
+
+# Backup all files matching a pattern to files with a timestamp
+for FILE in *.conf; do cp $FILE{,.`date +%Y%m%dt%M:%H:%S`}; done
+
+# AD: Diff 2 entire servers at ScriptRock.com

@@ -1,0 +1,205 @@
+! ------------------------------------------------------------------------------
+! Nord Color Scheme
+! By Arctic Ice Studio 
+! ------------------------------------------------------------------------------
+
+!!! General
+Xft.dpi:        96
+Xft.antialias:  true
+Xft.hinting:    true
+Xft.hintsyle:   hintfull
+Xft.rgba:       rgb
+Xft.lcdfilter:  lcddefault
+Xft.letterSpace: -1
+Xft.lineSpace: -1
+Xft.lineHeight: -1
+Xft.linePadding: -1
+
+*renderFont: true
+! *font: xft:Inconsolata:size=12
+*faceName: Inconsolata
+*faceSize1: 12
+*faceSize2: 14
+*faceSize3: 16
+*faceSize4: 18
+*faceSize5: 20
+*faceSize6: 22
+*initialFont: 3
+
+
+! ------------------------------------------------------------------------------
+! XTerm
+! ------------------------------------------------------------------------------
+
+XTerm*color0: #111111
+XTerm*color1: #ffa2a5
+XTerm*color2: #bdb66b
+XTerm*color3: #f7e78c
+XTerm*color4: #84cfef
+XTerm*color5: #ce5d5a
+XTerm*color6: #87ff87
+XTerm*color7: #bebebe
+XTerm*color8: #666666
+XTerm*color9: #cf6171
+XTerm*color10: #c5f779
+XTerm*color11: #fff796
+XTerm*color12: #4186be
+XTerm*color13: #cf9ebe
+XTerm*color14: #71bebe
+XTerm*color15: #ffffff
+XTerm*foreground: #e8e8e8
+XTerm*background: #111111
+XTerm*colorBD: lightyellow
+XTerm*colorMode: on
+XTerm*colorUL: yellow
+XTerm*colorULMode: on
+XTerm*customization: -color
+XTerm*dynamicColors: off
+XTerm*highlightSelection: true
+XTerm*scrollBar: false
+XTerm*underLine: on
+XTerm*urlLauncher: firefox
+XTerm*selectToClipboard: true
+! XTerm*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0)
+
+
+! special
+*.foreground:   #d8dee8
+*.background:   #2f343f
+*.cursorColor:  #b48ead
+
+! black
+*.color0  : #4b5262
+*.color8  : #434a5a
+
+! red
+*.color1  : #bf616a
+*.color9  : #b3555e
+
+! green
+*.color2  : #a3be8c
+*.color10 : #93ae7c
+
+! yellow
+*.color3  : #ebcb8b
+*.color11 : #dbbb7b
+
+! blue
+*.color4  : #81a1c1
+*.color12 : #7191b1
+
+! magenta
+*.color5  : #b48ead
+*.color13 : #a6809f
+
+! cyan
+*.color6  : #93e5cc
+*.color14 : #7bcdb4
+
+! white
+*.color7  : #e5e9f0
+*.color15 : #d1d5dc
+
+
+! ------------------------------------------------------------------------------
+! URxvt configs
+! ------------------------------------------------------------------------------
+
+! general settings
+URxvt*saveline:         15000
+URxvt*termName:         rxvt-256color
+URxvt*iso14755:         false
+
+! appearance
+URxvt*depth:            32
+!URxvt*background:      rgba:0000/0000/0000/AAAA
+!URxvt*background:      [100]#2f343f
+URxvt.underlineColor:   #81a1c1
+URxvt.highlightColor:   #81a1c1
+URxvt.throughColor:     Blue
+! URxvt*cursorColor:      #b48ead
+URxvt*cursorColor:      #e5e9f0
+! URxvt*cursorColor2:     Magenta
+URxvt*cursorColor2:     White
+URxvt*scrollBar:        false
+URxvt*scrollBar_right:  false
+URxvt*internalBorder:   0
+URxvt*externalBorder:   0
+URxvt.colorIT:      	#a3be8c
+URxvt.colorBD:      	#e5e9f0
+URxvt.colorUL:      	#81a1c1
+URxvt.geometry: 		92x16
+URxvt.internalBorder:	16
+
+! fonts
+urxvt*font: xft:Inconsolata\-dz for\ Powerline:pixelsize=13:antialias=true:hinting=true
+! urxvt*font: xft:NotoMono\-Regular:pixelsize=12:antialias=true:hinting=true
+! urxvt*font: xft:NotoSans:pixelsize=12:antialias=true:hinting=true
+! urxvt*font: xft:DejaVuSansMono:pixelsize=12:antialias=true:hinting=true
+! urxvt*font: xft:DejaVu\ Sans\ Mono\ Bold\ Oblique\ for\ Powerline:pixelsize=12:antialias=true:hinting=true
+! urxvt*font: xft:Ubuntu\ Mono\ derivative\ Powerline:pixelsize=12:antialias=true:hinting=true
+! URxvt*font: xft:Source\ Code\ Pro\ Medium:pixelsize=13:antialias=true:hinting=true,xft:Source\ Code\ Pro\ Medium:pixelsize=13:antialias=true:hinting=true
+
+URxvt*letterSpace: 	    		0
+URxvt.lineSpace: 				0
+! Xft.size:						12
+URxvt*font:                 	xft:M+ 1mn:regular:size=12
+URxvt*imFont:               	xft:M+ 1mn:regular:size=12
+URxvt*boldFont:             	xft:M+ 1mn:bold:size=12
+URxvt*italicFont:           	xft:M+ 1mn:italic:size=12
+URxvt*boldItalicFont:     		xft:M+ 1mn:regular:size=12
+! run :.!fc-list | grep <font-name>
+
+! perl extensions
+URxvt.perl-ext-common:  default,clipboard,keyboard-select,url-select,resize-font,font-size
+!URxvt.perl-ext-common:  default,clipboard,url-select,keyboard-select,tabbed
+
+! macros for clipboard and selection
+! Keybind
+URxvt.keysym.Control-Alt-C: perl:clipboard:copy
+URxvt.keysym.Control-Alt-V: perl:clipboard:paste
+URxvt.keysym.M-Escape: perl:keyboard-select:activate
+URxvt.keysym.C-Escape: perl:keyboard-select:activate
+URxvt.keysym.C-u: perl:url-select:select_next
+
+URxvt.copyCommand:      xclip -i -selection clipboard
+URxvt.pasteCommand:     xclip -o -selection clipboard
+URxvt.keysym.M-c:       perl:clipboard:copy
+URxvt.keysym.M-v:       perl:clipboard:paste
+URxvt.keysym.M-C-v:     perl:clipboard:paste_escaped
+URxvt.keysym.M-Escape:  perl:keyboard-select:activate
+URxvt.keysym.M-s:       perl:keyboard-select:search
+URxvt.keysym.M-u:       perl:url-select:select_next
+URxvt.urlLauncher:      google-chrome
+URxvt.underlineURLs:    true
+URxvt.urlButton:        1
+URxvt.resize-font.smaller: C-Down
+URxvt.resize-font.bigger: C-Up
+URxvt.keysym.C-Up:     font-size:increase
+URxvt.keysym.C-Down:   font-size:decrease
+URxvt.keysym.C-S-Up:   font-size:incglobal
+URxvt.keysym.C-S-Down: font-size:decglobal
+URxvt.keysym.C-equal:  font-size:reset
+URxvt.keysym.C-slash:  font-size:show
+
+! tabbed
+URxvt.tabbed.tabbar-fg: 4
+URxvt.tabbed.tabbar-bg: 16
+URxvt.tabbed.tab-fg:    15
+URxvt.tabbed.tab-bg:    4
+URxvt*buffered:         false          
+
+!Disables the insanely annoying Ctrl+Shift shortcut that enters ISO14755 mode
+URxvt.iso14755:         False
+
+
+! ------------------------------------------------------------------------------
+! ROFI Color theme
+! ------------------------------------------------------------------------------
+
+rofi.color-enabled: true
+rofi.color-window: #2f343f, #2f343f, #2f343f
+rofi.color-normal: #2f343f, #d8dee8, #2f343f, #2f343f, #bf616a
+rofi.color-active: #2f343f, #b48ead, #2f343f, #2f343f, #93e5cc
+rofi.color-urgent: #2f343f, #ebcb8b, #2f343f, #2f343f, #ebcb8b           
+                                                           

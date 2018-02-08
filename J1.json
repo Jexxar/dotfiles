@@ -1,0 +1,17 @@
+{
+    "child": {
+        "directory": "",
+        "height": 396,
+        "profile": "84ca7c51-44f1-4ed7-95ab-e553024012cb",
+        "readOnly": false,
+        "synchronizedInput": true,
+        "type": "Terminal",
+        "width": 938
+    },
+    "height": 396,
+    "name": "Default",
+    "synchronizedInput": false,
+    "type": "Session",
+    "version": "1.0",
+    "width": 938
+}
