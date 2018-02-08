@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<playlist xmlns="http://xspf.org/ns/0/" xmlns:vlc="http://www.videolan.org/vlc/playlist/ns/0/" version="1">
+	<title>Biblioteca de Mídia</title>
+	<trackList>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Video%20Downloader/Facebook%20Video.mp4</location>
+			<title>1239382239420885</title>
+			<duration>298190</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>0</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Video%20Downloader/Bach%20%20Brandenburg%20Concerto%20No.%201%20in%20F%20major%2C%20BWV%201046%20%28Freiburger%20Barockorchester%29.mp4</location>
+			<duration>1173700</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>1</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Video%20Downloader/Cafezinho%20-%20Chaveco%20Na%20Loira.mp4</location>
+			<duration>58118</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>2</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Video%20Downloader/Checking%20out%20Linux%20Mint%2018.2%20Cinnamon%20for%20Sardi%20%26%20Surfn%20icons%2C%20Arc%20and%20Mint-y%20themes%20on%20archlabs.mp4</location>
+			<duration>988637</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>3</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Video%20Downloader/How%20to%20install%20Linux%20Mint%2018.2%20Cinnamon%20and%20redesign%20it%20%2822%29%20ULM%20mute.mp4</location>
+			<duration>1020518</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>4</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Video%20Downloader/Miniature.mp4</location>
+			<duration>20095</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>5</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Video%20Downloader/Pretinho%20Basico%20-%20Frases%20antes%20da%20Morte.mp4</location>
+			<duration>293035</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>6</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Video%20Downloader/Sele%C3%A7%C3%A3o%20de%20Piadas%20dos%20Primeiros%20Anos%20do%20Pretinho%20B%C3%A1sico.mp4</location>
+			<duration>3260779</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>7</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Video%20Downloader/Venture.mp4</location>
+			<duration>31295</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>8</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Video%20Downloader/Wire%20Cutters-HD.mp4</location>
+			<duration>521726</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>9</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Movies/B5%20Movies/Babylon5.1x00.The_Gathering.REPACK.DVDRip.XviD-DKi.avi</location>
+			<title>Babylon 5 - The Gathering</title>
+			<duration>5683000</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>10</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Movies/B5%20Movies/Babylon5%20-%20A%20Call%20to%20Arms.avi</location>
+			<title>Babylon 5 - A Call to Arms</title>
+			<duration>5622000</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>11</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Movies/B5%20Movies/Babylon5%20-%20In%20the%20Beginning.avi</location>
+			<title>Babylon 5 - In the Beginning</title>
+			<duration>5657000</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>12</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Movies/B5%20Movies/Babylon5%20-%20River%20of%20Souls.avi</location>
+			<title>Babylon 5 - River of Souls</title>
+			<duration>5621000</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>13</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Movies/B5%20Movies/Babylon%205%20-The%20Legend%20Of%20The%20Rangers%20-%20To%20Live%20And%20Die%20In%20Starlight.avi</location>
+			<title>Babylon 5 -The Legend Of The Rangers - To Live And Die In Starlight</title>
+			<creator>Michael Vejar</creator>
+			<duration>5395000</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>14</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Movies/B5%20Movies/Babylon5%20-%20Thirdspace.avi</location>
+			<title>Babylon 5 - Thirdspace</title>
+			<duration>5652000</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>15</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Movies/Dragon%20Nest%20Warriors%27%20Dawn%20%282014%29/Dragon.Nest.Warriors.Dawn.2014.720p.BluRay.x264.YIFY.mp4</location>
+			<title>Dragon.Nest.Warriors.Dawn.2014.720p.BluRay.x264.YIFY.mp4</title>
+			<creator>Mili Pictures</creator>
+			<album>Dragon Nest: Warriors&#39; Dawn</album>
+			<trackNum>1</trackNum>
+			<annotation>The land of Altera has observed an uneasy peace for years among Humans, Elves and Evil beasts who are loyal to the legendary Black Dragon. But the Black Dragon begins to stir from its hibernation, sending the Beasts marching across Altera. With a beast conquest perilously close, a small group of Humans and Elves unite to try to find a secret hidden road to the Black Dragon&#39;s cave and destroy it. But the fate of all of them may be in the hands of the young warrior Lambert, who must summon the confidence and skill to face the Black Dragon himself just when all may be lost.</annotation>
+			<image>file:///home/usuario/.cache/vlc/art/artistalbum/Mili%20Pictures/Dragon%20Nest_%20Warriors%27%20Dawn/art</image>
+			<duration>5245098</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>16</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Movies/hacksekai-no-mukou-ni/hacksekai-no-mukou-ni.mp4</location>
+			<title>.Hack Sekai No Mukou Ni</title>
+			<creator>Matsuyama Hiroshi</creator>
+			<album>.Hack Sekai No Mukou Ni</album>
+			<trackNum>1</trackNum>
+			<annotation>Em 2024, as crianças vivem desde o nascimento em um mundo conectado por redes. Uma alegre criança de 14 anos do ginasial chamada Yuuki Sora não têm interesse em jogos, mas seus amigos a fazem entrar no popular mmorpg “The World”. Entretanto, devido a um certo acontecimento no “The World”, anomalias começam a ocorrer no mundo real.</annotation>
+			<image>file:///home/usuario/.cache/vlc/art/artistalbum/Matsuyama%20Hiroshi/.Hack%20Sekai%20No%20Mukou%20Ni/art.jpg</image>
+			<duration>6691873</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>17</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Movies/Mad%20Max%20Fury%20Road%20%282015%29/Mad.Max.Fury.Road.2015.720p.BluRay.x264.YIFY.mp4</location>
+			<title>Mad.Max.Fury.Road.2015.720p.BluRay.x264.YIFY.mp4</title>
+			<creator>Village Roadshow Pictures</creator>
+			<album>Mad Max: Fury Road</album>
+			<trackNum>1</trackNum>
+			<annotation>An apocalyptic story set in the furthest reaches of our planet, in a stark desert landscape where humanity is broken, and most everyone is crazed fighting for the necessities of life. Within this world exist two rebels on the run who just might be able to restore order. There&#39;s Max, a man of action and a man of few words, who seeks peace of mind following the loss of his wife and child in the aftermath of the chaos. And Furiosa, a woman of action and a woman who believes her path to survival may be achieved if she can make it across the desert back to her childhood homeland.</annotation>
+			<image>file:///home/usuario/.cache/vlc/art/artistalbum/Village%20Roadshow%20Pictures/Mad%20Max_%20Fury%20Road/art</image>
+			<duration>7223466</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>18</vlc:id>
+			</extension>
+		</track>
+		<track>
+			<location>file:///home/usuario/V%C3%ADdeos/Movies/The%20Dark%20Knight%20Rises%20%282012%29/The.Dark.Knight.Rises.2012.720p.BluRay.x264.YIFY.mp4</location>
+			<title>The.Dark.Knight.Rises.2012.720p.BluRay.x264.YIFY.mp4</title>
+			<creator>Legendary Pictures</creator>
+			<album>The Dark Knight Rises</album>
+			<trackNum>1</trackNum>
+			<annotation>Following the death of District Attorney Harvey Dent, Batman assumes responsibility for Dent&#39;s crimes to protect the late attorney&#39;s reputation and is subsequently hunted by the Gotham City Police Department. Eight years later, Batman encounters the mysterious Selina Kyle and the villainous Bane, a new terrorist leader who overwhelms Gotham&#39;s finest. The Dark Knight resurfaces to protect a city that has branded him an enemy.</annotation>
+			<image>file:///home/usuario/.cache/vlc/art/artistalbum/Legendary%20Pictures/The%20Dark%20Knight%20Rises/art</image>
+			<duration>9872873</duration>
+			<extension application="http://www.videolan.org/vlc/playlist/0">
+				<vlc:id>19</vlc:id>
+			</extension>
+		</track>
+	</trackList>
+	<extension application="http://www.videolan.org/vlc/playlist/0">
+		<vlc:node title="Video Downloader">
+			<vlc:item tid="0"/>
+			<vlc:item tid="1"/>
+			<vlc:item tid="2"/>
+			<vlc:item tid="3"/>
+			<vlc:item tid="4"/>
+			<vlc:item tid="5"/>
+			<vlc:item tid="6"/>
+			<vlc:item tid="7"/>
+			<vlc:item tid="8"/>
+			<vlc:item tid="9"/>
+		</vlc:node>
+		<vlc:node title="Movies">
+		<vlc:node title="B5 Movies">
+			<vlc:item tid="10"/>
+			<vlc:item tid="11"/>
+			<vlc:item tid="12"/>
+			<vlc:item tid="13"/>
+			<vlc:item tid="14"/>
+			<vlc:item tid="15"/>
+		</vlc:node>
+		<vlc:node title="Dragon Nest Warriors&#39; Dawn (2014)">
+			<vlc:item tid="16"/>
+		</vlc:node>
+		<vlc:node title="hacksekai-no-mukou-ni">
+			<vlc:item tid="17"/>
+		</vlc:node>
+		<vlc:node title="Mad Max Fury Road (2015)">
+			<vlc:item tid="18"/>
+		</vlc:node>
+		<vlc:node title="The Dark Knight Rises (2012)">
+			<vlc:item tid="19"/>
+		</vlc:node>
+		</vlc:node>
+	</extension>
+</playlist>

@@ -1,0 +1,12 @@
+#! /bin/bash
+#===========================================
+# Completions
+#===========================================
+source ~/.bash/completion_scripts/common
+source ~/.bash/completion_scripts/git_completion
+source ~/.bash/completion_scripts/go
+source ~/.bash/completion_scripts/killall
+source ~/.bash/completion_scripts/make
+source ~/.bash/completion_scripts/pip
+source ~/.bash/completion_scripts/ssh
+source ~/.bash/completion_scripts/tar

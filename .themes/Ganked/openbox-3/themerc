@@ -1,0 +1,52 @@
+!!General
+
+window.handle.width: 0
+window.client.padding.width: 0
+border.Width: 1
+padding.width: 1
+menu.overlap: 0
+border.color: #CBCCBC
+menu.border.color: #CBCCBC
+window.frameColor: #333333
+window.*.client.color: #66BCD1
+*.text.justify: left
+
+!!Menu
+menu.title.bg: Flat Gradient SplitVertical
+menu.title.bg.color: #424242
+menu.title.bg.colorTo: #333333
+menu.title.text.color: #CBCCBC
+
+menu.items.bg: Flat Solid
+menu.items.bg.color: #333333
+menu.items.text.color: #CBCCBC
+menu.items.disabled.text.color: #CCCCCC
+menu.items.active.bg: Flat Solid
+menu.items.active.bg.color: #888A79
+menu.items.active.text.color: #CBCCBC
+
+!!Windows
+window.active.title.bg:                 Gradient SplitVertical Flat
+window.active.title.bg.color:           #424242
+window.active.title.bg.colorTo:         #333333
+window.active.title.separator.color: #CBCCBC
+
+window.inactive.title.bg: Flat Solid
+window.inactive.title.bg.color: #333333
+window.inactive.title.separator.color: #333333
+
+window.*.label.bg: parentrelative
+window.label.text.justify: right
+
+window.active.label.text.color: #CBCCBC
+window.inactive.label.text.color: #4C4C4C
+
+!!Buttons
+window.*.button.*.bg: parentrelative
+window.active.button.*.image.color: #CBCCBC
+window.inactive.button.*.image.color: #424242
+window.*.button.*.bg.color: #333333
+window.*.button.hover.bg.color: #333333
+window.active.button.hover.image.color: #FFFFFF
+window.inactive.button.hover.image.color: #FFFFFF
+

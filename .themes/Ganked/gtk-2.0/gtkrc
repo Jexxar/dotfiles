@@ -1,0 +1,51 @@
+pixmap_path "/home/bryan/.gnome-color-chooser/images/"
+
+style "theme-default"
+{
+  engine "clearlooks"
+  {
+    style = GLOSSY
+#    reliefstyle = 1
+    menubarstyle = 1
+    animation = TRUE
+    radius = 0.0
+  }
+
+  bg[NORMAL] = "#333333"
+  bg[PRELIGHT] = "#333333"
+  bg[SELECTED] = "#333333"
+  bg[ACTIVE] = "#333333"
+  bg[INSENSITIVE] = "#313131"
+  fg[NORMAL] = "#CBCCBC"
+  fg[PRELIGHT] = "#888A79"
+  fg[ACTIVE] = "#888A79"
+  fg[SELECTED] = "#FFFFFF"
+  fg[INSENSITIVE] = "#424242"
+  base[NORMAL] = "#333333"
+  base[PRELIGHT] = "#888A79"
+  base[SELECTED] = "#888A79"
+  base[ACTIVE] = "#888A79"
+  base[INSENSITIVE] = "#313131"
+  text[NORMAL] = "#CBCCBC"
+  text[PRELIGHT] = "#888A79"
+  text[ACTIVE] = "#CBCCBC"
+  text[SELECTED] = "#333333"
+  text[INSENSITIVE] = "#424242"
+  xthickness = 1
+  ythickness = 1
+}
+style "theme-wide" = "theme-default"
+{
+  xthickness = 2
+  ythickness = 2
+}
+style "theme-notebook" = "theme-wide"
+{
+	engine "clearlooks" {radius = 0.0 style = CLASSIC}
+	bg[SELECTED] = "#CBCCBC"
+}
+class "GtkWidget" style "theme-default"
+class "GtkNotebook" style "theme-notebook"
+gtk-button-images = 0
+
+

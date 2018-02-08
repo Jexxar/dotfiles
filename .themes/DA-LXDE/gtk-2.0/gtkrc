@@ -1,0 +1,360 @@
+# DA remix GTK
+# Created by Vitaliy "lavi" KuzNETsov (vkl)
+# Based on deviantART GTK.
+# Requires the Murrine GTK engine
+
+# BASIC
+
+gtk_color_scheme = "fg_color:#2c3635\nbg_color:#ccd9c8\nbase_color:#e6ede4\ntext_color:#2c3635\nselected_bg_color:#728776\nselected_fg_color:#FFFFFF\ntooltip_bg_color:#ccd9c8\ntooltip_fg_color:#2c3635"
+gtk-icon-sizes = "gtk-menu=16,16:\ngtk-button=16,16:\ngtk-dnd=16,16:\npanel-menu=16,16:\npanel=16,16:\ngtk-dialog=16,16:"
+gtk-button-images = 0
+
+# STYLES
+
+style "default"
+{
+	GtkButton      ::child-displacement-x = 1
+	GtkButton      ::child-displacement-y = 1
+	GtkButton      ::default-border       = { 0, 0, 0, 0 }
+	GtkCheckButton ::indicator-size       = 14
+	GtkPaned       ::handle-size          = 6
+	GtkRange       ::trough-border        = 0
+	GtkRange       ::slider-width         = 15
+	GtkRange       ::stepper-size         = 15
+	GtkScale       ::slider-length        = 15
+	GtkScale       ::trough-side-details  = 0
+	GtkScrollbar   ::min-slider-length    = 30
+	GtkMenuBar     ::internal-padding     = 0
+	GtkExpander    ::expander-size        = 16
+	GtkToolbar     ::internal-padding     = 0
+	GtkTreeView    ::expander-size        = 14
+	GtkTreeView    ::vertical-separator   = 0
+	GtkMenu        ::horizontal-padding   = 0
+	GtkMenu        ::vertical-padding     = 0
+ 	GtkMenuBar     ::shadow_type          = GTK_SHADOW
+	GtkToolbar     ::shadow_type          = GTK_SHADOW
+
+	xthickness = 1
+	ythickness = 1
+
+	fg[NORMAL]        = @fg_color
+	fg[PRELIGHT]      = @fg_color
+	fg[SELECTED]      = @selected_fg_color
+	fg[ACTIVE]        = @fg_color
+	fg[INSENSITIVE]   = darker (@bg_color)
+	bg[NORMAL]        = @bg_color
+	bg[PRELIGHT]      = shade (1.02, @bg_color)
+	bg[SELECTED]	    = @selected_bg_color
+	bg[INSENSITIVE]   = @bg_color
+	bg[ACTIVE]        = shade (0.9, @bg_color)
+	base[NORMAL]      = @base_color
+	base[PRELIGHT]    = shade (0.95, @bg_color)
+	base[ACTIVE]      = shade (0.88, @selected_bg_color)
+	base[SELECTED]    = shade (0.89, @selected_bg_color)
+	base[INSENSITIVE] = @bg_color
+	text[NORMAL]      = @text_color
+	text[PRELIGHT]    = @text_color
+	text[ACTIVE]      = @selected_fg_color
+	text[SELECTED]    = @selected_fg_color
+	text[INSENSITIVE] = darker (@bg_color)
+	
+	engine "murrine" 
+	{
+		animation           = TRUE
+		colorize_scrollbar  = FALSE
+		contrast            = 0.9
+		gradient_shades     = {1.05,1.02,0.98,0.95}
+		highlight_shade     = 1.0
+		lightborder_shade   = 1.2
+		lightborderstyle    = 0
+		listviewheaderstyle = 0
+		listviewstyle       = 1
+		menubaritemstyle    = 0
+		menubarstyle        = 0
+		menuitemstyle       = 0
+		menustyle           = 0
+		reliefstyle	        = 0
+		rgba		            = FALSE
+		roundness           = 3
+		scrollbarstyle      = 0
+		sliderstyle         = 0
+		stepperstyle        = 0
+		toolbarstyle	      = 2
+	}
+}
+style "wide"
+{
+	xthickness = 2
+	ythickness = 2
+}
+style "wider"
+{
+	xthickness = 3
+	ythickness = 3
+}
+style "button" = "wider"
+{
+	bg[NORMAL]      = "#e4e8e2"
+	bg[PRELIGHT]    = "#ecefec"
+	bg[ACTIVE]      = "#e4e8e2"
+	bg[INSENSITIVE] = shade (1.0, @bg_color)
+
+	engine "murrine" {
+		contrast            = 0.7
+	}
+}
+style "entry" = "wider"
+{  
+  engine "murrine" {
+    contrast            = 0.35
+  }
+}
+style "notebook"
+{
+	xthickness = 2
+	ythickness = 2
+
+	bg[ACTIVE]   = shade (0.98, @bg_color)
+  bg[NORMAL]   = "#dae4d9"
+	bg[SELECTED] = @selected_bg_color
+	#fg[ACTIVE]   = shade (0.34, @bg_color)
+
+	engine "murrine" {
+		contrast = 0.80
+	}
+}
+style "tasklist" = "wide"
+{
+}
+style "menu"
+{
+	xthickness = 0
+	ythickness = 0
+
+  fg[NORMAL]      = "#D6DED4"
+
+  fg[INSENSITIVE] = darker ("#D6DED4")
+	bg[NORMAL]      = "#2a3737"
+}
+style "menu-item"
+{
+	xthickness = 3
+	ythickness = 5
+
+  fg[NORMAL]      = "#D6DED4"
+#   fg[NORMAL]      = darker("#2a3737")
+ 
+  fg[INSENSITIVE] = darker ("#D6DED4")
+	fg[PRELIGHT]    = "#D6DED4"
+	bg[SELECTED]    = "#337287"
+
+	engine "murrine" 
+	{
+		roundness = 0
+	}
+}
+style "separator-menu-item"
+{
+  xthickness = 0
+	ythickness = 0
+}
+style "treeview"
+{
+	bg[SELECTED] = @selected_bg_color
+}
+style "treeview-header" = "default"
+{
+	bg[NORMAL]      = shade (0.99, @bg_color)
+	bg[PRELIGHT]    = shade (1.06, @bg_color)
+	bg[ACTIVE]      = shade (0.92, @bg_color)
+	bg[INSENSITIVE] = shade (1.0, @bg_color)
+
+	engine "murrine" {
+		gradient_shades     = {1.02,1.005,1.005,0.98}
+		contrast = 0.8
+	}
+}
+style "frame-title"
+{
+	fg[NORMAL] = lighter (@fg_color)
+}
+style "tooltips" = "wider"
+{
+	bg[NORMAL] = @tooltip_bg_color
+	fg[NORMAL] = @tooltip_fg_color
+}
+
+style "progressbar"
+{
+	xthickness = 0
+	ythickness = 0
+
+	fg[PRELIGHT] = @selected_fg_color
+	bg[NORMAL]   = shade (0.98, @bg_color)
+	bg[SELECTED] = @selected_bg_color
+}
+style "statusbar"
+{
+}
+style "comboboxentry"
+{
+}
+style "spinbutton"
+{
+}
+style "scale" = "button"
+{
+	GtkRange       ::slider-width         = 15
+
+	engine "murrine" 
+	{
+		#roundness = 6
+	}
+}
+style "hscale"
+{
+}
+style "vscale"
+{
+}
+style "scrollbar"
+{
+	bg[NORMAL]      = shade (0.995, @bg_color)
+}
+style "hscrollbar"
+{
+}
+style "vscrollbar"
+{
+}
+
+style "menubar"
+{
+  fg[NORMAL]      = "#d6ded4"
+  fg[INSENSITIVE] = darker ("#2a3737")
+#  bg[NORMAL]      = "#ccd9c8"
+  bg[NORMAL]      = "#2a3737"
+
+}
+style "nautilus-location"
+{
+}
+style "radiocheck" = "default"
+{
+	text[NORMAL]	= "#FFFFFF"
+	text[PRELIGHT]	= "#FFFFFF"
+}
+style "panel"
+{
+  fg[NORMAL]   = "#d6ded4"
+  fg[PRELIGHT] = darker ("#d6ded4")
+  fg[ACTIVE]   = "#dedede"
+	bg[NORMAL]   = "#2a3737"
+	bg[PRELIGHT] = darker ("#2a3737")
+	bg[ACTIVE]   = "#2a3737"
+	
+	engine "murrine" {
+		contrast            = 0.6
+		gradient_shades     = {1.1,1.05,0.95,0.9}
+	}
+}
+style "smaller-text"
+{
+	font_name = "7"
+}
+style "handle"
+{
+	bg[NORMAL] = "#232323"
+}
+style "toolbar"
+{ 
+  engine "murrine"
+  {
+    gradient_shades     = {1.05,1.02,0.98,0.95}
+  }
+}
+style "combobox-text-color-workaround"
+{
+	text[NORMAL]      = @fg_color
+	text[PRELIGHT]    = @fg_color
+	text[SELECTED]    = @selected_fg_color
+	text[ACTIVE]      = @fg_color
+	text[INSENSITIVE] = darker (@bg_color)
+}
+style "menuitem-text-is-fg-color-workaround"
+{
+	text[NORMAL]        = "#D6DED4"
+	text[PRELIGHT]      = "#D6DED4"
+	text[SELECTED]      = "#D6DED4"
+	text[ACTIVE]        = @fg_color
+	text[INSENSITIVE]   = darker (@bg_color)
+}
+style "fg-is-text-color-workaround"
+{
+	fg[NORMAL]      = @text_color
+	fg[PRELIGHT]    = @text_color
+	fg[ACTIVE]      = @selected_fg_color
+	fg[SELECTED]    = @selected_fg_color
+	fg[INSENSITIVE] = darker (@bg_color)
+}
+
+# MATCHES
+
+class "GtkRadio*"                        	      style "radiocheck"
+class "GtkCheck*"                           	  style "radiocheck"
+class "GtkWidget"    				                    style "default"
+class "GtkToolbar"   				                    style "toolbar" 
+class "GtkRange"     				                    style "wide"
+class "GtkFrame"     				                    style "wide"
+class "GtkSeparator" 				                    style "wide"
+class "GtkEntry"     				                    style "entry"
+class "GtkSpinButton"  				                  style "spinbutton"
+class "GtkScale"       				                  style "scale"
+class "GtkVScale"      				                  style "vscale"
+class "GtkHScale"      				                  style "hscale"
+class "GtkScrollbar"   				                  style "scrollbar"
+class "GtkVScrollbar"  				                  style "vscrollbar"
+class "GtkHScrollbar"  				                  style "hscrollbar"
+class "*Panel*"                                 style "panel"
+class "*notif*"                                 style "panel"
+class "*Notif*"                                 style "panel"
+class "*Tray*"                                  style "panel"
+class "*tray*"                                  style "panel"
+class "PanelAppletFrame"                        style "handle"
+
+widget_class "*<GtkNotebook>*<GtkEventBox>"     style "notebook"
+widget_class "*<GtkNotebook>*<GtkDrawingArea>"  style "notebook"
+widget_class "*<GtkNotebook>*<GtkLayout>"       style "notebook"
+widget_class "*<GtkNotebook>*<GtkLabel>"        style "notebook"
+widget_class "*<GtkButton>"      		            style "button"
+widget_class "*<GtkNotebook>"    		            style "notebook"
+widget_class "*<GtkStatusbar>*"  		            style "statusbar"
+widget_class "*<GtkComboBoxEntry>*"		          style "comboboxentry"
+widget_class "*<GtkCombo>*"         		        style "comboboxentry"
+widget_class "*<GtkMenuBar>*"           	      style "menubar"
+widget_class "*<GtkMenu>*"              	      style "menu"
+widget_class "*<GtkMenuItem>*"          	      style "menu-item"
+widget_class "*<GtkSeparatorMenuItem>*" 	      style "separator-menu-item"
+widget_class "*.<GtkFrame>.<GtkLabel>" 		      style "frame-title"
+widget_class "*.<GtkTreeView>*"        		      style "treeview"
+widget_class "*<GtkProgressBar>"       		      style "progressbar"
+widget_class "*.<GtkTreeView>.<GtkButton>" 	    style "treeview-header"
+widget_class "*.<GtkCTree>.<GtkButton>"    	    style "treeview-header"
+widget_class "*.<GtkList>.<GtkButton>"     	    style "treeview-header"
+widget_class "*.<GtkCList>.<GtkButton>"       	style "treeview-header"
+widget_class "*.ETable.ECanvas"    		          style "treeview-header"
+widget_class "*.ETree.ECanvas"    		          style "treeview-header"
+widget_class "*Panel*"                          style "panel"
+widget_class "*ToolButton*"                     style "smaller-text"
+widget_class "*Statusbar*"                      style "smaller-text"
+widget_class "*Mail*"                           style "panel"
+widget_class "*.<GtkComboBox>.<GtkCellView>"	  style "combobox-text-color-workaround"
+widget_class "*<GtkListItem>*" 				          style "fg-is-text-color-workaround"
+widget_class "*<GtkCList>" 				              style "fg-is-text-color-workaround"
+
+widget "*Panel*"                                style "panel"
+widget "*PanelWidget*"                          style "panel"
+widget "*PanelApplet*"                          style "panel"
+widget "gtk-tooltip*" 				                  style "tooltips"
+widget "*.nautilus-extra-view-widget" 		      style : highest "nautilus-location"
+widget "*.gtk-combobox-popup-menu.*"   			    style "menuitem-text-is-fg-color-workaround"

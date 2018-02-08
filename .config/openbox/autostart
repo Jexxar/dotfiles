@@ -1,0 +1,108 @@
+#!/bin/bash
+# Script in $HOME/.config/openbox/autostart
+# to run user-specific things.
+#
+#GLOBALAUTOSTART="/etc/xdg/openbox/autostart"
+
+#. $GLOBALAUTOSTART
+
+OB_rc=0
+
+function OB_clear_log_file() {
+    if [ -e ~/.config/openbox/log/ob.log ]; then
+        mv ~/.config/openbox/log/ob.log ~/.config/openbox/log/ob.2.log > /dev/null
+        touch ~/.config/openbox/log/ob.log > /dev/null
+    fi
+    return 0
+}
+
+function OB_log() {
+    echo "["`date +%F-%H:%M:%S`"] - " $@ >> ~/.config/openbox/log/ob.log
+}
+
+# Start  function
+function OB_start() {
+    if [ $1 -ge 1 ]; then
+        sleep $1
+    fi
+    if [ "$2" != "" ]; then
+        eval  $2 ;
+        OB_rc=$?
+        if [[ $OB_rc -eq 0 ]]; then
+            OB_log "OB_start_$2: ok"
+        else
+            OB_log "OB_start_$2: returned $OB_rc"
+        fi
+    fi
+    return 0
+}
+
+# Clear log file 
+OB_clear_log_file
+
+# Run XDG autostart things.  By default don't run anything desktop-specific
+# See xdg-autostart --help more info
+DESKTOP_ENV="OPENBOX"
+if which /usr/lib/openbox/xdg-autostart >/dev/null 2>&1; then
+  /usr/lib/openbox/xdg-autostart $DESKTOP_ENV
+fi
+
+# Start compton 
+OB_start 0  "compton -b --config ~/.config/compton.conf &"
+
+# If you want to use GNOME config tools...
+# Start gnme-settings-daemon 
+if test -x /usr/lib/openbox/gnome-settings-daemon >/dev/null; then
+    OB_start 0  "/usr/lib/openbox/gnome-settings-daemon &"
+elif which gnome-settings-daemon >/dev/null 2>&1; then
+    OB_start 0  "gnome-settings-daemon &"
+fi
+
+# Start nitrogen
+#OB_start 2  "nitrogen --restore &"
+
+# D-bus
+#if which dbus-launch >/dev/null 2>&1 && test -z "$DBUS_SESSION_BUS_ADDRESS"; then
+#    OB_start 2 "dbus-launch --sh-syntax --exit-with-session"
+#fi
+
+# If you want to use Mate config tools...
+# Start mate settings
+OB_start 1  "mate-settings-daemon &"
+
+# Start polkit deamon
+OB_start 1  "/usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1 &"
+
+# Start cinnamon screensaver daemon
+OB_start 1  "cinnamon-screensaver &"
+
+# Start network manager
+OB_start 1  "/usr/bin/nm-applet &"
+
+# Start power manager deamon
+OB_start 1  "mate-power-manager &"
+
+# Update user dirs
+OB_start 1  "xdg-user-dirs-gtk-update &"
+
+# Keyboard
+
+#Sound Applet
+OB_start 0  "mate-volume-control-applet &"
+
+#locks screen after xx mins
+OB_start 1  "xautolock -time 15 -locker 'cinnamon-screensaver-command -l' -notify 30 -notifier 'notify-send -u critical -t 10000 -- \"Bloqueando tela em 30 segundos\"' & "
+
+# Start Conky
+#OB_start 0  "~/bin/conky/conky-startup.sh &"
+
+# Tint2 panel
+if [ $(pgrep -lfc tint2) -ge 1 ] ; then
+    killall tint2 > /dev/null
+fi
+OB_start 1  "tint2 &"
+
+# lighsOn
+OB_start 10  "~/bin/lightsOn.sh 20 &"
+
+export OB_rc

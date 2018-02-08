@@ -1,0 +1,12 @@
+[2018-02-06-01:16:12] -  OB_start_compton -b --config ~/.config/compton.conf &: ok
+[2018-02-06-01:16:12] -  OB_start_gnome-settings-daemon &: ok
+[2018-02-06-01:16:13] -  OB_start_mate-settings-daemon &: ok
+[2018-02-06-01:16:14] -  OB_start_/usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1 &: ok
+[2018-02-06-01:16:15] -  OB_start_cinnamon-screensaver &: ok
+[2018-02-06-01:16:16] -  OB_start_/usr/bin/nm-applet &: ok
+[2018-02-06-01:16:17] -  OB_start_mate-power-manager &: ok
+[2018-02-06-01:16:18] -  OB_start_xdg-user-dirs-gtk-update &: ok
+[2018-02-06-01:16:18] -  OB_start_mate-volume-control-applet &: ok
+[2018-02-06-01:16:19] -  OB_start_xautolock -time 15 -locker 'cinnamon-screensaver-command -l' -notify 30 -notifier 'notify-send -u critical -t 10000 -- "Bloqueando tela em 30 segundos"' & : ok
+[2018-02-06-01:16:20] -  OB_start_tint2 &: ok
+[2018-02-06-01:16:30] -  OB_start_~/bin/lightsOn.sh 20 &: ok

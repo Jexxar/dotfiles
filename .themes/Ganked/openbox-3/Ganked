@@ -1,0 +1,134 @@
+! -- General window (can be overridden)
+window.font:                        nu
+window.justify:                     right
+
+! -- toolbar --
+toolbar: 				flat splitvertical
+toolbar.color:			#424242
+toolbar.colorTo:			#333333
+toolbar.textColor:			#CBCCBC
+toolbar.justify:			center
+toolbar.font:			nu
+
+toolbar.label:			parentrelative
+
+toolbar.windowLabel:               sunken splitvertical border
+toolbar.windowLabel.color:		#424242
+toolbar.windowLabel.colorTo:	#333333
+toolbar.windowLabel.textColor:	#FFFFFF
+toolbar.borderColor:		#CBCCBC	
+
+toolbar.clock:			parentrelative
+toolbar.clock.textColor:		#CBCCBC
+
+toolbar.button:			parentrelative
+toolbar.button.color:		#CBCCBC
+toolbar.button.picColor:		#CBCCBC
+toolbar.button.borderColor:		#FFFFFF
+
+toolbar.button.pressed:            sunken splitvertical
+toolbar.button.pressed.color:	#424242
+toolbar.button.pressed.colorTo:	#333333
+
+! -- menu --
+menu.title:			flat splitvertical border
+menu.title.color:			#424242
+menu.title.colorTo:			#333333
+menu.title.textColor:               #CBCCBC
+menu.title.justify:                 center
+menu.title.borderColor:		#CBCCBC
+
+menu.frame:			flat solid border
+menu.frame.color:			#333333
+menu.frame.textColor:		#CBCCBC
+menu.frame.justify:		right
+menu.frame.font:			nu
+menu.frame.borderColor:		#CBCCBC
+
+menu.hilite:			flat solid
+menu.hilite.color:			#888A79
+menu.hilite.textColor:		#CBCCBC
+
+menu.bullet:			bitmap
+menu.bullet.position:		right
+
+! -- window --
+
+window.title.focus:			flat splitvertical
+window.title.focus.colorTo:		#333333
+window.title.focus.color:		#424242
+
+window.label.focus:			parentrelative
+window.label.focus.textColor:	#CBCCBC
+
+
+window.handle.focus:		flat solid
+window.handle.focus.color:		#333333
+
+window.grip.focus:			flat solid
+window.grip.focus.color:		#424242
+
+window.button.focus:		parentrelative
+window.button.focus.color:		#d6d7ca
+window.button.focus.picColor:	#d6d7ca
+
+window.title.unfocus:		flat solid
+window.title.unfocus.color:		#333333
+
+window.label.unfocus:		parentrelative
+window.label.unfocus.textColor:	#4c4c4c
+
+window.handle.unfocus:		flat solid
+window.handle.unfocus.color:	#333333
+
+window.grip.unfocus:		flat solid
+window.grip.unfocus.color:		#424242
+
+window.button.unfocus:		parentrelative
+window.button.unfocus.picColor:	#4c4c4c
+
+
+window.button.pressed:		parentrelative
+window.button.pressed.color:	#2356a8
+window.button.pressed.picColor:	#d6d7ca
+
+
+! -- misc. --
+borderColor:			#CBCCBC
+borderWidth:			1
+bevelWidth:			0
+frameWidth:			1
+handleWidth:			1
+
+! -- 3dc theme start --
+3355443
+4539717
+3355443
+11908533
+5066061
+6118749
+12373195
+12373195
+3355443
+8618883
+8421504
+12373195
+10841658
+9546922
+8421504
+16357202
+14054197
+16777215
+13160660
+3355443
+12373195
+8388608
+13160660
+4934475
+12373195
+15002603
+5131854
+3355443
+13293526
+13160660
+6956042
