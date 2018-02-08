@@ -1,0 +1,69 @@
+#!/bin/bash
+numberArgs=$#
+
+#zenity --error --text="$#"
+if [ "$?" -eq 1 ]; then
+    zenity --error --text="No files found"
+    exit 1
+fi
+
+exnm="${1}"
+exnm="${exnm#*.}"
+
+if [ "$exnm" != "mp4" ] && [ "$exnm" != "MP4" ]; then
+    zenity --error --text="Invalid file type" 
+    exit 1
+fi
+
+#test="${1}";
+#zenity --error --text="$numberArgs"
+#zenity --error --text="$test antes"
+#test="${test%%.*}"
+#zenity --error --text="$test depois"
+
+
+#if ! [ -x ./"${1}" ]; then
+#   zenity --error --text="Invalid file type" 
+#   exit 1
+#fi
+
+for (( i=1; i<=$numberArgs; i++ )); do
+#    zenity --error --text="vez -> $i";
+    test="# ${1##*/}";
+#    zenity --error --text="${1}";
+
+    n=0
+    while case "$test" in (*mp4*)
+        bsnm="${1}";
+        bsnm="${bsnm%%.*}"
+#        zenity --error --text="basename -> $bsnm";
+#        zenity --error --text="basename.mp4 -> ${bsnm}.mp4";
+#        zenity --error --text="basename.mp3 -> ${bsnm}.mp3";
+        ffmpeg -i "${bsnm}.mp4" -f mp3 -ab 192000 -vn "${bsnm}.mp3";
+        test=${test#*mp4};;(*) ! :
+        ;;
+    esac; do n=$(($n+1)); done
+    
+    n=0
+    while case "$test" in (*MP4*)
+        bsnm="${1}";
+        bsnm="${bsnm%%.*}"
+#        zenity --error --text="basename -> $bsnm";
+#        zenity --error --text="basename.mp4 -> ${bsnm}.mp4";
+#        zenity --error --text="basename.mp3 -> ${bsnm}.mp3";
+        ffmpeg -i "${bsnm}.MP4" -f mp3 -ab 192000 -vn "${bsnm}.mp3";
+        test=${test#*MP4};;(*) ! :
+        ;;
+    esac; do n=$(($n+1)); done
+
+#    sleep 0.5 
+    shift 1
+done | zenity --progress --title="Converting file ${1} to mp3 format" --percentage=10 --auto-close --no-cancel
+
+if [ "$?" -eq 1 ]; then
+    zenity --error --text="Cancelled!"
+    exit 1
+fi
+
+zenity --notification --text="File ${1} converted to mp3 format"
+

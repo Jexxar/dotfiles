@@ -1,0 +1,20 @@
+#!/bin/sh
+
+needed=("netctl" "sudo" "dmenu")
+
+for n in "${needed[@]}"; do
+    if ! which "$n" &> /dev/null; then
+        printf "Please install %s in order to use this script!\n" "$n" >&2
+        exit 1
+    fi
+done
+
+profile="$(find /etc/netctl/ -maxdepth 1 -type f -printf "%f\n" | dmenu -p "Select profile:" $*)"
+
+if [ "$profile" ]; then
+    sudo netctl stop-all
+    sudo netctl start "$profile"
+else
+    printf "Could not find a profile to connect to\n" >&2
+    exit 1
+fi
