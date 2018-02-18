@@ -110,6 +110,8 @@ class BlexitBase(object):
         print_message("{} {}".format(__me__, string))
 
     def openbox_exit(self):
+        subprocess.check_output(["openbox", "--exit"])
+        subprocess.check_output(["killall", "openbox*"])
         subprocess.check_output(["killall", "tint2"])
         subprocess.check_output(["killall", "gnome-settings-daemon"])
         subprocess.check_output(["killall", "mate-settings-daemon"])
@@ -117,8 +119,6 @@ class BlexitBase(object):
         subprocess.check_output(["killall", "polkit-mate-authentication-agent-1"])
         subprocess.check_output(["killall", "mate-power-manager"])
         subprocess.check_output(["killall", "cinnamon-screensaver"])
-        subprocess.check_output(["openbox", "--exit"])
-        subprocess.check_output(["killall", "openbox*"])
 
     def openbox_lock(self):
         subprocess.check_output(["cinnamon-screensaver-command", "-l"])

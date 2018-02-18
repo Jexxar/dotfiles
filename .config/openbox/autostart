@@ -54,17 +54,27 @@ OB_start 0  "compton -b --config ~/.config/compton.conf &"
 # Start gnme-settings-daemon 
 if test -x /usr/lib/openbox/gnome-settings-daemon >/dev/null; then
     OB_start 0  "/usr/lib/openbox/gnome-settings-daemon &"
-elif which gnome-settings-daemon >/dev/null 2>&1; then
-    OB_start 0  "gnome-settings-daemon &"
+#elif which gnome-settings-daemon >/dev/null 2>&1; then
+else
+    OB_gsd=$(which gnome-settings-daemon);
+    OB_log "$OB_gsd";
+    if test -x "$OB_gsd"; then
+        OB_log "$OB_gsd chamou";
+        OB_start 0  "$OB_gsd &";
+    fi
 fi
 
 # Start nitrogen
 #OB_start 2  "nitrogen --restore &"
 
 # D-bus
-#if which dbus-launch >/dev/null 2>&1 && test -z "$DBUS_SESSION_BUS_ADDRESS"; then
-#    OB_start 2 "dbus-launch --sh-syntax --exit-with-session"
-#fi
+if which dbus-launch >/dev/null 2>&1 ; then
+    if test -z "$DBUS_SESSION_BUS_ADDRESS"; then
+        OB_log "dbus-launch ja carregado"
+    else
+        OB_start 0 "dbus-launch --sh-syntax --exit-with-session &"  
+    fi
+fi
 
 # If you want to use Mate config tools...
 # Start mate settings

@@ -32,19 +32,7 @@ function mouse2pos(){
     xdotool mousemove $xloc $yloc click 1;
 }
 
-function mouse2pos(){
-    local xloc
-    local yloc
-    if [[ -z "$1" ]]; then
-        xloc=askx
-    else
-        xloc=$1
-    fi
-    if [[ -z "$2" ]]; then
-        yloc=asky
-    else
-        yloc=$2
-    fi
+function isera(){
     xdotool mousemove $xloc $yloc click 1;
 }
 
