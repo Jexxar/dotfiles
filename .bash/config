@@ -222,3 +222,13 @@ export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
 # Java stuff
 export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel'
+
+#===========================================
+# Reusa o ssh-agent e/ou gpg-agent entre os logins
+# para determinadas chaves
+#===========================================
+if [ $UID -ne "0" ]; then
+    /usr/bin/keychain --eval --quiet -Q $HOME/.ssh/githubkey_rsa ;
+    [ -f $HOME/.keychain/$HOSTNAME-sh ] && . $HOME/.keychain/$HOSTNAME-sh;
+    [ -f $HOME/.keychain/$HOSTNAME-sh-gpg ] && . $HOME/.keychain/$HOSTNAME-sh-gpg;
+fi
