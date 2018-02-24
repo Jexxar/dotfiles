@@ -23,7 +23,7 @@
 use strict;
 
 # Command to lauch files with
-my $cmd = "pcmanfm";
+my $cmd = "xdg-open";
 
 my $path = $ARGV[0];
 $path = "$ENV{'HOME'}" if $path eq "";

@@ -52,17 +52,15 @@ OB_start 0  "compton -b --config ~/.config/compton.conf &"
 
 # If you want to use GNOME config tools...
 # Start gnme-settings-daemon 
-if test -x /usr/lib/openbox/gnome-settings-daemon >/dev/null; then
+#if test -x /usr/lib/openbox/gnome-settings-daemon >/dev/null; then
     OB_start 0  "/usr/lib/openbox/gnome-settings-daemon &"
 #elif which gnome-settings-daemon >/dev/null 2>&1; then
-else
-    OB_gsd=$(which gnome-settings-daemon);
-    OB_log "$OB_gsd";
-    if test -x "$OB_gsd"; then
-        OB_log "$OB_gsd chamou";
-        OB_start 0  "$OB_gsd &";
-    fi
-fi
+#else
+#    OB_gsd=$(which gnome-settings-daemon);
+#    if test -x "$OB_gsd"; then
+#        OB_start 0  "$OB_gsd &";
+#    fi
+#fi
 
 # Start nitrogen
 #OB_start 2  "nitrogen --restore &"
