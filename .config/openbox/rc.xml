@@ -42,7 +42,7 @@
                   'Active' - where the active window is -->
   </placement>
   <theme>
-    <name>Arc</name>
+    <name>Adapta</name>
     <titleLayout>NSDLIMC</titleLayout>
     <!--
       available characters are NDSLIMC, each can occur at most once.
@@ -193,9 +193,8 @@
       </action>
     </keybind>
     <keybind key="C-A-Up">
-      <action name="GoToDesktop">
-        <to>up</to>
-        <wrap>no</wrap>
+      <action name="Execute">
+        <command>/usr/local/bin/skippy-xd-fix</command>
       </action>
     </keybind>
     <keybind key="C-A-Down">
@@ -340,9 +339,9 @@
       <action name="Execute">
         <startupnotify>
           <enabled>true</enabled>
-          <name>Caja</name>
+          <name>Nemo</name>
         </startupnotify>
-        <command>caja --no-desktop</command>
+        <command>nemo --no-desktop</command>
       </action>
     </keybind>
     <keybind key="XF86AudioRaiseVolume">
@@ -456,8 +455,8 @@
       </action>
     </keybind>
     <keybind key="W-Tab">
-      <action name="ShowMenu">
-        <menu>client-list-combined-menu</menu>
+      <action name="Execute">
+        <command>/usr/local/bin/skippy-xd-fix</command>
       </action>
     </keybind>
     <keybind key="W-space">
