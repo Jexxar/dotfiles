@@ -135,7 +135,7 @@
   </desktops>
   <resize>
     <drawContents>yes</drawContents>
-    <popupShow>Nonpixel</popupShow>
+    <popupShow>Never</popupShow>
     <!-- 'Always', 'Never', or 'Nonpixel' (xterms and such) -->
     <popupPosition>Center</popupPosition>
     <!-- 'Center', 'Top', or 'Fixed' -->
@@ -167,7 +167,7 @@
     <noStrut>no</noStrut>
     <stacking>Normal</stacking>
     <!-- 'Above', 'Normal', or 'Below' -->
-    <direction>Vertical</direction>
+    <direction>Horizontal</direction>
     <!-- 'Vertical' or 'Horizontal' -->
     <autoHide>no</autoHide>
     <hideDelay>300</hideDelay>
@@ -965,7 +965,10 @@
       <fullscreen>no</fullscreen>
       <maximized>no</maximized>
     </application>
-    <application title="bum" class="mpv">
+    <application class="vlc">
+      <decor>no</decor>
+    </application>
+    <application class="Firefox">
       <decor>no</decor>
     </application>
     <application title="qiv*">

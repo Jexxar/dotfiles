@@ -125,6 +125,7 @@ export -f editexec
 export -f _dir_count
 export -f _file_count
 export -f _pwd_size
+export -f _mkdir
 export -f position_cursor
 export -f display_status
 export -f is_installed

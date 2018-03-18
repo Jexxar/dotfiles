@@ -938,7 +938,7 @@ function is_active() {
     local isact=$(systemctl is-active $1)
     if [ $isact == "active" ]; then
         return 0
-    elif  [ $isact == "inactive"]; then
+    elif  [ $isact == "inactive" ]; then
         return 1
     else
         echo "Error"
@@ -1133,7 +1133,7 @@ function md_view() {
 #==============================================
 # multiline, case-insensitive grepping (modified from sed & awk O'Reilly book ~pg 138)
 #==============================================
-function phrase {
+function phrase() {
     if [[ ( -f "$1" ) || ( ! -f "$2" ) || ( $(echo "$1") == "" ) ]] ; then
         echo 'usage: phrase "search term" filename';
     fi
@@ -1339,7 +1339,7 @@ function mkgit() {
     touch README.MD
     git add README.MD
     git commit -m 'inital setup - automated'
-    git remote add origin git@github.com:jexxar/$1.git
+    git remote add origin git@github.com:Jexxar/$1.git
     git push origin master
 } 
 
