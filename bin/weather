@@ -9,25 +9,33 @@
 # Addy
 
 # Open Weather Map API code, register to http://openweathermap.org to get one ;)
-API_KEY="365a6f3a274bba21cabdbee0aa44exxx"
+API_KEY="547bbdc38bd641bef6645cd2c4bc613f"
 
 # Check on http://openweathermap.org/find
-CITY_ID="1650xxx"
+CITY_ID="6322752"
 
-ICON_SUNNY="  Clear"
-ICON_CLOUDY="  Cloudy"
-ICON_RAINY="  Rainy"
-ICON_STORM="  Storm"
-ICON_SNOW="  Snow"
-ICON_FOG="  Fog"
+#ICON_SUNNY="  Claro"
+#ICON_CLOUDY="  Nublado"
+#ICON_RAINY="  Chuvoso"
+#ICON_STORM="  Tempestade"
+#ICON_SNOW="  Neve"
+#ICON_FOG="  Neblina"
+
+ICON_MISC=" "
+ICON_SUNNY=" "
+ICON_CLOUDY=" "
+ICON_RAINY=" "
+ICON_STORM=" "
+ICON_SNOW=" "
+ICON_FOG=" "
 ICON_MISC=" "
 
-TEXT_SUNNY="Clear"
-TEXT_CLOUDY="Cloudy"
-TEXT_RAINY="Rainy"
-TEXT_STORM="Storm"
-TEXT_SNOW="Snow"
-TEXT_FOG="Fog"
+TEXT_SUNNY="Claro"
+TEXT_CLOUDY="Nublado"
+TEXT_RAINY="Chuvoso"
+TEXT_STORM="Tempestade"
+TEXT_SNOW="Neve"
+TEXT_FOG="Neblina"
 
 SYMBOL_CELSIUS="˚C"
 
@@ -37,40 +45,69 @@ WEATHER_INFO=$(wget -qO- "${WEATHER_URL}")
 WEATHER_MAIN=$(echo "${WEATHER_INFO}" | grep -o -e '\"main\":\"[a-Z]*\"' | awk -F ':' '{print $2}' | tr -d '"')
 WEATHER_TEMP=$(echo "${WEATHER_INFO}" | grep -o -e '\"temp\":\-\?[0-9]*' | awk -F ':' '{print $2}' | tr -d '"')
 
+if  [[ $1 = "-t" ]]; then
+    echo "${WEATHER_TEMP}${SYMBOL_CELSIUS}"
+    exit 0
+fi
+
 if [[ "${WEATHER_MAIN}" = *Snow* ]]; then
-	if  [[ $1 = "-i" ]]; then
-    echo "${ICON_SNOW} ${WEATHER_TEMP}${SYMBOL_CELSIUS}"
-	else
+    if  [[ $1 = "-i" ]]; then
+    echo "${ICON_SNOW}"
+    elif  [[ $1 = "-c" ]]; then
+    echo "${TEXT_SNOW}"
+    elif  [[ $1 = "-m" ]]; then
+    echo "Se você sair, não esqueça de trazer seu agasalho"
+    else
     echo "${TEXT_SNOW} ${WEATHER_TEMP}${SYMBOL_CELSIUS}"
-	fi
+    fi
 elif [[ "${WEATHER_MAIN}" = *Rain* ]] || [[ "${WEATHER_MAIN}" = *Drizzle* ]]; then
-	if  [[ $1 = "-i" ]]; then
-    echo "${ICON_RAINY} ${WEATHER_TEMP}${SYMBOL_CELSIUS}"
-	else
+    if  [[ $1 = "-i" ]]; then
+    echo "${ICON_RAINY} "
+    elif  [[ $1 = "-c" ]]; then
+    echo "${TEXT_RAINY}"
+    elif  [[ $1 = "-m" ]]; then
+    echo "Se você sair, não esqueça de trazer seu guarda-chuva"
+    else
     echo "${TEXT_RAINY} ${WEATHER_TEMP}${SYMBOL_CELSIUS}"
-	fi
+    fi
 elif [[ "${WEATHER_MAIN}" = *Cloud* ]]; then
-	if  [[ $1 = "-i" ]]; then
-    echo "${ICON_CLOUDY} ${WEATHER_TEMP}${SYMBOL_CELSIUS}"
-	else
+    if  [[ $1 = "-i" ]]; then
+    echo "${ICON_CLOUDY}"
+    elif  [[ $1 = "-c" ]]; then
+    echo "${TEXT_CLOUDY}"
+    elif  [[ $1 = "-m" ]]; then
+    echo "Bom clima pra sair e se divertir"
+    else
     echo "${TEXT_CLOUDY} ${WEATHER_TEMP}${SYMBOL_CELSIUS}"
-	fi
+    fi
 elif [[ "${WEATHER_MAIN}" = *Clear* ]]; then
-	if  [[ $1 = "-i" ]]; then
-    echo "${ICON_SUNNY} ${WEATHER_TEMP}${SYMBOL_CELSIUS}"
-	else
+    if  [[ $1 = "-i" ]]; then
+    echo "${ICON_SUNNY}"
+    elif  [[ $1 = "-c" ]]; then
+    echo "${TEXT_SUNNY}"
+    elif  [[ $1 = "-m" ]]; then
+    echo "Se você sair, não esqueça de trazer seu boné"
+    else
     echo "${TEXT_SUNNY} ${WEATHER_TEMP}${SYMBOL_CELSIUS}"
-	fi
+    fi
 elif [[ "${WEATHER_MAIN}" = *Fog* ]] || [[ "${WEATHER_MAIN}" = *Mist* ]]; then
-	if  [[ $1 = "-i" ]]; then
-    echo "${ICON_FOG} ${WEATHER_TEMP}${SYMBOL_CELSIUS}"
-	else
+    if  [[ $1 = "-i" ]]; then
+    echo "${ICON_FOG}"
+    elif  [[ $1 = "-c" ]]; then
+    echo "${TEXT_FOG}"
+    elif  [[ $1 = "-m" ]]; then
+    echo "Se você sair, não esqueça de sua lanterna"
+    else
     echo "${TEXT_FOG} ${WEATHER_TEMP}${SYMBOL_CELSIUS}"
-	fi
+    fi
 else
-	if  [[ $1 = "-i" ]]; then
-    echo "${ICON_MISC} ${WEATHER_MAIN} ${WEATHER_TEMP}${SYMBOL_CELSIUS}"
-	else
+    if  [[ $1 = "-i" ]]; then
+    echo "${ICON_MISC}"
+    elif  [[ $1 = "-c" ]]; then
+    echo "${WEATHER_MAIN}"
+    elif  [[ $1 = "-m" ]]; then
+    echo "Clima não informado"
+    else
     echo "${WEATHER_MAIN} ${WEATHER_TEMP}${SYMBOL_CELSIUS}"
-	fi	
+    fi  
 fi
