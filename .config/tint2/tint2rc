@@ -151,9 +151,10 @@ launcher_item_app = /usr/share/applications/matecc.desktop
 launcher_item_app = /usr/share/applications/google-chrome.desktop
 launcher_item_app = /usr/share/applications/thunderbird.desktop
 launcher_item_app = /usr/share/applications/com.gexperts.Tilix.desktop
-launcher_item_app = /usr/share/applications/nemo.desktop
+#launcher_item_app = /usr/share/applications/nemo.desktop
+launcher_item_app = /usr/share/applications/pcmanfm.desktop
 launcher_item_app = /usr/share/applications/sublime_text.desktop
-launcher_item_app = /usr/share/applications/sylpheed.desktop
+launcher_item_app = /usr/share/applications/mate-search-tool.desktop
 
 #-------------------------------------
 # Clock
@@ -168,8 +169,8 @@ clock_background_id = 0
 clock_tooltip = 
 clock_tooltip_timezone = 
 clock_lclick_command = gsimplecal
-clock_rclick_command = gnome-clocks
-clock_mclick_command = orage
+clock_rclick_command = gnome-calendar
+clock_mclick_command = gnome-clock
 clock_uwheel_command = 
 clock_dwheel_command = 
 

@@ -1,13 +1,13 @@
-[2018-03-18-00:08:54] -  OB_start_compton -b --config ~/.config/compton.conf &: ok
-[2018-03-18-00:08:54] -  OB_start_/usr/lib/openbox/gnome-settings-daemon &: ok
-[2018-03-18-00:08:54] -  OB_start_dbus-launch --sh-syntax --exit-with-session &: ok
-[2018-03-18-00:08:55] -  OB_start_mate-settings-daemon &: ok
-[2018-03-18-00:08:56] -  OB_start_/usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1 &: ok
-[2018-03-18-00:08:57] -  OB_start_cinnamon-screensaver &: ok
-[2018-03-18-00:08:58] -  OB_start_/usr/bin/nm-applet &: ok
-[2018-03-18-00:08:59] -  OB_start_mate-power-manager &: ok
-[2018-03-18-00:09:00] -  OB_start_xdg-user-dirs-gtk-update &: ok
-[2018-03-18-00:09:00] -  OB_start_mate-volume-control-applet &: ok
-[2018-03-18-00:09:01] -  OB_start_xautolock -time 15 -locker 'cinnamon-screensaver-command -l' -notify 30 -notifier 'notify-send -u critical -t 10000 -- "Bloqueando tela em 30 segundos"' & : ok
-[2018-03-18-00:09:02] -  OB_start_tint2 &: ok
-[2018-03-18-00:09:12] -  OB_start_~/bin/lightsOn.sh 20 &: ok
+[2018-04-02-21:31:02] - Ok   - 0 - compton -b --config ~/.config/compton.conf
+[2018-04-02-21:31:02] - Ok   - 0 - nitrogen --restore
+[2018-04-02-21:31:02] - dbus-launch ja ativo
+[2018-04-02-21:31:03] - Ok   - 0 - /usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh
+[2018-04-02-21:31:04] - Ok   - 0 - mate-settings-daemon
+[2018-04-02-21:31:05] - Ok   - 0 - /usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1
+[2018-04-02-21:31:06] - Ok   - 0 - /usr/bin/nm-applet
+[2018-04-02-21:31:07] - Ok   - 0 - mate-power-manager
+[2018-04-02-21:31:08] - Ok   - 0 - xdg-user-dirs-gtk-update
+[2018-04-02-21:31:09] - Ok   - 0 - mate-volume-control-applet
+[2018-04-02-21:31:10] - Ok   - 0 - xautolock
+[2018-04-02-21:31:11] - Ok   - 0 - tint2
+[2018-04-02-21:31:12] - Ok   - 0 - ~/bin/lightsOn.sh 20

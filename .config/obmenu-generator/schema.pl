@@ -31,7 +31,7 @@ our $SCHEMA = [
 
     #          COMMAND                 LABEL              ICON
     {item => ['xdg-open .',       'Arquivos', 'system-file-manager']},
-    {item => ['xterm',            'Terminal',     'utilities-terminal']},
+    {item => ['tilix',            'Terminal',     'utilities-terminal']},
     {item => ['xdg-open http://', 'Web Browser',  'web-browser']},
     {item => ['gmrun',            'Executar comando',  'system-run']},
 
@@ -98,13 +98,17 @@ our $SCHEMA = [
 
     {sep => undef},
 
-    # {pipe => ['~/.config/openbox/pipemenus/obrecent.sh', 'Recent', '/usr/share/icons/directory.png']}, 
-    # {pipe => ['~/.config/openbox/pipemenus/obpipemenu-places', 'Places-Comp', '/usr/share/icons/directory.png']}, 
+    {pipe => ['~/.config/openbox/scripts/obpipemenu-places', 'Diretórios', 'folder']}, 
+    {pipe => ['~/.config/openbox/scripts/sysInfo.sh pipe', 'SysInfo', 'dialog-information-symbolic']}, 
+    {pipe => ['~/.config/openbox/scripts/obrecent.sh', 'Recentes', 'view-wrapped-symbolic']}, 
+    {pipe => ['~/.config/openbox/scripts/al-audacious.sh', 'Audacious', 'multimedia']}, 
+    #{pipe => ['~/.config/openbox/scripts/recently_opened_menu.sh', 'Recentes', 'view-wrapped-symbolic']}, 
+    # 
     
     # {sep => undef},
 
     ## The xscreensaver lock command
-    {item => ['cinnamon-screensaver-command -l', 'Bloquear', 'system-lock-screen']},
+    {item => ['~/bin/autolock.sh lock', 'Bloquear', 'system-lock-screen']},
 
     ## This option uses the default Openbox's "Exit" action
     {item => ['~/bin/bl-exit.sh', 'Sair', 'application-exit']},

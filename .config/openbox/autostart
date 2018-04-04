@@ -6,111 +6,324 @@
 
 #. $GLOBALAUTOSTART
 
-OB_rc=0
+export OB_rc=0
 
-function OB_clear_log_file() {
-    if [ -e ~/.config/openbox/log/ob.log ]; then
-        mv ~/.config/openbox/log/ob.log ~/.config/openbox/log/ob.2.log > /dev/null
-        touch ~/.config/openbox/log/ob.log > /dev/null
-    fi
-    return 0
-}
-
-function OB_log() {
-    echo "["`date +%F-%H:%M:%S`"] - " $@ >> ~/.config/openbox/log/ob.log
-}
-
-# Start  function
-function OB_start() {
-    if [ $1 -ge 1 ]; then
-        sleep $1
-    fi
-    if [ "$2" != "" ]; then
-        eval  $2 ;
-        OB_rc=$?
-        if [[ $OB_rc -eq 0 ]]; then
-            OB_log "OB_start_$2: ok"
-        else
-            OB_log "OB_start_$2: returned $OB_rc"
-        fi
-    fi
-    return 0
-}
-
-# Clear log file 
-OB_clear_log_file
+if [ -e ~/.config/openbox/log/ob.log ]; then
+    mv ~/.config/openbox/log/ob.log ~/.config/openbox/log/ob.2.log > /dev/null
+    touch ~/.config/openbox/log/ob.log > /dev/null
+fi
 
 # Run XDG autostart things.  By default don't run anything desktop-specific
 # See xdg-autostart --help more info
-DESKTOP_ENV="OPENBOX"
-if which /usr/lib/openbox/xdg-autostart >/dev/null 2>&1; then
-  /usr/lib/openbox/xdg-autostart $DESKTOP_ENV
-fi
+#DESKTOP_ENV="OPENBOX"
+#if which /usr/lib/openbox/xdg-autostart >/dev/null 2>&1; then
+#    sleep 1
+#    OB_str="/usr/lib/openbox/xdg-autostart $DESKTOP_ENV"
+#    OB_stts=""
+#    /usr/lib/openbox/xdg-autostart $DESKTOP_ENV &
+#    OB_rc=$?
+#    if [ $OB_rc -eq 0 ]; then
+#        OB_stts="Ok  "
+#    else
+#        OB_stts="Erro"
+#    fi
+#    echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+#fi
 
 # Start compton 
-OB_start 0  "compton -b --config ~/.config/compton.conf &"
+if [ $(pgrep -lfc compton) -ge 1 ] ; then
+    killall compton > /dev/null
+fi
+
+sleep 1
+OB_str="compton -b --config ~/.config/compton.conf"
+OB_stts=""
+
+compton -b --config ~/.config/compton.conf &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 # If you want to use GNOME config tools...
-# Start gnme-settings-daemon 
+# Start gnome-settings-daemon 
 #if test -x /usr/lib/openbox/gnome-settings-daemon >/dev/null; then
-    OB_start 0  "/usr/lib/openbox/gnome-settings-daemon &"
-#elif which gnome-settings-daemon >/dev/null 2>&1; then
-#else
-#    OB_gsd=$(which gnome-settings-daemon);
-#    if test -x "$OB_gsd"; then
-#        OB_start 0  "$OB_gsd &";
+#    sleep 1
+#    OB_str="/usr/lib/openbox/gnome-settings-daemon"
+#    OB_stts=""
+#    
+#    /usr/lib/openbox/gnome-settings-daemon &
+#    
+#    OB_rc=$?
+#
+#    if [ $OB_rc -eq 0 ]; then
+#        OB_stts="Ok  "
+#    else
+#        OB_stts="Erro"
 #    fi
+#
+#    echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 #fi
 
 # Start nitrogen
-#OB_start 2  "nitrogen --restore &"
+#sleep 1
+OB_str="nitrogen --restore"
+OB_stts=""
 
-# D-bus
-if which dbus-launch >/dev/null 2>&1 ; then
-    if test -z "$DBUS_SESSION_BUS_ADDRESS"; then
-        OB_log "dbus-launch ja carregado"
-    else
-        OB_start 0 "dbus-launch --sh-syntax --exit-with-session &"  
-    fi
+nitrogen --restore &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
 fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+# launches a session dbus instance
+OB_str="dbus-launch session"
+OB_stts=""
+
+if [ -z "$DBUS_SESSION_BUS_ADDRESS" ] && type dbus-launch >/dev/null; then
+    sleep 1
+    dbus-launch --sh-syntax --exit-with-session &
+    OB_rc=$?
+    if [ $OB_rc -eq 0 ]; then
+        OB_stts="Ok  "
+    else
+        OB_stts="Erro"
+    fi
+    echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+else
+    echo "["`date +%F-%H:%M:%S`"] - dbus-launch ja ativo" >> ~/.config/openbox/log/ob.log
+fi
+
+# Stop gnome-keyring-daemon if it exists
+if [ $(pgrep -lfc gnome-keyring-daemon) -ge 1 ] ; then
+    killall gnome-keyring-daemon > /dev/null
+fi
+
+# Start gnome-keyring-daemon pkcs11,secrets,ssh
+sleep 1
+OB_str="/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh"
+OB_stts=""
+
+/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 # If you want to use Mate config tools...
 # Start mate settings
-OB_start 1  "mate-settings-daemon &"
+if [ $(pgrep -lfc mate-settings-daemon) -ge 1 ] ; then
+    killall mate-settings-daemon > /dev/null
+fi
+sleep 1
+OB_str="mate-settings-daemon"
+OB_stts=""
+
+mate-settings-daemon &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 # Start polkit deamon
-OB_start 1  "/usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1 &"
+sleep 1
+OB_str="/usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1"
+OB_stts=""
 
-# Start cinnamon screensaver daemon
-OB_start 1  "cinnamon-screensaver &"
+/usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1 &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+# Start screensaver daemon
+#sleep 1
+#OB_str="cinnamon-screensaver"
+#OB_stts=""
+
+#cinnamon-screensaver &
+
+#OB_rc=$?
+#if [ $OB_rc -eq 0 ]; then
+#    OB_stts="Ok  "
+#else
+#    OB_stts="Erro"
+#fi
+#echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 # Start network manager
-OB_start 1  "/usr/bin/nm-applet &"
+sleep 1
+OB_str="/usr/bin/nm-applet"
+OB_stts=""
+
+/usr/bin/nm-applet &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 # Start power manager deamon
-OB_start 1  "mate-power-manager &"
+if [ $(pgrep -lfc mate-power-manager) -ge 1 ] ; then
+    killall mate-power-manager > /dev/null
+fi
+
+sleep 1
+OB_str="mate-power-manager"
+OB_stts=""
+
+mate-power-manager &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 # Update user dirs
-OB_start 1  "xdg-user-dirs-gtk-update &"
+sleep 1
+OB_str="xdg-user-dirs-gtk-update"
+OB_stts=""
+
+xdg-user-dirs-gtk-update &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 # Keyboard
 
 #Sound Applet
-OB_start 0  "mate-volume-control-applet &"
+if [ $(pgrep -lfc mate-volume-control-applet) -ge 1 ] ; then
+    killall mate-volume-control-applet > /dev/null
+fi
+
+sleep 1
+OB_str="mate-volume-control-applet"
+OB_stts=""
+
+mate-volume-control-applet &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 #locks screen after xx mins
-OB_start 1  "xautolock -time 15 -locker 'cinnamon-screensaver-command -l' -notify 30 -notifier 'notify-send -u critical -t 10000 -- \"Bloqueando tela em 30 segundos\"' & "
+if [ $(pgrep -lfc cinnamon-screensaver) -ge 1 ] ; then
+    killall cinnamon-screensaver > /dev/null
+fi
+
+if [ $(pgrep -lfc mate-screensaver) -ge 1 ] ; then
+    killall mate-screensaver > /dev/null
+fi
+
+#if [ $(pgrep -lfc xautolock) -ge 1 ] ; then
+#    killall xautolock > /dev/null
+#fi
+
+sleep 1
+OB_str="xautolock"
+OB_stts=""
+
+xautolock -detectsleep -noclose -time 5 -locker "\"$HOME/bin/autolock.sh lock\"" -notify 10 -notifier "\"$HOME/bin/autolock.sh notify\"" -killtime 10 -killer "\"$HOME/bin/autolock.sh suspend\"" &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 # Start Conky
-#OB_start 0  "~/bin/conky/conky-startup.sh &"
+#if [ $(pgrep -lfc conky) -ge 1 ] ; then
+#    killall conky > /dev/null
+#fi
+
+#sleep 1
+#OB_str="~/bin/conky/conky-startup.sh"
+#OB_stts=""
+
+#~/bin/conky/conky-startup.sh &
+
+#OB_rc=$?
+#if [ $OB_rc -eq 0 ]; then
+#    OB_stts="Ok  "
+#else
+#    OB_stts="Erro"
+#fi
+#echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 # Tint2 panel
+# 
 if [ $(pgrep -lfc tint2) -ge 1 ] ; then
     killall tint2 > /dev/null
 fi
-OB_start 1  "tint2 &"
+
+sleep 1
+OB_str="tint2"
+OB_stts=""
+
+tint2 &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 # lighsOn
-OB_start 10  "~/bin/lightsOn.sh 20 &"
+if [ $(pgrep -lfc lightsOn.sh) -ge 1 ] ; then
+    killall lightsOn.sh > /dev/null
+fi
+sleep 1
+OB_str="~/bin/lightsOn.sh 20"
+OB_stts=""
+
+~/bin/lightsOn.sh 20 &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 export OB_rc
+
