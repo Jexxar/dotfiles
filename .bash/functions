@@ -5,6 +5,8 @@
 #==============================================
 # Oneliners
 #==============================================
+# Open the man page for the previous command.
+function lman () { set -- $(fc -nl -1); while [ "$#" -gt 0 -a '(' "sudo" = "$1" -o "-" = "${1:0:1}" ')' ]; do shift; done; man "$1" || help "$1"; }
 #Xargs com function. Ex. echo "abc" | do_xarg echo_pass
 function do_xarg() { local funnm=$1; xargs -I{} bash -c $funnm\ \{\}; }
 # logical test functions
@@ -37,7 +39,9 @@ function cpf() { cp "$@" && goto "$_"; }
 # Move and Goto dir
 function mvf() { mv "$@" && goto "$_"; }
 # Mkdir and Goto dir
-function mkf() { mkdir -p $1 && goto "$1";}
+function mkf() { mkdir -p $1 && goto "$1"; }
+# Cmd exists
+function cmd_exists() { command -v "$1" &> /dev/null; }
 # Top used cmds
 function top_cmds() { cat $HISTFILE | grep -Ev '^#' | awk '{ print $1 }' | grep -Ev '^`' | grep -Ev ' ' | sort | uniq -c | sort  -n -k1 | sort -rn | head ; }
 # Color tree of current dir
@@ -221,6 +225,30 @@ function _dir_count() { echo "`/bin/ls -lagFXh1 | grep '/' | awk '!/\.\./' | awk
 function _file_count() { echo "`/bin/ls -lagFXh1 | grep '\-rw' | /usr/bin/wc -l | /bin/sed 's: ::g'`" ;  }
 # Funcoes auxiliares - pwd_size
 function _pwd_size() { echo "`/bin/ls -lagFXh1 | /bin/grep -m 1 total | /bin/sed 's/total //'`" ; }
+# Commit and push everything
+function gitdone() { git add -A; git commit -S -v -m "$1"; git push; }
+
+
+#==============================================
+# Search history.
+#==============================================
+function qh() {
+    #           ┌─ enable colors for pipe
+    #           │  ("--color=auto" enables colors only if
+    #           │  the output is in the terminal)
+    grep --color=always "$*" "$HISTFILE" | less -RX
+    # display ANSI color escape sequences in raw form ─┘│
+    #       don't clear the screen after quitting less ─┘
+}
+
+#==============================================
+# Search for text within the current directory.
+#==============================================
+function qtxt() {
+    grep -ir --color=always "$*" --exclude-dir=".git" --exclude-dir="node_modules" . | less -RX
+    #     │└─ search all files under each directory, recursively
+    #     └─ ignore case
+}
 
 #==============================================
 # mkdir default permission
@@ -481,6 +509,11 @@ function is_float() {
 # Format is: cache "$basename_to_cache_in" $cmd $arg1 $arg2 $arg3...
 #==============================================
 function cache() {
+    if [[ -z "$1" ]]; then
+        echo "Uso: cache <basename_to_cache_in> <cmd> <arg1> <arg2> <arg3> ..."
+        return 0
+    fi
+
     local cache_fn="$1"
     shift
 
@@ -1311,8 +1344,7 @@ function matches () {
 #==============================================
 function fstr() {
     local mycase=""
-    local usage="fstr: find string in files.
-Usage: fstr [-i] \"pattern\" [\"filename pattern\"] "
+    local usage="fstr: find string in files. Usage: fstr [-i] \"pattern\" [\"filename pattern\"] "
     OPTIND=1
     while getopts :it opt
     do
@@ -1333,6 +1365,10 @@ Usage: fstr [-i] \"pattern\" [\"filename pattern\"] "
 #  Setup empty github repo
 #==============================================
 function mkgit() {
+    if [[ -z "$1" ]]; then
+        echo "Uso: mkgit <Path>"
+        return 0
+    fi
     mkdir $1
     cd $1
     git init
@@ -1462,6 +1498,10 @@ function screens_and_jobs_count() {
 # Retorna o tamanho de uma string Localizada
 #==============================================
 function strLen() {
+    if [[ -z "$1" ]]; then
+        echo "Uso: strLen <string>"
+        return 0
+    fi
     local bytlen
     bytlen=${#1}
     echo  $bytlen
@@ -1471,6 +1511,10 @@ function strLen() {
 # Retorna o tamanho de uma string LANG=C
 #==============================================
 function strLenC() {
+    if [[ -z "$1" ]]; then
+        echo "Uso: strLenC <string>"
+        return 0
+    fi
     local bytlen 
     local oLang=$LANG
     LANG=C
@@ -1483,6 +1527,10 @@ function strLenC() {
 # Retorna diferenca de tamanho de uma string  entre sistemas de codificacao
 #==============================================
 function strU8DiffLen () { 
+    if [[ -z "$1" ]]; then
+        echo "Uso: strU8DiffLen <string>"
+        return 0
+    fi
     local bytlen oLang=$LANG
     LANG=C
     bytlen=${#1}
@@ -1494,6 +1542,10 @@ function strU8DiffLen () {
 # Mostra nome do processo do PID passado como parm
 #==============================================
 function process_name() {
+    if [[ -z "$1" ]]; then
+        echo "Uso: process_name <PID>"
+        return 0
+    fi
     ps -p $1 -o comm=
     if [ $? != 0 ]; then
         echo ""
@@ -1519,9 +1571,9 @@ function cl() {
 #==============================================
 # Extrai arquivos compactados
 #==============================================
-function extract {
+function do_extract {
     if [ -z "$1" ]; then
-        echo "Uso: extract <caminho/nome_do_arquivo>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
+        echo "Uso: do_extract <caminho/nome_do_arquivo>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
     else
         local f=`echo "$1" | tr '[:upper:]' '[:lower:]'`
         if [ -f $1 ] ; then
@@ -1541,7 +1593,7 @@ function extract {
                 *.7z)        7z x ./$1        ;;
                 *.xz)        unxz ./$1        ;;
                 *.exe)      cabextract ./$1  ;;
-                *)           echo "extract: '$1' - método de compactação desconhecido" ;;
+                *)           echo "do_extract: '$1' - método de compactação desconhecido" ;;
             esac
         else
             echo "$1 - arquivo não existe"
@@ -1756,10 +1808,53 @@ function __rprompt() {
 # Frase do dia (via fortune)
 #==============================================
 function my_motd() {
-    rm -f ~/.plan &>/dev/null
+    [ -f ~/.plan ] && rm -f ~/.plan &>/dev/null
+    local LineLimit
+    let LineLimit=3
     /usr/games/fortune -a > ~/.plan
+    local LineReal=$(cat ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1' | wc -l)
+    while [ $LineLimit -lt $LineReal ]
+    do
+      [ -f ~/.plan ] && rm -f ~/.plan &>/dev/null
+      /usr/games/fortune -a > ~/.plan
+      LineReal=$(cat ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1' | wc -l)
+    done
     #cat ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1' | cowsay -f $(random_cow_file)
     cat ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1'
+}
+
+#==============================================
+# progress bar
+#==============================================
+function draw() {
+    local perc=$1
+    local size=$2
+    local inc=$(( perc * size / 100 ))
+    local out=
+    if [ -z $3 ]; then
+        local color="36"
+    else
+        local color="$3"
+    fi 
+    for v in `seq 0 $(( size - 1 ))`; do
+        test "$v" -le "$inc" && out="${out}\e[1;${color}m${FULL}" \
+        || out="${out}\e[0;${color}m${EMPTY}"
+    done
+    printf $out
+}
+
+#==============================================
+# color bar
+#==============================================
+function color_bar() {
+    printf "\n"
+    local i=0
+    while [ $i -le 6 ]
+    do
+      printf "\e[$((i+41))m\e[$((i+30))m█▓▒░"
+      i=$(($i+1))
+    done
+    printf "\e[37m█\e[0m▒░\n\n"
 }
 
 #==============================================
@@ -1767,7 +1862,9 @@ function my_motd() {
 #==============================================
 function greetings() { 
     local USR="`whoami`"
-    local DATE="`date`"
+    local DATE="`date +"%d/%m/%Y"`"
+    #local DATE="`date +"%A, %d de %B de %Y"`"
+    #local DATE="`date +"%a, %d %b de %Y - %T %Z UTC"`"
     local DIST="`my_distro`"
     local KERNEL="`uname -rmo`"
     local TIMEU="`uptime_active`"
@@ -1775,27 +1872,116 @@ function greetings() {
     local FrMEM="`free_mem`"
     local TtMEM="`total_mem`"
     local AvMEM="`avail_mem`"
+    local Wthico=`~/bin/weather -i`
+    local Wthcnd=`~/bin/weather`
+    local Wthmsg=`~/bin/weather -m`
+    local BVERS="$BASH_VERSION"
   
+    local id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
+    local id="${id##* }"
+    local wm="$(xprop -id "$id" -notype -len 100 -f _NET_WM_NAME 8t)"
+    local wm="${wm/*_NET_WM_NAME = }"
+    local wm="${wm/\"}"
+    local wm="${wm/\"*}"
+    local FULL=━
+    #local EMPTY=━
+    #local EMPTY=─
+    #local FULL=┅
+    local EMPTY=┄
+
     cls
     
-    echo "`tput setaf 3`Olá, seja bem vindo."
-    echo "Data...: $DATE"
-    echo "Distro.: $DIST"
-    echo "Kernel.: $KERNEL"
-    echo "Uptime.: $TIMEU desde $TIMEDe"
-    echo "Memória: Livre: $FrMEM, Total: $TtMEM, Disp: $AvMEM"
+    printf " \e[1;33mOlá, seja bem vindo. $(you_have_mail)\e[0m\n"
+    printf " \e[1;33mHoje está ( $Wthico) $Wthcnd. $Wthmsg.\e[0m\n\n"
+    printf " \e[1;36mStatus do Sistema em $DATE:\e[0m\n"
+    printf " \e[1;36m     distro  $DIST@ kernel $KERNEL\e[0m\n"
+    #printf " \e[1;33m   kernel \e[0m$KERNEL\n"
+    printf " \e[1;36m     uptime  $TIMEU desde $TIMEDe\e[0m\n"
+
+    if xhost >& /dev/null ; then 
+        printf " \e[1;36m      shell  $BVERS @ $wm\e[0m\n"
+    else
+        printf " \e[1;36m      shell  $BVERS\e[0m\n"
+    fi
+
+    #printf " \e[1;33m    clima \e[0m$Wthico $Wthcnd. $Wthmsg.\n"
+    #printf " \e[1;33m     data \e[0m$DATE\n"
+    #printf " \e[1;33m   distro \e[0m$DIST@ kernel $KERNEL\n"
+    ##printf " \e[1;33m   kernel \e[0m$KERNEL\n"
+    #printf " \e[1;33m   uptime \e[0m$TIMEU desde $TIMEDe\n"
+    #if xhost >& /dev/null ; then 
+    #    printf " \e[1;33m    shell \e[0m$BVERS @ $wm\n"
+    #else
+    #    printf " \e[1;33m    shell \e[0m$BVERS\n"
+    #fi
+
+    #printf " \e[0m\n" 
+    
+    # cpu
+    local CpuUsg=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}' | sed "s/\./,/g")
+    local CpuLvl=`printf "%.0f" $CpuUsg`
+    printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " cpu" "$CpuLvl%" `draw $CpuLvl 15` 
+    
+    # ram
+    local RamM=`free | awk '/Mem:/ {print int($3/$2 * 100.0)}'`
+    printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " ram" "$RamM%" `draw $RamM 15` 
+    
+    # battery
+    local battery=/sys/class/power_supply/BAT1
+    local BtyFull=$battery/charge_full
+    local BtyNow=$battery/charge_now
+    local bf=`cat $BtyFull`
+    local bn=`cat $BtyNow`
+    local charge=`printf $(( 100 * $bn / $bf ))`
+    case 1 in
+      $(($charge <= 15)))
+        local color='31'
+        ;;
+      *)
+        local color='36'
+        ;;
+    esac
+    printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" " bat" "$charge%" `draw $charge 15 $color`
+    # volume
+    local vol=`amixer get Master | awk '$0~/%/{print $4}' | tr -d '[]%'`
+    if amixer get Master | grep -q '\[off\]' 
+    then
+        local color='31'
+    else
+        local color='36'
+    fi
+    printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" " vol" "$vol%" `draw $vol 15 $color` 
+    # temperature
+    local SensTemp=`sensors | awk '/Core\ 0/ {gsub(/\+/,"",$3); gsub(/\..+/,"",$3)    ; print $3}'`
+    case 1 in
+      $(($SensTemp <= 50)))
+          color='34'
+          ;;
+      $(($SensTemp >= 75)))
+          color='31'
+          ;;
+      *)
+          color='36'
+          ;;
+    esac
+    printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" "temp" "$SensTemp˚C " `draw $SensTemp 15 $color`
+    printf "\e[1;33m\n"
+    #echo "Data...: $DATE"
+    #echo "Distro.: $DIST"
+    #echo "Kernel.: $KERNEL"
+    #echo "Uptime.: $TIMEU desde $TIMEDe"
+    #echo "Memória: Livre: $FrMEM, Total: $TtMEM, Disp: $AvMEM"
     #echo ""
-    
-    echo ""
-    
+    #echo ""
     my_motd
 
-    echo ""
+    #echo ""
     
-    echo -e "`you_have_mail`\n"
+    #echo -e "`you_have_mail`\n"
     
     # Reset colors
     tput sgr0
+    color_bar
 }
 
 #==============================================

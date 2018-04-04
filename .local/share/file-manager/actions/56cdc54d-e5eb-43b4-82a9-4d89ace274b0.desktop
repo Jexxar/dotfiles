@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Action
+ToolbarLabel[pt_BR]=ConverToMP3
+ToolbarLabel[pt]=ConverToMP3
+Name[pt_BR]=ConverToMP3
+Name[pt]=ConverToMP3
+Profiles=profile-zero;
+Icon[pt_BR]=view-media-lyrics
+Icon[pt]=view-media-lyrics
+
+[X-Action-Profile profile-zero]
+Exec=/home/usuario/bin/MP4toMP3.sh %b
+Name[pt_BR]=ConverToMP3
+Name[pt]=ConverToMP3

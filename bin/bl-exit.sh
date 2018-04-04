@@ -110,18 +110,14 @@ class BlexitBase(object):
         print_message("{} {}".format(__me__, string))
 
     def openbox_exit(self):
+        subprocess.call("~/bin/ob_end_session.sh", shell=True)
+        # subprocess.check_output(["ob_end_session.sh", "now"])
         subprocess.check_output(["openbox", "--exit"])
         subprocess.check_output(["killall", "openbox*"])
-        subprocess.check_output(["killall", "tint2"])
-        subprocess.check_output(["killall", "gnome-settings-daemon"])
-        subprocess.check_output(["killall", "mate-settings-daemon"])
-        subprocess.check_output(["killall", "xautolock"])
-        subprocess.check_output(["killall", "polkit-mate-authentication-agent-1"])
-        subprocess.check_output(["killall", "mate-power-manager"])
-        subprocess.check_output(["killall", "cinnamon-screensaver"])
-
+        
     def openbox_lock(self):
-        subprocess.check_output(["cinnamon-screensaver-command", "-l"])
+        subprocess.call("~/bin/autolock.sh", shell=True)
+        # subprocess.check_output(["~/bin/autolock.sh", "lock"])
     
     def lock(self):
         try:

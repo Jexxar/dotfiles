@@ -22,7 +22,7 @@ while read line ; do
     echo "Subshell level INSIDE = $BASH_SUBSHELL"
     echo "line is : $line"
     ligne=$line
-done < < (ls /home | sort )
+done < <(ls /home | sort)
  
 echo "Value of \$line outside the loop : '$line'"
 echo "Value of \$ligne outside the loop : '$ligne'"

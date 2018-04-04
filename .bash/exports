@@ -3,6 +3,7 @@
 # Exports (auto generated. Do not edit) - Bash Shell
 #==============================================
 function do_exports() {
+export -f lman
 export -f do_xarg
 export -f is_empty
 export -f is_not_empty
@@ -21,6 +22,7 @@ export -f goto
 export -f cpf
 export -f mvf
 export -f mkf
+export -f cmd_exists
 export -f top_cmds
 export -f lsr
 export -f cls
@@ -125,6 +127,9 @@ export -f editexec
 export -f _dir_count
 export -f _file_count
 export -f _pwd_size
+export -f gitdone
+export -f qh
+export -f qtxt
 export -f _mkdir
 export -f position_cursor
 export -f display_status
@@ -190,13 +195,15 @@ export -f strLenC
 export -f strU8DiffLen
 export -f process_name
 export -f cl
-export -f extract
+export -f do_extract
 export -f qt_mail
 export -f tem_mail
 export -f uptime_active
 export -f random_cow_file
 export -f you_have_mail
 export -f my_motd
+export -f draw
+export -f color_bar
 export -f greetings
 }
 

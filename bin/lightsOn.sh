@@ -39,6 +39,7 @@
 # program (which may exist, for instance, in /usr/bin).
 
 # VERSION=v0.1
+LO_log_file=/var/log/lightsOn.log
 
 # mostra nome do processo
 function LO_pname() {
@@ -46,6 +47,14 @@ function LO_pname() {
     if [ $? != 0 ]; then
         echo ""
     fi
+}
+
+function LO_log_clean() {
+    if [ -f $LO_log_file ]; then
+        rm -f $LO_log_file
+    fi
+    touch $LO_log_file
+    return 0
 }
 
 function LO_kill_older() {
@@ -65,13 +74,14 @@ function LO_kill_older() {
         pnm=$(LO_pname $pc_id)
         #echo "elem $i : ${bf_proc[$i]}  pc_id=$pc_id  pc_nm=$pnm "
         if [ "$pc_id" != "$mypid" ] && [ "$pnm" == "lightsOn.sh" ]; then
-                kill $pc_id > /dev/null
+        	kill $pc_id > /dev/null
         fi
     done
     return 0
 }
 
 LO_kill_older
+LO_log_clean
 
 # DEBUG=0 for no output
 # DEBUG=1 for sleep prints
@@ -109,7 +119,7 @@ minitube_detection=1
 
 # Names of programs which, when running, you wish to delay the screensaver.
 # For example ('ardour2' 'gmpc').
-delay_progs=('vlc' 'xplayer'  'audacity' 'mpv')
+delay_progs=('vlc' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube')
 
 # Display outputs to check, display screensaver when they are connected.
 # Run xrandr to show current monitor config.
@@ -136,9 +146,11 @@ delay_this_loop=0
 function log() {
     if [ $DEBUG -eq 2 ]; then
         echo "["`date +%H:%M:%S`"] - " $@
+        echo "["`date +%H:%M:%S`"] - " $@ >> $LO_log_file
     elif [ $DEBUG -eq 1 ]; then
         if [ "$(echo $@ | grep -c 'sleeping for')" == "1" ]; then
             echo "["`date +%H:%M:%S`"] - " $@
+            echo "["`date +%H:%M:%S`"] - " $@ >> $LO_log_file
         fi
     fi
 }
@@ -165,16 +177,16 @@ if pgrep -x xscreensaver > /dev/null; then
 elif pgrep -x kscreensaver > /dev/null; then
     screensaver=kscreensaver
     log "kscreensaver detected"
-elif pgrep -x xautolock > /dev/null; then
+elif pgrep -l xautolock > /dev/null; then
     screensaver=xautolock
     log "xautolock detected"
 elif pgrep -x gnome-screensaver > /dev/null; then
     screensaver=gnome-screensaver
     log "gnome-screensaver detected"
-elif pgrep -x cinnamon-screen > /dev/null; then
+elif pgrep -l cinnamon-screen > /dev/null; then
     screensaver=cinnamon-screensaver
     log "cinnamon-screensaver detected"
-elif pgrep -x mate-screen > /dev/null; then
+elif pgrep -l mate-screen > /dev/null; then
     screensaver=mate-screensaver
     log "mate-screensaver detected"
 else
@@ -544,6 +556,7 @@ function _sleep()
     sleep $sleep_delay
     fi
 }
+
 delay=$1
 dynamicDelay=0
 # If argument empty, use dynamic delay.

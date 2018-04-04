@@ -1,0 +1,15 @@
+#!/bin/bash
+function doit() {
+    local hv=$(which $1)
+    
+    if [[ -z "${hv}" ]]; then
+        return 1
+    fi
+    return 0
+}
+
+if [[ -z "$1" ]]; then
+    exit 1
+fi
+
+doit "$1"

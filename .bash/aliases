@@ -2,6 +2,9 @@
 #==============================================
 # Aliases - Bash Shell
 #==============================================
+alias :q="exit"
+alias c="cls"
+alias ch="history -c && > ~/.bash_history"
 alias lc="colorls -sf"
 alias ela='els -laH '
 alias cp="cp -i"                          # confirm before overwriting something
@@ -29,6 +32,7 @@ alias toiletlist='for i in ${TOILET_FONT_PATH:=/usr/share/figlet}/*.{t,f}lf; do 
 alias toiascii="toilet -t -f ascii9"
 alias toifuture="toilet -t -f future"
 alias pyg='pygmentize -f 256 -O style=monokai'
+alias psname='process_name'
 
 ## shortcut  for iptables and pass it via sudo#
 alias ipt='sudo /sbin/iptables'
@@ -87,13 +91,15 @@ for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do
     alias "$method"="lwp-request -m '$method'"
 done
 
-alias weather="curl -4 http://wttr.in/"
+alias wttr="curl -4 http://wttr.in/~Curitiba"
 
 alias noded="node --trace_osr --array_index_dehoisting  --trace_gc --trace_gc_verbose  --log_gc --prof --log_regexp"
 alias nodec="node --crankshaft --trace_opt --use_osr --trace_osr  --trace_gc --log_regexp --log_gc --log_suspect --log_code"
 
 alias java.debug.enable='export JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,address=5009,suspend=y"'
 alias java.debug.disable='export JAVA_OPTS=""'
+
+alias ctags='ctags --exclude={docs,cache,tiny_mce,layout} --recurse';
 
 # Git  
 # Undo a `git push`
@@ -125,6 +131,7 @@ alias gm='git merge'
 alias grh='git reset HEAD'
 alias grhh='git reset HEAD --hard'
 
+
 # utilizacao do disco
 alias ducks='du -cks * | sort -rn | head'
 
@@ -133,6 +140,8 @@ alias aptrepair='sudo apt-get -f install'
 
 # Reparar o dpkg
 alias dpkgrepair='sudo dpkg --configure -a'
+
+alias local-ip="LC_ALL=C ifconfig | grep 'inet addr' | grep -v '127.0.0.1' | cut -d: -f2 | cut -d' ' -f1"
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert

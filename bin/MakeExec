@@ -1,0 +1,25 @@
+#!/bin/bash
+#xf=$(which execf)
+if [[ $# -eq 0 ]]; then 
+    exit 1
+fi    
+
+# chmod +x $NEMO_SCRIPT_SELECTED_FILE_PATHS
+# Set IFS so that it won't consider spaces as entry separators.  
+# Without this, spaces in file/folder names can make the loop go wacky.
+IFS=$'\n'
+
+if [ -z $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS ]; then
+    NAUTILUS_SCRIPT_SELECTED_FILE_PATHS=$*
+fi
+
+# Loop through the list (from either Nautilus or the command line)
+for ARCHIVE_FULLPATH in $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS; do
+    chmod +x "$ARCHIVE_FULLPATH"
+#    notify-send -t 5000 -i "+x para $ARCHIVE_FULLPATH"
+
+#    if [[ $? != 0 ]]; then 
+#        notify-send -t 5000 -i /usr/share/icons/gnome/32x32/status/error.png "Erro chmod $? em $ARCHIVE_FULLPATH";
+#        exit 1
+#    fi    
+done

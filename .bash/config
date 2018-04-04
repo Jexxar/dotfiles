@@ -54,6 +54,11 @@ export LANG='pt_BR.UTF-8';
 export LC_ALL='pt_BR.UTF-8';
 
 #===========================================
+# for cache function settings
+#===========================================
+export CACHE_DIR="/tmp"
+
+#===========================================
 # Some settings
 #===========================================
 
@@ -202,7 +207,7 @@ export LESS_TERMCAP_us=$(printf '\e[04;34m')
 #=============================================
 
 # Your place for hosting Git repos. I use this for private repos.
-export GIT_HOSTING='git@git.domain.com'
+export GIT_HOSTING='jexxar@github.com'
 
 # Don't check mail when opening terminal.
 #unset MAILCHECK

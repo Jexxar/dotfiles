@@ -14,17 +14,19 @@ function do_ask_pw() {
         fi
         if [[ ${?} -ne 0 || -z ${Psw} ]]; then
             Psw=""
-            echo "$Psw"
+            echo " "
             return 1
         fi;
         sudo -vSp '' <<<${Psw}
         if [[ ${?} -eq 0 ]]; then
-            echo "$Psw"
+            echo " "
+            yad  --text="Senha Ok!"
             return 0
         fi;
     done
     Psw=""
-    echo "$Psw"
-    exit 1
+    echo " "
+    yad  --text="Senha Errada"
+    return 1
 }
 do_ask_pw

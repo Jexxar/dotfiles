@@ -2,11 +2,16 @@
 #===========================================
 # Completions
 #===========================================
-source ~/.bash/completion_scripts/common
-source ~/.bash/completion_scripts/git_completion
-source ~/.bash/completion_scripts/go
-source ~/.bash/completion_scripts/killall
-source ~/.bash/completion_scripts/make
-source ~/.bash/completion_scripts/pip
-source ~/.bash/completion_scripts/ssh
-source ~/.bash/completion_scripts/tar
+#===========================================
+# Carrega source files em /etc/bash_completion.d
+#===========================================
+for file in /etc/bash_completion.d/*; do
+    [ -r "$file" ] && source "$file"
+done
+
+#===========================================
+# Carrega source files dentro de ~/.bash
+#===========================================
+for file in ~/.bash/completion_scripts/*; do
+    [ -r "$file" ] && source "$file"
+done

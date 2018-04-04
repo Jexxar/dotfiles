@@ -1,0 +1,19 @@
+[Desktop Entry]
+Type=Action
+Tooltip[pt_BR]=Copiar Para
+Tooltip[pt]=Copiar Para
+ToolbarLabel[pt_BR]=CopyTo
+ToolbarLabel[pt]=CopyTo
+Name[pt_BR]=CopyTo
+Name[pt]=CopyTo
+Profiles=profile-zero;
+Icon[pt_BR]=gnome-stock-mail-fwd
+Icon[pt]=gnome-stock-mail-fwd
+
+
+
+
+[X-Action-Profile profile-zero]
+Exec=/home/usuario/bin/copy_to.sh %F
+Name[pt_BR]=Copy To
+Name[pt]=Copy To
