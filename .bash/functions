@@ -1872,9 +1872,9 @@ function greetings() {
     local FrMEM="`free_mem`"
     local TtMEM="`total_mem`"
     local AvMEM="`avail_mem`"
-    local Wthico=`~/bin/weather -i`
-    local Wthcnd=`~/bin/weather`
-    local Wthmsg=`~/bin/weather -m`
+    #local Wthico=`~/bin/weather -i`
+    #local Wthcnd=`~/bin/weather`
+    #local Wthmsg=`~/bin/weather -m`
     local BVERS="$BASH_VERSION"
   
     local id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
@@ -1892,7 +1892,7 @@ function greetings() {
     cls
     
     printf " \e[1;33mOlá, seja bem vindo. $(you_have_mail)\e[0m\n"
-    printf " \e[1;33mHoje está ( $Wthico) $Wthcnd. $Wthmsg.\e[0m\n\n"
+    #printf " \e[1;33mHoje está ( $Wthico) $Wthcnd. $Wthmsg.\e[0m\n\n"
     printf " \e[1;36mStatus do Sistema em $DATE:\e[0m\n"
     printf " \e[1;36m     distro  $DIST@ kernel $KERNEL\e[0m\n"
     #printf " \e[1;33m   kernel \e[0m$KERNEL\n"

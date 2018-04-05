@@ -7,3 +7,5 @@ pkill -u $USER -t `tty | cut -d '/' -f 3,4` dbus-launch
 if [ "$SHLVL" = 1 ]; then
     [ -x /usr/bin/clear_console ] && /usr/bin/clear_console -q
 fi
+
+[ "$SHLVL" == 1 ] && clear &> /dev/null
