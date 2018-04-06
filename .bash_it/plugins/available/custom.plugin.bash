@@ -1875,12 +1875,6 @@ function greetings() {
     #local Wthmsg=`~/bin/weather -m`
     local BVERS="$BASH_VERSION"
 
-    local id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
-    local id="${id##* }"
-    local wm="$(xprop -id "$id" -notype -len 100 -f _NET_WM_NAME 8t)"
-    local wm="${wm/*_NET_WM_NAME = }"
-    local wm="${wm/\"}"
-    local wm="${wm/\"*}"
     local FULL=━
     #local EMPTY=━
     #local EMPTY=─
@@ -1897,6 +1891,12 @@ function greetings() {
     printf " \e[1;36m     uptime  $TIMEU desde $TIMEDe\e[0m\n"
 
     if xhost >& /dev/null ; then
+        local id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
+        local id="${id##* }"
+        local wm="$(xprop -id "$id" -notype -len 100 -f _NET_WM_NAME 8t)"
+        local wm="${wm/*_NET_WM_NAME = }"
+        local wm="${wm/\"}"
+        local wm="${wm/\"*}"
         printf " \e[1;36m      shell  $BVERS @ $wm\e[0m\n"
     else
         printf " \e[1;36m      shell  $BVERS\e[0m\n"
@@ -1979,22 +1979,6 @@ function greetings() {
 
     # Reset colors
     tput sgr0
-    color_bar
+    #color_bar
 }
 
-#==============================================
-# gera export para funcoes
-#==============================================
-function exports_gen() {
-    if [ -f ~/.bash/exports ]; then
-        rm -f ~/.bash/exports
-    fi
-    echo -e "#! /bin/bash" > ~/.bash/exports
-    echo -e "#==============================================" >> ~/.bash/exports
-    echo -e "# Exports (auto generated. Do not edit) - Bash Shell" >> ~/.bash/exports
-    echo -e "#==============================================" >> ~/.bash/exports
-    echo -e "function do_exports() {" >> ~/.bash/exports
-    cat ~/.bash/functions | grep -v "^#" | grep -v exports_gen | grep -v "is a function" | grep -v " function)" | grep -v usage | grep -v do_exports | grep -v prompt | grep '^function' | tr -d '(' | tr -d ')' | awk '{print "export -f",$2}' >> ~/.bash/exports ;
-    echo -e "}\n" >> ~/.bash/exports
-    echo -e "do_exports" >> ~/.bash/exports
-}

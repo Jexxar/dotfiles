@@ -1,58 +1,76 @@
-#===========================================
-# * ~/.bashrc Personalizado para Ubuntu e derivados
-#===========================================
+#!/usr/bin/env bash
 
-#===========================================
-# Se não estiver rodando interativamente, não fazer nada
-#===========================================
-[[ $- != *i* ]] && return
-[ -z "$PS1" ] && return
+# Path to the bash it configuration
+export BASH_IT="/home/usuario/.bash_it"
 
-#===========================================
-# Para uso com tilix/terminix/vte
-#===========================================
-if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
-    if [ -e "/etc/profile.d/vte.sh" ]; then    
-        source /etc/profile.d/vte.sh
+# Lock and Load a custom theme file
+# location /.bash_it/themes/
+export BASH_IT_THEME='powerline-multiline-custom'
+
+# (Advanced): Change this to the name of your remote repo if you
+# cloned bash-it with a remote other than origin such as `bash-it`.
+# export BASH_IT_REMOTE='bash-it'
+
+# Your place for hosting Git repos. I use this for private repos.
+export GIT_HOSTING='jexxar@github.com'
+
+# Don't check mail when opening terminal.
+unset MAILCHECK
+
+# Change this to your console based IRC client of choice.
+export IRC_CLIENT='irssi'
+
+# Set this to the command you use for todo.txt-cli
+export TODO="t"
+
+# Set this to false to turn off version control status checking within the prompt for all themes
+export SCM_CHECK=true
+
+# Set Xterm/screen/Tmux title with only a short hostname.
+# Uncomment this (or set SHORT_HOSTNAME to something else),
+# Will otherwise fall back on $HOSTNAME.
+#export SHORT_HOSTNAME=$(hostname -s)
+
+# Set Xterm/screen/Tmux title with only a short username.
+# Uncomment this (or set SHORT_USER to something else),
+# Will otherwise fall back on $USER.
+#export SHORT_USER=${USER:0:8}
+
+# Set Xterm/screen/Tmux title with shortened command and directory.
+# Uncomment this to set.
+#export SHORT_TERM_LINE=true
+
+# Set vcprompt executable path for scm advance info in prompt (demula theme)
+# https://github.com/djl/vcprompt
+export VCPROMPT_EXECUTABLE=~/bin/vcprompt
+
+# (Advanced): Uncomment this to make Bash-it reload itself automatically
+# after enabling or disabling aliases, plugins, and completions.
+# export BASH_IT_AUTOMATIC_RELOAD_AFTER_CONFIG_CHANGE=1
+
+#==============================================
+# gera export regen de funcoes customizadas
+#==============================================
+function exports_gen() {
+    if [ -f ~/.bash_it/plugins/available/exports.plugin.bash ]; then
+        rm -f ~/.bash_it/plugins/available/exports.plugin.bash
     fi
-fi
+    echo -e "#! /bin/bash" > ~/.bash_it/plugins/available/exports.plugin.bash
+    echo -e "#==============================================" >> ~/.bash_it/plugins/available/exports.plugin.bash
+    echo -e "# Exports (auto generated. Do not edit) - Bash Shell" >> ~/.bash_it/plugins/available/exports.plugin.bash
+    echo -e "#==============================================" >> ~/.bash_it/plugins/available/exports.plugin.bash
+    echo -e "function do_exports() {" >> ~/.bash_it/plugins/available/exports.plugin.bash
+    cat ~/.bash_it/plugins/available/custom.plugin.bash | grep -v "^#" | grep -v exports_gen | grep -v "is a function" | grep -v " function)" | grep -v usage | grep -v do_exports | grep -v prompt | grep '^function' | tr -d '(' | tr -d ')' | awk '{print "export -f",$2}' >> ~/.bash_it/plugins/available/exports.plugin.bash ;
+    echo -e "}\n" >> ~/.bash_it/plugins/available/exports.plugin.bash
+    echo -e "do_exports" >> ~/.bash_it/plugins/available/exports.plugin.bash
+}
 
-#===========================================
-# Se houver bash_completion em /etc
-#===========================================
-if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
-    . /etc/bash_completion
-fi
-
-#===========================================
-# Se houver bashrc.local
-#===========================================
-if [ -f ~/.bashrc.local ]; then
-    source ~/.bashrc.local
-fi
-
-#===========================================
-# Carrega source files dentro de ~/.bash
-#===========================================
-for file in ~/.bash/{config,paths,aliases,functions,completions,prompt}; do
-    [ -r "$file" ] && source "$file"
-done
-
-unset file
-
-#===========================================
-# Cria ~/.bash/exports para realizar export das funcoes
-#===========================================
+#==============================================
+# gera export de funcoes customizadas
+#==============================================
 exports_gen
 
-#===========================================
-# Se houver ~/.bash/exports
-#===========================================
-if [ -f ~/.bash/exports ]; then
-    source ~/.bash/exports
-fi
+# Load Bash It
+source "$BASH_IT"/bash_it.sh
 
-#=============================================
-# Mostra frases no início da sessão
-#=============================================
 greetings

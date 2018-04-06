@@ -19,7 +19,8 @@ function __powerline_user_info_prompt {
   local color=${USER_INFO_THEME_PROMPT_COLOR}
 
   if [[ "${THEME_CHECK_SUDO}" = true ]]; then
-    if sudo -n uptime 2>&1 | grep -q "load"; then
+      #if sudo -n uptime 2>&1 | grep -q "load"; then
+     if [ $UID -eq 0 ]; then
       color=${USER_INFO_THEME_PROMPT_COLOR_SUDO}
     fi
   fi
@@ -50,6 +51,13 @@ function __powerline_ruby_prompt {
   fi
 
   [[ -n "${ruby_version}" ]] && echo "${RUBY_CHAR}${ruby_version}|${RUBY_THEME_PROMPT_COLOR}"
+}
+
+function __powerline_qtmail_prompt {
+  local sqm=`qt_mail`
+  local sQtma=`if [ $sqm -eq 0 ]; then echo ""; else echo "✉ "; fi`
+
+  [[ $sqm -gt 0 ]] && echo "${sQtma}|${QTMAIL_THEME_PROMPT_COLOR}"
 }
 
 function __powerline_python_venv_prompt {

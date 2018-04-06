@@ -1,13 +1,13 @@
-[2018-04-04-00:24:05] - Ok   - 0 - compton -b --config ~/.config/compton.conf
-[2018-04-04-00:24:05] - Ok   - 0 - nitrogen --restore
-[2018-04-04-00:24:05] - dbus-launch ja ativo
-[2018-04-04-00:24:06] - Ok   - 0 - /usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh
-[2018-04-04-00:24:07] - Ok   - 0 - mate-settings-daemon
-[2018-04-04-00:24:08] - Ok   - 0 - /usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1
-[2018-04-04-00:24:09] - Ok   - 0 - /usr/bin/nm-applet
-[2018-04-04-00:24:10] - Ok   - 0 - mate-power-manager
-[2018-04-04-00:24:11] - Ok   - 0 - xdg-user-dirs-gtk-update
-[2018-04-04-00:24:12] - Ok   - 0 - mate-volume-control-applet
-[2018-04-04-00:24:13] - Ok   - 0 - xautolock
-[2018-04-04-00:24:14] - Ok   - 0 - tint2
-[2018-04-04-00:24:15] - Ok   - 0 - ~/bin/lightsOn.sh 20
+[2018-04-05-23:48:05] - Ok   - 0 - compton -b --config ~/.config/compton.conf
+[2018-04-05-23:48:05] - Ok   - 0 - nitrogen --restore
+[2018-04-05-23:48:05] - dbus-launch ja ativo
+[2018-04-05-23:48:06] - Ok   - 0 - /usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh
+[2018-04-05-23:48:07] - Ok   - 0 - mate-settings-daemon
+[2018-04-05-23:48:08] - Ok   - 0 - /usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1
+[2018-04-05-23:48:09] - Ok   - 0 - /usr/bin/nm-applet
+[2018-04-05-23:48:10] - Ok   - 0 - mate-power-manager
+[2018-04-05-23:48:11] - Ok   - 0 - xdg-user-dirs-gtk-update
+[2018-04-05-23:48:12] - Ok   - 0 - mate-volume-control-applet
+[2018-04-05-23:48:13] - Ok   - 0 - xautolock
+[2018-04-05-23:48:14] - Ok   - 0 - tint2
+[2018-04-05-23:48:15] - Ok   - 0 - ~/bin/lightsOn.sh 20

@@ -8,7 +8,7 @@ about-alias 'Custom aliases for this installation.'
 # Aliases - Bash Shell
 #==============================================
 alias bshrld='source ~/.bashrc'
-alias capitalize='~/bin/capitalize.sh'
+alias capitalize="$HOME/bin/capitalize.sh"
 alias cd..='cd ..'
 alias cp="cp -i"                          # confirm before overwriting something
 alias debug="set -o nounset; set -o xtrace"
@@ -24,10 +24,10 @@ alias fgrep='fgrep --color=auto'
 alias free='free -m'                      # show sizes in MB
 alias grep='grep --color=auto'
 alias ips="ifconfig -a | perl -nle'/(\d+\.\d+\.\d+\.\d+)/ && print $1'"
-alias launch='~/bin/launch.sh'
+alias launch="$HOME/bin/launch.sh"
 alias lc="colorls -sf"
 alias lf='ls -lah1FX --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
-alias limp='~/bin/limp.sh'
+alias limp="$HOME/bin/limp.sh"
 alias listeners="lsof -iTCP -sTCP:LISTEN"
 alias ll='ls -lahXF --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
 alias local-ip="LC_ALL=C ifconfig | grep 'inet addr' | grep -v '127.0.0.1' | cut -d: -f2 | cut -d' ' -f1"
@@ -50,9 +50,9 @@ alias sha1='openssl sha1'
 alias toiascii="toilet -t -f ascii9"
 alias toifuture="toilet -t -f future"
 alias toiletlist='for i in ${TOILET_FONT_PATH:=/usr/share/figlet}/*.{t,f}lf; do j=${i##*/}; echo ""; echo "╓───── "$j; echo "╙────────────────────────────────────── ─ ─ "; echo ""; toilet -d "${i%/*}" -f "$j" "${j%.*}"; done'
-alias tolower='~/bin/tolower.sh'
-alias toupper='~/bin/toupper.sh'
-alias upd='~/bin/upd.sh'
+alias tolower="$HOME/bin/tolower.sh"
+alias toupper="$HOME/bin/toupper.sh"
+alias upd="$HOME/bin/upd.sh"
 alias wttr="curl -4 http://wttr.in/~Curitiba"
 
 # shortcut for iptables and pass it via sudo
