@@ -2003,7 +2003,7 @@ function greetings() {
     fi
     printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" " vol" "$vol%" `draw $vol 15 $color`
     # temperature
-    if sensors >/dev/null; then
+    if sensors > /dev/null 2> /dev/null; then
         local SensTemp=`sensors | awk '/Core\ 0/ {gsub(/\+/,"",$3); gsub(/\..+/,"",$3)    ; print $3}'`
         case 1 in
           $(($SensTemp <= 50)))
