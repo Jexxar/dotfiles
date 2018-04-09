@@ -1851,7 +1851,7 @@ function __rprompt() {
 # Frase do dia (via fortune)
 #==============================================
 function my_motd() {
-    local __fortune="`which fortune 2> /dev/null`"
+    local __fortune="$(which fortune 2> /dev/null)"
     [ -f ~/.plan ] && rm -f ~/.plan &>/dev/null
     [ -z __fortune ] && exit 0
 
