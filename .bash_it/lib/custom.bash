@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 #===========================================
 # Distingue quando se esta em um sistema chrooted
 #===========================================
@@ -25,12 +25,6 @@ export HISTIGNORE="&:[ ]*:clear:exit"
 # Unifica o history através das sessões bash
 #===========================================
 export PROMPT_COMMAND="history -a; history -r"
-
-#=============================================
-# Prompt do lado direito no estilo zsh inicial
-#=============================================
-#export RPROMPT="⎇ "
-export RPROMPT=""
 
 #===========================================
 # Define qual sera o manpager most ou less
@@ -136,6 +130,42 @@ else
     export white="\e[1;37m";
     export yellow="\e[1;33m";
 fi
+
+
+#===========================================
+# Variaveis de Cores (especialmente para o prompt)
+#===========================================
+export NONE="\[\033[0m\]" # Eliminar as Cores, deixar padrão)
+
+## Cores de Fonte
+export K="\[\033[0;30m\]" # Black (Preto)
+export R="\[\033[0;31m\]" # Red (Vermelho)
+export G="\[\033[0;32m\]" # Green (Verde)
+export Y="\[\033[0;33m\]" # Yellow (Amarelo)
+export B="\[\033[0;34m\]" # Blue (Azul)
+export M="\[\033[0;35m\]" # Magenta (Vermelho Claro)
+export C="\[\033[0;36m\]" # Cyan (Ciano - Azul Claro)
+export W="\[\033[0;37m\]" # White (Branco)
+
+## Efeito Negrito (bold) e cores
+export BK="\[\033[1;30m\]" # Bold+Black (Negrito+Preto)
+export BR="\[\033[1;31m\]" # Bold+Red (Negrito+Vermelho)
+export BG="\[\033[1;32m\]" # Bold+Green (Negrito+Verde)
+export BY="\[\033[1;33m\]" # Bold+Yellow (Negrito+Amarelo)
+export BB="\[\033[1;34m\]" # Bold+Blue (Negrito+Azul)
+export BM="\[\033[1;35m\]" # Bold+Magenta (Negrito+Vermelho Claro)
+export BC="\[\033[1;36m\]" # Bold+Cyan (Negrito+Ciano - Azul Claro)
+export BW="\[\033[1;37m\]" # Bold+White (Negrito+Branco)
+
+## Cores de fundo (backgroud)
+export BGK="\[\033[40m\]" # Black (Preto)
+export BGR="\[\033[41m\]" # Red (Vermelho)
+export BGG="\[\033[42m\]" # Green (Verde)
+export BGY="\[\033[43m\]" # Yellow (Amarelo)
+export BGB="\[\033[44m\]" # Blue (Azul)
+export BGM="\[\033[45m\]" # Magenta (Vermelho Claro)
+export BGC="\[\033[46m\]" # Cyan (Ciano - Azul Claro)
+export BGW="\[\033[47m\]" # White (Branco)
 
 #=============================================
 # TERMCAP Setup

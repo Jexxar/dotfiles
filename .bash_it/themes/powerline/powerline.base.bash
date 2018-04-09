@@ -32,9 +32,9 @@ function __powerline_user_info_prompt {
       ;;
     *)
       if [[ -n "${SSH_CLIENT}" ]]; then
-        user_info="${USER_INFO_SSH_CHAR}${USER}@${HOSTNAME}"
+        user_info="${USER_INFO_SSH_CHAR}ssh://${USER}@${HOSTNAME}"
       else
-        user_info="${USER}"
+        user_info="${USER_INFO_NORM_CHAR}${USER}@${HOSTNAME}"
       fi
       ;;
   esac
@@ -98,7 +98,7 @@ function __powerline_scm_prompt {
 }
 
 function __powerline_cwd_prompt {
-  echo "$(pwd | sed "s|^${HOME}|~|")|${CWD_THEME_PROMPT_COLOR}"
+  echo " $(pwd | sed "s|^${HOME}|~|")|${CWD_THEME_PROMPT_COLOR}"
 }
 
 function __powerline_clock_prompt {

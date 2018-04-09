@@ -16,7 +16,7 @@ export -f bencrypt
 export -f decrypt
 export -f ncpu
 export -f my_ps
-export -f pp
+export -f psgrep
 export -f sub
 export -f goto
 export -f cpf
@@ -128,6 +128,9 @@ export -f _dir_count
 export -f _file_count
 export -f _pwd_size
 export -f gitdone
+export -f do_magic
+export -f ArrayElemDisplay
+export -f GetLastElem
 export -f qh
 export -f qtxt
 export -f _mkdir

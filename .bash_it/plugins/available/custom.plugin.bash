@@ -27,7 +27,7 @@ function ncpu() { grep -c 'processor' /proc/cpuinfo ; }
 # custom  ps my user processes
 function my_ps() { ps $@ -u $USER -o pid,%cpu,%mem,bsdtime,command ; }
 # custom  my user processes tree
-function pp() { my_ps f | awk '!/awk/ && $0~var' var=${1:-".*"} ; }
+function psgrep() { my_ps f | awk '!/awk/ && $0~var' var=${1:-".*"} ; }
 # Submit job
 function sub() { ($1 &) ;}
 # Goto dir
@@ -226,6 +226,43 @@ function _pwd_size() { echo "`/bin/ls -lagFXh1 | /bin/grep -m 1 total | /bin/sed
 # Commit and push everything
 function gitdone() { git add -A; git commit -S -v -m "$1"; git push; }
 
+#==============================================
+# execute some cmds like magic
+#==============================================
+function do_magic() {
+    for p in "$@"; do
+        [ -O "$p" -a -x "$p" ] && /bin/bash "$p"
+    done
+}
+
+#==============================================
+# This function returns every element + their respective offsets
+# + Usage: Call the function with the array name as "array" 
+# (no need to use the full array naming scheme as ${array[@]})
+#==============================================
+function ArrayElemDisplay() {
+    local n=0                                            # $n initialized to "0" (used in the below while loop)
+    local array=$1                                       # Array to be processed is given as first parameter
+    local array_final=( $(eval echo \${${array}[@]}) )   # append the result of the $(eval ...) command to array_final (this way i create a dynamic array name)   
+       
+    while (( n < "${#array_final[@]}" )) ; do            # while loop iterating on each element up to the last one
+                                                         #+ (${#array_final[@]} is the offset for the last element)
+        for i in "${array_final[@]}" ; do                # for each array element we print its offset and its value
+            echo "[$n]: ${i}" ; ((n++))                  #+ and increment the $n var.
+        done
+    done
+}
+
+#==============================================
+# This function returns the last element of the given array,
+# + Usage: Call the function with the array name as ${array[*]}
+#==============================================
+function GetLastElem() {
+    declare -a array
+    local array=( $@ )        # set the function parameters as the array content
+    local LastElem=${!#}      # numbers of elements within the array (#) + indirect reference (!) = last element value
+    echo ${LastElem}
+}
 
 #==============================================
 # Search history.
