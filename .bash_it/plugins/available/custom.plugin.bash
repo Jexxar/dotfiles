@@ -129,32 +129,32 @@ function wfcard() { lspci | grep -i network | cut -d: -f3 ; }
 # awk simples para operacoes via pipe (ex: cmd1 | fawk 1)
 function fawk() { local cmd="awk '{print \$$1}'";  eval $cmd ; }
 # display color para operacoes via parametro (ex: red $1)
-function black() { echo "$(tput setaf 0)$*$(tput setaf 9)"; }
-function red() { echo "$(tput setaf 1)$*$(tput setaf 9)"; }
-function green() { echo "$(tput setaf 2)$*$(tput setaf 9)"; }
-function yellow() { echo "$(tput setaf 3)$*$(tput setaf 9)"; }
-function blue() { echo "$(tput setaf 4)$*$(tput setaf 9)"; }
-function magenta() { echo "$(tput setaf 5)$*$(tput setaf 9)"; }
-function cyan() { echo "$(tput setaf 6)$*$(tput setaf 9)"; }
-function white() { echo "$(tput setaf 7)$*$(tput setaf 9)"; }
-# display color para operacoes via pipe (ex: cmd1 | ongreen)
-function onblack() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;30m %s \x1b[0m",$i);print ""}'; }
-function onred() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;31m %s \x1b[0m",$i);print ""}'; }
-function ongreen() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;32m %s \x1b[0m",$i);print ""}'; }
-function onyellow() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;33m %s \x1b[0m",$i);print ""}'; }
-function onblue() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;34m %s \x1b[0m",$i);print ""}'; }
-function onmagenta() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;35m %s \x1b[0m",$i);print ""}'; }
-function oncyan() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;36m %s \x1b[0m",$i);print ""}'; }
-function onwhite() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;37m %s \x1b[0m",$i);print ""}'; }
+function onblack() { echo "$(tput setaf 0)$*$(tput sgr0)"; }
+function onred() { echo "$(tput setaf 1)$*$(tput sgr0)"; }
+function ongreen() { echo "$(tput setaf 2)$*$(tput sgr0)"; }
+function onyellow() { echo "$(tput setaf 3)$*$(tput sgr0)"; }
+function onblue() { echo "$(tput setaf 4)$*$(tput sgr0)"; }
+function onmagenta() { echo "$(tput setaf 5)$*$(tput sgr0)"; }
+function oncyan() { echo "$(tput setaf 6)$*$(tput sgr0)"; }
+function onwhite() { echo "$(tput setaf 7)$*$(tput sgr0)"; }
+# display color para operacoes via pipe (ex: cmd1 | on_green)
+function on_black() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;30m %s \x1b[0m",$i);print ""}'; }
+function on_red() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;31m %s \x1b[0m",$i);print ""}'; }
+function on_green() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;32m %s \x1b[0m",$i);print ""}'; }
+function on_yellow() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;33m %s \x1b[0m",$i);print ""}'; }
+function on_blue() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;34m %s \x1b[0m",$i);print ""}'; }
+function on_magenta() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;35m %s \x1b[0m",$i);print ""}'; }
+function on_cyan() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;36m %s \x1b[0m",$i);print ""}'; }
+function on_white() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;37m %s \x1b[0m",$i);print ""}'; }
 # cat  em cores
-function cblk() { cat $1 | onblack ; }
-function cred() { cat $1 | onred ; }
-function cgre() { cat $1 | ongreen ; }
-function cyel() { cat $1 | onyellow ; }
-function cblu() { cat $1 | onblue ; }
-function cmag() { cat $1 | onmagenta ; }
-function ccya() { cat $1 | oncyan ; }
-function cwhi() { cat $1 | onwhite ; }
+function cblk() { cat $1 | on_black ; }
+function cred() { cat $1 | on_red ; }
+function cgre() { cat $1 | on_green ; }
+function cyel() { cat $1 | on_yellow ; }
+function cblu() { cat $1 | on_blue ; }
+function cmag() { cat $1 | on_magenta ; }
+function ccya() { cat $1 | on_cyan ; }
+function cwhi() { cat $1 | on_white ; }
 # commandline FU MOTD
 function cm_fu_motd () { curl http://www.commandlinefu.com/commands/random/plaintext -o $HOME/.motd -s -L && cgre $HOME/.motd ; }
 #calculos na linha de comando
@@ -172,21 +172,21 @@ function uniqlines() { sort $1 | uniq -u ;}
 # Get IP from hostname
 function hostname2ip() { ping -c 1 "$1" | egrep -m1 -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' ; }
 # Logging stuff. header
-function e_header() { printf "\n${bold}${purple}===  %s  ===${reset}\n" "$@" ;}
+function e_header() { printf "\n${_cl_bold}${_cl_purple}===  %s  ===${_cl_reset}\n" "$@" ;}
 # Logging stuff. arrow
 function e_arrow() { printf "➜ $@\n"; }
 # Logging stuff. success
-function e_success() { printf "${green}✔ %s${reset}\n" "$@" ;}
+function e_success() { printf "${_cl_green}✔ %s${_cl_reset}\n" "$@" ;}
 # Logging stuff. Error
-function e_error() { printf "${red}✖ %s${reset}\n" "$@" ; }
+function e_error() { printf "${_cl_red}✖ %s${_cl_reset}\n" "$@" ; }
 # Logging stuff. Warning
-function e_warning() { printf "${yellow}➜ %s${reset}\n" "$@" ; }
+function e_warning() { printf "${_cl_yellow}➜ %s${_cl_reset}\n" "$@" ; }
 # Logging stuff. Underline text
-function e_underline() { printf "${underline}${bold}%s${reset}\n" "$@"; }
+function e_underline() { printf "${_cl_underline}$_cl_{bold}%s${_cl_reset}\n" "$@"; }
 # Logging stuff. Bold
-function e_bold() { printf "${bold}%s${reset}\n" "$@"; }
+function e_bold() { printf "${_cl_bold}%s${_cl_reset}\n" "$@"; }
 # Logging stuff. note in blue
-function e_note() { printf "${underline}${bold}${blue}Note:${reset}  ${blue}%s${reset}\n" "$@"; }
+function e_note() { printf "${_cl_underline}${_cl_bold}${_cl_blue}Note:${_cl_reset}  ${_cl_blue}%s${_cl_reset}\n" "$@"; }
 # Logging stuff. List item
 function e_itemok() { echo -e " \033[1;32m✔\033[0m  $@"; }
 # Logging stuff. Error list item
@@ -200,7 +200,7 @@ function echo_pass() { printf "${1} \e[32m[✔] ";  echo -e "\033[0m"; }
 # appends your key to a server's authorized keys file
 function authme() { ssh $1 'cat >>.ssh/authorized_keys' <~/.ssh/id_rsa.pub ; }
 # Parses manpage for a command's option description -> usage manopt man t
-function manopt() { man $1 | sed 's/.\x08//g' | sed -n "/^\s\+-\+$2\b/,/^\s*$/p" | sed '$d;' | onyellow; }
+function manopt() { man $1 | sed 's/.\x08//g' | sed -n "/^\s\+-\+$2\b/,/^\s*$/p" | sed '$d;' | on_yellow; }
 # web helper get
 function couch-get() { curl -s -X GET $@ 2>&1 ; }
 # web helper put
@@ -315,33 +315,33 @@ function display_status () {
     case $STATUS in
     OK | ok | Ok )
             STATUS="   OK    "
-            STATUS_COLOUR="$green"
+            STATUS_COLOUR="$_cl_green"
             ;;
     PASSED | passed | Passed )
             STATUS=" PASSED  "
-            STATUS_COLOUR="$green"
+            STATUS_COLOUR="$_cl_green"
             ;;
     SUCCESS | SUCCESS | success | Success )
             STATUS=" SUCCESS "
-            STATUS_COLOUR="$green"
+            STATUS_COLOUR="$_cl_green"
             ;;
 
     FAILURE | failure | Failure | FAILED | failed | Failed | ERROR | error | Error )
             STATUS=" FAILURE "
-            STATUS_COLOUR="$red"
+            STATUS_COLOUR="$_cl_red"
             ;;
     INFO | info | Info | NOTICE | notice | Notice )
             STATUS=" NOTICE  "
-            STATUS_COLOUR="$blue"
+            STATUS_COLOUR="$_cl_blue"
             ;;
     WARNING | Warning | warning | WARN )
             STATUS=" WARNING "
-            STATUS_COLOUR="$yellow"
+            STATUS_COLOUR="$_cl_yellow"
             ;;
     esac
 
     position_cursor
-    echo "[$bold$STATUS_COLOUR$STATUS$reset]"
+    echo "[$_cl_bold$STATUS_COLOUR$STATUS$_cl_reset]"
     #$reset ]"
     #$reset
     #$bold
@@ -358,10 +358,10 @@ function is_installed() {
   dpkg -s $1 &> /dev/null
 
   if [ $? -eq 0 ]; then
-      echo "Package $1 is installed!"
+      echo_pass "Package $1 is installed!"
       return 0
   else
-      echo "Package $1 is NOT installed!"
+      echo_fail "Package $1 is NOT installed!"
       return 1
   fi
 }
@@ -396,7 +396,7 @@ function xfind() {
             -exec grep --color "$FIND_VAR" -sl '{}' \; \
             -exec grep "$FIND_VAR" -s '{}' \;
     else
-        echo "ERROR: No file or folder with the name '$STACK' exist";
+        echo_fail "ERROR: No file or folder with the name '$STACK' exist";
     fi
 }
 
@@ -589,7 +589,7 @@ function serve_php() {
 # ask for a simple confirmation
 #==============================================
 function ask_confirmation() {
-    printf "\n${bold}$@${reset}"
+    printf "\n${_cl_bold}$@${_cl_reset}"
     read -p " (y/n) " -n 1
     printf "\n"
 }
@@ -914,7 +914,7 @@ function encryptfile () {
     local f=`selcryptfile "encrypt"`
 
     if [ -z "$f" ]; then
-        echo -e "You must select a file to encrypt !"
+        echo_fail "You must select a file to encrypt !"
     else
         gpg -acq --yes ${f}
 
@@ -934,7 +934,7 @@ function decryptfile () {
     local f=`selcryptfile "decrypt"`
 
     if [ -z "$f" ]; then
-        echo -e "You must select a file to decrypt !"
+        echo_fail "You must select a file to decrypt !"
     else
         gpg --yes -q ${f}
 
@@ -1009,7 +1009,7 @@ function is_active() {
     elif  [ $isact == "inactive" ]; then
         return 1
     else
-        echo "Error"
+        echo_fail "Error"
         return 1
     fi
 }
@@ -1024,7 +1024,7 @@ function activate() {
     fi
 
     if is_active "$1"; then
-        echo "Error $1 is running"
+        echo_fail "Error $1 is already running"
     else
         sudo systemctl enable "$1"
         sudo systemctl start "$1"
@@ -1042,7 +1042,7 @@ function deactivate() {
 
     if is_active "$1"; then
         sudo systemctl stop "$1"
-        echo "Error $1 is stopped"
+        echo_fail "Error $1 is stopped"
     fi
     sudo systemctl enable "$1"
 }
@@ -1065,12 +1065,12 @@ function psproc() {
         return 0
     fi
     if pgrep $1 > /dev/null; then
-        echo "Processo(s) contendo $1 encontrado(s)"
+        echo_pass "Processo(s) relacionados com $1 foram encontrado(s)"
         echo "=========="
         ps -aux | grep $1 | egrep -v 'grep --color=auto' | sort -u
         echo "=========="
     else
-        echo "Não Encontrado"
+        echo_fail "Nenhum processo Encontrado"
         return 0
     fi
 }
@@ -1084,12 +1084,12 @@ function psonly() {
         return 0
     fi
     if pgrep $1 > /dev/null; then
-        echo "Processo(s) contendo $1 encontrado(s)"
+        echo_pass "Instancia(s) de $1 encontrada(s)"
         echo "=========="
         ps -aux | grep $1 | egrep -v 'grep --color=auto' | sort -u |  awk '{print $1,$2,$11,$12}' | grep $1
         echo "=========="
     else
-        echo "Não Encontrado"
+        echo_fail "Nenhuma instancia encontrada"
         return 0
     fi
 }
@@ -1130,12 +1130,12 @@ function interface_info() {
         return 0
     fi
     if ifdata -e $1; then
-        echo "Interface $1 Encontrada"
+        echo_pass "Interface $1 Encontrada"
         echo "=========="
         ifdata -p -ph -pf -si -so $1
         echo "=========="
     else
-        echo "Não Encontrada"
+        echo_fail "Não Encontrada"
         return 0
     fi
 }
@@ -1144,14 +1144,14 @@ function interface_info() {
 # Traducao on-line
 #==============================================
 function dtranslate () {
-    PS3="${blue}Select the dictionary: ${reset}"
+    PS3="${_cl_blue}Select the dictionary: ${_cl_reset}"
     local _options="por-eng eng-por por-fra fra-por por-ita ita-por por-nld nld-por por-deu deu-por tur-por lat-por jpn-por afr-por gla-por exit"
 
     select i in $_options; do
         if [ $i == "exit" ]; then
             return
         else
-            printf "${blue}Enter the word to translate: ${reset}"
+            printf "${_cl_blue}Enter the word to translate: ${_cl_reset}"
             read w
             echo "Searching..."
             curl dict://dict.org/d:${w}:fd-${i} 2> /dev/null | grep -Ev "html|head|body|h1|hr|center|100|150|220|221|250|251|\%|Dload|\-"
@@ -1194,7 +1194,7 @@ function md_view() {
         sleep 2;
         rm -f "$output";
     else
-        echo "markdown is not installed"
+        echo_fail "markdown is not installed"
     fi
 }
 
@@ -1599,7 +1599,7 @@ function cl() {
         cd "$dir"
         ls
     else
-        echo "bash: cl: '$dir': Diretório não encontrado"
+        echo_fail "bash: cl: '$dir': Diretório não encontrado"
     fi
 }
 
@@ -1628,10 +1628,10 @@ function do_extract {
                 *.7z)        7z x ./$1        ;;
                 *.xz)        unxz ./$1        ;;
                 *.exe)      cabextract ./$1  ;;
-                *)           echo "do_extract: '$1' - método de compactação desconhecido" ;;
+                *)           echo_fail "do_extract: '$1' - método de compactação desconhecido" ;;
             esac
         else
-            echo "$1 - arquivo não existe"
+            echo_fail "$1 - arquivo não existe"
         fi
     fi
 }

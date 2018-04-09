@@ -100,35 +100,35 @@ shopt -s extglob
 #===========================================
 if tput setaf 1 &> /dev/null; then
     tput sgr0; # reset colors
-    export bold=$(tput bold);
-    export underline=$(tput sgr 0 1);
-    export tan=$(tput setaf 3);
-    export reset=$(tput sgr0);
-    export black=$(tput setaf 0);
-    export blue=$(tput setaf 33);
-    export cyan=$(tput setaf 37);
-    export green=$(tput setaf 64);
-    export orange=$(tput setaf 166);
-    export purple=$(tput setaf 125);
-    export red=$(tput setaf 124);
-    export violet=$(tput setaf 61);
-    export white=$(tput setaf 15);
-    export yellow=$(tput setaf 136);
+    export _cl_bold=$(tput bold);
+    export _cl_underline=$(tput sgr 0 1);
+    export _cl_tan=$(tput setaf 3);
+    export _cl_reset=$(tput sgr0);
+    export _cl_black=$(tput setaf 0);
+    export _cl_blue=$(tput setaf 33);
+    export _cl_cyan=$(tput setaf 37);
+    export _cl_green=$(tput setaf 64);
+    export _cl_orange=$(tput setaf 166);
+    export _cl_purple=$(tput setaf 125);
+    export _cl_red=$(tput setaf 124);
+    export _cl_violet=$(tput setaf 61);
+    export _cl_white=$(tput setaf 15);
+    export _cl_yellow=$(tput setaf 136);
 else
-    export bold='';
-    export underline=''
-    export tan='';
-    export reset="\e[0m";
-    export black="\e[1;30m";
-    export blue="\e[1;34m";
-    export cyan="\e[1;36m";
-    export green="\e[1;32m";
-    export orange="\e[1;33m";
-    export purple="\e[1;35m";
-    export red="\e[1;31m";
-    export violet="\e[1;35m";
-    export white="\e[1;37m";
-    export yellow="\e[1;33m";
+    export _cl_bold='';
+    export _cl_underline=''
+    export _cl_tan='';
+    export _cl_reset="\e[0m";
+    export _cl_black="\e[1;30m";
+    export _cl_blue="\e[1;34m";
+    export _cl_cyan="\e[1;36m";
+    export _cl_green="\e[1;32m";
+    export _cl_orange="\e[1;33m";
+    export _cl_purple="\e[1;35m";
+    export _cl_red="\e[1;31m";
+    export _cl_violet="\e[1;35m";
+    export _cl_white="\e[1;37m";
+    export _cl_yellow="\e[1;33m";
 fi
 
 
