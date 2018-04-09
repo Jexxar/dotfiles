@@ -47,7 +47,6 @@ export -f htmgrep
 export -f wdevgrep
 export -f topcount
 export -f mostcolor
-export -f my_distro
 export -f uptime_since
 export -f free_mem
 export -f total_mem
@@ -128,6 +127,7 @@ export -f _dir_count
 export -f _file_count
 export -f _pwd_size
 export -f gitdone
+export -f my_distro
 export -f do_magic
 export -f ArrayElemDisplay
 export -f GetLastElem

@@ -52,7 +52,8 @@ IN_VIM_THEME_PROMPT_COLOR=245
 IN_VIM_THEME_PROMPT_TEXT="vim"
 
 POWERLINE_LEFT_PROMPT=${POWERLINE_LEFT_PROMPT:="user_info scm python_venv ruby cwd"}
-POWERLINE_RIGHT_PROMPT=${POWERLINE_RIGHT_PROMPT:="qtmail in_vim clock battery"}
+#POWERLINE_RIGHT_PROMPT=${POWERLINE_RIGHT_PROMPT:="qtmail in_vim clock battery"}
+POWERLINE_RIGHT_PROMPT=${POWERLINE_RIGHT_PROMPT:="qtmail in_vim battery clock"}
 
 safe_append_prompt_command __powerline_prompt_command
 

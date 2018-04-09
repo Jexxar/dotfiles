@@ -84,8 +84,6 @@ function wdevgrep() { find . \( -name "*.php" -print -or -name "*.js" -or -name 
 function topcount() { sort | uniq -c | sort -rn | head -n ${1:-10}; }
 # most color
 function mostcolor() { cat $1 | sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[%sm %s \x1b[0m",(i%7)+31,$i);print ""}' | most -RS; }
-# mostra a distro
-function my_distro() { cat /etc/issue.net | sed "s/$/ \n/g" ; }
 # uptime desde
 function uptime_since() { uptime -ps ; }
 # memoria livre
@@ -227,6 +225,16 @@ function _pwd_size() { echo "`/bin/ls -lagFXh1 | /bin/grep -m 1 total | /bin/sed
 function gitdone() { git add -A; git commit -S -v -m "$1"; git push; }
 
 #==============================================
+# mostra a distro
+#==============================================
+function my_distro() {
+    local _ID=`cat /etc/*-release  2> /dev/null | grep 'DISTRIB_ID' | sed -e "s/DISTRIB_ID=//g" | sed -e "s/\"//g"`
+    local _RELEASE=`cat /etc/*-release  2> /dev/null | grep 'DISTRIB_RELEASE' | sed -e "s/DISTRIB_RELEASE=//g" | sed -e "s/\"//g"`
+    local _CODENAME=`cat /etc/*-release  2> /dev/null | grep 'DISTRIB_CODENAME' | sed -e "s/DISTRIB_CODENAME=//g" | sed -e "s/\"//g"`
+    echo "${_ID} ${_RELEASE} ${_CODENAME}" | sed "s/$/ \n/g" ;
+}
+
+#==============================================
 # execute some cmds like magic
 #==============================================
 function do_magic() {
@@ -237,14 +245,14 @@ function do_magic() {
 
 #==============================================
 # This function returns every element + their respective offsets
-# + Usage: Call the function with the array name as "array" 
+# + Usage: Call the function with the array name as "array"
 # (no need to use the full array naming scheme as ${array[@]})
 #==============================================
 function ArrayElemDisplay() {
     local n=0                                            # $n initialized to "0" (used in the below while loop)
     local array=$1                                       # Array to be processed is given as first parameter
-    local array_final=( $(eval echo \${${array}[@]}) )   # append the result of the $(eval ...) command to array_final (this way i create a dynamic array name)   
-       
+    local array_final=( $(eval echo \${${array}[@]}) )   # append the result of the $(eval ...) command to array_final (this way i create a dynamic array name)
+
     while (( n < "${#array_final[@]}" )) ; do            # while loop iterating on each element up to the last one
                                                          #+ (${#array_final[@]} is the offset for the last element)
         for i in "${array_final[@]}" ; do                # for each array element we print its offset and its value
@@ -1843,15 +1851,18 @@ function __rprompt() {
 # Frase do dia (via fortune)
 #==============================================
 function my_motd() {
+    local __fortune="`which fortune 2> /dev/null`"
     [ -f ~/.plan ] && rm -f ~/.plan &>/dev/null
+    [ -z __fortune ] && exit 0
+
     local LineLimit
     let LineLimit=3
-    /usr/games/fortune -a > ~/.plan
+    ${__fortune} -a > ~/.plan
     local LineReal=$(cat ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1' | wc -l)
     while [ $LineLimit -lt $LineReal ]
     do
       [ -f ~/.plan ] && rm -f ~/.plan &>/dev/null
-      /usr/games/fortune -a > ~/.plan
+      ${__fortune} -a > ~/.plan
       LineReal=$(cat ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1' | wc -l)
     done
     #cat ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1' | cowsay -f $(random_cow_file)
@@ -1920,7 +1931,7 @@ function greetings() {
 
     cls
 
-    printf " \e[1;33mOlá, seja bem vindo. $(you_have_mail)\e[0m\n"
+    printf " \e[1;33mOlá, seja bem vindo. $(you_have_mail)\e[0m\n\n"
     #printf " \e[1;33mHoje está ( $Wthico) $Wthcnd. $Wthmsg.\e[0m\n\n"
     printf " \e[1;36mStatus do Sistema em $DATE:\e[0m\n"
     printf " \e[1;36m     distro  $DIST@ kernel $KERNEL\e[0m\n"
@@ -1962,12 +1973,12 @@ function greetings() {
     printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " ram" "$RamM%" `draw $RamM 15`
 
     # battery
-    local battery=/sys/class/power_supply/BAT1
-    local BtyFull=$battery/charge_full
-    local BtyNow=$battery/charge_now
-    local bf=`cat $BtyFull`
-    local bn=`cat $BtyNow`
-    local charge=`printf $(( 100 * $bn / $bf ))`
+    #local battery=/sys/class/power_supply/BAT1
+    #local BtyFull=$battery/charge_full
+    #local BtyNow=$battery/charge_now
+    #local bf=`cat $BtyFull`
+    #local bn=`cat $BtyNow`
+    local charge=`printf $(battery_percentage 2> /dev/null)`
     case 1 in
       $(($charge <= 15)))
         local color='31'
@@ -1978,7 +1989,12 @@ function greetings() {
     esac
     printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" " bat" "$charge%" `draw $charge 15 $color`
     # volume
-    local vol=`amixer get Master | awk '$0~/%/{print $4}' | tr -d '[]%'`
+    if amixer get Master | grep -q 'Right'
+    then
+        local vol=`amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }' | tr -d '[]%'`
+    else
+        local vol=`awk -F"[][]" '/%/ { print $2 }' <(amixer sget Master)  | tr -d '[]%'`
+    fi
     if amixer get Master | grep -q '\[off\]'
     then
         local color='31'
@@ -1987,19 +2003,21 @@ function greetings() {
     fi
     printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" " vol" "$vol%" `draw $vol 15 $color`
     # temperature
-    local SensTemp=`sensors | awk '/Core\ 0/ {gsub(/\+/,"",$3); gsub(/\..+/,"",$3)    ; print $3}'`
-    case 1 in
-      $(($SensTemp <= 50)))
-          color='34'
-          ;;
-      $(($SensTemp >= 75)))
-          color='31'
-          ;;
-      *)
-          color='36'
-          ;;
-    esac
-    printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" "temp" "$SensTemp˚C " `draw $SensTemp 15 $color`
+    if sensors >/dev/null; then
+        local SensTemp=`sensors | awk '/Core\ 0/ {gsub(/\+/,"",$3); gsub(/\..+/,"",$3)    ; print $3}'`
+        case 1 in
+          $(($SensTemp <= 50)))
+              color='34'
+              ;;
+          $(($SensTemp >= 75)))
+              color='31'
+              ;;
+          *)
+              color='36'
+              ;;
+        esac
+        printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" "temp" "$SensTemp˚C " `draw $SensTemp 15 $color`
+    fi
     printf "\e[1;33m\n"
     #echo "Data...: $DATE"
     #echo "Distro.: $DIST"
@@ -2010,7 +2028,7 @@ function greetings() {
     #echo ""
     my_motd
 
-    #echo ""
+    echo -e "\n"
 
     #echo -e "`you_have_mail`\n"
 
