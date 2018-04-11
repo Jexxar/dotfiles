@@ -1,0 +1,77 @@
+[Desktop Entry]
+Type=Action
+Name=UnTarIt
+Name[pt_BR]=Descomprime
+Name[pt]=Descomprime
+ToolbarLabel=UnTarIt
+ToolbarLabel[pt_BR]=Descomprime
+ToolbarLabel[pt]=Descomprime
+Icon=extract-archive
+Tooltip=Uncompress tarball files
+Tooltip[pt_BR]=Descomprime arquivos tarball
+Tooltip[pt]=Descomprime arquivos tarball
+Profiles=profile-zero;x-tar;x-gzip;x-gtar;x-tgz;x-compress;x-compressed;x-bzip
+
+
+[X-Action-Profile x-tar]
+Name=UnTarIt
+Name[pt_BR]=Descomprime
+Name[pt]=Descomprime
+MimeTypes=application/x-tar
+Schemes=file;
+SelectionCount=1
+Exec=/home/usuario/bin/untarIT.sh %F
+
+[X-Action-Profile x-gzip]
+Name=UnTarIt
+Name[pt_BR]=Descomprime
+Name[pt]=Descomprime
+MimeTypes=application/x-gzip;
+Schemes=file;
+SelectionCount=1
+Exec=/home/usuario/bin/untarIT.sh %F
+
+[X-Action-Profile x-gtar]
+Name=UnTarIt
+Name[pt_BR]=Descomprime
+Name[pt]=Descomprime
+MimeTypes=application/x-gtar;
+Schemes=file;
+SelectionCount=1
+Exec=/home/usuario/bin/untarIT.sh %F
+
+[X-Action-Profile x-tgz]
+Name=UnTarIt
+Name[pt_BR]=Descomprime
+Name[pt]=Descomprime
+MimeTypes=application/x-tgz;
+Schemes=file;
+SelectionCount=1
+Exec=/home/usuario/bin/untarIT.sh %F
+
+[X-Action-Profile x-compress]
+Name=UnTarIt
+Name[pt_BR]=Descomprime
+Name[pt]=Descomprime
+MimeTypes=application/x-compress;
+Schemes=file;
+SelectionCount=1
+Exec=/home/usuario/bin/untarIT.sh %F
+
+[X-Action-Profile x-compressed]
+Name=UnTarIt
+Name[pt_BR]=Descomprime
+Name[pt]=Descomprime
+MimeTypes=application/x-compressed;
+Schemes=file;
+SelectionCount=1
+Exec=/home/usuario/bin/untarIT.sh %F
+
+[X-Action-Profile x-bzip]
+Name=UnTarIt
+Name[pt_BR]=Descomprime
+Name[pt]=Descomprime
+MimeTypes=application/x-bzip
+Schemes=file;
+SelectionCount=1
+Exec=/home/usuario/bin/untarIT.sh %F
