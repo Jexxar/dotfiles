@@ -35,6 +35,8 @@ alias logs="find /var/log -type f -exec file {} \; | grep 'text' | cut -d' ' -f1
 alias ls='ls -ahXF --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
 alias mem="watch -n 1 free -h"
 alias my_disks='echo "╓───── m o u n t . p o i n t s"; echo "╙────────────────────────────────────── ─ ─ "; lsblk -a; echo ""; echo "╓───── d i s k . u s a g e"; echo "╙────────────────────────────────────── ─ ─ "; df -h;'
+alias my_distro="$HOME/bin/distro_info -3"
+alias my_motd="$HOME/bin/my_motd"
 alias ns='netstat -alnp --protocol=inet | grep -v ESPERANDO_FECHAR | cut -c-6,21-94 | tail '
 alias now='date +"%T"'
 alias nowtime=now

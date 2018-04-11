@@ -12,12 +12,20 @@ function qt_m()
 # Exite msg de e-mails pendentes
 function t_m()
 {
+    if [ $# -ne 0 ]; then
+        local OPTS=`getopt -o q --long verbose,dry-run,help,stack-size: -n 'parse-options' -- "$@"`
+        local quiet=`echo "${OPTS}" | sed 's/--//g'`
+    else
+        local quiet=""
+    fi
     local qm="$(qt_m)"
     qm="${qm}"
     if  [[ $qm -gt 0 ]]; then
         echo "Voce tem $qm novo(s) e-mail(s)!"
     else
-        echo "Todos os e-mails foram lidos"
+        if [ -z "$quiet" ]; then
+            echo "Todos os e-mails foram lidos"
+        fi
     fi
 }
-t_m
+t_m $@

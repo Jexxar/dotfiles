@@ -224,15 +224,6 @@ function _pwd_size() { echo "`/bin/ls -lagFXh1 | /bin/grep -m 1 total | /bin/sed
 # Commit and push everything
 function gitdone() { git add -A; git commit -S -v -m "$1"; git push; }
 
-#==============================================
-# mostra a distro
-#==============================================
-function my_distro() {
-    local _ID=`cat /etc/*-release  2> /dev/null | grep 'DISTRIB_ID' | sed -e "s/DISTRIB_ID=//g" | sed -e "s/\"//g"`
-    local _RELEASE=`cat /etc/*-release  2> /dev/null | grep 'DISTRIB_RELEASE' | sed -e "s/DISTRIB_RELEASE=//g" | sed -e "s/\"//g"`
-    local _CODENAME=`cat /etc/*-release  2> /dev/null | grep 'DISTRIB_CODENAME' | sed -e "s/DISTRIB_CODENAME=//g" | sed -e "s/\"//g"`
-    echo "${_ID} ${_RELEASE} ${_CODENAME}" | sed "s/$/ \n/g" ;
-}
 
 #==============================================
 # execute some cmds like magic
@@ -1847,27 +1838,6 @@ function __rprompt() {
     tput sgr0
 }
 
-#==============================================
-# Frase do dia (via fortune)
-#==============================================
-function my_motd() {
-    local __fortune="$(which fortune 2> /dev/null)"
-    [ -f ~/.plan ] && rm -f ~/.plan &>/dev/null
-    [ -z __fortune ] && exit 0
-
-    local LineLimit
-    let LineLimit=3
-    ${__fortune} -a > ~/.plan
-    local LineReal=$(cat ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1' | wc -l)
-    while [ $LineLimit -lt $LineReal ]
-    do
-      [ -f ~/.plan ] && rm -f ~/.plan &>/dev/null
-      ${__fortune} -a > ~/.plan
-      LineReal=$(cat ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1' | wc -l)
-    done
-    #cat ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1' | cowsay -f $(random_cow_file)
-    cat ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1'
-}
 
 #==============================================
 # progress bar
@@ -1911,7 +1881,7 @@ function greetings() {
     local DATE="`date +"%d/%m/%Y"`"
     #local DATE="`date +"%A, %d de %B de %Y"`"
     #local DATE="`date +"%a, %d %b de %Y - %T %Z UTC"`"
-    local DIST="`my_distro`"
+    local DIST="`~/bin/distro_info -1 | capitalize`"
     local KERNEL="`uname -rmo`"
     local TIMEU="`uptime_active`"
     local TIMEDe="`uptime_since`"
@@ -1969,7 +1939,7 @@ function greetings() {
     printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " cpu" "$CpuLvl%" `draw $CpuLvl 15`
 
     # ram
-    local RamM=`free | awk '/Mem:/ {print int($3/$2 * 100.0)}'`
+    local RamM=`free | awk '/Mem/ {print int($3/$2 * 100.0)}'`
     printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " ram" "$RamM%" `draw $RamM 15`
 
     # battery
@@ -1978,7 +1948,7 @@ function greetings() {
     #local BtyNow=$battery/charge_now
     #local bf=`cat $BtyFull`
     #local bn=`cat $BtyNow`
-    local charge=`printf $(battery_percentage 2> /dev/null)`
+    local charge="$(battery_percentage 2> /dev/null)"
     case 1 in
       $(($charge <= 15)))
         local color='31'
@@ -2026,7 +1996,7 @@ function greetings() {
     #echo "Memória: Livre: $FrMEM, Total: $TtMEM, Disp: $AvMEM"
     #echo ""
     #echo ""
-    my_motd
+    ~/bin/my_motd
 
     echo -e "\n"
 

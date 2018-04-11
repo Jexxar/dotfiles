@@ -36,9 +36,10 @@ for (( i=1; i<=$numberArgs; i++ )); do
     while case "$test" in (*mp4*)
         bsnm="${1}";
         bsnm="${bsnm%%.*}"
-#        zenity --error --text="basename -> $bsnm";
-#        zenity --error --text="basename.mp4 -> ${bsnm}.mp4";
-#        zenity --error --text="basename.mp3 -> ${bsnm}.mp3";
+        #zenity --error --text="entrada= ${1}";
+        #zenity --error --text="basename= $bsnm";
+        #zenity --error --text="basename.mp4= ${bsnm}.mp4";
+        #zenity --error --text="basename.mp3= ${bsnm}.mp3";
         ffmpeg -i "${bsnm}.mp4" -f mp3 -ab 192000 -vn "${bsnm}.mp3";
         test=${test#*mp4};;(*) ! :
         ;;

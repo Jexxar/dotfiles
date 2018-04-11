@@ -127,7 +127,6 @@ export -f _dir_count
 export -f _file_count
 export -f _pwd_size
 export -f gitdone
-export -f my_distro
 export -f do_magic
 export -f ArrayElemDisplay
 export -f GetLastElem
@@ -204,7 +203,6 @@ export -f tem_mail
 export -f uptime_active
 export -f random_cow_file
 export -f you_have_mail
-export -f my_motd
 export -f draw
 export -f color_bar
 export -f greetings
