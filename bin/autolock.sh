@@ -72,7 +72,7 @@ case "$cmd" in
 
     # Fork both i3lock and its monitor to avoid blocking xautolock.
     # this must be the last command, and it must be 'non forking', as expected by 'xautolock'
-    $HOME/bin/lock -gpf Comic-Sans-MS -- scrot -z &
+    /home/usuario/bin/lock -gpf Comic-Sans-MS -- scrot -z &
     
     pid="$!"
     log "Waiting for PID $pid to end..."
