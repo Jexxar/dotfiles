@@ -1,17 +1,21 @@
 [Desktop Entry]
 Type=Action
+Name=EditIt
+Name[pt_BR]=Edita como texto
+Name[pt]=Edita como texto
+Tooltip=Edit file as text
 Tooltip[pt_BR]=Edita o arquivo em modo texto
 Tooltip[pt]=Edita o arquivo em modo texto
-ToolbarLabel[pt_BR]=TextEditIt
-ToolbarLabel[pt]=TextEditIt
-Name[pt_BR]=TextEditIt
-Name[pt]=TextEditIt
-Profiles=profile-zero;
-
-Icon[pt_BR]=blue-document-open
-Icon[pt]=blue-document-open
+ToolbarLabel=EditIt
+ToolbarLabel[pt_BR]=Edita
+ToolbarLabel[pt]=Edita
+Icon=sublime-text
 
 [X-Action-Profile profile-zero]
-Name[pt_BR]=TextEditIt
-Name[pt]=TextEditIt
+Name=EditIt
+Name[pt_BR]=Edita como texto
+Name[pt]=Edita como texto
+MimeTypes=all/all;
+Schemes=file;
+Profiles=profile-zero;
 Exec=/opt/sublime_text/sublime_text %F

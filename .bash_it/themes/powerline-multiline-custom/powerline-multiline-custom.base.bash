@@ -19,6 +19,21 @@ function __powerline_disto_char {
     return 0;
 }
 
+function __powerline_disto_color {
+    local _DISTRIB_ID=`cat /etc/*-release  2> /dev/null | grep 'DISTRIB_ID' | sed -e "s/DISTRIB_ID=//g" | sed -e "s/\"//g" | tr '[:upper:]' '[:lower:]'`
+    if [ $(echo "$_DISTRIB_ID" | grep "mint") ]; then echo "22"; return 0; fi
+    if [ $(echo "$_DISTRIB_ID" | grep "arc") ]; then echo "18"; return 0; fi
+    if [ $(echo "$_DISTRIB_ID" | grep "debian") ]; then echo "53"; return 0; fi
+    if [ $(echo "$_DISTRIB_ID" | grep "ubunt") ]; then echo "88"; return 0; fi
+    if [ $(echo "$_DISTRIB_ID" | grep "fedora") ]; then echo "30"; return 0; fi
+    if [ $(echo "$_DISTRIB_ID" | grep "manjaro") ]; then echo "22"; return 0; fi
+    if [ $(echo "$_DISTRIB_ID" | grep "suse") ]; then echo "29"; return 0; fi
+    if [ $(echo "$_DISTRIB_ID" | grep "gentoo") ]; then echo "63"; return 0; fi
+    if [ $(echo "$_DISTRIB_ID" | grep "hat") ]; then echo "16"; return 0; fi
+    echo "0"
+    return 0;
+}
+
 function __powerline_right_segment {
     local OLD_IFS="${IFS}"; IFS="|"
     local params=( $1 )

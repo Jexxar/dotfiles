@@ -1,0 +1,30 @@
+[Desktop Entry]
+Type=Action
+Name=Open as Root
+Name[pt_BR]=Abrir como Root
+Name[pt]=Abrir como Root
+Tooltip=Open the folder as root
+Icon=terminal
+ToolbarLabel[pt_BR]=AbrirRoot
+ToolbarLabel[pt]=AbrirRoot
+Profiles = on_folder;on_file;
+Tooltip[pt_BR]=Abrir como Root
+Tooltip[pt]=Abrir como Root
+
+[X-Action-Profile on_file]
+Name = Open as Root
+Name[pt_BR]=Abrir como Root
+Name[pt]=Abrir como Root
+MimeTypes=all/all;
+SelectionCount = 1
+Schemes = file;
+Exec = gksu /usr/bin/xdg-open %f
+
+[X-Action-Profile on_folder]
+Name = Open as Root
+Name[pt_BR]=Abrir como Root
+Name[pt]=Abrir como Root
+MimeTypes = inode/directory;
+SelectionCount = 1
+Schemes = file;
+Exec = gksu pcmanfm %f
