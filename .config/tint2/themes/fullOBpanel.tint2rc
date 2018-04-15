@@ -244,7 +244,7 @@ separator_padding = 10 10
 #-------------------------------------
 # Executor 1
 execp = new
-execp_command = /home/dobbie/.bin/usedcpu -i
+execp_command = { grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}' | sed "s/\./,/g" }
 execp_interval = 15
 execp_has_icon = 0
 execp_cache_icon = 1
@@ -265,30 +265,30 @@ execp_icon_h = 15
 
 #-------------------------------------
 # Executor 2
-execp = new
-execp_command = /home/dobbie/.bin/usedram -i
-execp_interval = 15
-execp_has_icon = 0
-execp_cache_icon = 1
-execp_continuous = 0
-execp_markup = 1
-execp_lclick_command = 
-execp_rclick_command = 
-execp_mclick_command = 
-execp_uwheel_command = 
-execp_dwheel_command = 
-execp_font = Roboto Condensed, 15
-execp_font_color = #2b303b 100
-execp_padding = 18 0
-execp_background_id = 4
-execp_centered = 0
-execp_icon_w = 15
-execp_icon_h = 15
+#execp = new
+#execp_command = avail_mem
+#execp_interval = 15
+#execp_has_icon = 0
+#execp_cache_icon = 1
+#execp_continuous = 0
+#execp_markup = 1
+#execp_lclick_command = 
+#execp_rclick_command = 
+#execp_mclick_command = 
+#execp_uwheel_command = 
+#execp_dwheel_command = 
+#execp_font = Roboto Condensed, 15
+#execp_font_color = #2b303b 100
+#execp_padding = 18 0
+#execp_background_id = 4
+#execp_centered = 0
+#execp_icon_w = 15
+#execp_icon_h = 15
 
 #-------------------------------------
 # Executor 3
 execp = new
-execp_command = /home/dobbie/.bin/temperature -i
+execp_command = { sensors | awk '/Core\ 0/ {gsub(/\+/,"",$3); gsub(/\..+/,"",$3)    ; print $3}' }
 execp_interval = 15
 execp_has_icon = 0
 execp_cache_icon = 1
@@ -309,31 +309,31 @@ execp_icon_h = 15
 
 #-------------------------------------
 # Executor 4
-execp = new
-execp_command = { echo "$(playerctl metadata title | awk -v len=40 '{ if (length($0) > len) print substr($0, 1, len-3) "..."; else print; }' | tr -d '&' | awk '{print "♫ " $0 ""}')"; echo  -  "$(playerctl metadata artist)" - "$(playerctl metadata album)"; } | tr "\n" " "
-execp_interval = 1
-execp_has_icon = 0
-execp_cache_icon = 1
-execp_continuous = 0
-execp_markup = 1
-execp_tooltip = 
-execp_lclick_command = playerctl play-pause
-execp_rclick_command = audacious
-execp_mclick_command = 
-execp_uwheel_command = 
-execp_dwheel_command = 
-execp_font = Roboto Condensed, 15
-execp_font_color = #8fa1b3 100
-execp_padding = 4 4
-execp_background_id = 3
-execp_centered = 1
-execp_icon_w = 0
-execp_icon_h = 0
+#execp = new
+#execp_command = { echo "$(playerctl metadata title | awk -v len=40 '{ if (length($0) > len) print substr($0, 1, len-3) "..."; else print; }' | tr -d '&' | #awk '{print "♫ " $0 ""}')"; echo  -  "$(playerctl metadata artist)" - "$(playerctl metadata album)"; } | tr "\n" " "
+#execp_interval = 1
+#execp_has_icon = 0
+#execp_cache_icon = 1
+#execp_continuous = 0
+#execp_markup = 1
+#execp_tooltip = 
+#execp_lclick_command = playerctl play-pause
+#execp_rclick_command = audacious
+#execp_mclick_command = 
+#execp_uwheel_command = 
+#execp_dwheel_command = 
+#execp_font = Roboto Condensed, 15
+#execp_font_color = #8fa1b3 100
+#execp_padding = 4 4
+#execp_background_id = 3
+#execp_centered = 1
+#execp_icon_w = 0
+#execp_icon_h = 0
 
 #-------------------------------------
 # Executor 5
 execp = new
-execp_command = /home/dobbie/.bin/weather -i
+execp_command = { wicon="$(/home/usuario/bin/weather -i)";wdes="$(/home/usuario/bin/weather)"; echo "${wicon} ${wdes}" }
 execp_interval = 600
 execp_has_icon = 0
 execp_cache_icon = 1

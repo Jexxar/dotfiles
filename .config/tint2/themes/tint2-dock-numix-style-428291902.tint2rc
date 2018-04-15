@@ -1,0 +1,77 @@
+##  http://lovelybacon.deviantart.com/art/tint2-dock-numix-style-428291902
+
+rounded = 19
+border_width = 3
+background_color = #424242 0
+border_color = #424242 0
+ 
+
+rounded = 19
+border_width = 0
+background_color = #424242 100
+border_color = #424242 80
+ 
+
+rounded = 19
+border_width = 0
+background_color = #D64937 100
+border_color = #111111 100
+
+rounded = 19
+border_width = 0
+background_color = #424242 100
+border_color = #424242 80
+
+panel_items = BSCT
+panel_monitor = all
+panel_position = bottom right horizontal
+panel_size = 63% 47
+panel_margin = 0 0
+panel_padding =2 0 8
+panel_dock = 0
+font_shadow = 0
+panel_background_id = 1
+wm_menu = 1
+autohide = 1
+autohide_show_timeout = 0.01 
+autohide_hide_timeout = 0.01
+autohide_height = 1 
+
+taskbar_mode = single_monitor
+taskbar_padding = 0 0 3
+taskbar_background_id = 0
+task_icon = 1
+task_text = 0
+task_width = 40
+task_centered = 1
+task_padding = 4 10
+task_font = victor-pixel 7
+task_font_color = #ecedee 75
+task_active_font_color = #ecedee 75
+task_background_id = 2
+task_active_background_id = 3
+
+systray_padding = 10 11
+systray_background_id = 4
+
+time1_format = %H:%M
+time1_font = Arial Black 8
+clock_font_color = #ecedee 75
+clock_padding = 5 10
+clock_background_id = 4
+clock_lclick_command = nitrogen --sort=rtime
+clock_rclick_command = lxappearance
+
+battery = 1
+battery_low_status = 15
+battery_low_cmd = notify-send "battery low"
+bat1_font = Arial Black 8
+bat2_font = sans 0
+battery_font_color = #ecedee 75
+battery_padding = 5 2
+battery_background_id = 4
+
+mouse_middle = close
+mouse_right = none
+mouse_scroll_up = prev_task
+mouse_scroll_down = next_task
