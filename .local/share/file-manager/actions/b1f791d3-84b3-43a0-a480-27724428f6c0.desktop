@@ -10,6 +10,7 @@ ToolbarLabel=EditIt
 ToolbarLabel[pt_BR]=Edita
 ToolbarLabel[pt]=Edita
 Icon=sublime-text
+Profiles=profile-zero;
 
 [X-Action-Profile profile-zero]
 Name=EditIt
@@ -17,5 +18,4 @@ Name[pt_BR]=Edita como texto
 Name[pt]=Edita como texto
 MimeTypes=all/all;
 Schemes=file;
-Profiles=profile-zero;
-Exec=/opt/sublime_text/sublime_text %F
+Exec=subl %F
