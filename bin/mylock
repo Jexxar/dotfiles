@@ -1,0 +1,146 @@
+#!/bin/bash
+set -eu
+
+# This script is intended to be run as the xautolock locker and notifier.
+# It requires i3lock, and dunst is optional.
+
+cmd=${1:-lock}
+
+function is_running_X(){
+    if ! xset q &>/dev/null; then
+        return 1
+    fi
+    return 0
+}
+
+# Is the screen already locked?
+function locked() {
+    local DebugMode=${1:-no}
+    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "i3lock" &>/dev/null
+    if [ $? -eq 0 ]; then
+        if [ "$DebugMode" = "debug" ]; then
+            log "i3lock found and active"
+        fi
+        return 0;
+    fi
+    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "mate-screensaver-dialog" &>/dev/null
+    if [ $? -eq 0 ]; then
+        if [ "$DebugMode" = "debug" ]; then
+            log "mate-screensaver-dialog found and active"
+        fi
+        return 0;
+    fi
+    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "cinnamon-screensaver-pam-helper" &>/dev/null
+    if [ $? -eq 0 ]; then
+        if [ "$DebugMode" = "debug" ]; then
+            log "cinnamon-screensaver-pam-helper found and active"
+        fi
+        return 0;
+    fi
+    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "slimlock" &>/dev/null 
+    if [ $? -eq 0 ]; then
+        if [ "$DebugMode" = "debug" ]; then
+            log "slimlock found and active"
+        fi
+        return 0;
+    fi
+    return 1
+}
+
+# Control the dunst daemon, if it is running.
+function dunst() {
+    pkill -0 --exact dunst || return 0
+
+    case ${1:-} in
+        stop)
+            log "Stopping notifications and locking screen."
+            pkill -USR1 --euid "$(id -u)" --exact dunst
+            ;;
+        resume)
+            log "...Resuming notifications."
+            pkill -USR2 --euid "$(id -u)" --exact dunst
+            ;;
+        *)
+            echo "dunst argument required: stop or resume"
+            return 1
+            ;;
+    esac
+}
+
+# Lock screen if possible.
+function do_lock() {
+    # Only works if X is running.
+    if [ is_running_X ]; then
+        true
+    else
+        log "X server is not running";
+        return 0;
+    fi
+
+    # Already locked.
+    locked && return 0;
+    
+    log "Locking screen now..."
+    dunst stop
+
+    # Fork both i3lock and its monitor to avoid blocking xautolock.
+    # this must be the last command, and it must be 'non forking', as expected by 'xautolock'
+    $HOME/bin/lock -gpf Comic-Sans-MS -- scrot -z &
+    
+    pid="$!"
+    log "Waiting for PID $pid to end..."
+    while 2>/dev/null kill -0 "$pid"; do
+      sleep 1
+    done
+    
+    dunst resume
+}
+
+# Print the given message with a timestamp.
+function info() { printf '%s\t%s\n' "$(date)" "$*"; }
+
+# Set LOCK_LOG if you want log to a file
+function log() {
+    local LOCK_LOG="/var/log/mylock.log"
+    local LOCK_rc=0
+    if [ ! -f $LOCK_LOG ]; then
+        touch $LOCK_LOG
+        LOCK_rc=$?
+    fi
+    if [[ $LOCK_rc -eq 0 && -f $LOCK_LOG ]]; then
+        info >>"$LOCK_LOG" "$@"
+    else
+        info "$@"
+    fi
+}
+
+function do_test() {
+    if [ is_running_X ]; then
+        log "X is running"
+    else
+        log "X server down"
+    fi
+    
+    if [ `locked "debug"` ]; then
+        log "Screen already locked"
+    else
+        log "Screen not locked"
+    fi
+    
+    if [ `pkill -0 --exact dunst` ]; then
+        log "dunst found"
+    else
+        log "dunst not found"
+    fi
+}
+
+case "$cmd" in
+    lock)
+        do_lock
+        ;;  
+    debug)
+        do_test
+        ;;
+    *)
+        log "Unrecognized option: $1"
+esac

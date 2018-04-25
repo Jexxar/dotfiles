@@ -17,6 +17,7 @@
 
 =cut
 
+
 # NOTE:
 #    * Keys and values are case sensitive. Keep all keys lowercase.
 #    * ICON can be a either a direct path to an icon or a valid icon name
@@ -30,12 +31,14 @@ my $editor = $CONFIG->{editor};
 our $SCHEMA = [
 
     #          COMMAND                 LABEL              ICON
+    {sep => 'Linux Mint 18.2 Sonya'},
+
     {item => ['xdg-open .',       'Arquivos', 'system-file-manager']},
     {item => ['tilix',            'Terminal',     'utilities-terminal']},
     {item => ['xdg-open http://', 'Web Browser',  'web-browser']},
     {item => ['gmrun',            'Executar comando',  'system-run']},
 
-    {sep => 'Categorias'},
+    {sep       => undef},
 
     #          NAME            LABEL                ICON
     {cat => ['utility',     'Acessórios', 'applications-utilities']},
@@ -77,14 +80,14 @@ our $SCHEMA = [
         {item      => ["$editor ~/.config/obmenu-generator/config.pl", 'Menu Config', 'text-x-generic']},
 
         {sep  => undef},
-        {item => ['obmenu-generator -s -c',    'Generate a static menu',             'accessories-text-editor']},
-        {item => ['obmenu-generator -s -i -c', 'Generate a static menu with icons',  'accessories-text-editor']},
+        {item => ['obmenu-generator -s -c',    'Gera um menu estatico ',             'accessories-text-editor']},
+        {item => ['obmenu-generator -s -i -c', 'Gera um menu estatico  com icones',  'accessories-text-editor']},
         {sep  => undef},
-        {item => ['obmenu-generator -p',       'Generate a dynamic menu',            'accessories-text-editor']},
-        {item => ['obmenu-generator -p -i',    'Generate a dynamic menu with icons', 'accessories-text-editor']},
+        {item => ['obmenu-generator -p',       'Gera um menu dinamico ',            'accessories-text-editor']},
+        {item => ['obmenu-generator -p -i',    'Gera um menu dinamico  com icones', 'accessories-text-editor']},
         {sep  => undef},
 
-        {item    => ['obmenu-generator -d', 'Refresh icon set', 'view-refresh']},
+        {item    => ['obmenu-generator -d', 'Atualiza Icones', 'view-refresh']},
       {end => undef},
 
       # Openbox category
@@ -99,6 +102,9 @@ our $SCHEMA = [
     {sep => undef},
 
     {pipe => ['~/.config/openbox/scripts/obpipemenu-places', 'Diretórios', 'folder']}, 
+    # {pipe => ['~/.config/openbox/scripts/dir-menu.py', 'Computador', '']},
+    {pipe => ['~/.config/openbox/scripts/inxi-pipemenu', 'Inxi Info', 'dialog-information-symbolic']}, 
+    {pipe => ['~/.config/openbox/scripts/ob-sysinfo.pl', 'SysInfo1', 'dialog-information-symbolic']}, 
     {pipe => ['~/.config/openbox/scripts/sysInfo.sh pipe', 'SysInfo', 'dialog-information-symbolic']}, 
     {pipe => ['~/.config/openbox/scripts/obrecent.sh', 'Recentes', 'view-wrapped-symbolic']}, 
     {pipe => ['~/.config/openbox/scripts/al-audacious.sh', 'Audacious', 'multimedia']}, 
@@ -111,7 +117,7 @@ our $SCHEMA = [
     {item => ['~/bin/autolock.sh lock', 'Bloquear', 'system-lock-screen']},
 
     ## This option uses the default Openbox's "Exit" action
-    {item => ['~/bin/bl-exit.sh', 'Sair', 'application-exit']},
+    {item => ['oblogout', 'Sair', 'application-exit']},
 
     ## This option uses the default Openbox's "Exit" action
     # {exit => ['Exit', 'application-exit']},

@@ -10,7 +10,7 @@ function do_DISTRIB_ID() {
 }
 
 #==============================================
-# Release
+# DISTRIB_RELEASE
 #==============================================
 function do_DISTRIB_RELEASE() {
     local _DISTRIB_RELEASE=`cat /etc/*-release  2> /dev/null | grep 'DISTRIB_RELEASE' | sed -e "s/DISTRIB_RELEASE=//g" | sed -e "s/\"//g"`
@@ -18,7 +18,7 @@ function do_DISTRIB_RELEASE() {
 }
 
 #==============================================
-# Codename
+# DISTRIB_CODENAME
 #==============================================
 function do_DISTRIB_CODENAME() {
     local _DISTRIB_CODENAME=`cat /etc/*-release  2> /dev/null | grep 'DISTRIB_CODENAME' | sed -e "s/DISTRIB_CODENAME=//g" | sed -e "s/\"//g"`
@@ -26,7 +26,7 @@ function do_DISTRIB_CODENAME() {
 }
 
 #==============================================
-# Description
+# DISTRIB_DESCRIPTION
 #==============================================
 function do_DISTRIB_DESCRIPTION() {
     local _DISTRIB_DESCRIPTION=`cat /etc/*-release  2> /dev/null | grep 'DISTRIB_DESCRIPTION' | sed -e "s/DISTRIB_DESCRIPTION=//g" | sed -e "s/\"//g"`
@@ -34,7 +34,7 @@ function do_DISTRIB_DESCRIPTION() {
 }
 
 #==============================================
-# Name
+# NAME
 #==============================================
 function do_NAME() {
     local _NAME=`cat /etc/*-release  2> /dev/null | grep '^NAME' | sed -e "s/^NAME=//g" | sed -e "s/\"//g"`
@@ -42,7 +42,7 @@ function do_NAME() {
 }
 
 #==============================================
-# Version
+# VERSION
 #==============================================
 function do_VERSION() {
     local _VERSION=`cat /etc/*-release  2> /dev/null | grep '^VERSION=' | sed -e "s/^VERSION=//g" | sed -e "s/\"//g"`
@@ -58,7 +58,7 @@ function do_ID() {
 }
 
 #==============================================
-# Pretty Name
+# PRETTY_NAME
 #==============================================
 function do_PRETTY_NAME() {
     local _PRETTY_NAME=`cat /etc/*-release  2> /dev/null | grep '^PRETTY_NAME' | sed -e "s/^PRETTY_NAME=//g" | sed -e "s/\"//g"`
@@ -66,7 +66,7 @@ function do_PRETTY_NAME() {
 }
 
 #==============================================
-# Version ID
+# VERSION_ID
 #==============================================
 function do_VERSION_ID() {
     local _VERSION_ID=`cat /etc/*-release  2> /dev/null | grep '^VERSION_ID' | sed -e "s/^VERSION_ID=//g" | sed -e "s/\"//g"`
@@ -104,10 +104,9 @@ function do_distro3() {
 # Execution control pull from server
 #==============================================
 function this_usage() {
-    echo "Usage: $0 [options]"
-    echo "Purpose: return distro informations"
+    echo "Usage: $0 [Options]"
     echo "       "
-    echo "Mandatory arguments: "
+    echo "Purpose: return distro informations"
     echo "       "
     echo "Options"
     echo "-h: Show this help"
@@ -128,7 +127,10 @@ function this_usage() {
 
 #OPTS=`getopt -o h123d: --long verbose,dry-run,help,stack-size: -n 'parse-options' -- "$@"`
 
-#if [ $? != 0 ] ; then { this_usage ; exit 0; }
+if [ $# -eq 0 ] ; then 
+    this_usage ; 
+    exit 0; 
+fi
 
 #echo "$OPTS"
 #eval set -- "$OPTS"
@@ -154,7 +156,7 @@ while getopts "h123d:" opt; do
                      ;;
                 pname)      do_PRETTY_NAME
                      ;;
-                versionid) do_VERSION_ID
+                versionid)  do_VERSION_ID
                      ;;
                 \?) echo "Invalid option: -$OPTARG" >&2
                     ;;

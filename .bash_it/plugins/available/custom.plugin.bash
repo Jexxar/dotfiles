@@ -1506,8 +1506,8 @@ function du_short() {
 # Mostra hosts ativos na sua rede
 #==============================================
 function hosts_up() {
-    local ip_local=`ip  -br -h -4 address | grep "wl" | awk '/UP/{print $3}' | tr -d  '=/24=' `
-    local ip_neig=`ip  -br -h -4 neigh | awk '/dev/{print $1}'`
+    local ip_local=`ip -br -h -4 address | grep "UP" | awk '/UP/{print $3}' | sed -e 's/\/24//g'`
+    local ip_neig=`ip -br -h -4 neigh | awk '/dev/{print $1}'`
     local sor_ips=`echo -e "$ip_local\n$ip_neig" | sort`
     echo "$sor_ips"
 }

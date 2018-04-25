@@ -1,0 +1,123 @@
+#!/bin/bash
+set -eu
+
+# This script is intended to be run as the main notifier script for this installation.
+cmd=${1:-notify}
+
+function is_running_X(){
+    if ! xset q &>/dev/null; then
+        return 1
+    fi
+    return 0
+}
+
+# Is the screen already locked?
+function locked() {
+    local DebugMode=${1:-no}
+    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "i3lock" &>/dev/null
+    if [ $? -eq 0 ]; then
+        if [ "$DebugMode" = "debug" ]; then
+            log "i3lock found and active"
+        fi
+        return 0;
+    fi
+    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "mate-screensaver-dialog" &>/dev/null
+    if [ $? -eq 0 ]; then
+        if [ "$DebugMode" = "debug" ]; then
+            log "mate-screensaver-dialog found and active"
+        fi
+        return 0;
+    fi
+    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "cinnamon-screensaver-pam-helper" &>/dev/null
+    if [ $? -eq 0 ]; then
+        if [ "$DebugMode" = "debug" ]; then
+            log "cinnamon-screensaver-pam-helper found and active"
+        fi
+        return 0;
+    fi
+    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "slimlock" &>/dev/null 
+    if [ $? -eq 0 ]; then
+        if [ "$DebugMode" = "debug" ]; then
+            log "slimlock found and active"
+        fi
+        return 0;
+    fi
+    return 1
+}
+
+
+# Notify desired message.
+function do_notify() {
+    # Only works if X is running.
+    if [ is_running_X ]; then
+        true
+    else
+        log "X server is not running";
+        return 0;
+    fi
+
+    # Notification should not be issued while locked.
+    locked && return 0;
+    log "Sending notification."
+
+    # grep finds either Xautolock.notify or Xautolock*notify
+    secs="$(xrdb -query | grep -m1 '^Xautolock.notify' | cut -f2)"
+    
+    test -n "$secs" && secs="Locking in $secs seconds"
+
+    notify-send --urgency="normal" --app-name="mynotify" \
+        --icon='/usr/share/icons/Adwaita/48x48/actions/system-lock-screen.png' \
+        -- "Screen Lock" "$secs"
+    return 0
+}
+
+# Print the given message with a timestamp.
+function info() { printf '%s\t%s\n' "$(date)" "$*"; }
+
+# Log to a file if possible
+function log() {
+    local LOCK_LOG="/var/log/mynotify.log"
+    local LOCK_rc=0
+    if [ ! -f $LOCK_LOG ]; then
+        touch $LOCK_LOG
+        LOCK_rc=$?
+    fi
+    if [[ $LOCK_rc -eq 0 && -f $LOCK_LOG ]]; then
+        info >>"$LOCK_LOG" "$@"
+    else
+        info "$@"
+    fi
+}
+
+function do_test() {
+    if [ is_running_X ]; then
+        log "X is running"
+    else
+        log "X server down"
+    fi
+    
+    if [ `locked "debug"` ]; then
+        log "Screen already locked"
+    else
+        log "Screen not locked"
+    fi
+    
+    local secs="$(xrdb -query | grep -m1 '^Xautolock.notify' | cut -f2)"
+    
+    if [ -n "$secs" ]; then
+        log "Locking in $secs seconds"
+    else
+        log "secs not defined"
+    fi
+}
+
+case "$cmd" in
+    notify)
+        do_notify
+        ;;
+    debug)
+        do_test
+        ;;
+    *)
+        log "Unrecognized option: $1"
+esac

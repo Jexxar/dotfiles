@@ -64,7 +64,7 @@ our $CONFIG = {
                                                         ],
                              keep_unknown_categories => 1,
                              skip_entry              => undef,
-                             skip_filename_re        => undef,
+                             skip_filename_re        => qr/^(?:cinnamon|xfce)\b/,
                              substitutions           => undef,
                              terminalization_format  => "%s -e '%s'",
                              terminalize             => 1,

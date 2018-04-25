@@ -42,7 +42,7 @@
                   'Active' - where the active window is -->
   </placement>
   <theme>
-    <name>Numix</name>
+    <name>Pearls-By-Jexxar-OSX</name>
     <titleLayout>NSDLIMC</titleLayout>
     <!--
       available characters are NDSLIMC, each can occur at most once.
@@ -339,9 +339,9 @@
       <action name="Execute">
         <startupnotify>
           <enabled>true</enabled>
-          <name>Nemo</name>
+          <name>Pcmanfm</name>
         </startupnotify>
-        <command>nemo --no-desktop</command>
+        <command>pcmanfm --no-desktop</command>
       </action>
     </keybind>
     <keybind key="XF86AudioRaiseVolume">
@@ -370,7 +370,7 @@
           <enabled>true</enabled>
           <name>Monitor</name>
         </startupnotify>
-        <command>gksu mate-system-monitor</command>
+        <command>gksu qps</command>
       </action>
     </keybind>
     <keybind key="A-F3">
@@ -442,7 +442,7 @@
           <enabled>true</enabled>
           <name>Logout</name>
         </startupnotify>
-        <command>~/bin/ob_off.sh</command>
+        <command>oblogout</command>
       </action>
     </keybind>
     <keybind key="W-a">

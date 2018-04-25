@@ -1,0 +1,80 @@
+#!/bin/bash
+set -eu
+
+# This script is intended to be run as the main shutdown script for this installation.
+cmd=${1:-down}
+
+# Return 0 if systemctl is found.
+function systemctl_ok() {
+    [ $(which systemctl) ] && return 0
+    return 1
+}
+
+# Return 0 if shutdown is found.
+function shutdown_ok() {
+    [ $(which shutdown) ] && return 0
+    return 1
+}
+
+# Return 0 if init is found.
+function init_ok() {
+    [ $(which init) ] && return 0
+    return 1
+}
+
+# Print the given message with a timestamp.
+function info() { printf '%s\t%s\n' "$(date)" "$*"; }
+
+# Log to a file if possible
+function log() {
+    local LOCK_LOG="/var/log/myshutdown.log"
+    local LOCK_rc=0
+    if [ ! -f $LOCK_LOG ]; then
+        touch $LOCK_LOG
+        LOCK_rc=$?
+    fi
+    if [[ $LOCK_rc -eq 0 && -f $LOCK_LOG ]]; then
+        info >>"$LOCK_LOG" "$@"
+    else
+        info "$@"
+    fi
+}
+
+function do_shutdown() {
+    if [ systemctl_ok ]; then
+        systemctl poweroff
+    fi
+    if [ shutdown_ok ]; then
+        shutdown -h now
+    fi
+    if [ init_ok ]; then
+        init 0
+    fi
+}
+
+function do_test() {
+    if [ systemctl_ok ]; then
+        log "using: systemctl poweroff"
+        return 0
+    fi
+    if [ shutdown_ok ]; then
+        log "using: shutdown -h now"
+        return 0
+    fi
+    if [ init_ok ]; then
+        log "using: init 0"
+        return 0
+    fi
+}
+
+case "$cmd" in
+    down)
+        log "shutdown now..."
+        do_shutdown
+        ;;
+    debug)
+        do_test
+        ;;
+    *)
+        log "Unrecognized option: $1"
+esac

@@ -1,0 +1,17 @@
+#!/bin/bash -e
+
+# Run a program with pkexec
+# USAGE: pkex <command>
+
+if [ "$#" -eq 0 ]; then
+    >&2 echo "Usage: $0 <command>"
+    exit 1
+fi
+
+# Run the command using pkexec:
+set +e
+pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY $1 
+__pkexrc=$?
+set -e
+
+exit $__pkexrc

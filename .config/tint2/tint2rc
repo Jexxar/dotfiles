@@ -131,7 +131,7 @@ mouse_scroll_down = iconify
 systray_padding = 0 4 2
 systray_background_id = 0
 systray_sort = right2left
-systray_icon_size = 12
+systray_icon_size = 16
 systray_icon_asb = 80 0 0
 systray_monitor = primary
 systray_name_filter = 
@@ -160,7 +160,7 @@ launcher_item_app = /usr/share/applications/mate-search-tool.desktop
 # Clock
 time1_format = %H:%M
 time2_format = 
-time1_font = nu bold 08
+time1_font = nu bold 10
 time1_timezone = 
 time2_timezone = 
 clock_font_color = #ffffff 100

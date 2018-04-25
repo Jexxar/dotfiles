@@ -86,7 +86,7 @@ LO_log_clean
 # DEBUG=0 for no output
 # DEBUG=1 for sleep prints
 # DEBUG=2 for everything
-DEBUG=0
+DEBUG=2
 
 # this is actually the minimum allowed dynamic delay.
 # Also the default (if everything else fails)
@@ -171,16 +171,16 @@ fi
 displays=$(xvinfo | awk -F'#' '/^screen/ {print $2}' | xargs)
 
 # Detect screensaver being used
-if pgrep -x xscreensaver > /dev/null; then
+if pgrep -l xscreensaver > /dev/null; then
     screensaver=xscreensaver
     log "xscreensaver detected"
-elif pgrep -x kscreensaver > /dev/null; then
+elif pgrep -l kscreensaver > /dev/null; then
     screensaver=kscreensaver
     log "kscreensaver detected"
 elif pgrep -l xautolock > /dev/null; then
     screensaver=xautolock
     log "xautolock detected"
-elif pgrep -x gnome-screensaver > /dev/null; then
+elif pgrep -l gnome-screensaver > /dev/null; then
     screensaver=gnome-screensaver
     log "gnome-screensaver detected"
 elif pgrep -l cinnamon-screen > /dev/null; then
@@ -244,14 +244,14 @@ function checkFullscreen() {
     for display in $displays
     do
         # Get id of active window and clean output
-        activ_win_id=$(DISPLAY=:${display} xprop -root _NET_CLIENT_LIST_STACKING | sed 's/.*\, //')
+        activ_win_id=$(DISPLAY=:${display} xprop -root _NET_CLIENT_LIST_STACKING 2> /dev/null | sed 's/.*\, //')
         # Previously used _NET_ACTIVE_WINDOW, but it didn't work with some flash
         # players (eg. Twitch.tv) in firefox. Using sed because id lengths can vary.
         # Check if active window is in fullscreen or above state.
         if [[ -n $activ_win_id ]]; then
-            isActivWinFullscreen=$(DISPLAY=:${display} xprop -id $activ_win_id | grep -c _NET_WM_STATE_FULLSCREEN)
+            isActivWinFullscreen=$(DISPLAY=:${display} xprop -id $activ_win_id 2> /dev/null | grep -c _NET_WM_STATE_FULLSCREEN)
             # Above state is used in some window managers instead of fullscreen.
-            isActivWinAbove=$(DISPLAY=:${display} xprop -id $activ_win_id | grep -c _NET_WM_STATE_ABOVE)
+            isActivWinAbove=$(DISPLAY=:${display} xprop -id $activ_win_id 2> /dev/null | grep -c _NET_WM_STATE_ABOVE)
             log "checkFullscreen(): Display: $display isFullScreen=$isActivWinFullscreen"
             log "checkFullscreen(): Display: $display isAbove=$isActivWinAbove"
             if [[ "$isActivWinFullscreen" -ge 1 || "$isActivWinAbove" -ge 1 ]]; then
@@ -317,7 +317,7 @@ function isAppRunning() {
     fi
     log "isAppRunning()"
     # Get title of active window.
-    activ_win_title=$(xprop -id $activ_win_id | grep "WM_CLASS(STRING)")
+    activ_win_title=$(xprop -id $activ_win_id 2> /dev/null | grep "WM_CLASS(STRING)")
     # Check if user want to detect Flash fullscreen on Firefox.
     if [ $firefox_flash_detection == 1 ]; then
         if [[ "$activ_win_title" = *unknown* || "$activ_win_title" = *plugin-container* ]]; then

@@ -1,0 +1,233 @@
+#!/bin/bash
+# -pipemenu
+function menuBegin() {
+    echo "<openbox_pipe_menu>"
+}
+
+function menuEnd() {
+    echo "</openbox_pipe_menu>"
+}
+
+function menuSep() {
+    if [ -z "$1" ]; then 
+        echo "<separator />"
+    else
+        echo "<separator label=\"$1\"/>"
+    fi
+}
+
+function menuItem() {
+    echo "<item label=\"$1\">
+        <action name=\"Execute\"><command>$2</command></action>
+    </item>"
+
+}
+
+function doMenu() {
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) doMenu_en ;; # Deutsch
+        da_* ) doMenu_en ;; # Danish
+        es_* ) doMenu_en ;; # Española
+        fr_* ) doMenu_en ;; # Français
+        id_* ) doMenu_en ;; # Bahasa Indonesia
+        it_* ) doMenu_en ;; # Italian
+        lv_* ) doMenu_en ;; # Latvian
+        pl_* ) doMenu_en ;; # Polish
+        pt_* ) doMenu_pt ;; # Português
+        ru_* ) doMenu_en ;; # Russian
+        * ) doMenu_en ;; # Default to English
+    esac
+}
+
+function doMenu_en() {
+    menuBegin
+    menuSep 
+    menuItem 'Audio' '~/.config/openbox/scripts/inxi-pipemenu Audio'
+    #menuItem 'Battery' '~/.config/openbox/scripts/inxi-pipemenu Battery'
+    menuItem 'CPU' '~/.config/openbox/scripts/inxi-pipemenu CPU'
+    menuItem 'Drives Info' '~/.config/openbox/scripts/inxi-pipemenu DrivesGI'
+    menuItem 'Drives UUID Used' '~/.config/openbox/scripts/inxi-pipemenu DrivesUU'
+    menuItem 'Drives Unmounted' '~/.config/openbox/scripts/inxi-pipemenu DrivesUN'
+    menuItem 'Graphics' '~/.config/openbox/scripts/inxi-pipemenu Graphics'
+    menuItem 'Host Info' '~/.config/openbox/scripts/inxi-pipemenu HostKBD'
+    menuItem 'Machine Info' '~/.config/openbox/scripts/inxi-pipemenu MachineInfo'
+    menuItem 'Network' '~/.config/openbox/scripts/inxi-pipemenu Network'
+    menuItem 'Processes' '~/.config/openbox/scripts/inxi-pipemenu Processes'
+    menuItem 'Process Summary' '~/.config/openbox/scripts/inxi-pipemenu ProcUptimeMemory'
+    menuItem 'Repositories' '~/.config/openbox/scripts/inxi-pipemenu Repositories'
+    menuItem 'Resolution' '~/.config/openbox/scripts/inxi-pipemenu Resolution'
+    menuItem 'Temperature' '~/.config/openbox/scripts/inxi-pipemenu Temperature'
+    menuItem 'Weather' '~/.config/openbox/scripts/inxi-pipemenu Weather'
+    menuEnd
+}
+
+function doMenu_pt() {
+    menuBegin
+    menuSep 
+    menuItem 'Audio' '~/.config/openbox/scripts/inxi-pipemenu Audio'
+    #menuItem 'Battery' '~/.config/openbox/scripts/inxi-pipemenu Battery'
+    menuItem 'CPU' '~/.config/openbox/scripts/inxi-pipemenu CPU'
+    menuItem 'Discos Info' '~/.config/openbox/scripts/inxi-pipemenu DrivesGI'
+    menuItem 'Uso UUID' '~/.config/openbox/scripts/inxi-pipemenu DrivesUU'
+    menuItem 'Não Montado' '~/.config/openbox/scripts/inxi-pipemenu DrivesUN'
+    menuItem 'Graficos' '~/.config/openbox/scripts/inxi-pipemenu Graphics'
+    menuItem 'Host' '~/.config/openbox/scripts/inxi-pipemenu HostKBD'
+    menuItem 'Máquina' '~/.config/openbox/scripts/inxi-pipemenu MachineInfo'
+    menuItem 'Rede' '~/.config/openbox/scripts/inxi-pipemenu Network'
+    menuItem 'Processos' '~/.config/openbox/scripts/inxi-pipemenu Processes'
+    menuItem 'Sumario' '~/.config/openbox/scripts/inxi-pipemenu ProcUptimeMemory'
+    menuItem 'Repositórios' '~/.config/openbox/scripts/inxi-pipemenu Repositories'
+    menuItem 'Resolução' '~/.config/openbox/scripts/inxi-pipemenu Resolution'
+    menuItem 'Temperatura' '~/.config/openbox/scripts/inxi-pipemenu Temperature'
+    menuItem 'Clima' '~/.config/openbox/scripts/inxi-pipemenu Weather'
+    menuEnd
+}
+
+function doAudio() {
+    inxi -A -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function doBattery() {
+    inxi -B -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function doCPU() {
+    inxi -C -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function doDrivesGI() {
+    inxi -d -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function doDrivesUU() {
+    inxi -plu -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function doDrivesUN() {
+    inxi -o -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function doGraphics() {
+    inxi -G -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function doHostKBD() {
+    inxi -S -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function doMachine() {
+    inxi -M -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function doNetwork() {
+    inxi -i -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function doProcesses() {
+    inxi -t cm -x -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function doProcUptimeMemory() {
+    inxi -I -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function doRepositories() {
+    inxi -r -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function doResolution() {
+    inxi -G -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function doTemperature() {
+    inxi -s -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function doWeather() {
+    #inxi -xxx -W 55051 -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    inxi -xxx -W curitiba,brazil -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function doAll() {
+    inxi -Fxxxz -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    return 0
+}
+
+function main() {
+    local cmd=${1:-menu}
+    case "$cmd" in
+        All)
+            doAll
+            ;;
+        Audio)
+            doAudio
+            ;;
+        Battery)
+            doBattery
+            ;;
+        CPU)
+            doCPU
+            ;;
+        DrivesGI)
+            doDrivesGI
+            ;;
+        DrivesUU)
+            doDrivesUU
+            ;;
+        DrivesUN)
+            doDrivesUN
+            ;;
+        Graphics)
+            doGraphics
+            ;;
+        HostKBD)
+            doHostKBD
+            ;;
+        MachineInfo)
+            doMachine Info
+            ;;
+        Network)
+            doNetwork
+            ;;
+        Processes)
+            doProcesses
+            ;;
+        ProcUptimeMemory)
+            doProcUptimeMemory
+            ;;
+        Repositories)
+            doRepositories
+            ;;
+        Resolution)
+            doResolution
+            ;;
+        Temperature)
+            doTemperature
+            ;;
+        Weather)
+            doWeather
+            ;;
+        *)
+            doMenu
+    esac
+}
+
+main $1
+

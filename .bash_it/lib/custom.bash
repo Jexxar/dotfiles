@@ -27,36 +27,6 @@ export HISTIGNORE="&:[ ]*:clear:exit"
 export PROMPT_COMMAND="history -a; history -r"
 
 #===========================================
-# Define qual sera o manpager most ou less
-#===========================================
-export MANPAGER="/usr/bin/most"
-
-#===========================================
-# Define qual sera o scrip usado pelo sudo no askpass
-#===========================================
-export SUDO_ASKPASS="${HOME}/bin/askpw.sh"
-
-#===========================================
-# Make Python use UTF-8 encoding for output to stdin, stdout, and stderr.
-#===========================================
-export PYTHONIOENCODING='UTF-8';
-
-#===========================================
-# Prefer pt_BR and use UTF-8.
-#===========================================
-export LANG='pt_BR.UTF-8';
-export LC_ALL='pt_BR.UTF-8';
-
-#===========================================
-# for cache function settings
-#===========================================
-export CACHE_DIR="/tmp"
-
-#===========================================
-# Some settings
-#===========================================
-
-#===========================================
 # Adicionar ao Historico e não substitui-lo
 #===========================================
 shopt -s histappend
@@ -68,11 +38,7 @@ shopt -s histappend
 #set -o xtrace
 
 #===========================================
-# Don't want coredumps.
-#===========================================
-ulimit -S -c 0
-
-#===========================================
+#
 #===========================================
 set -o notify
 set -o noclobber
@@ -131,7 +97,6 @@ else
     export _cl_yellow="\e[1;33m";
 fi
 
-
 #===========================================
 # Variaveis de Cores (especialmente para o prompt)
 #===========================================
@@ -184,40 +149,3 @@ export LESS_TERMCAP_so=$(printf '\e[01;32m')
 export LESS_TERMCAP_ue=$(printf '\e[0m')
 # enter underline mode - blue
 export LESS_TERMCAP_us=$(printf '\e[04;34m')
-
-
-#=============================================
-# Outras variaveis de ambiente
-#=============================================
-
-# Your place for hosting Git repos. I use this for private repos.
-export GIT_HOSTING='jexxar@github.com'
-
-# Don't check mail when opening terminal.
-#unset MAILCHECK
-
-# Change this to your console based IRC client of choice.
-#export IRC_CLIENT='irssi'
-
-# Default console editor
-export EDITOR='nano'
-
-# git author data comes from .gitconfig and is saved as environment variables
-# that are sent to ssh connections to maintain you identity across machines
-export GIT_AUTHOR_NAME=`git config user.name`
-export GIT_AUTHOR_EMAIL=`git config user.email`
-export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
-export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
-
-# Java stuff
-export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel'
-
-#===========================================
-# Reusa o ssh-agent e/ou gpg-agent entre os logins
-# para determinadas chaves
-#===========================================
-if [ $UID -ne "0" ]; then
-    /usr/bin/keychain --eval --quiet -Q $HOME/.ssh/githubkey_rsa ;
-    [ -f $HOME/.keychain/$HOSTNAME-sh ] && . $HOME/.keychain/$HOSTNAME-sh;
-    [ -f $HOME/.keychain/$HOSTNAME-sh-gpg ] && . $HOME/.keychain/$HOSTNAME-sh-gpg;
-fi
