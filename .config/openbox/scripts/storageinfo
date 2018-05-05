@@ -1,0 +1,52 @@
+#!/bin/bash
+# storage-pipemenu
+
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/pipe-common.sh"
+
+if [ -f "$COMMON_FUNCTIONS" ]; then
+    . "${COMMON_FUNCTIONS}" 2> /dev/null
+else
+    echo $"Error: Failed to locate $COMMON_FUNCTIONS" >&2
+    exit 1
+fi
+
+function doMenu() {
+    local old_IFS=$IFS
+    IFS=$'\n'
+    
+    menuBegin
+    if [ ! -z "$1" ]; then
+        for Line in $1; do
+            menuItem "$Line"
+        done 
+    fi
+    menuEnd
+
+    IFS=$old_IFS
+}
+
+function doDisplay() {
+    local old_IFS=$IFS
+    IFS=$'\n'
+    
+    if [ ! -z "$1" ]; then
+        for Line in $1; do
+            echo "$Line"
+        done 
+    fi
+    IFS=$old_IFS
+}
+
+function main() {
+    local cmd=${1:-menu}
+    local stor=$(df -h --output=source,fstype,size,used,pcent,target | grep "/" | grep -v "tmp" | sort) 
+    case "$cmd" in
+        Display)
+            doDisplay "$stor"
+            ;;
+        *)
+            doMenu "$stor"
+    esac
+}
+
+main $1

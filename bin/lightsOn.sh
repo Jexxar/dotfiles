@@ -98,11 +98,14 @@ app_checks=1
 
 # Modify these variables if you want this script to detect if MPV, Mplayer,
 # VLC, Minitube, Totem or a web browser Flash/HTML5 Video.
+minitube_detection=1
 mplayer_detection=1
 mpv_detection=1
 vlc_detection=1
 totem_detection=1
 xplayer_detection=1
+smplayer_detection=1
+smtube_detection=1
 firefox_flash_detection=1
 firefox_html5_detection=1
 chromium_flash_detection=1
@@ -114,12 +117,17 @@ opera_flash_detection=1
 opera_html5_detection=1
 yandexBrowser_html5_flash_detection=1
 epiphany_html5_detection=1
+webkit_html5_detection=1
 webkit_flash_detection=1
-minitube_detection=1
+epiphany_html5_detection=1
+min_html5_detection=1
 
 # Names of programs which, when running, you wish to delay the screensaver.
 # For example ('ardour2' 'gmpc').
-delay_progs=('vlc' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube')
+delay_progs=('vlc' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg' )
+
+# Names of programs which, when using sound server, you wish to delay the screensaver.
+stream_progs=('vlc' 'smplayer' 'smtube' 'chrome' 'firefox' 'opera' 'vivaldi' 'brave' 'chromium' 'epiphany' 'youtube-dl' 'midori' 'min' 'falkon')
 
 # Display outputs to check, display screensaver when they are connected.
 # Run xrandr to show current monitor config.
@@ -196,11 +204,12 @@ fi
 
 function isSndRunning() {
     if grep RUNNING /proc/asound/card*/pcm*/sub*/status ; then
-        echo "yes"
+        log "isSndRunning(): yes"
+        return 0
     else
-        echo "no"
+        log "isSndRunning(): no"
+        return 1
     fi
-    return 0
 }
 
 function hasAppStreaming() {
@@ -211,11 +220,36 @@ function hasAppStreaming() {
     fi
 }
 
+function streamUsingSndName() {
+    local nm_ps=""
+    local str=$(pacmd list-sink-inputs | grep "application.process.id" | awk '{print $3}' | sed 's/\"//g' | sed 's/\n//g')
+    if [ -z $str ]; then 
+        echo "$nm_ps" 
+        return 0
+    fi
+    local arr=( $str )
+    for i in "${arr[@]}"; do 
+        nm_ps=$(ps -p $i -o comm=;)
+        for prog in "${stream_progs[@]}"; do
+            if [ "$prog" = "$nm_ps" ] ; then
+                echo "$nm_ps"
+                return 0
+            fi
+        done
+    done
+    echo "$nm_ps"
+    return 0
+}
+
 function checkDelayProgs() {
     log "checkDelayProgs()"
-    local isRunning=$(isSndRunning | grep -E "yes|no")
-    log "isSndRunning(): $isRunning"
-    if [ "$isRunning" == "yes" ]; then
+    if [ isSndRunning ]; then
+        local streamName=$(streamUsingSndName)
+        if [ ! -z "$streamName" ]; then 
+            log "checkDelayProgs(): Delaying the screensaver because a program on the stream delay list, \"$streamName\", is running..."
+            delayScreensaver
+            return 0
+        fi
         for prog in "${delay_progs[@]}"; do
                 if [ $(pgrep -lfc "$prog") -ge 1 ] ; then
                     log "checkDelayProgs(): Delaying the screensaver because a program on the delay list, \"$prog\", is running..."
@@ -318,16 +352,6 @@ function isAppRunning() {
     log "isAppRunning()"
     # Get title of active window.
     activ_win_title=$(xprop -id $activ_win_id 2> /dev/null | grep "WM_CLASS(STRING)")
-    # Check if user want to detect Flash fullscreen on Firefox.
-    if [ $firefox_flash_detection == 1 ]; then
-        if [[ "$activ_win_title" = *unknown* || "$activ_win_title" = *plugin-container* ]]; then
-            # Check if plugin-container process is running.
-            if [ "$(pidof -s plugin-container)" ]; then
-                log "isAppRunning(): firefox flash fullscreen detected"
-                return 1
-            fi
-        fi
-    fi
     # Check if user want to detect HTML5 fullscreen on Firefox.
     if [ $firefox_html5_detection == 1 ]; then
         if [[ "$activ_win_title" = *Firefox* || "$activ_win_title" = *Iceweasel* ]]; then
@@ -339,13 +363,14 @@ function isAppRunning() {
             fi
         fi
     fi
-    # Check if user want to detect Flash fullscreen on Chromium.
-    if [ $chromium_flash_detection == 1 ]; then
-        if [[ "$activ_win_title" = *exe* || "$activ_win_title" = *hromium* ]]; then
-            # Check if Chromium Flash process is running.
-            flash_process=$(pgrep -lfc ".*chromium.*flashp.*")
-            if [[ $flash_process -ge 1 ]]; then
-                log "isAppRunning(): chromium flash fullscreen detected"
+    # Check if user want to detect HTML5 fullscreen on Chrome.
+    if [ $chrome_html5_detection == 1 ]; then
+        if [[ "$activ_win_title" = *oogle-chrome* ]]; then
+            # Check if Chrome process is running.
+            # chrome_process=`pgrep -lfc "(c|C)hrome --type=gpu-process "
+            chrome_process=$(pgrep -lfc "(c|C)hrome")
+            if [[ $chrome_process -ge 1 ]]; then
+                log "isAppRunning(): chrome html5 fullscreen detected"
                 return 1
             fi
         fi
@@ -370,6 +395,35 @@ function isAppRunning() {
             fi
         fi
     fi
+    # Check if user want to detect HTML5 fullscreen on Opera.
+    if [ $opera_html5_detection == 1 ]; then runcheck opera; if [ $? == 1 ]; then return 1; fi; fi
+    # Check if user want to detect HTML5 fullscreen on Epiphany.
+    if [ $epiphany_html5_detection == 1 ]; then runcheck epiphany; if [ $? == 1 ]; then return 1; fi; fi
+    # Check if user want to detect HTML5 fullscreen on Min.
+    if [ $min_html5_detection == 1 ]; then runcheck min; if [ $? == 1 ]; then return 1; fi; fi
+    # Check if user want to detect HTML5 fullscreen on Slimjet.
+    if [ $slimjet_html5_detection == 1 ]; then runcheck slimjet; if [ $? == 1 ]; then return 1; fi; fi
+    # Check if user want to detect Flash fullscreen on Firefox.
+    if [ $firefox_flash_detection == 1 ]; then
+        if [[ "$activ_win_title" = *unknown* || "$activ_win_title" = *plugin-container* ]]; then
+            # Check if plugin-container process is running.
+            if [ "$(pidof -s plugin-container)" ]; then
+                log "isAppRunning(): firefox flash fullscreen detected"
+                return 1
+            fi
+        fi
+    fi
+    # Check if user want to detect Flash fullscreen on Chromium.
+    if [ $chromium_flash_detection == 1 ]; then
+        if [[ "$activ_win_title" = *exe* || "$activ_win_title" = *hromium* ]]; then
+            # Check if Chromium Flash process is running.
+            flash_process=$(pgrep -lfc ".*chromium.*flashp.*")
+            if [[ $flash_process -ge 1 ]]; then
+                log "isAppRunning(): chromium flash fullscreen detected"
+                return 1
+            fi
+        fi
+    fi
     # Check if user want to detect Flash fullscreen on Chromium.
     if [ $chromium_pepper_flash_detection == 1 ]; then
         if [[ "$activ_win_title" = *hromium* ]]; then
@@ -377,6 +431,17 @@ function isAppRunning() {
             chromium_process=$(pgrep -lfc "chromium(|-browser) --type=ppapi ")
             if [[ $chromium_process -ge 1 ]]; then
                 log "isAppRunning(): chromium pepper flash fullscreen detected"
+                return 1
+            fi
+        fi
+    fi
+    # Check if user want to detect Flash fullscreen on Slimjet.
+    if [ $slimjet_pepper_flash_detection == 1 ]; then
+        if [[ "$activ_win_title" = *imjet* ]]; then
+            # Check if Slimjet pepper Flash process is running.
+            slimjet_process=$(pgrep -lfc "slimjet(|-browser) --type=ppapi ")
+            if [[ $slimjet_process -ge 1 ]]; then
+                log "isAppRunning(): slimjet pepper flash fullscreen detected"
                 return 1
             fi
         fi
@@ -392,18 +457,6 @@ function isAppRunning() {
             fi
         fi
     fi
-    # Check if user want to detect HTML5 fullscreen on Chrome.
-    if [ $chrome_html5_detection == 1 ]; then
-        if [[ "$activ_win_title" = *oogle-chrome* ]]; then
-            # Check if Chrome process is running.
-            # chrome_process=`pgrep -lfc "(c|C)hrome --type=gpu-process "
-            chrome_process=$(pgrep -lfc "(c|C)hrome")
-            if [[ $chrome_process -ge 1 ]]; then
-                log "isAppRunning(): chrome html5 fullscreen detected"
-                return 1
-            fi
-        fi
-    fi
     # Check if user want to detect Flash fullscreen on Opera.
     if [ $opera_flash_detection == 1 ]; then
         if [[ "$activ_win_title" = *operapluginwrapper* ]]; then
@@ -411,6 +464,17 @@ function isAppRunning() {
             flash_process=$(pgrep -lfc operapluginwrapper-native)
             if [[ $flash_process -ge 1 ]]; then
                 log "isAppRunning(): opera flash fullscreen detected"
+                return 1
+            fi
+        fi
+    fi
+    # Check if user want to detect HTML5 fullscreen on WebKit.
+    if [ $webkit_html5_detection == 1 ]; then
+        if [[ "$activ_win_title" = *WebKit* ]]; then
+            # Check if WebKit Flash process is running.
+            flash_process=$(pgrep -lfc ".*WebKit*")
+            if [[ $flash_process -ge 1 ]]; then
+                log "isAppRunning(): webkit fullscreen detected"
                 return 1
             fi
         fi
@@ -436,13 +500,13 @@ function isAppRunning() {
             fi
         fi
     fi
-    if [ $opera_html5_detection == 1 ]; then runcheck opera; if [ $? == 1 ]; then return 1; fi; fi
-    if [ $epiphany_html5_detection == 1 ]; then runcheck epiphany; if [ $? == 1 ]; then return 1; fi; fi
     if [ $totem_detection == 1 ]; then runcheck totem; if [ $? == 1 ]; then return 1; fi; fi
     if [ $mpv_detection == 1 ]; then runcheck mpv; if [ $? == 1 ]; then return 1; fi; fi
     if [ $vlc_detection == 1 ]; then runcheck vlc; if [ $? == 1 ]; then return 1; fi; fi
     if [ $minitube_detection == 1 ]; then runcheck minitube; if [ $? == 1 ]; then return 1; fi; fi
     if [ $xplayer_detection == 1 ]; then runcheck xplayer; if [ $? == 1 ]; then return 1; fi; fi
+    if [ $smplayer_detection == 1 ]; then runcheck smplayer; if [ $? == 1 ]; then return 1; fi; fi
+    if [ $smtube_detection == 1 ]; then runcheck smtube; if [ $? == 1 ]; then return 1; fi; fi
     return 0
 }
 

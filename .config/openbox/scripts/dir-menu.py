@@ -1,9 +1,11 @@
 #!/usr/bin/python
-
+import locale
 import os
 import random
 from sys import argv
 
+locale.setlocale(locale.LC_ALL, "")
+mylocale = locale.getlocale(locale.LC_MESSAGES)[0]
 mypath = argv[0]
 
 def ext_resolver(filename):
@@ -26,16 +28,16 @@ def ext_resolver(filename):
                 'mp4':'vlc',
                 'vob':'vlc',
                 'py' :'gksudo subl',
-                'png':'mirage',
-                'jpg':'mirage',
-                'bmp':'mirage',
-                'gif':'mirage',
-                'svg':'mirage',
+                'png':'gpicview',
+                'jpg':'gpicview',
+                'bmp':'gpicview',
+                'gif':'gpicview',
+                'svg':'gpicview',
                 'tex':'subl',
                 'txt':'subl',
                 'xml':'subl',
-                'pdf':'xournal',
-				'ps':'xournal',
+                'pdf':'xreader',
+				'ps':'xreader',
                 'html':'x-www-browser',
                 'html5':'x-www-browser',
 				'deb':'gdebi',
@@ -67,7 +69,10 @@ def gen_menu(dirs, files):
     curpath = replacer(currentpath)
     print('<openbox_pipe_menu>')
     
-    print('<item label="Open in PCManFM"><action name="execute"><execute>pcmanfm "' + curpath + '"</execute></action></item>')
+    if mylocale == "pt_BR":
+        print('<item label="Abrir"><action name="execute"><execute>pcmanfm "' + curpath + '"</execute></action></item>')
+    else:
+        print('<item label="Open in PCManFM"><action name="execute"><execute>pcmanfm "' + curpath + '"</execute></action></item>')
     print('<separator />')
     
     for thisdir in dirs:
@@ -86,10 +91,13 @@ def gen_menu(dirs, files):
         print('  </item>')
     print('</openbox_pipe_menu>')
 
+from os.path import expanduser
+homefold = expanduser("~")
+
 if len(argv) > 1:
     currentpath = ' '.join(argv[1:])
 else:
-    currentpath = "/"
+    currentpath = homefold
 
 try:
     content = [x for x in os.listdir(currentpath) if x[0] != '.']

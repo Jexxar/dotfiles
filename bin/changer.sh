@@ -28,7 +28,7 @@ function change_wallpaper(){
 	local number
 	let number=$CurrIndex
 	echo $number > $WallDir/.last
-	nitrogen --set-zoom-fill --save "${WallList[$number]}"
+	nitrogen --set-scaled --save "${WallList[$number]}"
 }
 
 function main(){
@@ -37,7 +37,7 @@ function main(){
     	    DISPLAY=:0.0
     	fi
 		change_wallpaper;
-		sleep 5m;
+		sleep 7m;
 	done;	
 	if [ ! is_running_X ]; then
     	echo "No X server at \$DISPLAY [$DISPLAY]" >&2

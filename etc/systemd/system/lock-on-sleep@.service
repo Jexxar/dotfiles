@@ -1,0 +1,11 @@
+[Unit]
+Description=Lock user X session on suspend
+Before=sleep.target
+
+[Service]
+User=%I
+Environment=DISPLAY=:0
+ExecStart=$HOME/bin/lock -gpf Comic-Sans-MS -- scrot -z
+
+[Install]
+WantedBy=sleep.target

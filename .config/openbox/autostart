@@ -214,18 +214,18 @@ if [ $(pgrep -lfc xscreensaver) -ge 1 ] ; then
   done
 fi
 
-OB_str="mate-screensaver"
-OB_stts=""
+#OB_str="mate-screensaver"
+#OB_stts=""
 
-mate-screensaver &
+#mate-screensaver &
 
-OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+#OB_rc=$?
+#if [ $OB_rc -eq 0 ]; then
+#    OB_stts="Ok  "
+#else
+#    OB_stts="Erro"
+#fi
+#echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 
 # Start network manager applet
@@ -266,16 +266,10 @@ echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbo
 
 
 # xautolock
-if [ $(pgrep -lfc xautolock) -ge 1 ] ; then
-  while 2>/dev/null killall xautolock; do
-    sleep 1
-  done
-fi
-
-OB_str="xautolock"
+OB_str="~/bin/delayctl 30"
 OB_stts=""
 
-xautolock -detectsleep -noclose -time 5 -locker "\"$HOME/bin/mylock\"" -notify 10 -notifier "\"$HOME/bin/mynotify\"" -killtime 10 -killer "\"$HOME/bin/mysuspend\"" &
+~/bin/delayctl 30 &
 
 OB_rc=$?
 if [ $OB_rc -eq 0 ]; then
@@ -330,24 +324,24 @@ echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbo
 
 
 # lightsOn
-if [ $(pgrep -lfc lightsOn.sh) -ge 1 ] ; then
-  while 2>/dev/null killall lightsOn.sh; do
-    sleep 1
-  done
-fi
+#if [ $(pgrep -lfc lightsOn.sh) -ge 1 ] ; then
+#  while 2>/dev/null killall lightsOn.sh; do
+#    sleep 1
+#  done
+#fi
 
-OB_str="~/bin/lightsOn.sh 20"
-OB_stts=""
+#OB_str="~/bin/lightsOn.sh 20"
+#OB_stts=""
 
-~/bin/lightsOn.sh 20 &
+#~/bin/lightsOn.sh 20 &
 
-OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+#OB_rc=$?
+#if [ $OB_rc -eq 0 ]; then
+#    OB_stts="Ok  "
+#else
+#    OB_stts="Erro"
+#fi
+#echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 
 # changer

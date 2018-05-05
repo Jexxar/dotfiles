@@ -9,9 +9,14 @@
 
 # required awk, bc, inxi
 
-function awk_round () {
-    awk 'BEGIN{printf "%."'$1'"f\n", "'$2'"}'
-}
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/pipe-common.sh"
+
+if [ -f "$COMMON_FUNCTIONS" ]; then
+    . "${COMMON_FUNCTIONS}" 2> /dev/null
+else
+    echo $"Error: Failed to locate $COMMON_FUNCTIONS" >&2
+    exit 1
+fi
 
 function doAudioCard() {
     local tmp=$(inxi -A -c0 | grep 'Card' | sed 's/Card/!/g' | sed 's,.*!,,' | sed "s/^[ \t]*//" | sed 's/ driver:/!driver:/g')
@@ -215,30 +220,6 @@ function doArch() {
 
 function doKernel() {
     uname -r
-}
-
-function menuBegin() {
-    echo "<openbox_pipe_menu>"
-}
-
-function menuEnd() {
-    echo "</openbox_pipe_menu>"
-}
-
-function menuSep() {
-    if [ -z "$1" ]; then 
-        echo "<separator />"
-    else
-        echo "<separator label=\"$1\"/>"
-    fi
-}
-
-function menuItem() {
-    if [ -z "$2" ]; then
-        echo "<item label=\"$1\"/>"
-    else
-        echo "<item label=\"$1\"> <action name=\"Execute\"><command>$2</command></action> </item>"
-    fi
 }
 
 function doMenu() {

@@ -1,27 +1,14 @@
 #!/bin/bash
 # -pipemenu
-function menuBegin() {
-    echo "<openbox_pipe_menu>"
-}
 
-function menuEnd() {
-    echo "</openbox_pipe_menu>"
-}
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/pipe-common.sh"
 
-function menuSep() {
-    if [ -z "$1" ]; then 
-        echo "<separator />"
-    else
-        echo "<separator label=\"$1\"/>"
-    fi
-}
-
-function menuItem() {
-    echo "<item label=\"$1\">
-        <action name=\"Execute\"><command>$2</command></action>
-    </item>"
-
-}
+if [ -f "$COMMON_FUNCTIONS" ]; then
+    . "${COMMON_FUNCTIONS}" 2> /dev/null
+else
+    echo $"Error: Failed to locate $COMMON_FUNCTIONS" >&2
+    exit 1
+fi
 
 function doMenu() {
     # l10n support

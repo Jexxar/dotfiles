@@ -98,3 +98,111 @@ complete -f -o default -X '!*.pl'  perl perl5
 
 complete  -o default -F _longopts configure bash
 complete  -o default -F _longopts wget id info a2ps ls recode
+
+# run is a function that enables bash completion of commands in folders that
+# should not exist in PATH for security reasons, but are very convenient; so
+# with run, these are added to the PATH explicitly and temporarily
+
+# prepend local . and bin folders for commands
+_RUN_PATH=".:bin:$PATH"
+
+# generate completions with the extended PATH
+_run() {
+  PATH=$_RUN_PATH
+  local cur=${COMP_WORDS[COMP_CWORD]}
+  COMPREPLY=($(compgen -c -- $cur))
+}
+
+# eval commands with the extended PATH
+run() {
+  PATH=$_RUN_PATH eval "$@"
+}
+
+complete -F _run run
+
+#===========================================
+# tar completion
+#===========================================
+function _tar_completion() {
+    local cur ext regex tar untar
+
+    COMPREPLY=()
+    cur=${COMP_WORDS[COMP_CWORD]}
+
+    # If we want an option, return the possible long options.
+    case "$cur" in
+        -*)     COMPREPLY=( $(_get_longopts $1 $cur ) ); return 0;;
+    esac
+
+    if [ $COMP_CWORD -eq 1 ]; then
+        COMPREPLY=( $( compgen -W 'c t x u r d A' -- $cur ) )
+        return 0
+    fi
+
+    case "${COMP_WORDS[1]}" in
+        ?(-)c*f)
+            COMPREPLY=( $( compgen -f $cur ) )
+            return 0
+            ;;
+        +([^Izjy])f)
+            ext='tar'
+            regex=$ext
+            ;;
+        *z*f)
+            ext='tar.gz'
+            regex='t\(ar\.\)\(gz\|Z\)'
+            ;;
+        *[Ijy]*f)
+            ext='t?(ar.)bz?(2)'
+            regex='t\(ar\.\)bz2\?'
+            ;;
+        *)
+            COMPREPLY=( $( compgen -f $cur ) )
+            return 0
+            ;;
+    esac
+
+    if [[ "$COMP_LINE" == tar*.$ext' '* ]]; then
+        # Complete on files in tar file.
+        #
+        # Get name of tar file from command line.
+        tar=$( echo "$COMP_LINE" | \
+                        sed -e 's|^.* \([^ ]*'$regex'\) .*$|\1|' )
+        # Devise how to untar and list it.
+        untar=t${COMP_WORDS[1]//[^Izjyf]/}
+
+        COMPREPLY=( $( compgen -W "$( echo $( tar $untar $tar \
+                                2>/dev/null ) )" -- "$cur" ) )
+        return 0
+    else
+        # File completion on relevant files.
+        COMPREPLY=( $( compgen -G $cur\*.$ext ) )
+    fi
+
+    return 0
+}
+
+complete -F _tar_completion -o default tar
+
+#===========================================
+# killall completion
+#===========================================
+function _killall_completion()
+{
+    local cur prev
+    COMPREPLY=()
+    cur=${COMP_WORDS[COMP_CWORD]}
+
+    #  Get a list of processes
+    #+ (the first sed evaluation
+    #+ takes care of swapped out processes, the second
+    #+ takes care of getting the basename of the process).
+    COMPREPLY=( $( ps -u $USER -o comm  | \
+        sed -e '1,1d' -e 's#[]\[]##g' -e 's#^.*/##'| \
+        awk '{if ($0 ~ /^'$cur'/) print $0}' ))
+
+    return 0
+}
+
+complete -F _killall_completion killall killps
+

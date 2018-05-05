@@ -33,7 +33,7 @@ our $SCHEMA = [
     #          COMMAND                 LABEL              ICON
     {sep => 'Linux Mint 18.2 Sonya'},
 
-    {item => ['xdg-open .',       'Arquivos', 'system-file-manager']},
+    {item => ['pcmanfm --no-desktop -n .',       'Arquivos', 'system-file-manager']},
     {item => ['tilix',            'Terminal',     'utilities-terminal']},
     {item => ['xdg-open http://', 'Web Browser',  'web-browser']},
     {item => ['gmrun',            'Executar comando',  'system-run']},
@@ -68,7 +68,7 @@ our $SCHEMA = [
 
     ## Custom advanced settings
     {sep       => undef},
-    {beg => ['Preferências Avançadas', 'applications-engineering']},
+    {beg => ['Preferências Avançadas', 'applications-system']},
 
       # Configuration files
       {item => ["$editor ~/.conkyrc",              'Conky RC',    'text-x-generic']},
@@ -101,13 +101,15 @@ our $SCHEMA = [
 
     {sep => undef},
 
-    {pipe => ['~/.config/openbox/scripts/obpipemenu-places', 'Diretórios', 'folder']}, 
+    #{pipe => ['~/.config/openbox/scripts/obpipemenu-places', 'Diretórios', 'folder']}, 
+    {pipe => ['~/.config/openbox/scripts/dir-menu.py', 'Diretórios', 'folder']}, 
     # {pipe => ['~/.config/openbox/scripts/dir-menu.py', 'Computador', '']},
     {pipe => ['~/.config/openbox/scripts/inxi-pipemenu', 'Inxi Info', 'dialog-information-symbolic']}, 
-    {pipe => ['~/.config/openbox/scripts/ob-sysinfo.pl', 'SysInfo1', 'dialog-information-symbolic']}, 
-    {pipe => ['~/.config/openbox/scripts/sysInfo.sh pipe', 'SysInfo', 'dialog-information-symbolic']}, 
+    #{pipe => ['~/.config/openbox/scripts/storageinfo', 'StorageInfo', 'dialog-information-symbolic']}, 
+    #{pipe => ['~/.config/openbox/scripts/ob-sysinfo.pl', 'SysInfo', 'dialog-information-symbolic']}, 
+    #{pipe => ['~/.config/openbox/scripts/sysInfo.sh pipe', 'SysInfo', 'dialog-information-symbolic']}, 
     {pipe => ['~/.config/openbox/scripts/obrecent.sh', 'Recentes', 'view-wrapped-symbolic']}, 
-    {pipe => ['~/.config/openbox/scripts/al-audacious.sh', 'Audacious', 'multimedia']}, 
+    #{pipe => ['~/.config/openbox/scripts/al-audacious.sh', 'Audacious', 'multimedia']}, 
     #{pipe => ['~/.config/openbox/scripts/recently_opened_menu.sh', 'Recentes', 'view-wrapped-symbolic']}, 
     # 
     
