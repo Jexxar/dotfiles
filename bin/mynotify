@@ -1,6 +1,10 @@
 #!/bin/bash
 set -eu
 
+if [ -f "$HOME/bin/mylog" ]; then
+    . "$HOME/bin/mylog"
+fi
+
 # This script is intended to be run as the main notifier script for this installation.
 cmd=${1:-notify}
 
@@ -45,7 +49,6 @@ function locked() {
     return 1
 }
 
-
 # Notify desired message.
 function do_notify() {
     # Only works if X is running.
@@ -69,24 +72,6 @@ function do_notify() {
         --icon='/usr/share/icons/Adwaita/48x48/actions/system-lock-screen.png' \
         -- "Screen Lock" "$secs"
     return 0
-}
-
-# Print the given message with a timestamp.
-function info() { printf '%s\t%s\n' "$(date)" "$*"; }
-
-# Log to a file if possible
-function log() {
-    local LOCK_LOG="/var/log/mynotify.log"
-    local LOCK_rc=0
-    if [ ! -f $LOCK_LOG ]; then
-        touch $LOCK_LOG
-        LOCK_rc=$?
-    fi
-    if [[ $LOCK_rc -eq 0 && -f $LOCK_LOG ]]; then
-        info >>"$LOCK_LOG" "$@"
-    else
-        info "$@"
-    fi
 }
 
 function do_test() {

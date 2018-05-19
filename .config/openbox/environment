@@ -8,7 +8,7 @@
 LANG=pt_BR.UTF8
 
 ## GNOME Keyring
-export $(gnome-keyring-daemon --start --components=pkcs11,secrets)
+#export $(gnome-keyring-daemon --start --components=pkcs11,secrets)
 
 # To set your keyboard layout, you need to modify your X config:
 # http://www.google.com/search?q=how+to+set+keyboard+layout+xorg

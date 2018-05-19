@@ -1,6 +1,10 @@
 #!/bin/bash
 set -eu
 
+if [ -f "$HOME/bin/mylog" ]; then
+    . "$HOME/bin/mylog"
+fi
+
 # This script is intended to be run as the xautolock locker and notifier.
 # It requires i3lock, and dunst is optional.
 
@@ -25,24 +29,6 @@ function locked() { pkill -0 --euid "$(id -u)" --exact i3lock; }
 function suspend_ok() {
     [ -n "$(2>/dev/null mpc current)" ] && return 1
     return 0
-}
-
-# Print the given message with a timestamp.
-function info() { printf '%s\t%s\n' "$(date)" "$*"; }
-
-# Set LOCK_LOG if you want log to a file
-function log() {
-    local LOCK_LOG="/var/log/autolock_sh.log"
-    local LOCK_rc=0
-    if [ ! -f $LOCK_LOG ]; then
-        touch $LOCK_LOG
-        LOCK_rc=$?
-    fi
-    if [[ $LOCK_rc -eq 0 && -f $LOCK_LOG ]]; then
-        info >>"$LOCK_LOG" "$@"
-    else
-        info "$@"
-    fi
 }
 
 # Control the dunst daemon, if it is running.

@@ -1,9 +1,11 @@
 #!/bin/bash
 set -eu
 
-# This script is intended to be run as the xautolock locker and notifier.
-# It requires i3lock, and dunst is optional.
+if [ -f "$HOME/bin/mylog" ]; then
+    . "$HOME/bin/mylog"
+fi
 
+# This script is intended to be run as the main dpms off script for this installation.
 cmd=${1:-off}
 
 function is_running_X(){
@@ -53,24 +55,6 @@ function xset_ok() {
     return 1
 }
 
-# Print the given message with a timestamp.
-function info() { printf '%s\t%s\n' "$(date)" "$*"; }
-
-# Set LOCK_LOG if you want log to a file
-function log() {
-    local LOCK_LOG="/var/log/myoff.log"
-    local LOCK_rc=0
-    if [ ! -f $LOCK_LOG ]; then
-        touch $LOCK_LOG
-        LOCK_rc=$?
-    fi
-    if [[ $LOCK_rc -eq 0 && -f $LOCK_LOG ]]; then
-        info >>"$LOCK_LOG" "$@"
-    else
-        info "$@"
-    fi
-}
-
 #off the screen if possible.
 function do_off() {
     # Only works if X is running.
@@ -82,7 +66,7 @@ function do_off() {
     fi
     if [ xset_ok ]; then
         # if "off" is given as parameter, then spawn a new thread to turn off the screen
-        sleep 2 && xset dpms force off &
+        sleep 1 && xset dpms force off &
     else
         log "xset command not found";
     fi

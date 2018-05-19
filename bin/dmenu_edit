@@ -5,7 +5,7 @@
 # Global variables:
 FILES=${1:-"~/bin"}
 DMENU='dmenu -l -i'
-EDITOR='subl'
+EDITOR='myedit'
 # Show list of options
 choice=$(ls -a "${FILES}" | $DMENU -p "File to edit:")
 

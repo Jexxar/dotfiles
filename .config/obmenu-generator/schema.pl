@@ -28,10 +28,15 @@ require "$ENV{HOME}/.config/obmenu-generator/config.pl";
 ## Text editor
 my $editor = $CONFIG->{editor};
 
+# Distro -------------------------------------------------------------------
+sub mk_distro {
+    return `~/bin/distro_info -3`;
+}
+
 our $SCHEMA = [
 
     #          COMMAND                 LABEL              ICON
-    {sep => 'Linux Mint 18.2 Sonya'},
+    {sep => mk_distro },
 
     {item => ['pcmanfm --no-desktop -n .',       'Arquivos', 'system-file-manager']},
     {item => ['tilix',            'Terminal',     'utilities-terminal']},
@@ -102,14 +107,16 @@ our $SCHEMA = [
     {sep => undef},
 
     #{pipe => ['~/.config/openbox/scripts/obpipemenu-places', 'Diretórios', 'folder']}, 
-    {pipe => ['~/.config/openbox/scripts/dir-menu.py', 'Diretórios', 'folder']}, 
+    {pipe => ["~/.config/openbox/scripts/obbrowser", "Locais", "drive-harddisk"]},
+    {pipe => ['~/.config/openbox/scripts/help-pipemenu', 'Ajuda', 'help']}, 
+    #{pipe => ['~/.config/openbox/scripts/dir-menu.py', 'Diretórios', 'folder']}, 
     # {pipe => ['~/.config/openbox/scripts/dir-menu.py', 'Computador', '']},
     {pipe => ['~/.config/openbox/scripts/inxi-pipemenu', 'Inxi Info', 'dialog-information-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/storageinfo', 'StorageInfo', 'dialog-information-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/ob-sysinfo.pl', 'SysInfo', 'dialog-information-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/sysInfo.sh pipe', 'SysInfo', 'dialog-information-symbolic']}, 
     {pipe => ['~/.config/openbox/scripts/obrecent.sh', 'Recentes', 'view-wrapped-symbolic']}, 
-    #{pipe => ['~/.config/openbox/scripts/al-audacious.sh', 'Audacious', 'multimedia']}, 
+    {pipe => ['~/.config/openbox/scripts/audaciousmenu', 'Audacious', 'multimedia']}, 
     #{pipe => ['~/.config/openbox/scripts/recently_opened_menu.sh', 'Recentes', 'view-wrapped-symbolic']}, 
     # 
     

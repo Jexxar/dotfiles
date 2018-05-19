@@ -1,6 +1,10 @@
 #!/bin/bash
 set -eu
 
+#if [ -f "$HOME/bin/mylog" ]; then
+    . "$HOME/bin/mylog"
+fi
+
 # This script is intended to be run as the main suspend script for this installation.
 cmd=${1:-suspend}
 
@@ -55,24 +59,6 @@ function systemctl_ok() {
 function dbus_ok() {
     [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanSuspend | grep "yes") ] && return 0
     return 1
-}
-
-# Print the given message with a timestamp.
-function info() { printf '%s\t%s\n' "$(date)" "$*"; }
-
-# Log to a file if possible
-function log() {
-    local LOCK_LOG="/var/log/mysuspend.log"
-    local LOCK_rc=0
-    if [ ! -f $LOCK_LOG ]; then
-        touch $LOCK_LOG
-        LOCK_rc=$?
-    fi
-    if [[ $LOCK_rc -eq 0 && -f $LOCK_LOG ]]; then
-        info >>"$LOCK_LOG" "$@"
-    else
-        info "$@"
-    fi
 }
 
 function do_suspend() {

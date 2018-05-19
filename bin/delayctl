@@ -14,6 +14,42 @@
 # "./delayctl 120 &" will Check every 120 seconds if any of the supported
 # applications are fullscreen and delay screensaver and Power Management if so.
 
+# DC_DEBUG=0 for NO output
+# DC_DEBUG=1 for sleep prints
+# DC_DEBUG=2 for everything
+DC_DEBUG=0
+
+# Modify these variables if you want this script to detect if MPV, Mplayer,
+# VLC, Minitube, Totem or a web browser Flash/HTML5 Video.
+
+# Names of programs which, when running, you wish to delay the screensaver.
+# For example ('ardour2' 'gmpc').
+DC_mandatoryApps=('wineserver' 'dbgl' 'dgen' 'lutris' 'playonlinux' 'avidemux' 'synaptic' 'scummvm' 'flare' 'frozen-bubble' '0ad' 'TeamViewer' 'remmina' 'dosbox' 'wine')
+
+# Names of programs which, when running, you wish to delay the screensaver.
+# For example ('ardour2' 'gmpc').
+DC_delayApps=('vlc' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
+
+# Names of programs which, when using sound server, you wish to delay the screensaver.
+DC_delayWebBasedApps=('chrome' 'firefox' 'opera' 'Iceweasel' 'WebKit' 'vivaldi' 'brave' 'chromium' 'epiphany' 'youtube-dl' 'smtube' 'midori' 'min' 'falkon' 'slimjet' 'steam')
+
+# Display outputs to check, display screensaver when they are connected.
+# Run xrandr to show current monitor config.
+DC_outDetectionControl=1
+DC_outputPattern=('HDMI1')
+
+# DPMS settings in seconds, 600 seconds = 10 minutes.
+# If you don't want to change DMPS settings, modify DC_DPMSControl to 0.
+DC_DPMSControl=1
+DC_DPMSStandbyTime=600
+DC_DPMSSuspendTime=600
+DC_DPMSOffTime=600
+
+# X11 Screen Saver Extension settings in seconds, 600 seconds = 10 minutes.
+# If you don't want to change these settings, modify DC_X11ScrSvrControl to 0.
+DC_X11ScrSvrControl=1
+DC_X11ScrSvrTimeout=600
+
 # clean DC_log file
 function DC_log_clean() {
     if [ -f $DC_logFile ]; then
@@ -743,6 +779,19 @@ function DC_disableOtherSS() {
     return 0
 }
 
+# check if an application is present and can be executed
+function DC_isPresentAndExec() {
+    [ -z "$1" ] && return 1;
+    local tmp=$(which $1)
+    [ -z "$tmp" ] && return 1;
+
+    if [ -x "${tmp}" ]; then 
+        return 0; 
+    else 
+        return 1; 
+    fi
+}
+
 # this is actually the minimum allowed dynamic delay.
 # Also the default (if everything else fails)
 DC_defaultSleepDelay=150
@@ -762,7 +811,7 @@ if [ ! -z "$1" ]; then
     else
         DC_delay=$1
     fi
-elif [ $DC_enableDynDelay -eq 0]; then
+elif [ $DC_enableDynDelay -eq 0 ]; then
     DC_delay=$DC_defaultSleepDelay
 fi
 
@@ -783,51 +832,14 @@ DC_activWinID=""
 DC_logFile="/var/log/${DC_scriptBaseName}.log"
 DC_stateFile="/tmp/${DC_scriptBaseName}_${USER}_state.txt"
 
-# DC_DEBUG=0 for NO output
-# DC_DEBUG=1 for sleep prints
-# DC_DEBUG=2 for everything
-DC_DEBUG=2
-
-
-# Modify these variables if you want this script to detect if MPV, Mplayer,
-# VLC, Minitube, Totem or a web browser Flash/HTML5 Video.
-
-# Names of programs which, when running, you wish to delay the screensaver.
-# For example ('ardour2' 'gmpc').
-DC_mandatoryApps=('wineserver' 'dbgl' 'dgen' 'lutris' 'playonlinux' 'avidemux' 'clipgrab' 'scummvm' 'flare' 'frozen-bubble' '0ad' 'TeamViewer' 'remmina' 'dosbox' 'wine')
-
-# Names of programs which, when running, you wish to delay the screensaver.
-# For example ('ardour2' 'gmpc').
-DC_delayApps=('vlc' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
-
-# Names of programs which, when using sound server, you wish to delay the screensaver.
-DC_delayWebBasedApps=('chrome' 'firefox' 'opera' 'Iceweasel' 'WebKit' 'vivaldi' 'brave' 'chromium' 'epiphany' 'youtube-dl' 'smtube' 'midori' 'min' 'falkon' 'slimjet' 'steam')
-
-# Display outputs to check, display screensaver when they are connected.
-# Run xrandr to show current monitor config.
-DC_outDetectionControl=1
-DC_outputPattern=('HDMI1')
-
-# DPMS settings in seconds, 600 seconds = 10 minutes.
-# If you don't want to change DMPS settings, modify DC_DPMSControl to 0.
-DC_DPMSControl=1
-DC_DPMSStandbyTime=600
-DC_DPMSSuspendTime=600
-DC_DPMSOffTime=600
-
-# X11 Screen Saver Extension settings in seconds, 600 seconds = 10 minutes.
-# If you don't want to change these settings, modify DC_X11ScrSvrControl to 0.
-DC_X11ScrSvrControl=1
-DC_X11ScrSvrTimeout=600
-
 # YOU SHOULD NOT NEED TO MODIFY ANYTHING BELOW THIS LINE
-DC_xautolockPresent=$(if [ -x $(which xautolock) ]; then echo 1; else echo 0; fi)
-DC_gsettingsPresent=$(if [ -x $(which gsettings) ]; then echo 1; else echo 0; fi)
-DC_xdgScrSvrPresent=$(if [ -x $(which xdg-screensaver) ]; then echo 1; else echo 0; fi)
-DC_mateScrSvrPresent=$(if [ -x $(which mate-screensaver) ]; then echo 1; else echo 0; fi)
-DC_gnomeScrSvrPresent=$(if [ -x $(which gnome-screensaver) ]; then echo 1; else echo 0; fi)
-DC_cinnamonScrSvrPresent=$(if [ -x $(which cinnamon-screensaver) ]; then echo 1; else echo 0; fi)
-DC_xScrSvrPresent=$(if [ -x $(which xscreensaver) ]; then echo 1; else echo 0; fi)
+DC_xautolockPresent=$(if DC_isPresentAndExec "xautolock"; then echo 1; else echo 0; fi)
+DC_gsettingsPresent=$(if DC_isPresentAndExec "gsettings"; then echo 1; else echo 0; fi)
+DC_xdgScrSvrPresent=$(if DC_isPresentAndExec "xdg-screensaver"; then echo 1; else echo 0; fi)
+DC_mateScrSvrPresent=$(if DC_isPresentAndExec "mate-screensaver"; then echo 1; else echo 0; fi)
+DC_gnomeScrSvrPresent=$(if DC_isPresentAndExec "gnome-screensaver"; then echo 1; else echo 0; fi)
+DC_cinnamonScrSvrPresent=$(if DC_isPresentAndExec "cinnamon-screensaver"; then echo 1; else echo 0; fi)
+DC_xScrSvrPresent=$(if DC_isPresentAndExec "xscreensaver"; then echo 1; else echo 0; fi)
 
 # enumerate all the attached screens
 DC_displays=$(xvinfo | awk -F'#' '/^screen/ {print $2}' | xargs)
@@ -859,7 +871,7 @@ DC_log "DC_gnomeScrSvrPresent...: $DC_gnomeScrSvrPresent"
 DC_log "DC_cinnamonScrSvrPresent: $DC_cinnamonScrSvrPresent"
 DC_log "DC_xScrSvrPresent.......: $DC_xScrSvrPresent"
 
-# Search for a screensaver program running
+# Search for a running screensaver program 
 DC_screenSaverProgram=$(DC_whichScrSvrRunning)
 
 DC_log "Original Screensaver detected = $DC_screenSaverProgram"

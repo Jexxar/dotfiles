@@ -1,4 +1,9 @@
 #!/bin/bash
+
+if [ -f "$HOME/bin/mylog" ]; then
+    . "$HOME/bin/mylog"
+fi
+
 function is_running_X(){
     if ! xset q &>/dev/null; then
         return 1
@@ -29,18 +34,20 @@ function change_wallpaper(){
 	let number=$CurrIndex
 	echo $number > $WallDir/.last
 	nitrogen --set-scaled --save "${WallList[$number]}"
+	log "Wallpaper changed to: ${WallList[$number]}"
 }
 
 function main(){
+	log "==[ Changer started ]=="
 	while [ is_running_X ]; do 
 	    if [ -z $DISPLAY ]; then
     	    DISPLAY=:0.0
     	fi
-		change_wallpaper;
 		sleep 7m;
+		change_wallpaper;
 	done;	
 	if [ ! is_running_X ]; then
-    	echo "No X server at \$DISPLAY [$DISPLAY]" >&2
+    	log "No X server at \$DISPLAY [$DISPLAY]" >&2
     	exit 0
 	fi
 }

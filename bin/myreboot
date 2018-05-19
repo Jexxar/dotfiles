@@ -1,7 +1,11 @@
 #!/bin/bash
 set -eu
 
-# This script is intended to be run as the main shutdown script for this installation.
+if [ -f "$HOME/bin/mylog" ]; then
+    . "$HOME/bin/mylog"
+fi
+
+# This script is intended to be run as the main reboot script for this installation.
 cmd=${1:-reboot}
 
 # Return 0 if systemctl is found.
@@ -20,24 +24,6 @@ function shutdown_ok() {
 function init_ok() {
     [ $(which init) ] && return 0
     return 1
-}
-
-# Print the given message with a timestamp.
-function info() { printf '%s\t%s\n' "$(date)" "$*"; }
-
-# Log to a file if possible
-function log() {
-    local LOCK_LOG="/var/log/myreboot.log"
-    local LOCK_rc=0
-    if [ ! -f $LOCK_LOG ]; then
-        touch $LOCK_LOG
-        LOCK_rc=$?
-    fi
-    if [[ $LOCK_rc -eq 0 && -f $LOCK_LOG ]]; then
-        info >>"$LOCK_LOG" "$@"
-    else
-        info "$@"
-    fi
 }
 
 function do_reboot() {

@@ -57,7 +57,7 @@ function doCPU() {
 
 function doCPUUsage() {
     local tmp=$(ps -A -o pcpu | tail -n+2 | paste -sd+ | bc)
-    tmp=$(awk_round 0 "$tmp")
+    tmp=$(awkRound 0 "$tmp")
     echo "$tmp%"
 }
 
@@ -98,7 +98,7 @@ function doDE() {
 function doLoad() {
     local tmp=$(uptime | awk '{print $10}' | cut -d ',' -f 1-2 | sed 's/\,/\./g');
     tmp=$(echo "$tmp * 100" | bc)
-    awk_round 0 "$tmp"
+    awkRound 0 "$tmp"
 }
     
 function doMachine() {
@@ -190,7 +190,7 @@ function doResolution() {
 
 function doTemperature() {
     local tmp=$(acpi -t | grep 'Thermal' | awk 'NR==1 {print $4}')
-    tmp=$(awk_round 0 "$tmp")
+    tmp=$(awkRound 0 "$tmp")
     echo "$tmp C" | awk '{print $1""$2}'
 }
 

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ -f "$HOME/bin/mylog" ]; then
+    . "$HOME/bin/mylog"
+fi
+
 MAXRETRIES=5
 RETRYSLEEP=10
 
@@ -32,6 +36,7 @@ header() {
     echo ""
     if [ "${RETRIES}" -ne 0 ]; then
         echo "Locked by ${USER} (${RETRIES} failed login attempts)"
+        log "Locked by ${USER} (${RETRIES} failed login attempts)"
     else
         echo "Locked by ${USER}"
     fi
@@ -51,6 +56,7 @@ authenticate() {
             header $RETRY
             echo "authentication failed!"
             echo ""
+            log "authentication failed!"
             if [ "${RETRY}" -ge "${MAXRETRIES}" ]; then
                 RETRY=0
                 echo "sleeping for ${RETRYSLEEP}"

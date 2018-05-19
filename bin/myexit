@@ -1,7 +1,11 @@
 #!/bin/bash
 set -eu
 
-# This script is intended to be run as the xautolock locker and notifier.
+if [ -f "$HOME/bin/mylog" ]; then
+    . "$HOME/bin/mylog"
+fi
+
+# This script is intended to be run as openbox exit helper.
 # It requires i3lock, and dunst is optional.
 
 cmd=${1:-exit}
@@ -45,24 +49,6 @@ function locked() {
         return 0;
     fi
     return 1
-}
-
-# Print the given message with a timestamp.
-function info() { printf '%s\t%s\n' "$(date)" "$*"; }
-
-# Set LOCK_LOG if you want log to a file
-function log() {
-    local LOCK_LOG="/var/log/autolock_sh.log"
-    local LOCK_rc=0
-    if [ ! -f $LOCK_LOG ]; then
-        touch $LOCK_LOG
-        LOCK_rc=$?
-    fi
-    if [[ $LOCK_rc -eq 0 && -f $LOCK_LOG ]]; then
-        info >>"$LOCK_LOG" "$@"
-    else
-        info "$@"
-    fi
 }
 
 # Control the dunst daemon, if it is running.
@@ -140,7 +126,7 @@ function do_this_exit() {
     stop_it "cinnamon-screensaver" "stop"
     stop_it "redshift-gtk" "stop"
     stop_it "redshift" "stop"
-    stop_it "lightsOn.sh" "stop"
+    stop_it "delayctl" "stop"
     stop_it "changer.sh" "stop"
     stop_it "compton" "stop"
     
@@ -152,24 +138,6 @@ function do_this_exit() {
     # dbus-launch cleanup
     pkill -u $USER -t `tty | cut -d '/' -f 3,4` dbus-launch
 
-}
-
-# Print the given message with a timestamp.
-function info() { printf '%s\t%s\n' "$(date)" "$*"; }
-
-# Set LOCK_LOG if you want log to a file
-function log() {
-    local LOCK_LOG="/var/log/myexit.log"
-    local LOCK_rc=0
-    if [ ! -f $LOCK_LOG ]; then
-        touch $LOCK_LOG
-        LOCK_rc=$?
-    fi
-    if [[ $LOCK_rc -eq 0 && -f $LOCK_LOG ]]; then
-        info >>"$LOCK_LOG" "$@"
-    else
-        info "$@"
-    fi
 }
 
 function do_test() {
@@ -203,7 +171,7 @@ function do_test() {
     stop_it "cinnamon-screensaver" "debug"
     stop_it "redshift-gtk" "debug"
     stop_it "redshift" "debug"
-    stop_it "lightsOn.sh" "debug"
+    stop_it "delayctl" "debug"
     stop_it "changer.sh" "debug"
     stop_it "compton" "debug"
 

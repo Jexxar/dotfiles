@@ -120,10 +120,13 @@ if [ $(pgrep -lfc polkit-mate-authentication-agent-1) -ge 1 ] ; then
   done
 fi
 
-OB_str="/usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1"
+OB_str="polkit-mate-authentication-agent-1"
 OB_stts=""
-
-/usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1 &
+if [ -f /usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1 ]; then
+    /usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1 &
+elif [ -f /usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1 ]; then
+    /usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1 &
+fi
 
 OB_rc=$?
 if [ $OB_rc -eq 0 ]; then

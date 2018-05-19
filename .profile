@@ -89,6 +89,10 @@ export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 # Java stuff
 #===========================================
 export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel'
+export JAVA_HOME="/usr/lib/jvm/default-java"
+export CLASSPATH="$JAVA_HOME/lib":$CLASSPATH
+export PATH="$JAVA_HOME/bin":$PATH
+export MANPATH="$JAVA_HOME/man":$MANPATH
 
 #===========================================
 # Local settings
