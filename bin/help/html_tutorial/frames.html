@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>Frames Tutorial</title>
+
+<meta name="KEYWORDS" content="HTML Codes Tutor , website design ,  frames tutorial, html">
+<meta name="DESCRIPTION" content="HTML Codes Tutor for Easy Website Design - Basic frames.">
+<META NAME="robots" CONTENT="index, follow">
+<link rel="stylesheet" href="html40.css" type="text/css">
+<style type="text/css">
+#toc a{ font-family: Verdana;font-style : normal ;font-size : 8pt; font-weight :bold;text-decoration : none}
+#toc a {color :#ffffff}
+#toc a:hover{color :#DFDFDF }
+#toc p{font-family: Verdana;font-style : normal ;font-size : 9pt; font-weight :bold;text-align :center;color :#FFFFFF}
+
+</style>
+
+</head>
+
+<body>
+
+<p><a href="http://www.createafreewebsite.net/button_gallery.html" title="Free Button Graphics">Free Buttons</a>  <a href="http://www.createafreewebsite.net/free_bullets.html" title="Free Bullet Graphics">Free Bullets</a>
+
+<h2 STYLE="margin-top:2px">Frames HTML Codes Tutor</h2>
+<p>Frames can add a little bit of extra character to any web site.  They are a little harder to set up for search engines, but that doesn't seem to lessen their popularity for many.</p>
+<p>The first rule to follow when using frames is to replace the body tag with the <code>&lt;frameset&gt;&lt;/frameset&gt;</code> tag.<br>
+Frames can be set up in either a row or column configuration. <br>
+The first frameset tag determines which set up is chosen. </p>
+
+<p>Figures 1 and 2 (below) are diagrams of a row configuration.<br>
+The first and defining frameset tag for each would be:<br>
+<code>&lt;frameset rows=&quot;20/ ,60/, 20/&quot;&gt;&lt;/frameset&gt;</code><br>
+The three numbers represent 3 individual frames (rows) within the frameset. 
+<table><tr>
+<td align="left" colspan="1" rowspan="2">
+<div ID="toc">
+<table   bgcolor="#004f9d" width="170" border="0" cellspacing="0" cellpadding="5">
+	<tr align="center"><td align="left" valign="top">
+<p>Page Structure</p>
+<a href="basic_html_page.html"> Basic HTML Page</a>
+<br>
+<a href="body_tag.html"> The Body Tag</a>
+<br>
+<a href="division_tag.html">The Division Tag</a>
+<br>
+<a href="horizontal_rule.html">Horizontal Rule</a>
+<br>
+<a href="anchor_tag.html">Anchor Tag</a>
+<br>
+<a href="anchor_tag_intra.html">Anchor Tag - Intradocument</a>
+<br>
+<a href="anchor_tag_image.html">Anchor Tag - Image</a>
+<br>
+<a href="borders.html">Using Borders</a>
+<br>
+<a href="id_attribute.html">The ID Attribute</a>
+<br>
+<a href="meta_tags.html">Meta Tags</a>
+<br>
+<p>Text Controls</p>
+<a href="style_sheets.html">Style Sheets</a>
+<br>
+<a href="fonts.htm">Working With Fonts</a>
+<br>
+<a href="paragraph_tag.html">The Paragraph Tag</a>
+<br>
+<a href="paragraph_images.html">Paragraphs-Images</a>
+<br>
+<a href="lists.html">Using Lists</a>
+<br>
+<a href="pre_tag.html">The Pre Tag</a>
+<br>
+<a href="line_break.html">Line Break Tag</a>
+<br>
+<p>Tables</p>
+<a href="tables.htm">Basics of Tables</a>
+<br>
+<a href="formscheckbox.htm">Check Boxes</a>
+<br>
+<a href="formselections.htm">Selection Boxes</a>
+<p>Frames</p>
+<a href="frames.html">Basic Frames</a>
+<br>
+<a href="frames_search_engines.html">Search Engines</a>
+<p>Miscellaneous</p>
+<a href="color.html">Using Color</a>
+</td></tr></table>
+</td>
+<td align="left">
+<p>They are percentages of available (vertical) space and should add up to 100. (/ = %)<br>
+Each individual frame within the frameset must now be defined by either a <code>&lt;frame&gt; or &lt;frameset&gt;</code> tag.  If the frame is a single column it is defined with a frame tag.  If it contains multiple columns it is defined by a second frameset tag.</p>
+
+
+<img src="images/rows_frames.gif" height="75" width="163" alt="" border="0"><br>
+
+<p>For figure 2 the code would be:<br>
+<code>&lt;frameset rows="20/,60/,20/"&gt;<br>
+&lt;&#33;--row 1--&gt;<br>
+&lt;frame src=""&gt;<br>
+&lt;&#33;--row 2--&gt;<br>
+&lt;frameset cols="30/,70/"&gt;<br>
+&lt;frame src=""&gt;<br>
+&lt;frame src=""&gt;<br>
+&lt;/frameset&gt;<br>
+&lt;&#33;--row 3--&gt;<br>
+&lt;frame src=""&gt;<br>
+&lt;/frameset&gt;</code>
+</p>
+<p>Notice that the second row in figure 2 contains 2 columns.  Each column in that nested frameset must be defined with a frame tag.<br>
+The src or source attribute is used to name the html page that will be located within the appropriate frame.<br>
+Example:<br>
+<code>src=&quot;index.html&quot;</code></p>
+<p>Figures 3 and 4 (below) are diagrams of a column configuration.<br>
+The first and defining frameset tag for each would be:<br>
+<code>&lt;frameset cols=&quot;20/ ,80/&quot;&gt;&lt;/frameset&gt;</code><br>
+The two numbers are percentages of available (horizontal) space and should add up to 100. (/ = %) and represent two individual frames (columns) within the overall frameset.<br>
+</td></tr></table>
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr valign="top">
+<td align="left">
+<p>Each individual frame within the frameset must now be defined by either a <code>&lt;frame&gt; or &lt;frameset&gt;</code> tag.  If the frame is a single row it is defined with a frame tag.  If it contains multiple rows it is defined by a second frameset tag.</p>
+
+<img src="images/cols_frames.gif" height="86" width="151" alt="" border="0"><br>
+
+<p>For figure 4 the code would be:<br>
+<code>&lt;frameset cols="20/,80/"&gt;<br>
+&lt;&#33;--column 1--&gt;<br>
+&lt;frame src=""&gt;<br>
+&lt;&#33;--column 2--&gt;<br>
+&lt;frameset rows="30/,70/"&gt;<br>
+&lt;frame src=""&gt;<br>
+&lt;frame src=""&gt;<br>
+&lt;/frameset&gt;<br>
+&lt;/frameset&gt;</code>
+</p>
+<p>Notice that the second column in figure 4 contains 2 rows.  Each row in that nested frameset must be defined with a frame tag.<br>
+The src or source attribute is used to name the html page that will be located within the appropriate frame.<br>
+Example:<br>
+<code>src=&quot;index.html&quot;</code></p>
+<p>Copy and paste this code into an html page and run it through your browser. Be sure to delete the body tags.<br>
+</p>
+
+</td></tr></table>
+</body>
+</html>
+
+

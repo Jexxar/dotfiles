@@ -1,0 +1,354 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN
+		"http://www.w3.org/TR/html4/loose.dtd"">
+<html>
+<head>
+  <title>IDesk - Usage</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <meta name="GENERATOR" content="Quanta Plus">
+  <link rel="stylesheet" type="text/css" href="main.css"/>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div id="frameContainer">
+  <div id="frame">
+	<div id="header" class="insideFrame"><img src="images/none.gif" alt="timmfin.net logo" border=0 height="73"></div>
+	<div id="menuBar" class="insideFrame">
+        <a class="menuItem" href="index.html">Home</a>
+        <a class="menuItem" href="about.html">About</a>
+        <a class="menuItem" href="download.html">Download</a>
+        <a class="menuItem" href="install.html">Install</a>
+        <a class="menuItem" href="usage.html">Usage</a>
+        <a class="menuItem" href="developers.html">Developers</a>
+        <a class="menuItem" href="screens.html">Screen Shots</a>
+	</div>
+	<div id="main" class="insideFrame">
+        <h2>Idesk configuration</h2>
+        <h3>Ideskrc file</h3>
+        <p> To use Idesk, you must first setup your config file. Put something like this into into .ideskrc in your home directory:</p>
+
+<pre>
+table Config
+  FontName: tahoma
+  FontSize: 8
+  FontColor: #ffffff
+  <blink><b>ToolTip.FontSize: 9</b></blink>
+  <blink><b>ToolTip.FontName: gothic</b></blink>
+  <blink><b>ToolTip.ForeColor: #0000FF</b></blink>
+  <blink><b>ToolTip.BackColor: #FFFFFF</b></blink>
+  <blink><b>ToolTip.CaptionOnHover: true</b></blink>
+  <blink><b>ToolTip.CaptionPlacement: right</b></blink>
+  Locked: false
+  Transparency: 100
+  Shadow: true
+  ShadowColor: #000000
+  ShadowX: 1
+  ShadowY: 2
+  Bold: false
+  ClickDelay: 300
+  IconSnap: true
+  SnapWidth: 55
+  SnapHeight: 100
+  SnapOrigin: BottomRight
+  SnapShadow: true
+  SnapShadowTrans: 200
+  CaptionOnHover: false
+  CaptionPlacement: bottom
+  FillStyle: FillHLine
+  <blink><b>Background.File: image.jpg</b></blink>
+  <blink><b>Background.Delay: 1</b></blink>
+  <blink><b>Background.Source: ~/.idesktop/icons</b></blink>
+  <blink><b>Background.Mode: Mirror</b></blink>
+  <blink><b>Background.Color: #C2CCFF</b></blink>
+end
+
+table Actions
+  Lock: control right doubleClk
+  Reload: middle doubleClk
+  Drag: left hold
+  EndDrag: left singleClk
+  Execute[0]: left doubleClk
+  Execute[1]: right doubleClk
+end
+</pre>
+
+<ul class="features">
+
+    <li><p>"FontName" is the name Font. Default is Arial.</p></li>
+
+    <li><p>"FontSize"  is the size Font. Default is 16.</p></li>
+
+    <li><p>"ForeColor"  is the Foreground color. Default is #FFFFFF (white).</p></li>
+    
+    <li><p>"ToolTip.FontName" <blink><b>new</b></blink> is the name Font for tooltip. Default is Arial.</p></li>
+
+    <li><p>"ToolTip.FontSize" <blink><b>new</b></blink> is the size Font for the tooltip. Default is 10.</p></li>
+
+    <li><p>"ToolTip.ForeColor" <blink><b>new</b></blink> is the Foreground color for the tooltip window. Default is #000000 (black).</p></li>
+
+    <li><p>"ToolTip.BackColor" <blink><b>new</b></blink> is the Background color for the tooltip window. Default is #FFFACD.</p></li>
+    
+     <li><p>"ToolTip.CaptionOnHover" <blink><b>new</b></blink> is a boolean (true/false) value. Setting it to true will make the icon's tip text appear when the mouse hovers over an icon. False is the default behavior.
+
+     <li><p> "ToolTip.CaptionPlacement"  <blink><b>new</b></blink> defines the position for Image ToolTip Text. Valid values are: Top, Bottom, Left, Right.
+
+    <li><p>"Locked" is boolean (true/false). Setting it to true disables the dragging movement.</p></li>
+
+    <li><p>"Transparency" is between 0 (no glow effect) and 255 (invisible without a mouseover).</p></li>
+
+    <li><p>"HighContrast" will draw a border around the text in the opposite colour if it is true.  It will draw it in an arbitary colour if it "#aa00aa", for example.  And it will not draw anything at all if it is set to "false".</p></li>
+
+    <li><p>"Shadow" is boolean (true/false). Turning this on will draw a drop shadow of color ShadowColor behind the text. The shadow will be ShadowX pixels right and ShadowY pixels down (negative values will work). Both ShadowX and ShadowY default to 1.</p></li>
+
+    <li><p>"Bold" is a boolean (true/false). Setting it to true will make your font bold.</p></li>
+
+    <li><p>"Click Delay" is the number of milliseconds that represents a double-click.</p></li>
+
+    <li><p>"SingleClick" is a boolean (true/false). Setting it to true makes a single-click execute the command associated with the icon. This also means that it is impossible to drag the icon either.</p></li>
+
+    <li><p>"IconSnap" is a boolean (true/false). Setting it to true makes the icons snap to a grid defined by "SnapWidth" and "SnapHeight". The icon will snap to the middle of the rectangle defined by "SnapWidth" and "SnapHeight". So if "SnapWidth" = "SnapHeight" = 100, the center of the icon will by in multiples of 50: (50,50), or (50, 100), or (100, 100), or (250, 350)... You will want to make "SnapWidth" and "SnapHeight" greater than or equal to the size of the picture.</p></li>
+
+    <li><p>"SnapWidth" is a positive integer, see description in "IconSnap".</p></li>
+    <li><p>"SnapHeight" is a positive integer, see description in "IconSnap".</p></li>
+
+    <li><p>"SnapOrigin" defines where the snap grip starts from. Valid values are: </p></li>
+  TopLeft, TopRight, BottomLeft, BottomRight.
+
+  <li><p>"SnapShadow" is a boolean (true/false) value. Setting it to true will make a shadow of the icon appear where the icon will snap if the drag was released there. Turn "IconSnap" on and check this out, pretty cool effect.  </p></li>
+
+  <li><p>"SnapShadowTrans" is a integer between 0 (opaque) and 255 (invisible). It represents the transparency of the SnapShadow</p></li>
+
+  <li><p>"CaptionPlacement"  <blink><b>new</b></blink> defines the position for Image Caption. Valid values are: Top, Bottom, Left, Right.
+
+  <li><p>"CaptionOnHover" is a boolean (true/false) value. Setting it to true will make the icon's caption only appear when the mouse hovers over an icon. False is the default behavior.
+
+  <li><p>- "FillStyle"  <blink><b>new</b></blink> defines the icon appearance when the user gives click him. The icon back to normal form when the user release the mouse button. Valid values are: FillInvert, FillHLine, FillVLine and None. None is the default behavior.
+  
+  <li><p>- "Background.File"  <blink><b>new</b></blink>define one background image for wallpaper. If the path is wrong or the image has a bad format then doesn't put nothing. This image remains although  idesk program ins't running. (Default: None). 
+
+  <li><p>- "Background.Delay"  <blink><b>new</b></blink> Set the image change time in minutes format.  (Default: 0 min, inactive). Max 526000 min.
+
+  <li><p>- "Background.Source"  <blink><b>new</b></blink> Let you can define the folder where there are some images. If in the folder there aren't images or the folder didn't exist, then idesk looking for Background.File option.  (Default: None).
+
+  <li><p>- "Background.Mode"  <blink><b>new</b></blink> Is the display mode for the images, the possible values are: Stretch, Scale, Center, Fit o Mirror).  (Default: Stretch).
+
+  <li><p>- "Background.Color"  <blink><b>new</b></blink> Let you define the color for borders on Fit and Center options for Background.mode. If you don't define a Background.Color value then the Background is transparent and it get the background from the original Desktop background. (Default: None).
+
+  <li><p>"CursorOver" <blink><b>new</b></blink> defines the mouse cursor type when the mouse hovers over an icon. Valid values are:
+   <pre>
+     num_glyphs
+     X_cursor
+     arrow
+     based_arrow_down
+     based_arrow_up
+     boat
+     bogosity
+     bottom_left_corner
+     bottom_right_corner
+     bottom_side
+     bottom_tee
+     box_spiral
+     center_ptr
+     circle
+     clock
+     coffee_mug
+     cross
+     cross_reverse
+     crosshair
+     diamond_cross
+     dot
+     dotbox
+     double_arrow
+     draft_large
+     draft_small
+     draped_box
+     exchange
+     fleur
+     gobbler
+     gumby
+     hand1
+     hand2
+     heart
+     icon
+     iron_cross
+     left_ptr
+     left_side
+     left_tee
+     leftbutton
+     ll_angle
+     lr_angle
+     man
+     middlebutton
+     mouse
+     pencil
+     pirate
+     plus
+     question_arrow
+     right_ptr
+     right_side
+     right_tee
+     rightbutton
+     rtl_logo
+     sailboat
+     sb_down_arrow
+     sb_h_double_arrow
+     sb_left_arrow
+     sb_right_arrow
+     sb_up_arrow
+     sb_v_double_arrow
+     shuttle
+     sizing
+     spider
+     spraycan
+     star
+     target
+     tcross
+     top_left_arrow
+     top_left_corner
+     top_right_corner
+     top_side
+     top_tee
+     trek
+     ul_angle
+     umbrella
+     ur_angle
+     watch
+     xterm
+</pre>
+</ul>
+
+<h3>Further Snapping Description</h3>
+<pre>               .          .          .
+               .          .          .
+               |__________|__________|_______ . . .
+               |          |          |
+               |          |          |
+           y   |          |          |
+               |          |          |
+               |          |          |
+         [>    |__________|__________|________ . . .
+         |           x
+         |           
+         |
+
+This is the bottom left of the desktop (SnapOrigin: BottomLeft)
+
+</pre>
+
+<p>
+X represents the snap width
+Y represents the snap height
+Snap origin only describes which corner of the screen
+</p>
+<p>
+So basically set snap width to the width of the "box" you want the icon contained in and set snap height to the height of the "box" you want the icon contained in.
+</p>
+<p>
+The icon will snap to the middle of that box specified by snap width and snap height. You will typically want the width and heihgt to be a bit larger than the width and height of the icons (make the height bigger if you use a caption).
+</p>
+
+<h3>Action Configuration</h3>
+
+<p>In the Action table 5 different actions can be configured.</p>
+
+<dl>
+    <dt>Lock:</dt>
+    <dd>Disables icon dragging to prevent accidental movement.</dd>
+    <dt>Reload:</dt>
+    <dd>Reloads all of the config options and gets a new background.</dd>
+    <dt>Drag:</dt>
+    <dd>Puts the icon in drag mode. Icon follows cursor.</dd>
+    <dt>EndDrag:</dt>
+    <dd>End the drag mode, icon will be positioned at the cursor.</dd>
+    <dt>Execute[i]:</dt>
+    <dd>Executes the ith icon command. So the Execute[0] action is the default action and run Command[0] (in the icon config file), Execute[1] runs Command[1] and so forth.</dd>
+</dl>
+
+<p>The options for each command are as follows:</p>
+    
+<pre>&lt;shift&gt; &lt;control&gt; &lt;alt&gt; [Button] [ClickType]
+  [Button] = left, middle, and/or right
+  [ClickType] = singleClk, doubleClk, tripleClk, or hold
+</pre>
+
+<h4>Some examples:</h4>
+
+<p>The default settings, should be self explanitory.</p>
+<pre>
+        Lock: right doubleClk
+        Reload: middle doubleClk
+        Drag: left hold
+        EndDrag: left singleClk
+        Execute[0]: left doubleClk
+
+  Note: Drag starts when left button is pressed 
+        and Drag ends when left button is released.
+</pre>
+        
+        Left single click while holding shift on the keyboard
+        Execute[0]: shift left singleClk
+
+        Left double click while holding down the right mouse button.
+        Execute[0]: left doubleClk right hold
+
+        And for those with too many fingers, middle double click while holding
+        down the left and right mouse buttons, and control, alt, and shift
+        on the keyboard.
+        Execute[0]: control shift alt left hold middle doubleClk right hold
+        
+<h4>Notes:</h4>
+<p>For the Drag action I reccomend only doing button holds and for the EndDrag I recommend using single clicks. This way the icon begins dragging as soon as you press the button and stops dragging as soon as you release the button. Using other actions should work as expected, but there are a few small bugs.</p>
+
+<p>If two actions have the same key/button combinations they both will occur, unless one is the reload action. The reload action always only happens by itself.</p>
+        
+
+<h3>Idesktop Directory</h3>
+<p>To add an icon, you need to first create a .idesktop directory in your home dir and inside that directory, create a file, for example, home.lnk and inside the file put something like this:</p>
+<pre>
+    table Icon
+      Caption: Home
+      ToolTip.Caption: <blink><b>My home</b></blink>
+      Icon: /home/you/.idesktop/home.png
+      Command[0]: nautilus /home/you
+      Command[1]: nautilus /home/you/otherDir
+    end
+</pre>
+<p>These are the options for icon file, they should mostly be self-explantory. The Icon option is the graphic file for the icon image (either a png file or a svg file). The Execute[i] action (in .ideskrc) runs the Command[i]. If the Caption field is blank or just one space, then no caption will be created for the icon.</p>
+
+<pre>
+    table Icon
+      Caption: Tux
+      ToolTip.Caption: Linux rocks   <blink><b>new</b></blink>
+      Command: echo 'Linux rocks!'
+      Icon: /home/you/icons/tux2.png
+      Width: 600
+      Height: 700
+      X: 680
+      Y: 174
+    end
+</pre>
+<h4>Important for SVG!</h4>
+<p>
+If you use a svg icon need to set Width and Height to your desired pixel size. Just make sure that the X value plus the width doesn't exceed your window diemensions, you get a segfault (same for Y value and height). It is best to set X and Y to zero to prevent this.</p>
+
+<h3>SVG support was remove in 0.7.x version!!</h3>
+<p>
+<p>
+
+
+        <div id="footer" class="insideFrame">
+             <div class="labels">
+                 <a href="http://sourceforge.net/projects/idesk/"><img src="http://sourceforge.net/sflogo.php?group_id=83307&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>
+            </div>
+
+            Page best viewed with <a href="http://www.mozilla.org">Mozilla</a>, Netscape 7, Internet Explorer 5 or more recent browser.
+        </div>
+	</div>
+  </div>
+  </div>
+</body>
+</html>
+
+
+
+

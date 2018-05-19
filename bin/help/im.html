@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+   <TITLE>ImageMagick</TITLE>
+   <META NAME="keywords" CONTENT="linux, ubuntu, photography, image editor, pictures, images, convert, montage, mogrify, resize, composite">
+
+<style type="text/css">	
+html{width: 100%}
+
+body {
+    font-family: Georgia, helvetica, sans-serif;
+    font-size: 16px;
+    font-weight: normal; 
+    text-align: left;
+    color: black;
+    margin: 8px;
+    padding: 0;
+    background-color: #FFFFFF;
+    border-style: solid;
+    border-color: #000000;
+    border-width: 0px;
+}
+
+p {
+   margin:5px;
+   font-size:16px;
+   text-indent: 0em;
+   text-align: justify;
+}
+  
+    
+A:link {text-decoration: none}
+A:visited {text-decoration: none}
+A:active {text-decoration: none}
+A:hover {font-size:24; font-weight:bold; color: red;}
+
+ul li
+{
+	color: #000000;
+	background-color: #FFFFFF;
+	margin: 8px;
+	margin-bottom: 4px;
+	margin-left: 1em;
+        padding-left: 2px;
+	font-size: 16px;
+	font-style: normal;
+        font-weight: normal;
+        text-indent: 1em;
+	list-style: disc inside;
+}
+
+h1, h2, h3, h4 {
+	color: #FF0000;
+    background-color: #FFFFFF;
+    font-weight: bold;
+    margin: 0;
+    margin-bottom: 7px;
+    padding: 4px;
+    font-style: normal;
+    text-align: center;
+    letter-spacing: ;
+    border-bottom-style: solid;
+    border-bottom-width: 0px;
+    border-bottom-color: #000000;
+}
+
+</style>
+</HEAD>
+
+<BODY>
+<p><b>Links</b>: <a href="http://www.imagemagick.org/Usage/backgrounds/" target="_blank">backgrounds</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="http://www.w3schools.com/html/html_colornames.asp" target="_blank">colors</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.imagemagick.org/Usage/text/" target="_blank">text</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.imagemagick.org/Usage/montage/" target="_blank">montage</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.imagemagick.org/Usage/basics/#mogrify" target="_blank">mogrify</a></p>
+<p><b>Background</b>:
+<ul><li><a style="background-color :#FFFF00; text-decoration :bold">convert -size 30x30 xc:red red.png</a></li>
+<li><a style="background-color :#FFFF00; text-decoration :bold">convert -size 25x25 canvas:wheat wheat.jpg</a></li> 
+<li><a style="background-color :#FFFF00; text-decoration :bold">convert -size 25x30 gradient:#f5f754-blue grad.gif</a></li>
+<li><a style="background-color :#FFFF00; text-decoration :bold">convert -size 40x40 radial-gradient:DodgerBlue-crimson radial.bmp</a></li>
+<li><a style="background-color :#FFFF00; text-decoration :bold">convert -size 40x30 plasma:ForestGreen plasma.jpg</a></li>
+<li><a style="background-color :#FFFF00; text-decoration :bold">convert -size 20x30 plasma:Black-Brown plasma2.png</a></li>
+<li><a style="background-color :#FFFF00; text-decoration :bold">convert -size 40x35 plasma:fractal plasma3.bmp</a></li>
+<li><a style="background-color :#FFFF00; text-decoration :bold">convert -size 30x40 xc: +noise Random noise.png</a></li></ul></p>
+<p><b>Transparent Background</b>:  Use crop shapes in right side Photofiltre menu to crop leaving white background.  Then:&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;<a style="background-color :#FFFF00; text-decoration :bold">convert image1.gif -transparent white image2.gif</a></p> 
+<p><b>Resizing</b>:<ul><li><a style="background-color :#FFFF00; text-decoration :bold">convert -resize 20 noise.png noise-w.png</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resizes width to 20 and preserves height-width ratio</li>
+<li><a style="background-color :#FFFF00; text-decoration :bold">convert -resize x34 noise.png noise-h.png</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resizes height to 34 and preserves h-w ratio</li>
+<li><a style="background-color :#FFFF00; text-decoration :bold">convert -resize 40x30! noise.png noise2.png</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resizes image to 40x30 ignoring h-w ratio (note "!")</li>
+<li><a style="background-color :#FFFF00; text-decoration :bold">convert -resize 35x60 noise.png noise3.jpg</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resizes image preserving h-w ratio while achieving one of h and w</li></ul>
+<ul><li><a style="background-color :#FFFF00; text-decoration :bold">convert -rotate 45 plasma3.bmp plasma4.jpg</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;45 degree rotation but can be any angle</li>
+<li><a style="background-color :#FFFF00; text-decoration :bold">convert -implode 1 plasma3.bmp plasma5.jpg</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;applies implode effect with strength 1</li></ul>
+</p>
+<p>The <b>-composite</b> option is used to combine images.  The <b>-geometry</b> option is useful for size and placement of images.  It applies only to the last image preceding its place in the command.  The general syntax for -geometry is <br/><br/>
+<a style="background-color :#FFFF00; text-decoration :bold">-geometry axb+c+d</a>.<br/><br/>
+Here, a=image width, b=image height, (c,d) are coordinates of the image upper-left corner measured from background upper-left corner with c positive to the right and d positive downward.</p>
+<p>&nbsp;&nbsp;&nbsp;<a style="background-color :#FFFF00; text-decoration :bold">
+convert -size 210x325 radial-gradient:DodgerBlue-crimson darwin.jpg -geometry 80x124+50+10 -composite comp1.jpg</a>
+</li>
+<li>Create comp2.jpg by joining comp1.jpg with 100x122 einstein.jpg so that einstein's location vertex is at (90,100):
+<br/>&nbsp;&nbsp;&nbsp;<a style="background-color :#FFFF00; text-decoration :bold">
+convert comp1.jpg einstein.jpg -geometry 100x122+90+100 -composite comp2.jpg</a></li>
+<li>Create comp3.png by joining comp2.jpg with the 100x108 freud.png so that freud's location vertex is at (10,200):
+<br/>&nbsp;&nbsp;&nbsp;<a style="background-color :#FFFF00; text-decoration :bold">    
+convert comp2.jpg freud.png -geometry 100x108+10+200 -composite comp3.png</a></li></ul> 
+comp3.png, could have been created with the single command:
+<br/><br/>
+&nbsp;&nbsp;&nbsp;<a style="background-color :#FFFF00; text-decoration :bold">convert -size 210x325 radial-gradient:DodgerBlue-crimson darwin.jpg -geometry 80x124+50+10 -composite einstein.jpg -geometry 100x122+90+100 -composite freud.png -geometry 100x108+10+200 -composite comp3.png</a>.<br/><br/>Notice the order of the image names in the command determines the order of images from below to above in the composite.
+</p>
+<p>
+<b>Frames (default; sunken; raised)</b>:<br/><br/>
+&nbsp;&nbsp;&nbsp;<a style="background-color :#FFFF00; text-decoration :bold">convert -frame 12x20+9+3 darwin.jpg darwin6.jpg</a><br/>
+&nbsp;&nbsp;&nbsp;<a style="background-color :#FFFF00; text-decoration :bold">convert -mattecolor Tomato -frame 20x12+0+10 darwin.jpg darwin5.jpg</a><br/>
+&nbsp;&nbsp;&nbsp;<a style="background-color :#FFFF00; text-decoration :bold">convert -mattecolor Steelblue -frame 20x12+10+0 darwin.jpg darwin7.jpg</a>.<br/><br/>
+</p>
+<p><b>-append</b> connects images vertically; <b>+append</b> connects images horizontally. 
+<br/>
+&nbsp;&nbsp;&nbsp;<a style="background-color :#FFFF00; text-decoration :bold">convert image1.jpg image2.jpg -gravity center -append result.jpg</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;puts image2 below image1 and makes sure they are centered.<br/>
+<a style="background-color :#FFFF00; text-decoration :bold">-gravity east&nbsp;&nbsp;&nbsp;&nbsp;-gravity west&nbsp;&nbsp;&nbsp;&nbsp;-gravity north&nbsp;&nbsp;&nbsp;&nbsp;-gravity south</a></p>
+<p><b>label:&nbsp;&nbsp;&nbsp;&nbsp;caption:</b>&nbsp;&nbsp;&nbsp;&nbsp;[creates text images; label squeezes to 1 line; caption wraps]:<br/>
+&nbsp;&nbsp;&nbsp;<a style="background-color :#FFFF00; text-decoration :bold">convert -background lightblue -fill blue -font FreeMono-Bold-Oblique -pointsize 36 -size 320x -gravity center caption:'This is a very long caption line.' caption.gif</a>&nbsp;&nbsp;&nbsp;&nbsp;[fill=font color]
+<br/><br/>
+&nbsp;&nbsp;&nbsp;<a style="background-color :#FFFF00; text-decoration :bold">convert -size 210x30 -background '#dd1339' -font Arial-bold -pointsize 24 -gravity center label:'MY HEROS' label.jpg</a>&nbsp;&nbsp;&nbsp;&nbsp;[IM does 'best' fits, etc, as default]</p>
+<p><b>montage</b> <br/>
+The montage <a href="http://www.imagemagick.org/script/montage.php" target="_blank">option list</a>
+includes: <b>-title, -pointwise, -background, -geometry, -label, -set label -tile, -bordercolor, -mattecolor, -frame</b>.
+<table width=100% border=1 cellpadding=4 cellspacing=2 bgcolor=#FFFFFF><tr><td align=center valign=middle><a style="background-color :#FFFF00; text-decoration :bold">montage -label 'Einstein' -font Arial-bold -pointsize 15 -background '#336699' -geometry +14+4 einstein.jpg einstein1.jpg</a></td>
+<td align=center valign=middle><a style="background-color :#FFFF00; text-decoration :bold">montage einstein.jpg -title 'Einstein' -font FreeMono-Bold-Oblique -pointsize 8 -frame 15x15+0+6 -mattecolor red -bordercolor Chocolate -background Sienna einstein2.jpg</a></td>
+<td align=center valign=middle><a style="background-color :#FFFF00; text-decoration :bold">montage einstein.jpg freud.png darwin.jpg -tile x1 -geometry +4+6 -frame 15x15+4+0 -background SkyBlue -bordercolor Blue -mattecolor DodgerBlue -set label %wx%h -font FreeMono-Bold-Oblique -pointsize 14 -title 'My Heroes' heros2.png</a></td></tr></table>
+<br/><br/>
+<table width=100% border=1 cellpadding=4 cellspacing=2 bgcolor=#FFFFFF><tr><td align=center valign=middle><a style="background-color :#FFFF00; text-decoration :bold">montage einstein.jpg freud.png darwin.jpg -set label '%f' -tile 1x -title 'My Heroes' heros1.png</a><br/><br/>
+</td>
+<td align=center valign=middle><a style="background-color :#FFFF00; text-decoration :bold">montage -label Einstein einstein.jpg -label Freud freud.png -label Darwin darwin.jpg -label Abel abel.png -background wheat -tile 2x2 -font FreeMono-Bold-Oblique -pointsize 14 -title 'My Heroes' heros6.png</a></td>
+<td align=center valign=middle><a style="background-color :#FFFF00; text-decoration :bold">montage -frame 15x15+6+0 einstein.jpg freud.png darwin.jpg -tile 2x2 -background Green -font FreeMono-Bold-Oblique -pointsize 14 -title 'My Heroes' heros3.jpg</a></td></tr></table></p>
+<p>Notice that <i>-set label '%f'</i> is programmed to center the image name at the bottom of the image, and <i>-set label '%wx%h'</i> centers the image dimensions at the bottom of the image.  The option <i>-title ' '</i> always centers the chosen title at the top.</p> 
+<p><b>mogrify</b>  [batch processing]:<ul><li><a style="background-color :#FFFF00; text-decoration :bold">mogrify -resize axb! -format jpg *.png</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resizes all .png to axb size and saves as .jpg</li>
+<li><a style="background-color :#FFFF00; text-decoration :bold">mogrify -resize axb -format jpg *.png</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resizes, preserving a/b ratio, all .png to cxd size, where either c=a or d=b and saves as .jpg</li></ul>
+Leaving out <b>-format jpg</b> will <i>replace</i> the original images with the resized image in .png format.</p>
+<p>
+In situations where batch processing images using "mogrify" does not seem to be practical, an <a href="http://www.imagemagick.org/Usage/basics/#mogrify_not" target="_blank">alternative</a> that uses a combination of Image Magick commands and a simple <a href="http://www.thegeekstuff.com/2011/07/bash-for-loop-examples/" target="_blank">for-in-do-done shell loop</a> command works.<br/><br/>
+&nbsp;&nbsp;&nbsp;<a style="background-color :#FFFF00; text-decoration :bold">mogrify -resize cxd *.jpg</a><br/>
+&nbsp;&nbsp;&nbsp;<a style="background-color :#FFFF00; text-decoration :bold">convert -size cxd radial-gradient:DodgerBlue-crimson bg.jpg</a><br/>
+&nbsp;&nbsp;&nbsp;<a style="background-color :#FFFF00; text-decoration :bold">for f in *.jpg ; do composite -gravity center $f bg.jpg $f ; done</a></p>
+
+</BODY>
+</HTML>
+

@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+ <head>
+   <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>PCLinuxOS Magazine March 2018 - Page 8</title>
+
+  <style>
+<!--
+BODY {background-attachment: fixed;}
+pre.code {
+	margin:0;
+	background:#ccc;
+	border:1px solid #777;
+	text-align:left;
+	overflow:auto;
+	padding:6px;
+        font-family : "courier new";
+        font-size: small;
+        font-weight: bold;
+	}
+//-->
+  </style>
+  
+  <link rel="shortcut icon" type="image/png" href="../../files/favicon.png"></head><body style="margin-left:auto; margin-right:auto; width: 792px; color: rgb(0, 0, 0); background-color: rgb(255, 255, 239); background-image: url(../../files/background.jpg);" alink="#000099" link="#000099" vlink="#990099">
+<font size="-2"><img style="width: 792px; height: 90px; font-family: Helvetica,Arial,sans-serif;" alt="banner" src="./images/banner.jpg"><a name="Top"></a><br style="font-family: Helvetica,Arial,sans-serif;">
+</font>
+<table style="text-align: left; width: 100%; font-family: Helvetica,Arial,sans-serif;" border="0" cellpadding="2" cellspacing="2">
+
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; background-color: rgb(255, 255, 239);">
+      <table style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+          <tr>
+            <td style="text-align: center; width: 132px;"><font size="-2"><a href="./page07.html">Previous
+Page</a><br>
+            </font></td>
+            <td style="text-align: center; width: 132px;"><font size="-2"><a href="http://pclosmag.com/index.html" rel="me">PCLinuxOS
+Magazine</a><br>
+            </font></td>
+            <td style="text-align: center; width: 132px;"><font size="-2"><a href="http://www.pclinuxos.com" rel="friend colleague co-resident" target="_blank">PCLinuxOS</a><br>
+            </font></td>
+            <td style="text-align: center; width: 132px;"><font size="-2"><a href="./links.html" rel="me">Article List</a><br>
+            </font></td>
+            <td style="text-align: center; width: 132px;"><font size="-2"><a href="disclaimer.html" rel="me">Disclaimer</a><br>
+            </font></td>
+            <td style="text-align: center; width: 132px;"><font size="-2"><a href="./page09.html">Next Page</a><br>
+            </font></td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      <table style="text-align: left; width: 760px; margin-left: auto; margin-right: auto; height: 50px;" border="0" cellpadding="2" cellspacing="2">
+        <tbody>
+          <tr>
+            <td style="vertical-align: middle; text-align: center;">
+              <h3>Make Naughty Programs Be Nice</h3><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table style="text-align: left; width: 760px; margin-left: auto; margin-right: auto;" border="0" cellpadding="2" cellspacing="2">
+        <tbody>
+          <tr>
+            <td style="vertical-align: middle; text-align: justify;">
+
+<!-- Source code layout box format
+<pre class="code">
+Place your source code here.
+</pre>
+-->
+<p><b>
+by Paul Arnote (parnote)
+</b></p><p>
+Believe it or not, the Linux system assigns the same priority to nearly every running process (program). There are a few exceptions, but the vast majority of the running processes are assigned the same priority -- zero (0). In this way, every running process has pretty much the same access to the core Linux system as every other.
+</p><p>
+Most of the time, this arrangement works out well. But sometimes, you might want a process to have more or less priority. You might want it to have a higher priority so that the system assigns more resources to it. Or, you might have a program that is consuming more resources and is slowing down other processes, causing an overall system slowdown. Some processes might not be as important to you, so assigning them a lower priority saves CPU time and cycles for those processes that are more important. Similarly, the opposite might occur, where you might want a process to have a higher priority because of its relative importance to you at that particular moment.
+</p><p>
+Fortunately, there are two commands in Linux that allow you to change a process's priority. Those commands are <b>nice</b> and <b>renice</b>. To use either command, you must have administrator access (be the root user). The priority scale runs from -20 (highest priority) to 19 (lowest priority). <b><i>It's important to remember that negative numbers have higher priority, and positive numbers represent lower priority.</i></b>
+</p><br>
+<img border="0" src="top-ni.png" width="500"><br>
+<p>
+Above is a screenshot of the <b>top</b> command run in a terminal window. Notice that the fourth column from the left is labeled "NI." That is the priority, or "nice" level, of each process. In this particular screenshot, the "nice" level for all the processes is zero ("0"), the default value.
+</p><p>
+If you look long enough (or in a bigger terminal window), you will see processes that belong to the root user that have a nice/priority level of -20. You would be ill advised to change the nice/priority level of these processes. Many of these processes are vital to your system running smoothly. You really don't want to mess with these vital processes.
+</p><p>
+It helps to think of the <b>nice</b> command as a sort of launcher. Let's just say, for the sake of argument, that I wanted to launch Firefox with a "nice" level of 10. All I would have to do is launch Firefox like this:
+</p><p><font face="Courier New"><b>
+nice -10 firefox&amp;
+</b></font></p><p>
+Once Firefox launches, rerun the <b>top</b> command. You should see Firefox's "nice" level is now changed to 10, indicating that it is running with a <b>lower</b> priority. Similarly, if I wanted to launch Firefox with an increased priority or "nice" level, I would enter the command like this:
+</p><p><font face="Courier New"><b>
+nice --10 firefox&amp;
+</b></font></p><p>
+Rerunning the <b>top</b> command after Firefox launches, you should see that Firefox's "nice" level has been set to -10. This means Firefox is running with <b>higher</b> priority. 
+</p><p>
+Take note of the slight difference in the commands. In the first nice command example, we lowered Firefox's priority with -10. This is a positive 10. The dash before the "10" is just the signal to the command that this is a command parameter. Notice in the second nice command example, where we raised Firefox's priority to -10 with a --10. The first dash indicates a command parameter, and the -10 is the actual value we passed to the command. Also, if you don't specify a "nice" level, nice will default to a nice level of 10. The ampersand at the end of each line pushes the task to the background and frees up the command line for other uses.
+</p><p>
+So what if you have a process that's already running and you want to change its nice level? That's what <b>renice</b> is for.
+</p><br>
+<img border="0" src="top-pid.png" width="500"><br>
+<p>
+The format is slightly different for the <b>renice</b> command. Instead of specifying a program's name, you use the PID (process ID) number. In the screenshot above, you can find the PID in the first column of the output from the <b>top</b> command. Don't forget that you will need to have administrative privileges (be the root user) to run these commands.
+</p><p>
+So, if I want to change the nice level of Firefox, I can issue the command like this:
+</p><p><font face="Courier New"><b>
+renice -n 15 -p 2996
+</b></font></p><p>
+The -n parameter is the new nice level I want to apply to the Firefox process, and the -p parameter is the PID of the currently running Firefox process. This particular command will <b>decrease/lower</b> the priority/nice level of Firefox.
+</p><p>
+Similarly, if I want to <b>increase/raise</b> the priority/nice level of Firefox, I would enter the command like this:
+</p><p><font face="Courier New"><b>
+renice -n -15 -p 2996
+</b></font></p><p>
+It really is that easy.
+</p><p>
+If you have multiple users on a system, you can also "renice" all of the processes belonging to a particular user or group. Instead of the -p parameter and the PID, use -u username for a particular user, or -g groupname for a particular group of users.
+</p><p><b>
+Summary
+</b></p><p>
+With the <b>nice</b> and <b>renice</b> commands, you easily can tweak your computer to get maximum performance. You don't have to "just accept" the priority that the Linux system assigns to each process.
+</p><p>
+Just one additional note, though. You can lower the nice level/priority of a process as a regular user, but you have to have administrative privileges (be the root user) to raise the nice level/priority of a process. However, I find that it's much easier to just always change the priority of a process as the root user. This helps eliminate having to remember when you have to have administrative privileges and when you don't. If you always execute the commands with administrative privileges, you never find yourself in a position where it works sometimes and not at other times.
+</p><p>
+Now, go forth and make the naughty be nice.
+</p>
+
+            </td>
+          </tr>
+        </tbody>
+      </table>
+ 
+<font size="-2"><br style="font-family: Helvetica,Arial,sans-serif;">
+<br style="font-family: Helvetica,Arial,sans-serif;">
+</font>
+</body></html>

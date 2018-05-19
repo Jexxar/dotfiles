@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+   <TITLE></TITLE>
+   <META NAME="keywords" CONTENT="linux, ubuntu,">
+
+<style type="text/css">	
+html{width: 100%}
+
+body {
+    font-family: Georgia, helvetica, sans-serif;
+    font-size: 16px;
+    font-weight: normal; 
+    text-align: left;
+    color: black;
+    margin: 8px;
+    padding: 0;
+    background-color: #FFFFFF;
+    border-style: solid;
+    border-color: #000000;
+    border-width: 0px;
+}
+
+p {
+   margin:5px;
+   font-size:16px;
+   text-indent: 0em;
+   text-align: justify;
+}
+  
+    
+A:link {text-decoration: none}
+A:visited {text-decoration: none}
+A:active {text-decoration: none}
+A:hover {font-size:24; font-weight:bold; color: red;}
+
+ul li
+{
+	color: #000000;
+	background-color: #FFFFFF;
+	margin: 8px;
+	margin-bottom: 4px;
+	margin-left: 1em;
+        padding-left: 2px;
+	font-size: 16px;
+	font-style: normal;
+        font-weight: normal;
+        text-indent: 1em;
+	list-style: decimal inside;
+}
+
+h1, h2, h3, h4 {
+	color: #FF0000;
+    background-color: #FFFFFF;
+    font-weight: bold;
+    margin: 0;
+    margin-bottom: 7px;
+    padding: 4px;
+    font-style: normal;
+    text-align: center;
+    letter-spacing: ;
+    border-bottom-style: solid;
+    border-bottom-width: 0px;
+    border-bottom-color: #000000;
+}
+
+</style>
+</HEAD>
+
+<BODY>
+<table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#60834A" width="100%">
+<tr align=center>
+<td width="33%" bgcolor="#E7EFE7"><b>Syntax</b></td>
+<td width="33%" bgcolor="#E7EFE7"><b>Description</b></td>
+<td width="34%" bgcolor="#E7EFE7"><b>Example</b></td>
+</tr>
+<tr>
+<td width="33%">dpkg -i {.deb package}</td>
+<td width="33%">Install the package</td>
+<td width="34%">dpkg -i zip_2.31-3_i386.deb</td>
+</tr>
+<tr>
+<td width="33%">dpkg -i {.deb package}</td>
+<td width="33%">Upgrade package if it is installed else install a fresh copy of package</td>
+<td width="34%">dpkg -i zip_2.31-3_i386.deb</td>
+</tr>
+<tr>
+<td width="33%">dpkg -R {Directory-name}</td>
+<td width="33%">Install all packages recursively from directory</td>
+<td width="34%">dpkg -R /tmp/downloads</td>
+</tr>
+<tr>
+<td width="33%">dpkg -r {package}</td>
+<td width="33%">Remove/Delete an installed package except configuration files</td>
+<td width="34%">dpkg -r zip</td>
+</tr>
+<tr>
+<td width="33%">dpkg -P {package}</td>
+<td width="33%">Remove/Delete everything including configuration files</td>
+<td width="34%">dpkg -P apache-perl</td>
+</tr>
+<tr>
+<td width="33%">dpkg -l</td>
+<td width="33%">List all installed packages, along with package version and short description</td>
+<td width="34%">dpkg -l<br>dokg -l | less<br>dpkg -l '*apache*'<br>dpkg -l | grep -i 'sudo'</td>
+</tr>
+<tr>
+<td width="33%">dpkg -l {package}</td>
+<td width="33%">List individual installed packages, along with package version and short description</td>
+<td width="34%">dpkg -l apache-perl</td>
+</tr>
+<tr>
+<td width="33%">dpkg -L {package}</td>
+<td width="33%">Find out files are provided by the installed package i.e. list where files were installed</td>
+<td width="34%">dpkg -L apache-perl<br>dpkg -L perl</td>
+</tr>
+<tr>
+<td width="33%">dpkg -c {.Deb package}</td>
+<td width="33%">List files provided (or owned) by the package i.e. List all files inside debian .deb package file, very useful to find where files would be installed</td>
+<td width="34%">dpkg -c dc_1.06-19_i386.deb</td>
+</tr>
+<tr>
+<td width="33%">dpkg -S {/path/to/file}</td>
+<td width="33%">Find what package owns the file i.e. find out what package does file belong</td>
+<td width="34%">dpkg -S /bin/netstat<br>dpkg -S /sbin/ippool</td>
+</tr>
+<tr>
+<td width="33%">dpkg -p {package}</td>
+<td width="33%">Display details about package package group, version, maintainer, Architecture, display depends packages, description etc</td>
+<td width="34%">dpkg -p lsof</td>
+</tr>
+<tr>
+<td width="33%">dpkg -s {package} | grep Status</td>
+<td width="33%">Find out if Debian package is installed or not (status)</td>
+<td width="34%"> dpkg -s lsof | grep Status</td>
+</tr>
+</table>
+
+</BODY>
+</HTML>
+

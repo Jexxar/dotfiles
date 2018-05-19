@@ -1,0 +1,177 @@
+<!doctype html public "-//w3c//dtd HTML 4.0 Transitional//EN">
+
+<html>
+
+<head>
+<title>HTML Forms and Selection Boxes</title>
+<meta name="KEYWORDS" content="HTML Codes Tutor, website design ,  forms,selection boxes">
+<meta name="DESCRIPTION" content="HTML Codes Tutor for Easy Website Design - HTML Forms and selection boxes .">
+<META NAME="robots" CONTENT="index, follow">
+<link rel="stylesheet" href="html40.css" type="text/css">
+<style type="text/css">
+#toc a{ font-family: Verdana;font-style : normal ;font-size : 8pt; font-weight :bold;text-decoration : none}
+#toc a {color :#ffffff}
+#toc a:hover{color :#DFDFDF }
+#toc p{font-family: Verdana;font-style : normal ;font-size : 9pt; font-weight :bold;text-align :center;color :#FFFFFF}
+
+</style>
+
+</head>
+<body>
+
+<p><a href="http://www.createafreewebsite.net/button_gallery.html" title="Free Button Graphics">Free Buttons</a>   <a href="http://www.createafreewebsite.net/free_bullets.html" title="Free Bullet Graphics">Free Bullets</a>
+<table  width="100%" border="0" cellspacing="0" cellpadding="3" bgcolor="ffffff">
+<tr align="center" valign="top">
+<td ID="right" align="center" colspan="1" rowspan="1" style="background-color:#dfdfdf;border-left:solid #004f9d 1px;border-right:solid #004f9d 1px;border-bottom:solid #004f9d 1px">
+<h2 STYLE="margin-top:2px">Forms and Selection Boxes</h2>
+<p>Selection boxes add a little elegance to the structure of a form.  They simply allow a user to make selections from a predefined list.
+<br clear="all">
+<br>
+The Tags:<br>
+<br>
+<b>Select</b>  <code>&lt;select&gt;&lt;/select&gt;</code>
+<br>
+<br>
+<b>Attributes</b><br>
+<ul>
+<li><b>name</b> (required) supplies the name for the name/value pair.</li>
+<li><b>size</b> determines the number of options to be displayed at one time. Default=1.</li>
+<li><b>multiple</b> allows mutiple selections. (Control Key depressed)</li>
+</ul>
+<br>
+<b>Option</b>  <code>&lt;option&gt;&lt;/option&gt;</code>
+<p>Note: Closing option tag is not required.</p>
+<p><b>Attributes</b><br>
+<ul>
+<li><b>selected</b> used to set default option.</li>
+<li><b>value</b> option text is default.</li>
+</ul>
+<br>
+<p>A simple form:<br>
+<br>
+<FORM method="post" action="parse_selection.php">
+<p>What states have you visited?<br>
+<select size="7" name="state[]" multiple>
+<option>Alabama
+<option>Arkansas
+<option>Colorado
+<option>Kentucky
+<option>Tennessee
+<option>Washington
+<option>None of the above.
+</select>
+<input type="submit" value="Submit"><input type="reset">
+<p>For multiple selections Hold Down the Control Key</p>
+</form>
+
+
+</td>
+<td align="left" colspan="1" rowspan="2">
+<div ID="toc">
+<table   bgcolor="#004f9d" width="170" border="0" cellspacing="0" cellpadding="5">
+	<tr align="center"><td align="left" valign="top">
+<p>Page Structure</p>
+<a href="basic_html_page.html"> Basic HTML Page</a>
+<br>
+<a href="body_tag.html"> The Body Tag</a>
+<br>
+<a href="division_tag.html">The Division Tag</a>
+<br>
+<a href="horizontal_rule.html">Horizontal Rule</a>
+<br>
+<a href="anchor_tag.html">Anchor Tag</a>
+<br>
+<a href="anchor_tag_intra.html">Anchor Tag - Intradocument</a>
+<br>
+<a href="anchor_tag_image.html">Anchor Tag - Image</a>
+<br>
+<a href="borders.html">Using Borders</a>
+<br>
+<a href="id_attribute.html">The ID Attribute</a>
+<br>
+<a href="meta_tags.html">Meta Tags</a>
+<br>
+<p>Text Controls</p>
+<a href="style_sheets.html">Style Sheets</a>
+<br>
+<a href="fonts.htm">Working With Fonts</a>
+<br>
+<a href="paragraph_tag.html">The Paragraph Tag</a>
+<br>
+<a href="paragraph_images.html">Paragraphs-Images</a>
+<br>
+<a href="lists.html">Using Lists</a>
+<br>
+<a href="pre_tag.html">The Pre Tag</a>
+<br>
+<a href="line_break.html">Line Break Tag</a>
+<br>
+<p>Tables</p>
+<a href="tables.htm">Basics of Tables</a>
+<br>
+<a href="formscheckbox.htm">Check Boxes</a>
+<br>
+<a href="formselections.htm">Selection Boxes</a>
+<p>Frames</p>
+<a href="frames.html">Basic Frames</a>
+<br>
+<a href="frames_search_engines.html">Search Engines</a>
+<p>Miscellaneous</p>
+<a href="color.html">Using Color</a>
+</td></tr></table>
+</div>
+</td></tr>
+<tr align="center" valign="top">
+<td align="left" colspan="2" rowspan="1">
+<p>Try the form Execution is via PHP. (Script below)
+<br>
+<h3>The Form Code</h3r>
+<p>
+<code>
+
+&lt;form method="post" action="script name"&gt;<br>
+
+What states have you visited?&lt;br&gt;<br>
+
+&lt;select name="state[]" size="7" multiple&gt;<br>
+&lt;option&gt;
+Alabama<br>
+&lt;option&gt;Arkansas<br>
+&lt;option&gt;Colorado<br>
+&lt;option&gt;Kentucky<br>
+&lt;option&gt;Tennessee<br>
+&lt;option&gt;Washington<br>
+&lt;option&gt;None of the above.<br>
+&lt;/select&gt;<br>
+&lt;input type="submit"&gt;<br>
+&lt;/form&gt;
+</code>
+</p>
+</td>
+</tr></table>
+
+<table width="100%" cellpadding="3" cellspacing="0" border="0"><tr align="center" valign="top"><td align="left" colspan="1" rowspan="1">
+
+<p>Note:  Most people don't know how to make multiple selections using a selection box.  Include the instruction for holding down the Control Key on your form.
+<h3>PHP Script</h3>
+<p><code>
+&lt;html&gt;<br>
+&lt;head&gt;&lt;title&gt;&lt;/title&gt;&lt;/head&gt;<br>
+&lt;body&gt;<br>
+&lt;?<br>
+print "&lt;h1&gt;You have visted:&lt;/h1&gt;";<br>
+foreach ($state as $value){<br>
+print "$value&lt;br&gt;";<br>
+}<br>
+print "&lt;br&gt;";<br>
+print "&lt;a href=formselections.htm&gt;Back to Tutorial&lt;/a&gt;";<br>
+?&gt;<br>
+&lt;/body&gt;<br>
+&lt;/html&gt;<br>
+</code>
+</td></tr></table>
+</body>
+
+</html>
+
+

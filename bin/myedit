@@ -1,0 +1,140 @@
+#!/bin/bash
+set -eu
+
+if [ -f "$HOME/bin/mylog" ]; then
+    . "$HOME/bin/mylog"
+fi
+
+# This script is intended to be run as an editor helper.
+
+cmd=${2:-edit}
+
+function is_running_X(){
+    if ! xset q &>/dev/null; then
+        return 1
+    fi
+    return 0
+}
+
+function has_editor(){
+	[ -z "$1" ] && return 1;
+	local tmp=$(which $1)
+	if [ -z $tmp ]; then
+		echo ""
+        return 1
+    fi
+	echo "$tmp"
+    return 0
+}
+
+function do_edit() {
+    if [ is_running_X ]; then
+        local edt=$(has_editor "subl")
+        if [ ! -z "$edt" ]; then 
+            $edt "$1"
+            return 0
+        fi
+        edt=$(has_editor "geany")
+        if [ ! -z "$edt" ]; then 
+            $edt "$1"
+            return 0
+        fi
+        edt=$(has_editor "xed")
+        if [ ! -z "$edt" ]; then 
+            $edt "$1"
+            return 0
+        fi
+        edt=$(has_editor "gedit")
+        if [ ! -z "$edt" ]; then 
+            $edt "$1"
+            return 0
+        fi
+        edt=$(has_editor "atom")
+        if [ ! -z "$edt" ]; then 
+            $edt "$1"
+            return 0
+        fi
+    else
+        local edt=$(has_editor "nano")
+        if [ ! -z "$edt" ]; then 
+            $edt "$1"
+            return 0
+        fi
+    fi
+    
+    if [ -z "$edt" ]; then
+        log "no editors found"
+    fi
+    
+    return 0
+}
+
+function do_test() {
+    local subl_present=$(has_editor "subl")
+    local geany_present=$(has_editor "geany")
+    local xed_present=$(has_editor "xed")
+    local gedit_present=$(has_editor "gedit")
+    local atom_present=$(has_editor "atom")
+    local nano_present=$(has_editor "nano")
+
+    if [ ! -z "$1" ]; then
+        log "target is $1"
+    else
+        log "no target found"
+    fi
+
+    if [ is_running_X ]; then
+        log "X is running"
+    else
+        log "X server down"
+    fi
+    
+    if [ ! -z "$subl_present" ]; then
+        log "sublime present @ $subl_present"
+    else
+        log "sublime not found"
+    fi
+    
+    if [ ! -z "$geany_present" ]; then
+        log "geany present @ $geany_present"
+    else
+        log "geany not found"
+    fi
+    
+    if [ ! -z "$xed_present" ]; then
+        log "xed present"
+    else
+        log "xed not found"
+    fi
+
+    if [ ! -z "$gedit_present" ]; then
+        log "gedit present @ $gedit_present"
+    else
+        log "gedit not found"
+    fi
+
+    if [ ! -z "$atom_present" ]; then
+        log "atom present @ $atom_present"
+    else
+        log "atom not found"
+    fi
+
+    if [ ! -z "$nano_present" ]; then
+        log "nano present @ $nano_present"
+    else
+        log "nano not found"
+    fi
+
+    return 0
+}
+
+case "$cmd" in
+    edit)
+        do_edit $1
+        ;;  
+    debug)
+        do_test $1
+        ;;
+    *)
+        log "Unrecognized option: $2"
+esac

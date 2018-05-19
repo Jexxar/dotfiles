@@ -1,0 +1,54 @@
+#!/bin/bash
+#set -eu
+
+if [ -f "$HOME/bin/mylog" ]; then
+    . "$HOME/bin/mylog"
+fi
+
+# Install cursor theme
+function do_install_theme(){
+    local CURSOR="$1"
+    log "Setting default x-cursor-theme to $CURSOR"
+    sudo -v
+    if [ -f /usr/share/icons/"$CURSOR"/cursor.theme ]; then
+        log "Install using $CURSOR/cursor.theme"
+        sudo update-alternatives --install /usr/share/icons/default/index.theme x-cursor-theme /usr/share/icons/"$CURSOR"/cursor.theme 20
+    elif [ -f /usr/share/icons/"$CURSOR"/index.theme ]; then
+        log "Install using $CURSOR/index.theme"
+        sudo update-alternatives --install /usr/share/icons/default/index.theme x-cursor-theme /usr/share/icons/"$CURSOR"/index.theme 20
+    else
+        log "Cursor theme $CURSOR not found"
+    fi
+}
+
+# Set default cursor theme
+function do_default_theme(){
+    local CURSOR="$1"
+    log "gsettings set org.gnome.desktop.interface cursor-theme $CURSOR"
+    gsettings set org.gnome.desktop.interface cursor-theme "$CURSOR"
+    sudo -v
+    if [ -f /usr/share/icons/"$CURSOR"/cursor.theme ]; then
+        log "Set default using $CURSOR/cursor.theme"
+        sudo update-alternatives --set x-cursor-theme /usr/share/icons/"$CURSOR"/cursor.theme
+    elif [ -f /usr/share/icons/"$CURSOR"/index.theme ]; then
+        log "Set default using $CURSOR/index.theme"
+        sudo update-alternatives --set x-cursor-theme /usr/share/icons/"$CURSOR"/index.theme
+    else
+        log "Cursor theme $CURSOR not found"
+    fi
+}
+
+cmd=${1:-empty}
+
+[ -z "$2" ] && exit 1;
+
+case "$cmd" in
+    default)
+        do_default_theme $2
+        ;;  
+    install)
+        do_install_theme $2
+        ;;
+    *)
+        log "Unrecognized option: $1"
+esac

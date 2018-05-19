@@ -1,0 +1,224 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"> 
+ 
+<html> 
+ 
+<head> 
+<title>Creating Buttons Using Style Sheets</title> 
+<meta name="DESCRIPTION" content="HTML Codes Tutor for Easy Website Design - Creating Buttons using style sheets.."> 
+<meta name="KEYWORDS" content="HTML Codes Tutor , website design ,  buttons , borders, border-style,border-color,border-width,HTML Codes Tutor, beginner, html codes"> 
+<META NAME="robots" CONTENT="index, follow">
+<link rel="stylesheet" href="html40.css" type="text/css">
+<style type="text/css">
+#toc a{ font-family: Verdana;font-style : normal ;font-size : 8pt; font-weight :bold;text-decoration : none}
+#toc a {color :#ffffff}
+#toc a:hover{color :#DFDFDF }
+#toc p{font-family: Verdana;font-style : normal ;font-size : 9pt; font-weight :bold;text-align :center;color :#FFFFFF}
+div.menubar{ 
+color :#000000;
+background-color :#000000;
+width :100%;
+padding :5px }
+
+a.menu{
+width :100px;
+text-align : center;
+font-family: Verdana;
+font-style : normal ;
+font-size : 9pt;
+font-weight :bold;
+color :#000000;
+text-decoration : none;
+background-color :#F5D996;
+padding :3px;
+border-style : outset ;border-color :#F5D996 ;border-width : medium }
+
+a.menu:hover{
+color :#6F6F6F;
+background-color :#8C1F13;
+border-style :inset ;border-color :#F5D996 ;border-width :medium }
+
+ul.menu2{list-style :none;text-align : center}
+li.menu2{text-align : center }
+a.menu2{
+display : block;
+width :125px;
+text-align : center;
+font-family: Verdana;
+font-style : normal ;
+font-size : 9pt;
+font-weight :bold;
+color :#000000;
+text-decoration : none;
+background-color :#F5D996;
+padding :1px;
+border-top : solid #ffffff 1px; border-right : solid #ffffff 1px; border-left : solid #000000 1px; border-bottom : solid #000000 1px }
+
+a.menu2:hover{
+color :#EFEFEF;
+background-color :#CFCFCF;
+border-top : solid #000000 1px; border-right : solid #000000 1px; border-left : solid #ffffff 1px; border-bottom : solid #ffffff 1px }
+</style>
+
+</head> 
+<body>
+<p><a href="http://www.createafreewebsite.net/button_gallery.html" title="Free Button Graphics">Free Buttons</a>
+<a href="http://www.createafreewebsite.net/free_bullets.html" title="Free Bullet Graphics">Free Bullets</a>
+<br clear="all">
+
+ <table  width="100%" border="0" cellspacing="0" cellpadding="3" bgcolor="ffffff"> 
+<tr align="center" valign="top">
+<td align="left" colspan="1" rowspan="2">
+	
+<div ID="toc">
+<table   bgcolor="#004f9d" width="170" border="0" cellspacing="0" cellpadding="5">
+	<tr align="center"><td align="left" valign="top">
+<p>Page Structure</p>
+<a href="basic_html_page.html"> Basic HTML Page</a>
+<br>
+<a href="body_tag.html"> The Body Tag</a>
+<br>
+<a href="division_tag.html">The Division Tag</a>
+<br>
+<a href="horizontal_rule.html">Horizontal Rule</a>
+<br>
+<a href="anchor_tag.html">Anchor Tag</a>
+<br>
+<a href="anchor_tag_intra.html">Anchor Tag - Intradocument</a>
+<br>
+<a href="anchor_tag_image.html">Anchor Tag - Image</a>
+<br>
+<a href="borders.html">Using Borders</a>
+<br>
+<a href="id_attribute.html">The ID Attribute</a>
+<br>
+<a href="meta_tags.html">Meta Tags</a>
+<br>
+<p>Text Controls</p>
+<a href="style_sheets.html">Style Sheets</a>
+<br>
+<a href="fonts.htm">Working With Fonts</a>
+<br>
+<a href="paragraph_tag.html">The Paragraph Tag</a>
+<br>
+<a href="paragraph_images.html">Paragraphs-Images</a>
+<br>
+<a href="lists.html">Using Lists</a>
+<br>
+<a href="pre_tag.html">The Pre Tag</a>
+<br>
+<a href="line_break.html">Line Break Tag</a>
+<br>
+<p>Tables</p>
+<a href="tables.htm">Basics of Tables</a>
+<br>
+<a href="formscheckbox.htm">Check Boxes</a>
+<br>
+<a href="formselections.htm">Selection Boxes</a>
+<p>Frames</p>
+<a href="frames.html">Basic Frames</a>
+<br>
+<a href="frames_search_engines.html">Search Engines</a>
+<p>Miscellaneous</p>
+<a href="color.html">Using Color</a>
+</td></tr></table>
+</div>
+</td><td>
+<h2 STYLE="margin-top:2px">Creating Buttons With CSS</h2> 
+<p>The navigational system of your website is one of its most important features.  You can use simple hyperlinks.  You can use fancy 'Navbars' bult with Javascript.  You can use simple button images with your hyperlinks.
+<p>You can also create buttons using CSS and HTML code which mimic the mechanical aspects of Js navbars.  And these won't slow your pages or create errors in browsers that don't support Js.
+<p>Most of the code is set up in the Style Sheets.  We use the class method <b>a.menu</b> to assign the properties only to the links in our menu.  We then produce a depressed button effect by changing background colors and border styles in the hover property. (IE 5.0 Mozilla 5.0)</p>
+<code>
+div.menubar{ <br>
+color :#000000;<br>
+background-color :#000000;<br>
+width :100%;<br>
+padding :5px }<br>
+<br>
+a.menu{<br>
+width :100px;<br>
+text-align : center;<br>
+font-family: Verdana;<br>
+font-style : normal ;<br>
+font-size : 9pt;<br> 
+font-weight :bold;<br>
+color :#000000;<br>
+text-decoration : none;<br>
+background-color :#F5D996;<br>
+padding :3px;<br>
+border-style : outset ;border-color :#F5D996 ;border-width : medium }<br>
+<br>
+a.menu:hover{<br>
+color :#6F6F6F;<br>
+background-color :#8C1F13;<br>
+border-style :inset ;border-color :#F5D996 ;border-width :medium }<br>
+<br>
+HTML:<br>
+&lt;div class="menubar"&gt;<br>
+&lt;a class="menu" href="index.html"&gt;Home&lt;/a&gt;<br>
+&lt;a class="menu" href="contact.html"&gt;Contact&lt;/a&gt;<br>
+&lt;/div&gt;
+ </code>
+<p>The code produces:</p>
+<div class="menubar">
+<a class="menu" href="#contact">Home</a>
+<a class="menu" href="#contact">Contact</a>
+</div> 
+<h2>More Buttons</h2>
+</td></tr>
+<tr>
+<td align="left" colspan="1" rowspan="1">
+
+<p>You can also create an illusion of a depressed button simply by changing the color of a solid border.
+<br><br></td>
+</tr>
+<tr align="center" valign="top">
+<td colspan="1" rowspan="1">
+
+<ul class="menu2">
+<li class="menu2"><a href="#beginning" class="menu2">Home</a> 
+<li class="menu2"><a href="#beginning" class="menu2">About</a> 
+<li class="menu2"><a href="#beginning" class="menu2">Contact</a> 
+</ul>
+<br><br>
+<p>The HTML code:<br>
+<code>&lt;ul class="menu2"&gt;<br>
+&lt;li class="menu2"&gt;&lt;a href="#beginning" class="menu2">Home&lt;/a&gt;<br> 
+&lt;li class="menu2"&gt;&lt;a href="#beginning" class="menu2">About&lt;/a&gt; <br>
+&lt;li class="menu2"&gt;&lt;a href="#beginning" class="menu2">Contact&lt;/a&gt;<br> 
+&lt;/ul&gt;</code>
+</td>
+<td align="left" colspan="1" rowspan="1">
+<p>The Style code:<br>
+<code>ul.menu2{list-style :none;text-align : center}<br>
+li.menu2{text-align : center }<br>
+a.menu2{<br>
+display : block;<br>
+width :125px;<br>
+text-align : center;<br>
+font-family: Verdana;<br>
+font-style : normal ;<br>
+font-size : 9pt;<br>
+font-weight :bold;<br>
+color :#000000;<br>
+text-decoration : none;<br>
+background-color :#F5D996;<br>
+padding :1px;<br>
+border-top : solid #ffffff 1px; border-right : solid #ffffff 1px; border-left : solid #000000 1px; border-bottom : solid #000000 1px }<br>
+<br>
+a.menu2:hover{<br>
+color :#EFEFEF;<br>
+background-color :#CFCFCF;<br>
+border-top : solid #000000 1px; border-right : solid #000000 1px; border-left : solid #ffffff 1px; border-bottom : solid #ffffff 1px }
+</code><br><br>
+</td></tr></table>
+</body> 
+ 
+</html>
+
+
+
+
+
+
+
+

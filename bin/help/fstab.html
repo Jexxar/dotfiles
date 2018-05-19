@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+   <TITLE></TITLE>
+   <META NAME="keywords" CONTENT="linux, ubuntu,">
+
+<style type="text/css">	
+html{width: 100%}
+
+body {
+    font-family: Georgia, helvetica, sans-serif;
+    font-size: 16px;
+    font-weight: normal; 
+    text-align: left;
+    color: black;
+    margin: 8px;
+    padding: 0;
+    background-color: #FFFFFF;
+    border-style: solid;
+    border-color: #000000;
+    border-width: 0px;
+}
+
+p {
+   margin:5px;
+   font-size:16px;
+   text-indent: 0em;
+   text-align: justify;
+}
+  
+    
+A:link {text-decoration: none}
+A:visited {text-decoration: none}
+A:active {text-decoration: none}
+A:hover {font-size:24; font-weight:bold; color: red;}
+
+ul li
+{
+	color: #000000;
+	background-color: #FFFFFF;
+	margin: 8px;
+	margin-bottom: 4px;
+	margin-left: 1em;
+        padding-left: 2px;
+	font-size: 16px;
+	font-style: normal;
+        font-weight: normal;
+        text-indent: 1em;
+	list-style: decimal inside;
+}
+
+h1, h2, h3, h4 {
+	color: #FF0000;
+    background-color: #FFFFFF;
+    font-weight: bold;
+    margin: 0;
+    margin-bottom: 7px;
+    padding: 4px;
+    font-style: normal;
+    text-align: center;
+    letter-spacing: ;
+    border-bottom-style: solid;
+    border-bottom-width: 0px;
+    border-bottom-color: #000000;
+}
+
+</style>
+</HEAD>
+
+<BODY>
+<h2>How to edit and understand /etc/fstab - 1.1</h2>
+
+<h4>Author: Nana L&aring;ngstedt &lt; nana.langstedt at gmail.com &gt;</h4>
+
+<h4>Many other great articles can be found at Nana&acute;s website, <a href="http://www.tuxfiles.org/">Tuxfiles.org.</a></h4>
+
+<p>There's a file called <em>/etc/fstab</em> in your Linux system. Learn what its contents mean and how it's used in conjunction with the <em>mount</em> command. When you learn to understand the <em>fstab</em> file, you'll be able to edit its contents yourself, too.</p>
+
+<p>In this tuXfile I assume you already know how to mount file systems and partitions with the <em>mount</em> command. If you don't, I suggest reading the <a href="http://www.tuxfiles.org/linuxhelp/mounting.html">Mounting tuXfile</a> before reading this one.</p>
+
+<h3>What is fstab and why it's useful</h3>
+
+<p><em>fstab</em> is a configuration file that contains information of all the partitions and storage devices in your computer. The file is located under <em>/etc</em>, so the full path to this file is <em>/etc/fstab</em>.</p>
+
+<p><em>/etc/fstab</em> contains information of where your partitions and storage devices should be mounted and how. If you can't access your Windows partition from Linux, aren't able to mount your CD or write to your floppy as a normal user, or have problems with your CD-RW, you probably have a misconfigured <em>/etc/fstab</em> file. So, you can usually fix your mounting problems by editing your <em>fstab</em> file.</p>
+
+<p><em>/etc/fstab</em> is just a plain text file, so you can open and edit it with any text editor you're familiar with. However, note that you must have the root privileges before editing <em>fstab</em>. So, in order to edit the file, you must either log in as root or use the <em>su</em> command to become root.</p>
+
+<h3>Overview of the file</h3>
+
+<p>Of course everybody has a bit different <em>/etc/fstab</em> file because the partitions, devices and their properties are different on different systems. But the basic structure of <em>fstab</em> is always the same. Here's an example of the contents of <em>/etc/fstab</em>:</p>
+
+<pre class="code">
+[UUID=20FD-79AA or /dev/sda4]   /media/me/[name or uuid]   [vfat or ntfs-3g or ext4 or swap]   umask=0000,user,sync   0   0
+/dev/hda2                       /                          ext2                                defaults               1   1
+/dev/hdb1                       /home                      ext2                                defaults               1   2
+/dev/cdrom                      /media/cdrom               auto                                ro,noauto,user,exec    0   0
+/dev/fd0                        /media/floppy              auto                                rw,noauto,user,sync    0   0
+proc                            /proc                      proc                                defaults               0   0
+/dev/hda1                       swap                       swap                                pri=42                 0   0
+</pre>
+
+<p>What does all this gibberish mean? As you see, every line (or row) contains the information of one device or partition. The first column contains the device name, the second one its mount point, third its file system type, fourth the mount options, fifth (a number) dump options, and sixth (another number) file system check options. Let's take a closer look at this stuff.</p>
+
+<h3>1st and 2nd columns: Device and default mount point</h3>
+
+<p>The first and second columns should be pretty straightforward. They tell the <em>mount</em> command exactly the same things that <em>you</em> tell <em>mount</em> when you mount stuff manually: what is the device or partition, and what is the mount point. The mount point specified for a device in <em>/etc/fstab</em> is its default mount point. That is the directory where the device will be mounted if you don't specify any other mount point when mounting the device.</p>
+
+<p>Like you already learned from the <a href="http://www.tuxfiles.org/linuxhelp/mounting.html">Mounting tuXfile</a>, most Linux distros create special directories for mount points. Most distros create them under <em>/mnt</em>, but some (at least SuSE) under <em>/media</em>. As you probably noticed when looking at the example <em>fstab</em>, I use SuSE's mount points as an example.</p>
+
+<p>What does all this mean? If I type the following command:</p>
+
+<p class="code">$ mount /dev/fd0</p>
+
+<p>my floppy will be mounted in <em>/media/floppy</em>, because that's the default mount point specified in <em>/etc/fstab</em>. If there is no entry for <em>/dev/fd0</em> in my <em>fstab</em> when I issue the command above, <em>mount</em> gets very confused because it doesn't know where to mount the floppy.</p>
+
+<p>You can freely change the default mount points listed in <em>/etc/fstab</em> if you're not satisfied with the defaults your distro has given you. Just make sure the mount point is a directory that already exists on your system. If it doesn't, simply create it.</p>
+
+<p>Some partitions and devices are also automatically mounted when your Linux system boots up. For example, have a look at the example <em>fstab</em> above. There are lines that look like this:</p>
+
+<pre class="code">
+/dev/hda2 / ext2 defaults 1 1
+/dev/hdb1 /home ext2 defaults 1 2
+</pre>
+
+<p>As you've learned, these lines mean that <em>/dev/hda2</em> will be mounted to / and <em>/dev/hdb1</em> to <em>/home</em>. This is done automatically when your Linux system boots up... if it wouldn't, you'd have a hard time using your cool Linux system because all the programs you use are in / and you wouldn't be able to run them if / wasn't mounted! But how does the system know where you want to mount <em>/dev/hda2</em> and <em>/dev/hdb1</em>? By looking at the <em>/etc/fstab</em> file of course.</p>
+
+<h3>3rd column: Filesystem type</h3>
+
+<p>The third column in <em>/etc/fstab</em> specifies the file system type of the device or partition. Many different file systems are supported but we'll take a look at the most common ones only.</p>
+
+<p><b>ext2 and ext3</b> Very likely your Linux partitions are Ext3. Ext2 used to be the standard file system for Linux, but these days, Ext3 and ReiserFS are usually the default file systems for almost every new Linux distro. Ext3 is a newer file system type that differs from Ext2 in that it's <em>journaled</em>, meaning that if you turn the computer off without properly shutting down, you shouldn't lose any data and your system shouldn't spend ages doing file system checks the next time you boot up.</p>
+
+<p><b>reiserfs</b> Your Linux partitions may very well be formatted as ReiserFS. Like Ext3, ReiserFS is a journaled file system, but it's much more advanced than Ext3. Many Linux distros (including SuSE) have started using ReiserFS as their default file system for Linux partitions.</p>
+
+<p><b>swap</b> The file system name is self-explanatory. The file system type &quot;swap&quot; is used in your swap partitions.</p>
+
+<p><b>vfat and ntfs</b> Your Windows partitions are probably either Vfat or NTFS. The 9x series (95, 98, ME) all use Vfat (more widely known as FAT32), and the NT series (NT, 2000, XP) use NTFS. In 2000 and XP you can choose the file system type, so 2000 and XP partitions may be formatted as Vfat, too. If you want to be able to write to your Windows partitions from Linux, I suggest formatting them as Vfat, because Linux's support for writing to NTFS partitions is a bit shabby at this moment.</p>
+
+<p><b>auto</b> No, this isn't a file system type :-) The option &quot;auto&quot; simply means that the file system type is detected automatically. If you take a look at the example <em>fstab</em> above, you'll see that the floppy and CD-ROM both have &quot;auto&quot; as their file system type. Why? Their file system type may vary. One floppy might be formatted for Windows and the other for Linux's Ext2. That's why it's wise to let the system automatically detect the file system type of media such as floppies and cdroms.</p>
+
+<h3>4th column: Mount options</h3>
+
+<p>The fourth column in <em>fstab</em> lists all the mount options for the device or partition. This is also the most confusing column in the <em>fstab</em> file, but knowing what some of the most common options mean, saves you from a big headache. Yes, there are many options available, but I'll take a look at the most widely used ones only. For more information, check out the man page of <em>mount</em>.</p>
+
+<p><b>auto and noauto</b> With the <em>auto</em> option, the device will be mounted automatically (at bootup, just like I told you a bit earlier, or when you issue the <em>mount -a</em> command). <em>auto</em> is the default option. If you don't want the device to be mounted automatically, use the <em>noauto</em> option in <em>/etc/fstab</em>. With <em>noauto</em>, the device can be mounted only explicitly.</p>
+
+<p><b>user and nouser</b> These are very useful options. The <em>user</em> option allows normal users to mount the device, whereas <em>nouser</em> lets only the root to mount the device. <em>nouser</em> is the default, which is a major cause of headache for new Linux users. If you're not able to mount your cdrom, floppy, Windows partition, or something else as a normal user, add the <em>user</em> option into <em>/etc/fstab</em>.</p>
+
+<p><b>exec and noexec</b> <em>exec</em> lets you execute binaries that are on that partition, whereas <em>noexec</em> doesn't let you do that. <em>noexec</em> might be useful for a partition that contains binaries you don't want to execute on your system, or that can't even be executed on your system. This might be the case of a Windows partition.</p>
+
+<p><b>exec</b> is the default option, which is a good thing. Imagine what would happen if you accidentally used the <em>noexec</em> option with your Linux root partition...</p>
+
+<p><b>ro</b> Mount the file system read-only.</p>
+
+<p><b>rw</b> Mount the file system read-write. Again, using this option might cure the headache of many new Linux users who are tearing their hair off because they can't write to their floppies, Windows partitions, or something else.</p>
+
+<p><b>sync and async</b> How the input and output to the file system should be done. <em>sync</em> means it's done synchronously. If you look at the example <em>fstab</em>, you'll notice that this is the option used with the floppy. In plain English, this means that when you, for example, copy a file to the floppy, the changes are physically written to the floppy at the <em>same time</em> you issue the copy command.</p>
+
+<p>However, if you have the <em>async</em> option in <em>/etc/fstab</em>, input and output is done asynchronously. Now when you copy a file to the floppy, the changes may be physically written to it long time <em>after</em> issuing the command. This isn't bad, and may sometimes be favorable, but can cause some nasty accidents: if you just remove the floppy without unmounting it first, the copied file may not physically exist on the floppy yet!</p>
+
+<p><b>async</b> is the default. However, it may be wise to use <em>sync</em> with the floppy, especially if you're used to the way it's done in Windows and have a tendency to remove floppies before unmounting them first.</p> 
+
+<p><b>defaults</b> Uses the default options that are rw, suid, dev, exec, auto, nouser, and async.</p>
+
+<h3>5th and 6th columns: Dump and fsck options</h3>
+
+<p>Dump and, uh, <em>what</em> options? Well, dump is a backup utility and fsck is a file system check utility. I won't discuss them in great length here (they would both need their own tuXfile), but I'll mention them, because otherwise you'd spend the rest of the day wondering what on God's green Earth do these things mean.</p>
+
+<p>The 5th column in <em>/etc/fstab</em> is the dump option. Dump checks it and uses the number to decide if a file system should be backed up. If it's zero, dump will ignore that file system. If you take a look at the example <em>fstab</em>, you'll notice that the 5th column is zero in most cases.</p>
+
+<p>The 6th column is a fsck option. fsck looks at the number in the 6th column to determine in which order the file systems should be checked. If it's zero, fsck won't check the file system.</p>
+
+<h3>Example /etc/fstab entries</h3>
+
+<p>As an example, we'll take a look at a couple of <em>fstab</em> entries that have been a source of endless frustration for new Linux users: floppy and CD-ROM (although these days floppies aren't that important anymore).</p>
+
+<p class="code">/dev/fd0 /media/floppy auto rw,noauto,user,sync 0 0</p>
+
+<p>This line means that the floppy is mounted to <em>/media/floppy</em> by default and that its file system type is detected automatically. This is useful because the type of the floppy may wary. Note especially the rw and user options: they must be there if you want to be able to mount and write to the floppy as a normal user. If you have trouble with this, check your <em>fstab</em> file to see if these options are there. Also note the sync option. It can be async just as well, but it's sync because of reasons discussed a bit earlier.</p>
+
+<p class="code">/dev/cdrom /media/cdrom auto ro,noauto,user,exec 0 0</p>
+
+<p>Note, again, the user option that enables you to mount the CD as a normal user. The CD-ROM has the ro option because it's no use mounting a CD-ROM read-write because you wouldn't be able to write to it anyway. Also note the exec option. It's especially useful if you'd like to be able to execute something from your CD.</p>
+
+<p>Also note that the noauto option is used with the floppy and CD-ROM. This means that they won't be automatically mounted when your Linux system boots up. This is useful for removable media, because sometimes there won't be any floppy or CD-ROM when you boot up your system, so there isn't any reason to try to mount something that doesn't even exist.</p>
+
+<p><b>Umask</b> works as the normal octal permissions but subtracted from 7, and uses the absolute value. For instance if you want to set the permissions to 0777 you will need to set umask= 0000, and if you want to set it to 0755 you will set umask=0022.  Here:<ul>
+<li>The first character represents that its an octal permissions.</li>
+<li>The second is for the owner.</li>
+<li>The third is the group.</li>
+<li>The fourth is for other, i.e any other user.</li></ul></p>
+
+<p><a href="#top">Top</a></p>
+</BODY>
+</HTML>
+

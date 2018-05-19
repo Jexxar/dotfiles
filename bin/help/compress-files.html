@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+   <TITLE>Compress Files Help</TITLE>
+   <META NAME="keywords" CONTENT="linux, ubuntu,">
+
+<style type="text/css">	
+html{width: 100%}
+
+body {
+    font-family: Georgia, helvetica, sans-serif;
+    font-size: 16px;
+    font-weight: normal; 
+    text-align: left;
+    color: black;
+    margin: 8px;
+    padding: 0;
+    background-color: #FFFFFF;
+    border-style: solid;
+    border-color: #000000;
+    border-width: 0px;
+}
+
+p {
+   margin:5px;
+   font-size:16px;
+   text-indent: 0em;
+   text-align: justify;
+}
+  
+    
+A:link {text-decoration: none}
+A:visited {text-decoration: none}
+A:active {text-decoration: none}
+A:hover {font-size:24; font-weight:bold; color: red;}
+
+ul li
+{
+	color: #000000;
+	background-color: #FFFFFF;
+	margin: 8px;
+	margin-bottom: 4px;
+	margin-left: 1em;
+        padding-left: 2px;
+	font-size: 16px;
+	font-style: normal;
+        font-weight: normal;
+        text-indent: 1em;
+	list-style: decimal inside;
+}
+
+h1, h2, h3, h4 {
+	color: #FF0000;
+    background-color: #FFFFFF;
+    font-weight: bold;
+    margin: 0;
+    margin-bottom: 7px;
+    padding: 4px;
+    font-style: normal;
+    text-align: center;
+    letter-spacing: ;
+    border-bottom-style: solid;
+    border-bottom-width: 0px;
+    border-bottom-color: #000000;
+}
+
+</style>
+</HEAD>
+
+<BODY>
+<h3>Compressing files under Linux or UNIX cheat sheet</h3>
+<p>Both Linux and UNIX include various commands for Compressing and decompresses (read as expand compressed file). To compress files you can use gzip, bzip2 and zip commands. To expand compressed file (decompresses) you can use and gzip -d, bunzip2 (bzip2 -d), unzip commands. </p>
+<h3>Compressing files</h3>
+&nbsp;
+<table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#60834A" width="100%">
+<tr align=center>
+<td width="33%" bgcolor="#E7EFE7"><b>Syntax</b></td>
+<td width="33%" bgcolor="#E7EFE7"><b>Description</b></td>
+<td width="34%" bgcolor="#E7EFE7"><b>Example(s)</b></td>
+</tr>
+<tr>
+<td width="33%"><a name="gzip"></a>gzip {filename}</td>
+<td width="33%">Gzip compress the size of the given files using Lempel-Ziv coding (LZ77). Whenever possible, each file is replaced by one with the extension .gz.</td>
+<td width="34%">gzip mydata.doc<br>gzip *.jpg<br>ls -l</td>
+</tr>
+<tr>
+<td width="33%"><a name="bzip2"></a>bzip2 {filename}</td>
+<td width="33%">bzip2 compresses files using the Burrows-Wheeler block sorting text compression algorithm, and Huffman coding. Compression is generally considerably better than that achieved by bzip command (LZ77/LZ78-based compressors). Whenever possible, each file is replaced by one with the extension .bz2.</td>
+<td width="34%">bzip2 mydata.doc<br>bzip2 *.jpg<br>ls -l</td>
+</tr>
+<tr>
+<td width="33%"><a name="zip"></a>zip {.zip-filename} {filename-to-compress}</td>
+<td width="33%">zip is a compression and file packaging utility for Unix/Linux. Each file is stored in single .zip {.zip-filename} file with the extension .zip.</td>
+<td width="34%">zip mydata.zip mydata.doc<br>zip data.zip *.doc<br>ls -l</td>
+</tr>
+<tr>
+<td width="33%"><a name="tar"></a>tar -zcvf {.tgz-file} {files}<br>tar -jcvf {.tbz2-file} {files}</td>
+<td width="33%">The GNU tar is archiving utility but it can be use to compressing large file(s). GNU tar supports both archive compressing through gzip and bzip2. If you have more than 2 files then it is recommended to use tar instead of gzip or bzip2.<br><b>-z</b>: use gzip compress<br><b>-j</b>: use bzip2 compress </td>
+<td width="34%">tar -zcvf data.tgz *.doc<br>tar -zcvf pics.tar.gz *.jpg *.png<br>tar -jcvf data.tbz2 *.doc<br>ls -l</td>
+</tr>
+</table>
+<h3>Decompressing files</h3>
+&nbsp;
+<table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#60834A" width="100%">
+<tr align=center>
+<td width="33%" bgcolor="#E7EFE7"><b>Syntax</b></td>
+<td width="33%" bgcolor="#E7EFE7"><b>Description</b></td>
+<td width="34%" bgcolor="#E7EFE7"><b>Example(s)</b></td>
+</tr>
+<tr>
+<td width="33%">gzip -d {.gz file}<br>gunzip {.gz file}</td>
+<td width="33%">Decompressed a file that is created using <a href="#gzip">gzip</a> command. File is restored to their original form using this command.</td>
+<td width="34%">gzip -d mydata.doc.gz<br>gunzip mydata.doc.gz</td>
+</tr>
+<tr>
+<td width="33%">bzip2 -d {.bz2-file}<br>bunzip2 {.bz2-file}</td>
+<td width="33%">Decompressed a file that is created using <a href="#bzip2">bzip2</a> command. File is restored to their original form using this command.</td>
+<td width="34%">bzip2 -d mydata.doc.bz2<br>gunzip mydata.doc.bz2</td>
+</tr>
+<tr>
+<td width="33%">unzip {.zip file}</td>
+<td width="33%">Extract compressed files in a <a href="#zip">ZIP</a> archive.</td>
+<td width="34%">unzip file.zip<br>unzip data.zip resume.doc</td>
+</tr>
+<tr>
+<td width="33%">tar -zxvf {.tgz-file}<br>tar -jxvf {.tbz2-file}</td>
+<td width="33%">Untar or decompressed a file(s) that is created using <a href="#tar">tar</a> compressing through <a href="#gzip">gzip</a> and <a href="
+#bzip2">bzip2</a> filter</td>
+<td width="34%">tar -zxvf data.tgz <br>tar -zxvf pics.tar.gz *.jpg<br>tar -jxvf data.tbz2</td>
+</tr>
+</table>
+<h3>List the contents of an archive/compressed file</h3>
+<p>Some time you just wanted to look at files inside an archive or compressed file. Then all of the above command supports file list option.</p>
+<table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#60834A" width="100%">
+<tr align=center>
+<td width="33%" bgcolor="#E7EFE7"><b>Syntax</b></td>
+<td width="33%" bgcolor="#E7EFE7"><b>Description</b></td>
+<td width="34%" bgcolor="#E7EFE7"><b>Example(s)</b></td>
+</tr>
+<tr>
+<td width="33%">gzip -l {.gz file} </td>
+<td width="33%">List files from a <a href="#gzip">GZIP</a> archive</td>
+<td width="34%">gzip -l mydata.doc.gz</td>
+</tr>
+<tr>
+<td width="33%">unzip -l {.zip file} </td>
+<td width="33%">List files from a <a href="#zip">ZIP</a> archive</td>
+<td width="34%">unzip -l mydata.zip</td>
+</tr>
+<tr>
+<td width="33%">tar -ztvf {.tar.gz}<br>tar -jtvf {.tbz2}</td>
+<td width="33%">List files from a <a href="#tar">TAR</a> archive</td>
+<td width="34%">tar -ztvf pics.tar.gz<br>tar -jtvf data.tbz2</td>
+</tr>
+</table>
+</BODY>
+</HTML>
+

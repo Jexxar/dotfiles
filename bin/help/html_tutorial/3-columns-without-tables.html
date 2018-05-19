@@ -1,0 +1,137 @@
+<!doctype html public "-//w3c//dtd HTML 4.0 Transitional//EN"> 
+ 
+<html> 
+ 
+<head> 
+<title>3 Column Web Pages Without Tables</title> 
+<meta name="DESCRIPTION" content="HTML Codes Tutor for Easy Website Design - Building 3 Column Web Pages Without using Tables. Html Codes for beginners."> 
+<meta name="KEYWORDS" content="HTML Codes Tutor , website design ,  columns , float , division ,HTML Codes Tutor, beginner, html codes"> 
+<META NAME="robots" CONTENT="index, follow">
+<link rel="stylesheet" href="html40.css" type="text/css">
+<style type="text/css">
+#toc a{ font-family: Verdana;font-style : normal ;font-size : 8pt; font-weight :bold;text-decoration : none}
+#toc a {color :#ffffff}
+#toc a:hover{color :#DFDFDF }
+#toc p{font-family: Verdana;font-style : normal ;font-size : 9pt; font-weight :bold;text-align :center;color :#FFFFFF}
+img.left{float : left; margin : 4px }
+</style>
+
+</head> 
+<body>
+<div ID="links">
+<table  width="100%" border="0" cellspacing="0" cellpadding="3" bgcolor="ffffff"><tr>
+<td><a href="http://www.createafreewebsite.net/button_gallery.html" title="Free Button Graphics">Free Buttons</a></td>
+<td><a href="http://www.createafreewebsite.net/free_bullets.html" title="Free Bullet Graphics">Free Bullets</a></td></tr></table>
+</div><br clear="all">
+<table  width="100%" border="0" cellspacing="0" cellpadding="3" bgcolor="ffffff"> 
+<tr align="center" valign="top">
+<td  align="left">
+<a name="ebooks"></a>
+<!--HTML Codes Tutor for Easy Website Design Body Text-->
+<h2 STYLE="margin-top:2px">3 Columns Without Tables</h2> 
+<p>It is possible to construct multi column web pages without using tables.  Pages developed in this manner will be easier for search engines to navigate.  It is however, harder to construct pages using these methods that will appear the same in all browser types.
+<p>We have already provided a lesson for a <a href="div_page.html">2 column page</a>, but have had requests for pages with 3 or more columns.
+<p>Since most of our users learn by copying code we provide a 3 column gripe page that is constructed without using tables. <br> <a href="http://www.createafreewebsite.net/css-mytest.html">3 Column Page</a> 
+
+<p>After you open the page just right click on it and choose <b>View Source</b>.
+</td>
+
+<td align="left" rowspan="2">
+<div ID="toc">
+<table   bgcolor="#004f9d" width="170" border="0" cellspacing="0" cellpadding="5">
+	<tr align="center"><td align="left" valign="top">
+<p>Page Structure</p>
+<a href="basic_html_page.html"> Basic HTML Page</a>
+<br>
+<a href="body_tag.html"> The Body Tag</a>
+<br>
+<a href="division_tag.html">The Division Tag</a>
+<br>
+<a href="horizontal_rule.html">Horizontal Rule</a>
+<br>
+<a href="anchor_tag.html">Anchor Tag</a>
+<br>
+<a href="anchor_tag_intra.html">Anchor Tag - Intradocument</a>
+<br>
+<a href="anchor_tag_image.html">Anchor Tag - Image</a>
+<br>
+<a href="borders.html">Using Borders</a>
+<br>
+<a href="id_attribute.html">The ID Attribute</a>
+<br>
+<a href="meta_tags.html">Meta Tags</a>
+<br>
+<p>Text Controls</p>
+<a href="style_sheets.html">Style Sheets</a>
+<br>
+<a href="fonts.htm">Working With Fonts</a>
+<br>
+<a href="paragraph_tag.html">The Paragraph Tag</a>
+<br>
+<a href="paragraph_images.html">Paragraphs-Images</a>
+<br>
+<a href="lists.html">Using Lists</a>
+<br>
+<a href="pre_tag.html">The Pre Tag</a>
+<br>
+<a href="line_break.html">Line Break Tag</a>
+<br>
+<p>Tables</p>
+<a href="tables.htm">Basics of Tables</a>
+<br>
+<a href="formscheckbox.htm">Check Boxes</a>
+<br>
+<a href="formselections.htm">Selection Boxes</a>
+<p>Frames</p>
+<a href="frames.html">Basic Frames</a>
+<br>
+<a href="frames_search_engines.html">Search Engines</a>
+<p>Miscellaneous</p>
+<a href="color.html">Using Color</a>
+</td></tr></table>
+</div>
+</td></tr>
+<tr valign="top">
+<td align="center">
+<p>You must be extra careful to test pages developed in this manner in as many different web browsers as possible.  We tested the page using Netscape 7.1, IE 5.5 and Mozilla 5.0.
+<p>The page displays differently in all 3 browsers, but a 3 column set up is produced by all.
+<p>The key code for making the web page work properly is provided using CSS.  3 divisions are defined using the <b>class</b> operative.</p>
+<code>div.left{ width :20%;float : left;}</code><br><br>
+<code>div.middle{ width :60%;float : left }</code><br><br>
+<code>div.right{ width :20%;float :left }</code>
+<p>To make the web page work properly in Netscape and Mozilla you must pay careful attention to the widths of the divisions.  If you add padding or borders to horizontally adjacent divisions you must decrease the width of the divisions.  When making these adjustments it is a good idea to set your monitor resolution to its lowest setting. </p>
+<p>The more padding you add to a division or the wider the border, the lower the width settings.  </p>
+<p><img src="images/misalign-division.gif" height="78" width="77" alt="" border="0" class="left">Note: Monitor Resolution will affect the way your page will display.  Test at different resolutions.  If you are not careful and build your pages at an 800X600 resolution or higher, someone surfing the web with a monitor resolution set to 640X480 might see your page as shown on the left.
+<br clear="all">
+<p>This is the HTML code for the page. Note the method of adding the class definitions.</p>
+<code>
+&lt;div class="left"&gt;<br>
+&lt;h1&gt;Division Left&lt;/h1&gt;<br>
+&lt;p&gt;Text&lt;/p&gt;<br>
+&lt;/div&gt;<br>
+
+&lt;div class="middle"&gt;<br>
+&lt;h1&gt;Division Middle&lt;/h1&gt;<br>
+&lt;p&gt;Text&lt;/p&gt;<br>
+&lt;/div&gt;<br>
+
+&lt;div class="right"&gt;<br>
+&lt;h1&gt;Division Right&lt;/h1&gt;<br>
+&lt;p&gt;Text&lt;/p&gt;<br>
+&lt;/div&gt;<br>
+</code>
+
+<code>&lt;br clear="all"&gt;<br>
+&lt;div&gt;<br>
+&lt;p&gt;This paragraph presents a problem for the Netscape 4.73 browser.  Later versions of Netscape work a little better with the float property.<br>
+&lt;/div&gt;
+</code>
+</td></tr></table>
+</body> 
+</html>
+
+
+
+
+
+

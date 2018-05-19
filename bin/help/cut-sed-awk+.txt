@@ -1,0 +1,68 @@
+-n 3inxi -I cat file |
+	finds (prints) file to pipe to next command when file not output of previous pipe
+	
+command infile > outfile
+
+cut -f 1-4,6,7 -d':' file   
+      selects fields 1-4, 6 and 7   with fields defined by    delimiter ":" which can (must) be a single character.
+
+cut -c 3-12 file   
+      selects characters 3-12; character = letter or space
+
+cut -f 1,3 -d':' --output-delimiter=' ' file        
+      (replaces ':' in intput with 'space' in output)
+
+cut -f 1,3 -d':' --output-delimiter=$'\t'       
+      (replaces ':' in intput with 'tab')
+
+sed "1,32 d" file.txt
+    Delete lines 1 through 32
+    
+sed  -r 's/\s//g' file
+	Deletes all spaces and tabs
+    
+sed 's/[ ^t]*$//' file.txt
+    Delete trailing whitespace (spaces/tabs) from end of each line.
+    
+sed 's/^[ ^t]*//;s/[ ^t]*$//' file.txt
+    Delete both leading and trailing whitespace from each line.
+    
+sed 's/foo/bar/g' file.txt
+    Replace all instances of "foo" with "bar"
+    
+sed '/^Delete/d' file.txt
+    Delete lines starting with "Delete".
+    
+sed --in-place 's/^\(.\{20\}\).*/\1/g' file
+    Replace all lines with only their first 20 characters. 
+    
+file | sed -n '3,3p; 4q'        
+	prints line 3 of file and then quits
+	
+file | awk -F ':' '{print $2 substr($3,1,15) $4}'
+	prints field 2, substream 1-15 of field 3 and field 4 without spaces.  If no field indicated, then uses spaces for field.
+	
+file | awk '{print $8 $9}'
+	prints words 8 and 9 of each line with spaces deleted.
+	
+file | awk '/20/ {print $3 }' prints field (word) 3 of lines containing 20
+	
+grep "model name" file
+	prints all lines begining with "model name".
+	
+tr -s '[:blank:]]'''
+	changes tabs to spaces
+	
+tr -d '[:blank:]'
+	removes all spaces and tabs
+	
+tail -n             outputs last 10 lines
+tail -n K			outputs last K-1 lines
+tail -n +K          outputs lines starting with Kth
+tail -c K    		outputs last K-2 bytes counting spaces
+
+head -n				outputs first 10 lines
+head -n K           outputs first K lines
+head -c K			outputs first K bytes counting spaces
+	
+

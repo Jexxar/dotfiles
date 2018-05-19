@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Script name that is sourcing this
+myLogScriptName="${0##*/}"
+myLogSctiptBase="${myLogScriptName%%.*}"
+
+# Find path for logging
+function findPath() {
+    local fpPath="/var/log"
+    if [ ! -w $fpPath ]; then 
+        fpPath="$HOME/.local/var/log"
+    fi
+    if [ ! -d $fpPath ]; then
+        mkdir -p $fpPath
+        if [ $? -ne 0 ]; then
+            echo ""
+            return 1
+        fi
+    fi
+    echo "$fpPath"
+    return 0
+}
+
+# Find a path to Log file
+myLogPath=$(findPath)
+myLogFile="$myLogPath/$myLogSctiptBase.log"
+
+# Print the given message with a timestamp.
+function info() { printf '%s\t%s\n' "$(date)" "$*"; }
+
+# Standard log file
+function log() {
+    local LOCK_rc=0
+    if [ ! -f $myLogFile ]; then
+        touch $myLogFile
+        LOCK_rc=$?
+    fi
+    if [[ $LOCK_rc -eq 0 && -f $myLogFile ]]; then
+        info >>"$myLogFile" "$@"
+    else
+        info "$@"
+    fi
+}

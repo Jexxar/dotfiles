@@ -1,0 +1,33 @@
+[1]  To create a variable, put a line in your script that contains the name of the variable followed immediately by an equal sign ("="). No spaces are allowed. After the equal sign, assign the information you wish to store. Note that no spaces are allowed on either side of the equal sign.
+
+[2]  Rules for naming a variable:
+
+    It must start with a letter.
+    It must not contain embedded spaces. Use underscores instead.
+    Don't use punctuation marks.
+    Don't use a name that is already a word understood by bash. These are called reserved words and should not be used as variable names. If you use one of these words, bash will get confused. To see a list of reserved words, use the help command.
+
+[3]  Example:  numz="shuf -i 1-20 -n 1"    (make sure numz does not conflict by putting    which numz  in terminal.  No output means no conflict.)
+
+[4]  printenv   shows variables already in computer system
+
+[5]  Using a variable in script, prefix with $, for example:   $numz
+
+[6]  &  runs process it suffixes in the background.
+
+[7]  can use output of command 1, say c1, as input in command 2 by putting $c1 in command 2 where needed.  
+
+[8]  Enclosing characters in single quotes (‘'’) preserves the literal value of each character within the quotes. A single quote may not occur between single quotes, even when preceded by a backslash.
+
+[9]  Enclosing characters in double quotes (‘"’) preserves the literal value of all characters within the quotes, with the exception of ‘$’, ‘`’, ‘\’, and, when history expansion is enabled, ‘!’. The characters ‘$’ and ‘`’ retain their special meaning within double quotes (see Shell Expansions). The backslash retains its special meaning only when followed by one of the following characters: ‘$’, ‘`’, ‘"’, ‘\’, or newline. Within double quotes, backslashes that are followed by one of these characters are removed. Backslashes preceding characters without a special meaning are left unmodified. A double quote may be quoted within double quotes by preceding it with a backslash. If enabled, history expansion will be performed unless an ‘!’ appearing in double quotes is escaped using a backslash. The backslash preceding the ‘!’ is not removed.
+
+[10]  If a command is terminated by the control operator ‘&’, the shell executes the command asynchronously in a subshell. This is known as executing the command in the background. The shell does not wait for the command to finish, and the return status is 0 (true). 
+Commands separated by a ‘;’ are executed sequentially; the shell waits for each command to terminate in turn. The return status is the exit status of the last command executed.
+
+[11]  AND and OR lists are sequences of one or more pipelines separated by the control operators ‘&&’ and ‘||’, respectively. AND and OR lists are executed with left associativity.
+
+An AND list has the form:   command1 && command2 - command2 is executed if, and only if, command1 returns an exit status of zero (true).
+
+An OR list has the form:  command1 || command2 - command2 is executed if, and only if, command1 returns a non-zero (false) exit status. 
+
+[12]  terminal launched command:   xterm -e /home/me/bin/tlaunch.sh "cdw"

@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>Tables</title>
+<meta name="KEYWORDS" content="HTML Codes Tutor , website design ,  background images , color, tables, html tips">
+<meta name="DESCRIPTION" content="HTML Codes Tutor for Easy Website Design - Using Background images in tables on HTML Pages. An online tutorial for html.">
+<META NAME="robots" CONTENT="index, follow">
+<link rel="stylesheet" href="html40.css" type="text/css">
+<style type="text/css">
+#toc a{ font-family: Verdana;font-style : normal ;font-size : 8pt; font-weight :bold;text-decoration : none}
+#toc a{color : #ffffff}
+#toc a:hover{color : #DFDFDF }
+#toc p{font-family: Verdana;font-style : normal ;font-size : 9pt; font-weight :bold;text-align :center;color :#FFFFFF}
+
+</style>
+
+</head>
+<body>
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr align="center" valign="top">
+<td align="left" colspan="1" rowspan="1">
+<h2>Background Images in  Tables</h2>
+<p>For browser compatibility background images should be placed using the inline background attribute:
+<br>
+<code>background="image_name"</code><br>
+</p>
+<p>Tags that accept the background attribute are:<br>
+<code>&lt;table&gt;</code>(IE)<br>
+<code>&lt;th&gt;</code><br>
+<code>&lt;td&gt;</code><br>
+</p>
+<p><img src="http://www.createafreewebsite.net/images/spacer_black.gif" height="9" width="9" alt="" border="0" align="center"> This image (spacer_black.gif) was used in the table below as a background image to produce the black border around the cell content.</p>
+
+
+<table background="http://www.createafreewebsite.net/images/spacer_black.gif" width="200" cellpadding="12" cellspacing="1" border="0">
+<tr><th colspan="2" bgcolor="#00FF00">Heading</th></tr>
+<tr>
+<td ><p STYLE=" color :#7F7F7F;background-color :#FFFF00">Column 1</p></td>
+<td bgcolor="#FFFF00">Column 2</td>
+</tr></table>
+<p>The code below shows how to place the background image and set the color within the tags that accept the bgcolor attribute, to produce the table exhibited above..</p>
+
+<code>
+&lt;table background="http://www.createafreewebsite.net/images/spacer_black.gif" width="200" cellpadding="12" cellspacing="1" border="0"&gt;<br>
+&lt;tr&gt;&lt;th colspan="2" bgcolor="#00FF00"&gt;Heading&lt;/th&gt;&lt;/tr&gt;<br>
+&lt;tr&gt;<br>
+&lt;td &gt;&lt;p STYLE=" color :#7F7F7F;background-color :#FFFF00"&gt;Column 1&lt;/p&gt;&lt;/td&gt;<br>
+&lt;td bgcolor="#FFFF00"&gt;Column 2&lt;/td&gt;<br>
+&lt;/tr&gt;&lt;/table&gt;<br>
+</code>
+<p>Note: If you are viewing this page in a Netscape browser the appearance of the table will be quite different than that of the IE display.</p>
+
+</td>
+<td align="left" colspan="1" rowspan="1">
+<div ID="toc">
+<table   bgcolor="#004f9d" width="170" border="0" cellspacing="0" cellpadding="5">
+	<tr align="center"><td align="left" valign="top">
+<p>Page Structure</p>
+<a href="basic_html_page.html"> Basic HTML Page</a>
+<br>
+<a href="body_tag.html"> The Body Tag</a>
+<br>
+<a href="division_tag.html">The Division Tag</a>
+<br>
+<a href="horizontal_rule.html">Horizontal Rule</a>
+<br>
+<a href="anchor_tag.html">Anchor Tag</a>
+<br>
+<a href="anchor_tag_intra.html">Anchor Tag - Intradocument</a>
+<br>
+<a href="anchor_tag_image.html">Anchor Tag - Image</a>
+<br>
+<a href="borders.html">Using Borders</a>
+<br>
+<a href="id_attribute.html">The ID Attribute</a>
+<br>
+<a href="meta_tags.html">Meta Tags</a>
+<br>
+
+<p>Text Controls</p>
+<a href="style_sheets.html">Style Sheets</a>
+<br>
+<a href="fonts.htm">Working With Fonts</a>
+<br>
+<a href="paragraph_tag.html">The Paragraph Tag</a>
+<br>
+<a href="paragraph_images.html">Paragraphs-Images</a>
+<br>
+<a href="lists.html">Using Lists</a>
+<br>
+<a href="pre_tag.html">The Pre Tag</a>
+<br>
+<a href="line_break.html">Line Break Tag</a>
+<br>
+
+<p>Tables</p>
+<a href="tables.htm">Basics of Tables</a>
+<br>
+<a href="formscheckbox.htm">Check Boxes</a>
+<br>
+<a href="formselections.htm">Selection Boxes</a>
+<p>Frames</p>
+<a href="frames.html">Basic Frames</a>
+<br>
+<a href="frames_search_engines.html">Search Engines</a>
+<p>Miscellaneous</p>
+<a href="color.html">Using Color</a>
+</td></tr></table>
+</div>
+</td></tr>
+<tr align="center" valign="top">
+<td align="left" colspan="1" rowspan="1">
+<p>
+<h3>Using Inline Style Sheets</h3>
+<p>Similar results can be obtained using Inline Style sheets.  There are still problems with browser compatibility using this method in tables. The code and resulting table, below.</p>
+
+<code>
+&lt;table STYLE="background-image : URL(images/blue_ball.gif)" width="200" cellpadding="2" cellspacing="15" border="0"&gt;<br>
+&lt;tr&gt;&lt;th  bgcolor="#FFFFFF" colspan=2"&gt;Heading&lt;/th&gt;&lt;/tr&gt;<br>
+&lt;tr align="center" valign="top"&gt;<br>
+&lt;td bgcolor="#FFFFFF"&gt;Column 1&lt;/td&gt;<br>
+&lt;td&gt;Column 2&lt;/td&gt;<br>
+&lt;/tr&gt;&lt;/table&gt;
+</code>
+</td></tr></table>
+
+<h2>The attributes of the table tag are:</h2>
+<dl>
+<dt>width</dt>
+<dd>Measurements are in pixels or percentage.  For best results, because most surfers do not use full view
+when browsing, do not exceed a 500 or 600 pixel setting.  Or try a percentage setting of 90%.</dd>
+<dt>border</dt>
+<dd>Border settings are a matter of preference.  Experiment and decide which works best for you.  Zero is no border. One is a single border. Two is 3 dimensional.  Successive numbers increase the thickness of the 3 dimensional effect.</dd>
+<dt>cellpadding</dt>
+<dd>Specifies the distance in pixels of the text or image from the inside wall of a cell.</dd>
+<dt>cellspacing</dt>
+<dd>Specifies in pixels, the spacing between cells in a table.</dd>
+<dt>bgcolor
+<dd>Sets and overall background color for the entire table.  You can also use bgcolor in row and cell tags to produce multi color effects.
+<dt>background
+<dd>For adding a background image to the table.  You can use style sheets for this setting, but because of incompatibilty problems with Netscape it is best to use this method.
+</dl>
+
+<h2>Row Tag</h2>
+<p>The <code>&lt;tr&gt;</code> or row tag is used to define rows in a table.  Do not omit the closing tag.  A row can
+contain numerous cells defined by the <code>&lt;td&gt;</code> tag.<br>
+<br>
+The attributes of the tr tag are:<br>
+<dl>
+<dt>align</dt>
+<dd>Horizontal alignment. Choices are left, right or center.</dd>
+<dt>valign</dt>
+<dd>Vertical alignment. Choices are top, middle or bottom.</dd>
+</dl>
+<h2>Cell or Column Tag</h2>
+<p>The td tag is used to define the cells in a row.<br>
+The most common attributes of the td tag are:<br>
+<dl>
+<dt>align</dt>
+<dd>Horizontal alignment. Choices are left, right or center.</dd>
+<dt>valign</dt>
+<dd>Vertical alignment. Choices are top, middle or bottom.</dd>
+<dt>bgcolor</dt>
+<dd>You may set individual background colors for cells.</dd>
+<dt>height</dt>
+<dt>width</dt>
+</dl>
+</p>
+
+
+<table STYLE="background-image : URL(images/blue_ball.gif)" width="200" cellpadding="2" cellspacing="15" border="0">
+<tr><th  bgcolor="#FFFFFF" colspan=2">Heading</th></tr>
+<tr align="center" valign="top">
+<td bgcolor="#FFFFFF">Column 1</td>
+<td>Column 2</td>
+</tr></table>
+<p>When using background images in tables or as page backgrounds, be sure to choose them wisely.  One of the most common errors in web page design is the use of busy or dark colored backgrounds that conflict with text.</p>
+<p>In the example above the proper use of a busy background is demonstrated in the heading and Column 1.  Improper use is demonstrated in column 2.</p>
+</td>
+</tr></table>
+<h2>Color in  Tables</h2>
+<p>For browser compatibility color settings in tables should use the inline bgcolor attribute:
+<br>
+<code>bgcolor="red"</code><br>
+<code>bgcolor="#ff0000"</code>
+</p>
+<p>Tags that accept the bgcolor attribute are:<br>
+<code>&lt;table&gt;</code>(IE)<br>
+<code>&lt;th&gt;</code><br>
+<code>&lt;td&gt;</code><br>
+</p>
+
+<table width="200" cellpadding="2" cellspacing="15" border="0" bgcolor="#7F7F7F">
+<tr><th colspan="2" bgcolor="#00FF00">Heading</th></tr>
+<tr>
+<td bgcolor="#FF8080">Column 1</td>
+<td bgcolor="#FFFF00">Column 2</td>
+</tr></table>
+<p>The code below shows how to set the color within the tags that accept the bgcolor attribute, to produce the table exhibited above..</p>
+<code>
+&lt;table width="200" cellpadding="2" cellspacing="15" border="0" bgcolor="#7F7F7F"&gt;<br>
+&lt;tr&gt;&lt;th colspan="2" bgcolor="#00FF00"&gt;Heading&lt;/th&gt;&lt;/tr&gt;<br>
+&lt;tr&gt;<br>
+&lt;td bgcolor="#FF8080"&gt;Column 1&lt;/td&gt;<br>
+&lt;td bgcolor="#FFFF00"&gt;Column 2&lt;/td&gt;<br>
+&lt;/tr&gt;&lt;/table&gt;<br>
+</code>
+<p>Note: If you are viewing this page in a Netscape browser the appearance of the table will be quite different than that of the IE display.</p>
+<h3>Using Inline Style Sheets</h3>
+<p>Similar results can be obtained using Inline Style sheets.  There are still problems with browser compatibility using this method in tables. The code and resulting table, below.</p>
+<code>
+&lt;table STYLE="background-color :#7F7F7F" width="200" cellpadding="2" cellspacing="15" border="0"&gt;<br>
+&lt;tr&gt;&lt;th  STYLE="background-color :#E4B552" colspan="2"&gt;Heading&lt;/th&gt;&lt;/tr&gt;<br>
+&lt;tr align="center" valign="top"&gt;<br>
+&lt;td  STYLE="background-color :#FFFF00"&gt;Column 1&lt;/td&gt;<br>
+&lt;td  STYLE="background-color :#FF8080"&gt;Column 2&lt;/td&gt;<br>
+&lt;/tr&gt;&lt;/table&gt;
+</code>
+<table STYLE="background-color :#7F7F7F" width="200" cellpadding="2" cellspacing="15" border="0">
+<tr><th  STYLE="background-color :#E4B552" colspan="2">Heading</th></tr>
+<tr align="center" valign="top">
+<td  STYLE="background-color :#FFFF00">Column 1</td>
+<td  STYLE="background-color :#FF8080">Column 2</td>
+</tr></table>
+
+<h2>More Table Tips</h2>
+<p>For faster loading pages, build several single row tables, rather than one large complicated multi row table.  Single row tables are also easier to maintain.</p>
+<p>We've used the older method of setting table attributes in our examples.  You can use Inline Style Sheets for HTML 4.0 compliance.<br>
+Example:<br>
+For:<br>
+<code>&lt;tr align=&quot;center&quot;&gt;</code><br>
+Use:<br>
+<code>&lt;tr STYLE=&quot;text-align : center&quot;&gt;</code>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

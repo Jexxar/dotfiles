@@ -1,0 +1,97 @@
+https://www.w3schools.com/html/default.asp
+
+
+The additional repository should be saved in the :    /etc/apt/sources.list.d
+
+So create new file, for example:      etc/apt/sources.list.d/widelands-daily.list
+      and past the repo:
+            deb http://ppa.launchpad.net/widelands-dev/widelands-daily/ubuntu yakkety main
+            deb-src http://ppa.launchpad.net/widelands-dev/widelands-daily/ubuntu yakkety main
+Try to install public key in this way:
+         sudo gpg --keyserver keys.gnupg.net --recv key-ID
+         sudo gpg --export key-ID | apt-key add -
+it means, it your case:
+        sudo gpg --keyserver keys.gnupg.net --recv 358E1F6F
+        sudo gpg --export 358E1F6F | apt-key add -
+_________________
+You should be able to use any of the listed mirrors by adding a line to your /etc/apt/sources.list like this:
+         deb http://ftp.de.debian.org/debian sid main 
+Replacing ftp.de.debian.org/debian with the mirror in question. 
+apt-get -t testing install wmforecast
+______________
+# Testing repository - main, contrib and non-free branches
+deb http://http.us.debian.org/debian testing main non-free contrib
+deb-src http://http.us.debian.org/debian testing main non-free contrib
+
+# Testing security updates repository
+deb http://security.debian.org/ testing/updates main contrib non-free
+deb-src http://security.debian.org/ testing/updates main contrib non-free
+
+# Unstable repo main, contrib and non-free branches, no security updates
+deb http://http.us.debian.org/debian unstable main non-free contrib
+deb-src http://http.us.debian.org/debian unstable main non-free contrib
+
+apt pinning:
+
+#Open either of  (create one if it does not exist):
+	/etc/apt/preferences
+	OR
+	/etc/apt/preferences.d/my_preferences
+#Fill the following into the file:
+	Package: *
+	Pin: release a=stable
+	Pin-Priority: 700
+
+	Package: *
+	Pin: release a=testing
+	Pin-Priority: 650
+
+	Package: *
+	Pin: release a=unstable
+	Pin-Priority: 600
+
+Package: *
+Pin: origin "foobar.com"
+Pin-Priority: -10						[does not automatically install anything]
+
+#The stable/current version has been given the highest priority which means that for regular tasks apt-get will install packages only from the current stable repository.
+
+#After adding the new repository and specify the pinning rules, update the package cache.
+	sudo apt-get update
+
+#Confirm:
+$ apt-cache policy apache2
+apache2:
+  Installed: (none)
+  Candidate: 2.2.22-13
+  Version table:
+     2.4.7-1 0
+        600 http://http.us.debian.org/debian/ unstable/main amd64 Packages
+     2.4.6-3 0
+        650 http://http.us.debian.org/debian/ testing/main amd64 Packages
+     2.2.22-13 0
+        700 http://http.us.debian.org/debian/ wheezy/main amd64 Packages
+#The above output confirms that version 2.2.22 ( the wheezy main/stable ) repository is selected, its on highest priority.
+
+#To install:   
+	sudo apt-get -t testing install wmforecast
+#The above command will install wmforecast from testing source and install all dependencies from testing source as well.
+_______________________
+#Add to your sources.list (or add a new file with the ".list" extension to /etc/apt/sources.list.d/):
+	deb http://ftp.debian.org/debian jessie-backports main
+#Run:   sudo apt-get update
+#To install:   sudo apt-get -t jessie-backports install "wmforecast"
+______________________
+Repos (active on Asus Sparky):  "inxi -r"  Active apt sources in file: /etc/apt/sources.list
+           deb http://ftp.debian.org/debian/ testing main contrib non-free
+           deb-src http://ftp.debian.org/debian/ testing main contrib non-free
+           
+           deb http://security.debian.org/ testing/updates main contrib non-free
+           deb-src http://security.debian.org/ testing/updates main contrib non-free
+           
+           deb http://www.deb-multimedia.org/ testing main non-free
+           deb http://httpredir.debian.org/debian jessie-backports main contrib non-free
+           
+           Active apt sources in file: /etc/apt/sources.list.d/sparky.list
+           deb http://sparkylinux.org/repo/ testing main
+           deb-src http://sparkylinux.org/repo/ testing main

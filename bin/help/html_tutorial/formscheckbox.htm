@@ -1,0 +1,156 @@
+<!doctype html public "-//w3c//dtd HTML 4.0 Transitional//EN">
+
+<html>
+
+<head>
+<title>HTML Forms Checkbox</title>
+
+<meta name="KEYWORDS" content="HTML Codes Tutor, website design ,  forms, checkbox">
+<meta name="DESCRIPTION" content="HTML Codes Tutor for Easy Website Design - Using checkboxes in HTML forms.">
+<META NAME="robots" CONTENT="index, follow">
+<link rel="stylesheet" href="html40.css" type="text/css">
+<style type="text/css">
+#toc a{ font-family: Verdana;font-style : normal ;font-size : 8pt; font-weight :bold;text-decoration : none}
+#toc a {color :#ffffff}
+#toc a:hover{color :#DFDFDF }
+#toc p{font-family: Verdana;font-style : normal ;font-size : 9pt; font-weight :bold;text-align :center;color :#FFFFFF}
+
+</style>
+
+</head>
+<body>
+
+<p><a href="http://www.createafreewebsite.net/button_gallery.html" title="Free Button Graphics">Free Buttons</a>
+<a href="http://www.createafreewebsite.net/free_bullets.html" title="Free Bullet Graphics">Free Bullets</a>
+<br clear="all">
+<table  width="100%" border="0" cellspacing="0" cellpadding="3" bgcolor="ffffff">
+<tr align="center" valign="top">
+<td ID="right" align="center" colspan="1" rowspan="1" style="background-color:#dfdfdf;border-left:solid #004f9d 1px;border-right:solid #004f9d 1px;border-bottom:solid #004f9d 1px">
+
+
+<h2 STYLE="margin-top:2px">Using Check boxes in Forms</h2>
+<p>Check boxes allow your user to make more than one selection in a list.
+<br clear="all">
+The Tag:<br>
+<br>
+<b>Label</b>  <code>&lt;input type="checkbox" name="" value=""&gt</code>
+<br>
+<br>
+<p>Attributes</b><br>
+<br>
+<dl>
+<dt>name
+<dd>Usually refers to the name of the variable where the value entered on the form is to be stored.
+<dt>value
+<dd>Refers to the information or data entered or selected on the form.
+<dt>checked
+<dd>Displays a check mark in the desired input box. (See Code Example)
+</dl>
+
+</td>
+
+<td align="left" colspan="1" rowspan="2">
+<div ID="toc">
+<table   bgcolor="#004f9d" width="170" border="0" cellspacing="0" cellpadding="5">
+	<tr align="center"><td align="left" valign="top">
+<p>Page Structure</p>
+<a href="basic_html_page.html"> Basic HTML Page</a>
+<br>
+<a href="body_tag.html"> The Body Tag</a>
+<br>
+<a href="division_tag.html">The Division Tag</a>
+<br>
+<a href="horizontal_rule.html">Horizontal Rule</a>
+<br>
+<a href="anchor_tag.html">Anchor Tag</a>
+<br>
+<a href="anchor_tag_intra.html">Anchor Tag - Intradocument</a>
+<br>
+<a href="anchor_tag_image.html">Anchor Tag - Image</a>
+<br>
+<a href="borders.html">Using Borders</a>
+<br>
+<a href="id_attribute.html">The ID Attribute</a>
+<br>
+<a href="meta_tags.html">Meta Tags</a>
+<br>
+<p>Text Controls</p>
+<a href="style_sheets.html">Style Sheets</a>
+<br>
+<a href="fonts.htm">Working With Fonts</a>
+<br>
+<a href="paragraph_tag.html">The Paragraph Tag</a>
+<br>
+<a href="paragraph_images.html">Paragraphs-Images</a>
+<br>
+<a href="lists.html">Using Lists</a>
+<br>
+<a href="pre_tag.html">The Pre Tag</a>
+<br>
+<a href="line_break.html">Line Break Tag</a>
+<br>
+<p>Tables</p>
+<a href="tables.htm">Basics of Tables</a>
+<br>
+<a href="formscheckbox.htm">Check Boxes</a>
+<br>
+<a href="formselections.htm">Selection Boxes</a>
+<p>Frames</p>
+<a href="frames.html">Basic Frames</a>
+<br>
+<a href="frames_search_engines.html">Search Engines</a>
+<p>Miscellaneous</p>
+<a href="color.html">Using Color</a>
+</td></tr></table>
+</div>
+</td></tr>
+<tr align="center" valign="top">
+<td align="left" colspan="1" rowspan="1">
+<p>Example:<br>
+<br>
+<b>Red</b>  <code>&lt;input type="checkbox" name="color" value="red"&gt</code><br>
+<b>Green</b>  <code>&lt;input type="checkbox" name="color" value="green"&gt</code><br>
+<b>Blue</b>  <code>&lt;input type="checkbox" name="color" value="blue"&gt</code>
+<br>
+<br>
+<p>When using check boxes the <b>name</b> attribute must be the same for each check box.
+<p> In the example above, multiple check boxes would each share the name <span STYLE="font-weight : bold">color</span>. 
+<p> In the example above multiple check boxes would include a different color in each <b> value</b>  attribute. 
+<p> The Label preceding or following the check box would match the value.</p>
+<p>Now let's build a simple form:<br> 
+<form method="post" action="parse_multiple_php.php">
+<b>Check Your Favorite Pass Times:</b><br>
+<input type="checkbox" name="passtime[]" value="TV">Watching TV <br>
+<input type="checkbox" name="passtime[]" value="Hiking">Hiking<br>
+<input type="checkbox" name="passtime[]" value="Surfing">Surfing the net.<br>
+<input type="checkbox" name="passtime[]" value="Building" checked>Building Web Pages.<br>
+<input type="checkbox" name="passtime[]" value="Reading">Reading a book.<br>
+<input type="checkbox" name="passtime[]" value="Games">Playing Games.<br>
+
+<input type="submit" value="Submit"><input type="reset" value="Reset"><br>
+</form>
+</td></tr></table>
+<table width="100%" cellpadding="3" cellspacing="0" border="0"><tr align="center" valign="top">
+<p>The Code:<br>
+<br>
+<code>&lt;form method="post" action="script name"&gt;<br>
+&lt;b&gt;Check Your Favorite Pass Times:&lt;/b&gt;&lt;br&gt;<br>
+&lt;input type="checkbox" name="passtime" value="TV"&gt;Watching TV&lt;br&gt;<br>
+&lt;input type="checkbox" name="passtime" value="Hiking"&gt;Hiking&lt;br&gt;<br>
+&lt;input type="checkbox" name="passtime" value="Surfing"&gt;Surfing the net.&lt;br&gt;<br>
+&lt;input type="checkbox" name="passtime" value="Building" checked&gt;Building Web Pages.&lt;br&gt;<br>
+&lt;input type="checkbox" name="passtime" value="Reading"&gt;Reading a book.&lt;br&gt;<br>
+&lt;input type="checkbox" name="passtime" value="Games"&gt;Playing Games.&lt;br&gt;<br>
+
+&lt;input type="submit" value="Submit"&gt;&lt;br&gt;<br>
+&lt;/form&gt;</code>
+
+</body>
+
+</html>
+
+
+
+
+
+
