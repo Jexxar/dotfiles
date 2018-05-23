@@ -39,6 +39,7 @@ function change_wallpaper(){
 
 function main(){
 	log "==[ Changer started ]=="
+    nitrogen --restore
 	while [ is_running_X ]; do 
 	    if [ -z $DISPLAY ]; then
     	    DISPLAY=:0.0

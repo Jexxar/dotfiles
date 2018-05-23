@@ -34,21 +34,6 @@ fi
 echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 
-# nitrogen
-OB_str="nitrogen --restore"
-OB_stts=""
-
-nitrogen --restore &
-
-OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
-
-
 # Keyboard
 
 
@@ -346,30 +331,6 @@ echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbo
 #fi
 #echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
-
-# changer
-if [ $(pgrep -lfc changer.sh) -ge 1 ] ; then
-  while 2>/dev/null killall changer.sh; do
-    sleep 1
-  done
-fi
-
-OB_str="~/bin/changer.sh"
-OB_stts=""
-
-~/bin/changer.sh &
-
-OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
-
-export OB_rc
-
-
 # redshift
 if [ $(pgrep -lfc redshift-gtk) -ge 1 ] ; then
     killall redshift-gtk > /dev/null
@@ -382,6 +343,28 @@ OB_str="redshift-gtk"
 OB_stts=""
 
 redshift-gtk &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+export OB_rc
+
+# changer
+if [ $(pgrep -lfc changer.sh) -ge 1 ] ; then
+  while 2>/dev/null killall changer.sh; do
+    sleep 1
+  done
+fi
+
+OB_str="~/bin/changer.sh"
+OB_stts=""
+
+~/bin/changer.sh &
 
 OB_rc=$?
 if [ $OB_rc -eq 0 ]; then

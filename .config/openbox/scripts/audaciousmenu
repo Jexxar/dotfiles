@@ -63,7 +63,6 @@ function doMenuControl() {
 }
 
 function doMenuControl_en(){
-    local iPath=$(iconPath)
     local cursong=`audtool --current-song`
     local cslen=`audtool --current-song-length`
     local rpstatus=`audtool --playlist-repeat-status`
@@ -86,23 +85,22 @@ function doMenuControl_en(){
         menuSep "$cursong ($cslen)"
     fi
 
-    menuItem "Play" "audtool --playback-play" "$iPath/scalable/actions/media-playback-start.svg"
-    menuItem "Pause" "audtool --playback-pause" "$iPath/scalable/actions/media-playback-pause.svg" 
-    menuItem "Stop" "audtool --playback-stop" "$iPath/scalable/actions/media-playback-stop.svg"
-    menuItem "Previous" "audtool --playlist-reverse" "$iPath/scalable/actions/media-skip-backward.svg"
-    menuItem "Next" "audtool --playlist-advance" "$iPath/scalable/actions/media-skip-forward.svg"
-    menuItem "Repeat $rpstatus" "audtool --playlist-repeat-toggle" "$iPath/scalable/actions/media-playlist-repeat.svg"
-    menuItem "Shuffle $shfstatus" "audtool --playlist-shuffle-toggle" "$iPath/scalable/actions/media-playlist-shuffle.svg"
-    menuItem "Jump to file" "audtool --jumptofile-show on" "$iPath/scalable/actions/gtk-jump-to-rtl.svg"
+    menuItem "Play" "audtool --playback-play" 'media-playback-start'
+    menuItem "Pause" "audtool --playback-pause" 'media-playback-pause' 
+    menuItem "Stop" "audtool --playback-stop" 'media-playback-stop'
+    menuItem "Previous" "audtool --playlist-reverse" 'media-skip-backward'
+    menuItem "Next" "audtool --playlist-advance" 'media-skip-forward'
+    menuItem "Repeat $rpstatus" "audtool --playlist-repeat-toggle" 'media-playlist-repeat'
+    menuItem "Shuffle $shfstatus" "audtool --playlist-shuffle-toggle" 'media-playlist-shuffle'
+    menuItem "Jump to file" "audtool --jumptofile-show on" 'gtk-jump-to-rtl'
     menuSep ""
-    menuItem "Add files" "audtool --filebrowser-show on --always-on-top on" "$iPath/scalable/actions/fileopen.svg"
-    menuItem "Preferences" "audtool --preferences-show on" "$iPath/scalable/categories/preferences-system.svg"
-    menuItem "Quit audacious" "audtool --shutdown" "$iPath/scalable/actions/system-shutdown.svg"
+    menuItem "Add files" "audtool --filebrowser-show on --always-on-top on" 'fileopen'
+    menuItem "Preferences" "audtool --preferences-show on" 'preferences-system'    
+    menuItem "Quit audacious" "audtool --shutdown" 'system-shutdown'
     menuEnd
 }
 
 function doMenuControl_pt(){
-    local iPath=$(iconPath)
     local cursong=$(audtool --current-song)
     local cslen=$(audtool --current-song-length)
     local rpstatus=`audtool --playlist-repeat-status`
@@ -125,18 +123,18 @@ function doMenuControl_pt(){
         menuSep "$cursong ($cslen)"
     fi
 
-    menuItem "Reproduzir" "audtool --playback-play" "$iPath/scalable/actions/media-playback-start.svg"
-    menuItem "Pausar" "audtool --playback-pause" "$iPath/scalable/actions/media-playback-pause.svg"
-    menuItem "Parar" "audtool --playback-stop" "$iPath/scalable/actions/media-playback-stop.svg"
-    menuItem "Anterior" "audtool --playlist-reverse" "$iPath/scalable/actions/media-skip-backward.svg"
-    menuItem "Proxima" "audtool --playlist-advance" "$iPath/scalable/actions/media-skip-forward.svg"
-    menuItem "Alterna Repetir ($rpstatus)" "audtool --playlist-repeat-toggle" "$iPath/scalable/actions/media-playlist-repeat.svg"
-    menuItem "Alterna Embaralhar ($shfstatus)" "audtool --playlist-shuffle-toggle" "$iPath/scalable/actions/media-playlist-shuffle.svg"
-    menuItem "Ir para..." "audtool --jumptofile-show on" "$iPath/scalable/actions/gtk-jump-to-rtl.svg"
+    menuItem "Reproduzir" "audtool --playback-play" 'media-playback-start'
+    menuItem "Pausar" "audtool --playback-pause" 'media-playback-pause'
+    menuItem "Parar" "audtool --playback-stop" 'media-playback-stop'
+    menuItem "Anterior" "audtool --playlist-reverse" 'media-skip-backward'
+    menuItem "Proxima" "audtool --playlist-advance" 'media-skip-forward'
+    menuItem "Alterna Repetir ($rpstatus)" "audtool --playlist-repeat-toggle" 'media-playlist-repeat'
+    menuItem "Alterna Embaralhar ($shfstatus)" "audtool --playlist-shuffle-toggle" 'media-playlist-shuffle'
+    menuItem "Ir para..." "audtool --jumptofile-show on" 'gtk-jump-to-rtl'
     menuSep ""
-    menuItem "Abrir Arquivo(s)" "audtool --filebrowser-show on --always-on-top on" "$iPath/scalable/actions/fileopen.svg"
-    menuItem "Configurações" "audtool --preferences-show on" "$iPath/scalable/categories/preferences-system.svg"
-    menuItem "Sair" "audtool --shutdown" "$iPath/scalable/actions/system-shutdown.svg"
+    menuItem "Abrir Arquivo(s)" "audtool --filebrowser-show on --always-on-top on" 'fileopen'
+    menuItem "Configurações" "audtool --preferences-show on" 'preferences-system'
+    menuItem "Sair" "audtool --shutdown" 'system-shutdown'
     menuEnd
 }
 

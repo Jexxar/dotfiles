@@ -42,7 +42,7 @@
                   'Active' - where the active window is -->
   </placement>
   <theme>
-    <name>Pearls-By-Jexxar-OSX</name>
+    <name>FlatabolousBox</name>
     <titleLayout>NSDLIMC</titleLayout>
     <!--
       available characters are NDSLIMC, each can occur at most once.
@@ -280,7 +280,7 @@
     <!-- Take a screenshot of the current window with scrot when Alt+Print are pressed -->
     <keybind key="A-Print">
       <action name="Execute">
-        <command>mate-screenshot</command>
+        <command>mate-screenshot --interactive</command>
       </action>
     </keybind>
     <!-- Keybindings for window switching -->
