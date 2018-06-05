@@ -7,7 +7,7 @@ fi
 MAXRETRIES=5
 RETRYSLEEP=10
 
-onexit() {
+function onexit() {
     return
 }
 
@@ -23,11 +23,11 @@ onexit() {
 #EOF
 #}
 
-checkpassword() {
+function checkpassword() {
     su $1 -c "true" || false
 }
 
-header() {
+function header() {
     local RETRIES=${1}
     clear
     echo ""
@@ -42,7 +42,7 @@ header() {
     fi
 }
 
-authenticate() {
+function authenticate() {
     local RETRY=0
     while true; do
         header $RETRY

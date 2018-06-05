@@ -10,7 +10,7 @@ fi
 
 # Run the command using pkexec:
 set +e
-pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY $1 
+pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY $* 
 __pkexrc=$?
 set -e
 

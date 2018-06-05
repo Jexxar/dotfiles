@@ -18,7 +18,7 @@ function is_running_X(){
 function main(){
     # Only works if X is running.
     if is_running_X; then
-        notify-send -t 9900 -i /usr/share/icons/gnome/32x32/status/info.png "$sctiptBase" "`shuf -n1 $scriptPath/.chuck-norris-jokes.txt`"
+        notify-send -t 9000 -i /usr/share/icons/gnome/32x32/status/info.png "$sctiptBase" "`shuf -n1 $scriptPath/.chuck-norris-jokes.txt`"
     else
         log "X server is not running";
         shuf -n1 $scriptPath/.chuck-norris-jokes.txt

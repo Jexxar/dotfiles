@@ -72,88 +72,88 @@ function doMenu_pt() {
 }
 
 function doAudio() {
-    inxi -A -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    inxi -A -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
     return 0
 }
 
 function doBattery() {
-    inxi -B -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    inxi -B -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
     return 0
 }
 
 function doCPU() {
-    inxi -C -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    inxi -C -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
     return 0
 }
 
 function doDrivesGI() {
-    inxi -d -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    inxi -d -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
     return 0
 }
 
 function doDrivesUU() {
-    inxi -plu -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    inxi -plu -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
     return 0
 }
 
 function doDrivesUN() {
-    inxi -o -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    inxi -o -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
     return 0
 }
 
 function doGraphics() {
-    inxi -G -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    inxi -G -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
     return 0
 }
 
 function doHostKBD() {
-    inxi -S -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    inxi -S -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
     return 0
 }
 
 function doMachine() {
-    inxi -M -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
-    return 0
+    inxi -M -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
+    return 0 
 }
 
 function doNetwork() {
-    inxi -i -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    inxi -i -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
     return 0
 }
 
 function doProcesses() {
-    inxi -t cm -x -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    inxi -t cm -x -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
     return 0
 }
 
 function doProcUptimeMemory() {
-    inxi -I -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    inxi -I -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
     return 0
 }
 
 function doRepositories() {
-    inxi -r -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    inxi -r -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
     return 0
 }
 
 function doResolution() {
-    inxi -G -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    inxi -G -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
     return 0
 }
 
 function doTemperature() {
-    inxi -s -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    inxi -s -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
     return 0
 }
 
 function doWeather() {
-    #inxi -xxx -W 55051 -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
-    inxi -xxx -W curitiba,brazil -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    #inxi -xxx -W 55051 -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
+    inxi -xxx -W curitiba,brazil -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
     return 0
 }
 
 function doAll() {
-    inxi -Fxxxz -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300
+    inxi -Fxxxz -c0 | zenity  --text-info --title "Inxi information..." --width 600 --height 300 --font "Hack Nerd Font Mono 9"
     return 0
 }
 
