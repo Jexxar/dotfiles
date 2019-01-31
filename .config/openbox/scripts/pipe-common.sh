@@ -5,7 +5,7 @@
 # required awk, bc
 
 function findJPG(){
-    if [ -z "$1" || -z "$2" ]; then
+    if [ [ -z "$1" ] || [ -z "$2" ] ]; then
         echo ""
         return 1
     fi
@@ -16,7 +16,7 @@ function findJPG(){
 }
 
 function findPNG(){
-    if [ -z "$1" || -z "$2" ]; then
+    if [ [ -z "$1" ] || [ -z "$2" ] ]; then
         echo ""
         return 1
     fi
@@ -27,7 +27,7 @@ function findPNG(){
 }
 
 function findSVG(){
-    if [ -z "$1" || -z "$2" ]; then
+    if [ [ -z "$1" ] || [ -z "$2" ] ]; then
         echo ""
         return 1
     fi
