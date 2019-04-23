@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # How to detect whether input is from keyboard, a file, or another process.
 # Useful for writing a script that can read from standard input, or prompt the

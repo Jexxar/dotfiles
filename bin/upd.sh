@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 clear
 echo
@@ -9,7 +9,7 @@ sudo -v
 echo
 echo "        Atualizando o cache dos repositorios..."
 echo
-sudo apt update 
+sudo apt-get update -o Acquire::CompressionTypes::Order::=gz 
 echo
 echo "        Fazendo upgrade..."
 echo

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #for i in /proc/[0-9]*/fd/*
 #do
 #    var="$(readlink $i)"

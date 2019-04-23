@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Search through open programs and switch to their tag
 application=$(
     # List all running programs
@@ -17,8 +17,8 @@ application=$(
 case $application in
     gimp | truecrypt)
         xdotool search --onlyvisible -classname "$application" windowactivate &> /dev/null
-        ;;
+    ;;
     *)
         xdotool search ".*${application}.*" windowactivate &> /dev/null
-        ;;
+    ;;
 esac

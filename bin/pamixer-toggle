@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 statusLine=$(amixer get Master | tail -n 1)
 status=$(echo "${statusLine}" | grep -wo "on")
 

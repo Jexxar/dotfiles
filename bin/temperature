@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Taken from Anachron i3blocks
 # I only slightly modify this script to add an option to show icon

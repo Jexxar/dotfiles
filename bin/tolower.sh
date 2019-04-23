@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 if readlink /proc/$$/fd/0 | grep -q "^pipe:"; then
     cat /dev/stdin | tr '[:upper:]' '[:lower:]'
 elif file $( readlink /proc/$$/fd/0 ) | grep -q "character special"; then

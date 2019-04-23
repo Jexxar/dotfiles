@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 e_header "I am a sample script"
 e_success "I am a success message"

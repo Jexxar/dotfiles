@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 e_header "Process Substituition"
 
 e_note "Without Substituition"

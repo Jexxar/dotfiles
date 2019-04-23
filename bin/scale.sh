@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 next="$1"
 if [ -z "$1" ]; then

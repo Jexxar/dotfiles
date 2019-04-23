@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #wmctrl -d | grep '*' | sed 's/.* //'
 #command above doesn't work in spectrwm

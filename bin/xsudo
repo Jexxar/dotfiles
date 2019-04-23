@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env bash -e
 
 # Run a program requiring xserver as another user by passing on the xauth cookie
 # s. http://askubuntu.com/questions/871092/failed-to-connect-to-mir-failed-to-connect-to-server-socket-no-such-file-or-di?newreg=811c7a1d637341c5b294d8b515e8b6e7
@@ -17,7 +17,7 @@ fi
 temp_bin="$(mktemp)"
 
 cat > $temp_bin <<- EOF
-#!/bin/bash -e 
+#!/usr/bin/env bash -e 
 
 # read xauth param from stdin:
 read xauth_param

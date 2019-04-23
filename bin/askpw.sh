@@ -1,10 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #zenity --forms --modal --text=" Autenticação Necessária " --title="Entre com a senha"  --add-password="Senha: "
 # Solicita senha sudo e valida a entrada
 function do_ask_pw() {
-    local has_yad=`which yad`
+    local has_yad=""
     local Psw=""
     local p=0
+    has_yad=`which yad`
     for p in $(seq 1 3 ); do
         sudo -K
         if [ -z "$has_yad" ]; then

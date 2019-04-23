@@ -1,12 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # This checks that the specified file is less than 28 hours old.
 # returns 0 if younger than 28 hours.
 # returns 1 if older than 28 hours.
  
 #funtion arguments -> filename to comapre against curr time
 function comparedate() {
-    if [ ! -f $1 ]; then
-      echo "file $1 does not exist"
+    if [ ! -f "$1" ]; then
+        echo "file $1 does not exist"
         exit 1
     fi
     local MAXAGE=$(bc <<< '28*60*60') # seconds in 28 hours

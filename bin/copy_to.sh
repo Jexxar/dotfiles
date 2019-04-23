@@ -1,5 +1,4 @@
-#!/bin/bash
-numberArgs=$#
+#!/usr/bin/env bash
 yadOrzen=`which zenity || which yad`
 
 [ -z "$yadOrzen" ] && exit 1
@@ -13,14 +12,12 @@ fi
 
 [ -z "$DestToBe" ] && exit 1
 
-pc=0
-
 TargetDir=`awk -F, '{print $1}' <<<$DestToBe`
 
 old_IFS=$IFS
 IFS=$'\n'
 
-if [ -z $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS ]; then
+if [ -z "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS" ]; then
     NAUTILUS_SCRIPT_SELECTED_FILE_PATHS=$*
 fi
 

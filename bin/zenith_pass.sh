@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ENTRY=`zenity --password --username --text="Entre com o usuário e senha" --title=Authentication`
 
 #ENTRY=`zenity --password`

@@ -5,72 +5,63 @@
 # DISTRIB_ID
 #==============================================
 function do_DISTRIB_ID() {
-    local _DISTRIB_ID=`cat /etc/*-release  2> /dev/null | grep 'DISTRIB_ID' | sed -e "s/DISTRIB_ID=//g" | sed -e "s/\"//g"`
-    echo "${_DISTRIB_ID}" | sed "s/$/ /g" ;
+    cat /etc/*-release  2> /dev/null | grep 'DISTRIB_ID' | sed -e "s/DISTRIB_ID=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
 # DISTRIB_RELEASE
 #==============================================
 function do_DISTRIB_RELEASE() {
-    local _DISTRIB_RELEASE=`cat /etc/*-release  2> /dev/null | grep 'DISTRIB_RELEASE' | sed -e "s/DISTRIB_RELEASE=//g" | sed -e "s/\"//g"`
-    echo "${_DISTRIB_RELEASE}" | sed "s/$/ /g" ;
+    cat /etc/*-release  2> /dev/null | grep 'DISTRIB_RELEASE' | sed -e "s/DISTRIB_RELEASE=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
 # DISTRIB_CODENAME
 #==============================================
 function do_DISTRIB_CODENAME() {
-    local _DISTRIB_CODENAME=`cat /etc/*-release  2> /dev/null | grep 'DISTRIB_CODENAME' | sed -e "s/DISTRIB_CODENAME=//g" | sed -e "s/\"//g"`
-    echo "${_DISTRIB_CODENAME}" | sed "s/$/ /g" ;
+    cat /etc/*-release  2> /dev/null | grep 'DISTRIB_CODENAME' | sed -e "s/DISTRIB_CODENAME=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
 # DISTRIB_DESCRIPTION
 #==============================================
 function do_DISTRIB_DESCRIPTION() {
-    local _DISTRIB_DESCRIPTION=`cat /etc/*-release  2> /dev/null | grep 'DISTRIB_DESCRIPTION' | sed -e "s/DISTRIB_DESCRIPTION=//g" | sed -e "s/\"//g"`
-    echo "${_DISTRIB_DESCRIPTION}" | sed "s/$/ /g" ;
+    cat /etc/*-release  2> /dev/null | grep 'DISTRIB_DESCRIPTION' | sed -e "s/DISTRIB_DESCRIPTION=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
 # NAME
 #==============================================
 function do_NAME() {
-    local _NAME=`cat /etc/*-release  2> /dev/null | grep '^NAME' | sed -e "s/^NAME=//g" | sed -e "s/\"//g"`
-    echo "${_NAME}" | sed "s/$/ /g" ;
+    cat /etc/*-release  2> /dev/null | grep '^NAME' | sed -e "s/^NAME=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
 # VERSION
 #==============================================
 function do_VERSION() {
-    local _VERSION=`cat /etc/*-release  2> /dev/null | grep '^VERSION=' | sed -e "s/^VERSION=//g" | sed -e "s/\"//g"`
-    echo "${_VERSION}" | sed "s/$/ /g" ;
+    cat /etc/*-release  2> /dev/null | grep '^VERSION=' | sed -e "s/^VERSION=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
 # ID
 #==============================================
 function do_ID() {
-    local _ID=`cat /etc/*-release  2> /dev/null | grep '^ID=' | sed -e "s/^ID=//g" | sed -e "s/\"//g"`
-    echo "${_ID}" | sed "s/$/ /g" ;
+    cat /etc/*-release  2> /dev/null | grep '^ID=' | sed -e "s/^ID=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
 # PRETTY_NAME
 #==============================================
 function do_PRETTY_NAME() {
-    local _PRETTY_NAME=`cat /etc/*-release  2> /dev/null | grep '^PRETTY_NAME' | sed -e "s/^PRETTY_NAME=//g" | sed -e "s/\"//g"`
-    echo "${_PRETTY_NAME}" | sed "s/$/ /g" ;
+    cat /etc/*-release  2> /dev/null | grep '^PRETTY_NAME' | sed -e "s/^PRETTY_NAME=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
 # VERSION_ID
 #==============================================
 function do_VERSION_ID() {
-    local _VERSION_ID=`cat /etc/*-release  2> /dev/null | grep '^VERSION_ID' | sed -e "s/^VERSION_ID=//g" | sed -e "s/\"//g"`
-    echo "${_VERSION_ID}" | sed "s/$/ /g" ;
+    cat /etc/*-release  2> /dev/null | grep '^VERSION_ID' | sed -e "s/^VERSION_ID=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
@@ -121,15 +112,15 @@ function this_usage() {
     echo "-d versionid: Show VERSION_ID contents"
     echo "-1: Show option 1 concatenation info"
     echo "-2: Show option 1 concatenation info"
-    echo "-3: Show option 1 concatenation info"; 
+    echo "-3: Show option 1 concatenation info";
     return 0;
 }
 
 #OPTS=`getopt -o h123d: --long verbose,dry-run,help,stack-size: -n 'parse-options' -- "$@"`
 
-if [ $# -eq 0 ] ; then 
-    this_usage ; 
-    exit 0; 
+if [ $# -eq 0 ] ; then
+    this_usage ;
+    exit 0;
 fi
 
 #echo "$OPTS"
@@ -140,52 +131,52 @@ while getopts "h123d:" opt; do
     case "${opt}" in
         d)  _op_arg="${OPTARG}";
             case "${_op_arg}" in
-                distroid)   do_DISTRIB_ID 
-                     ;;
-                distrorls)  do_DISTRIB_RELEASE 
-                     ;;
-                distrocod)  do_DISTRIB_CODENAME 
-                     ;;
+                distroid)   do_DISTRIB_ID
+                ;;
+                distrorls)  do_DISTRIB_RELEASE
+                ;;
+                distrocod)  do_DISTRIB_CODENAME
+                ;;
                 distrodes)  do_DISTRIB_DESCRIPTION
-                     ;;
+                ;;
                 name)       do_NAME
-                     ;;
+                ;;
                 version)    do_VERSION
-                     ;;
+                ;;
                 id)         do_ID
-                     ;;
+                ;;
                 pname)      do_PRETTY_NAME
-                     ;;
+                ;;
                 versionid)  do_VERSION_ID
-                     ;;
+                ;;
                 \?) echo "Invalid option: -$OPTARG" >&2
-                    ;;
+                ;;
             esac
-            ;;
+        ;;
         1)  do_distro1
-            ;;
+        ;;
         2)  do_distro2
-            ;;
+        ;;
         3)  do_distro3
-            ;;
+        ;;
         h)  this_usage
-            ;;
+        ;;
         *)  exit 1
-            ;;
+        ;;
     esac
 done
 shift $((OPTIND-1))
 
-#echo "di" && do_DISTRIB_ID          
-#echo "dr" && do_DISTRIB_RELEASE    
-#echo "dc" && do_DISTRIB_CODENAME   
+#echo "di" && do_DISTRIB_ID
+#echo "dr" && do_DISTRIB_RELEASE
+#echo "dc" && do_DISTRIB_CODENAME
 #echo "dd" && do_DISTRIB_DESCRIPTION
-#echo "nm" && do_NAME        
+#echo "nm" && do_NAME
 #echo "vs" && do_VERSION
-#echo "id" && do_ID          
-#echo "pn" && do_PRETTY_NAME  
-#echo "vi" && do_VERSION_ID  
-#echo "1" && do_distro1      
+#echo "id" && do_ID
+#echo "pn" && do_PRETTY_NAME
+#echo "vi" && do_VERSION_ID
+#echo "1" && do_distro1
 
 
 exit 0

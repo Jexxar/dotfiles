@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Author: Dolores Portalatin <hello@doloresportalatin.info>
 # Dependencies: imagemagick, i3lock-color-git, scrot, wmctrl (optional)
+rm -f /tmp/*.png
 set -o errexit -o noclobber -o nounset
 
 # get path where the script is located to find the lock icon

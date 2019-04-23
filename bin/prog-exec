@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Script to execute BASH scripts from scripts.programster.org
 # This will download the script before doing a hash check and

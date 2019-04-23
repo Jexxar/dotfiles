@@ -2838,7 +2838,7 @@
 
 <p>It works by fetching a page from a list of URLs and looking for links in that page that are within the same starting URL and that have not already been seen. These links are added to a new queue. When all the pages from the list is done, the new queue is moved to the list of URLs and the process is started over until no unseen links are found.</p>
 
-<pre><code>  #!/bin/bash
+<pre><code>  #!/usr/bin/env bash
 
   # E.g. http://gatt.org.yeslab.org/
   URL=$1
