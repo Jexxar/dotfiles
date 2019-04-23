@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # A simple script to display battery percent
 # Taken from Anachron i3blocks

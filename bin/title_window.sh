@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 function title_window () { 
     xprop -id $(xprop -root 32x '\t$0' _NET_ACTIVE_WINDOW | cut -f 2) _NET_WM_NAME | cut -d '=' -f 2 | cut -b 1-2 --complement | rev | cut -c 2- | rev 2>&1
 }

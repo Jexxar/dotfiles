@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Script name that is sourcing this
 myLogScriptName="${0##*/}"
@@ -26,7 +26,7 @@ myLogPath=$(findPath)
 myLogFile="$myLogPath/$myLogSctiptBase.log"
 
 # Print the given message with a timestamp.
-function info() { printf '%s\t%s\n' "$(date)" "$*"; }
+function info() { printf '%s %s\n' "$(date +%F_%H-%M-%S | tr '_' ' ') $HOSTNAME" "$*"; }
 
 # Standard log file
 function log() {

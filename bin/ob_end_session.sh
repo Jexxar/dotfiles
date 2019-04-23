@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ $(pgrep -lfc redshift) -ge 1 ] ; then
     killall redshift

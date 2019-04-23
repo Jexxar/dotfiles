@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/usr/bin/env bash 
 gxmessage -font "Sans bold 16" "          Tem certeza que quer sair?" -center  -borderless -noescape -sticky -ontop -title "Escolha uma ação" -default "Cancelar" -buttons "_Cancelar":1,"_Bloquear":2,"_Sair":3,"_Reiniciar":4,"_Desligar":5 >/dev/null 
 case $? in 
     1) 

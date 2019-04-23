@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # A simple script to display wifi name
 # 'ssid -i' = with icon, 'ssid' = text only

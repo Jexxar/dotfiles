@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 e_header "I am a sample script"
 
 ask_confirmation "Do you want to print a success message?"

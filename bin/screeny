@@ -1,2 +1,2 @@
-#!/bin/bash
+#!/usr/bin/env bash
 scrot 'scrot_%Y-%m-%d-%S_$wx$h.png' -e 'mv $f ~ ; viewnior ~/$f'

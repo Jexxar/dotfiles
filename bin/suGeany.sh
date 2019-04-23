@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Pede senha e faz autenticacao
 function ask_pw() {
     local Psw=""

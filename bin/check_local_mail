@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 function qt_m()
 {
     local f="/var/mail/$USER"
-    if [ -e $f ]; then    
-        awk '/From:/{print $0}' $f | grep -c "From:"
+    if [ -e "$f" ]; then
+        awk '/From:/{print $0}' "$f" | grep -c "From:"
     else
         echo "0"
     fi
@@ -12,13 +12,17 @@ function qt_m()
 # Exite msg de e-mails pendentes
 function t_m()
 {
+    local OPTS=""
+    local quiet=""
+    local qm=""
+
     if [ $# -ne 0 ]; then
-        local OPTS=`getopt -o q --long verbose,dry-run,help,stack-size: -n 'parse-options' -- "$@"`
-        local quiet=`echo "${OPTS}" | sed 's/--//g'`
+        OPTS=`getopt -o q --long verbose,dry-run,help,stack-size: -n 'parse-options' -- "$@"`
+        quiet=`echo "${OPTS}" | sed 's/--//g'`
     else
-        local quiet=""
+        quiet=""
     fi
-    local qm="$(qt_m)"
+    qm="$(qt_m)"
     qm="${qm}"
     if  [[ $qm -gt 0 ]]; then
         echo "Voce tem $qm novo(s) e-mail(s)!"
@@ -28,4 +32,5 @@ function t_m()
         fi
     fi
 }
-t_m $@
+
+t_m "$@"

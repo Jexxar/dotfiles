@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ -f "$HOME/bin/mylog" ]; then
     . "$HOME/bin/mylog"
@@ -22,8 +22,8 @@ function change_wallpaper(){
 	#let "number = $RANDOM"
 	#let CurrIndex="`cat $WallDir/.last` + $number"
 	local LastFile="$WallDir/.last"
-	if [ -f $LastFile ]; then 
-	    let CurrIndex="`cat $LastFile` + 1"
+	if [ -f "$LastFile" ]; then 
+	    let CurrIndex="`cat "$LastFile"` + 1"
 	    if [ $CurrIndex -ge $MaxFiles ]; then
 	        let CurrIndex=1
 	    fi
@@ -32,25 +32,26 @@ function change_wallpaper(){
 	fi
 	local number
 	let number=$CurrIndex
-	echo $number > $WallDir/.last
+	echo $number > "$WallDir"/.last
 	nitrogen --set-scaled --save "${WallList[$number]}"
 	log "Wallpaper changed to: ${WallList[$number]}"
 }
 
 function main(){
 	log "==[ Changer started ]=="
+    if ! is_running_X ; then
+        log "No X server at \$DISPLAY [$DISPLAY]" >&2
+        exit 0
+    fi
     nitrogen --restore
-	while [ is_running_X ]; do 
-	    if [ -z $DISPLAY ]; then
+    sleep 0.2
+	while is_running_X ; do 
+	    if [ -z "$DISPLAY" ]; then
     	    DISPLAY=:0.0
     	fi
 		sleep 7m;
 		change_wallpaper;
 	done;	
-	if [ ! is_running_X ]; then
-    	log "No X server at \$DISPLAY [$DISPLAY]" >&2
-    	exit 0
-	fi
 }
 
 main

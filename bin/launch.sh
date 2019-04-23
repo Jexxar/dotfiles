@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # there has to be at least one parameter, the name of the file to execute
  if [ $# -lt 1 ]
  then

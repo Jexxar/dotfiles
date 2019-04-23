@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # inpath - verify that a specified program is either valid as-is,
 #   or can be found in the PATH directory list.
 function in_path() {

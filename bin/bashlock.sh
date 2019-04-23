@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ -f "$HOME/bin/mylog" ]; then
     . "$HOME/bin/mylog"
@@ -24,7 +24,7 @@ function onexit() {
 #}
 
 function checkpassword() {
-    su $1 -c "true" || false
+    su "$1" -c "true" || false
 }
 
 function header() {
@@ -46,7 +46,7 @@ function authenticate() {
     local RETRY=0
     while true; do
         header $RETRY
-        checkpassword ${USER} 
+        checkpassword "${USER}" 
         if [ "$?" -eq 0 ]; then
             echo "Welcome back!"
             echo ""

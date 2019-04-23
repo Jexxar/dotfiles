@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 
 #stringZ=abcABC123ABCabc
@@ -33,7 +33,7 @@
 #echo $art
 ##echo $tmpf
 #
-##!/bin/bash
+##!/usr/bin/env bash
 ## paragraph-space.sh
 ## Ver. 2.1, Reldate 29Jul12 [fixup]
 #

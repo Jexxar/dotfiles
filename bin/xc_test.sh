@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # xc
 # clean XC_log file
 function XC_log_clean() {

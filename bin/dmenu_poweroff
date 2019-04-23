@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 cmd=$(printf "poweroff\nreboot\nsuspend\nlock\nkillX\n" | dmenu -l 10 -p "Execute:" $*)
 
@@ -14,7 +14,7 @@ case "$cmd" in
     suspend)
         systemctl suspend ;;
     lock)
-        cinnamon-screensaver-command -l ;;
+        ~/bin/autolock.sh lock ;;
     killX)
         killall X ;;
     *)
