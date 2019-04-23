@@ -1,0 +1,42 @@
+/*******弹出登陆注册样式******/
+
+.register_box, .login { width:400px; margin-left:10px;  background:#f9f9f9; z-index: 10; }
+.register_box h2,.login h2{ position:relative; font-size:22px; font-weight:bold;  padding:0 10px 0 35px; color:#403f3f; }
+/*.register_box h2 b, .login h2 b{ position:absolute; right:10px; top:5px; width:27px; height:27px; background:url(../img/sign_close.gif) 0 0 no-repeat; cursor:pointer;}
+*/
+
+/* register */
+.main{width:400px;  }
+.main fieldset{}
+.register div { position:relative;background:#f9f9f9}
+.register div input {width:249px; margin-left:30px; border:1px solid #d2d2d2; overflow:hidden; height:26px; font-size:14px; color:#000; font-family:Verdana,Arial,Helvetica,sans-serif;  padding:3px 4px; line-height:30px\9; outline:none;}
+.register div input.focus{ border:1px solid #f80400}
+.register div.user,.register div.email,.register div.password,.register div.cpassword{ height:40px;display:inline-block; margin-top: 20px; *zoom:1;*display:inline;}
+.register div.user{margin-top: 18px;}
+.register div.cbox {height:15px; position:relative;left:30px; top:30px; width:365px;}
+.sign_dialog .check_agree{ color:#767676;}
+
+.sign_dialog .play {position:relative;top:40px;left:5px;background:#3867bf ;border:none; cursor: pointer; display: block; font-size:16px; font-weight:bolder; text-align:center; height:38px;width:142px; margin: 25px 0 25px 30px; color:#fff;}
+.register div.cbox input {  vertical-align: middle; width:13px; height:13px; margin-right:5px;  padding:0\9; margin-top:0; float:none;}
+.register div.cbox label {  display: inline; font-size: 12px; color:#888; width:auto; line-height:15px; float:none;font-weight:normal;margin-left:20px;}
+.register div.cbox a {color:#144db4;}
+.register div.cbox a:hover {color:#144db4; text-decoration:underline}
+.register div label{ font-size:14px; font-weight:bold; display:block; color:#333333; line-height:40px; float:left; width:85px; text-align:right;}
+#register_loding{ background:url(../img/footer_markbg.png) repeat;   z-index: 999; width:100%; height:100%; display:none; position:absolute; left:0; top:0;  }
+#register_loding .load{ width:80px; height:80px; border-radius: 15px 15px 15px 15px; position:absolute; left:50%; top:50%; margin:40px 0 0 -40px; opacity:0.7;filter:alpha(opacity:70); background:url(../img/loading_pay.gif) 0 0 no-repeat; color:#fff;  text-align:center;}
+.register .info_con{ color: #777777;float: left;font-size: 12px;height: 24px;line-height: 20px;padding: 0 0;width: 365px;margin-left:30px;}
+.register .showIco{height: 15px;margin-top: 0;position: absolute;right: 70px;text-indent: -999em;top: 10px;width: 15px;}
+
+.register .ok{background:url(../img/register_ok.gif) 0 0 no-repeat; display:block}
+.register .error {background:url(../img/register_err.gif) 0 0 no-repeat;display:block}
+.register .red{ color: #FD0000;}
+.sign_dialog .agreen{ position:absolute; left:-30px; top:0 ; width:13px; height:13px;}
+.sign_dialog .un_agreen{ position:absolute; left:0; top:0 ; width:13px; height:13px; background:url(../img/agreen.jpg) 0 -13px no-repeat; }
+
+.sign_dialog .login_with{position:relative;top:50px;left:0;border-top:1px dashed #ccc ; padding-top:20px; margin:0 auto;font-size:12px; }
+.sign_dialog .login_new{ color:#757575; float:left; padding-right:12px; }
+.sign_dialog .login_new span{ display:inline-block; height:23px; line-height:23px; float:left; margin-left:5px; }
+.sign_dialog .login_new a{ text-decoration:underline;  height:23px; cursor:pointer; color:#124cb0 }
+.sign_dialog .login_f { float:left}
+.sign_dialog .login_f a{ display:inline-block; width:146px; height:23px; background:url(../img/regist-new-f.png) 0 0 no-repeat;cursor:pointer;}
+
