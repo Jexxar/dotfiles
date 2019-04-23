@@ -3,10 +3,8 @@
 #==============================================
 # Oneliners
 #==============================================
-# Open the man page for the previous command.
-function lman () { set -- $(fc -nl -1); while [ "$#" -gt 0 -a '(' "sudo" = "$1" -o "-" = "${1:0:1}" ')' ]; do shift; done; man "$1" || help "$1"; }
 #Xargs com function. Ex. echo "abc" | do_xarg echo_pass
-function do_xarg() { local funnm=$1; xargs -I{} bash -c $funnm\ \{\}; }
+function do_xarg() { local funnm=$1; xargs -I{} bash -c "$funnm"\ \{\}; }
 # logical test functions
 function is_empty() { local var=$1;  [[ -z $var ]] ; }
 function is_not_empty() { local var=$1;  [[ -n $var ]] ;}
@@ -25,9 +23,9 @@ function decrypt () { gpg --no-options "$1" ; }
 # Number of CPUs
 function ncpu() { grep -c 'processor' /proc/cpuinfo ; }
 # custom  ps my user processes
-function my_ps() { ps $@ -u $USER -o pid,%cpu,%mem,bsdtime,command ; }
+function my_ps() { ps "$@" -u "$USER" -o pid,%cpu,%mem,bsdtime,command ; }
 # custom  my user processes tree
-function psgrep() { my_ps f | awk '!/awk/ && $0~var' var=${1:-".*"} ; }
+function psgrep() { my_ps f | awk '!/awk/ && $0~var' var="${1:-".*"}" ; }
 # Submit job
 function sub() { ($1 &) ;}
 # Goto dir
@@ -37,11 +35,11 @@ function cpf() { cp "$@" && goto "$_"; }
 # Move and Goto dir
 function mvf() { mv "$@" && goto "$_"; }
 # Mkdir and Goto dir
-function mkf() { mkdir -p $1 && goto "$1"; }
+function mkf() { mkdir -p "$1" && goto "$1"; }
 # Cmd exists
 function cmd_exists() { command -v "$1" &> /dev/null; }
 # Top used cmds
-function top_cmds() { cat $HISTFILE | grep -Ev '^#' | awk '{ print $1 }' | grep -Ev '^`' | grep -Ev ' ' | sort | uniq -c | sort  -n -k1 | sort -rn | head ; }
+function top_cmds() { grep -Ev '^#' "$HISTFILE" | awk '{ print $1 }' | grep -Ev '^`' | grep -Ev ' ' | sort | uniq -c | sort  -n -k1 | sort -rn | head ; }
 # Color tree of current dir
 function lsr() { tree -ChvugapfF --dirsfirst | most -ct4 +82 +s ; }
 # alternative clear
@@ -51,11 +49,11 @@ function decode_64 () { echo "$@" | base64 -d ; }
 # encode base64
 function encode_64 () {  echo "$@" | base64 - ; }
 # DICTIONARY FUNCTIONS
-function dwordnet () { curl dict://dict.org/d:${1}:wn; }
-function dacron () { curl dict://dict.org/d:${1}:vera; }
-function djargon () { curl dict://dict.org/d:${1}:jargon; }
-function dfoldoc () { curl dict://dict.org/d:${1}:foldoc; }
-function dthesaurus () { curl dict://dict.org/d:${1}:moby-thes; }
+function dwordnet () { curl dict://dict.org/d:"${1}":wn; }
+function dacron () { curl dict://dict.org/d:"${1}":vera; }
+function djargon () { curl dict://dict.org/d:"${1}":jargon; }
+function dfoldoc () { curl dict://dict.org/d:"${1}":foldoc; }
+function dthesaurus () { curl dict://dict.org/d:"${1}":moby-thes; }
 # hora
 function hora () { date -Ins | cut -b 12-19 ; }
 # data formato ISO
@@ -63,13 +61,13 @@ function dataiso () { date -Ins | cut -b 1-10 ; }
 # data
 function data () { date +"%d-%m-%Y" ; }
 # data n dias atras
-function yday() { local dstr="date --date='-$1 day'";  eval $dstr; }
+function yday() { local dstr="date --date='-$1 day'";  eval "$dstr"; }
 # data n dias a frente
-function tday() { local dstr="date --date='+$1 day'";  eval $dstr; }
+function tday() { local dstr="date --date='+$1 day'";  eval "$dstr"; }
 # grep enhance
-function bro-grep() { grep -E "(^#)|$1" $2; }
+function bro-grep() { grep -E "(^#)|$1" "$2"; }
 # grep enhance zip files
-function bro-zgrep() { zgrep -E "(^#)|$1" $2; }
+function bro-zgrep() { zgrep -E "(^#)|$1" "$2"; }
 # search javascripts files for
 function jsgrep() { find . \( -name "*.js" -print \)  | xargs grep -in "$1" ; }
 # search development css files
@@ -81,9 +79,9 @@ function htmgrep() { find . \( -name "*.html" -print \)  | xargs grep -in "$1"; 
 # search php files and development scripts/styles
 function wdevgrep() { find . \( -name "*.php" -print -or -name "*.js" -or -name "*.css" -print \)  | xargs grep -n "$1"; }
 # top count lines
-function topcount() { sort | uniq -c | sort -rn | head -n ${1:-10}; }
+function topcount() { sort | uniq -c | sort -rn | head -n "${1:-10}"; }
 # most color
-function mostcolor() { cat $1 | sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[%sm %s \x1b[0m",(i%7)+31,$i);print ""}' | most -RS; }
+function mostcolor() { cat "$1" | sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[%sm %s \x1b[0m",(i%7)+31,$i);print ""}' | most -RS; }
 # uptime desde
 function uptime_since() { uptime -ps ; }
 # memoria livre
@@ -101,19 +99,19 @@ function fd() {  find . -type d -iname "$*";}
 # Find a dir with a pattern in name:
 function fdf() { find . -type d -iname '*'"$*"'*';}
 # Find a file with pattern $1 in name and Execute $2 on it:
-function fe() { find . -type f -iname '*'"${1:-}"'*' -exec ${2:-file} {} \;  ; }
+function fe() { find . -type f -iname '*'"${1:-}"'*' -exec "${2:-file}" {} \;  ; }
 # Conta jobs Ativos
 function jobs_count() { jobs -r | wc -l | sed -e "s/ //g" ; }
 # Conta jobs parados
 function stoppedjobs() { jobs -s | wc -l | sed -e "s/ //g" ; }
 # Bateria laptop %
-function laptop_battery() { upower -i $(upower -e | grep 'BAT') | grep -E "state|to\ full|percentage" ; }
+function laptop_battery() { upower -i "$(upower -e | grep 'BAT')" | grep -E "state|to\ full|percentage" ; }
 # Bateria mouse %
-function mouse_battery() { upower -i $(upower -e | grep 'mouse') | grep -E "state|to\ full|percentage" ; }
+function mouse_battery() { upower -i "$(upower -e | grep 'mouse')" | grep -E "state|to\ full|percentage" ; }
 # volta n diretórios
 function up() { cd $(eval printf '../'%.0s {1..$1}) ; }
 # bkp simples
-function bak() { cp $1 $1_`date +%Y-%m-%d_%H:%M:%S`.bak ; }
+function bak() { cp "$1" "$1_$(date +%Y-%m-%d_%H:%M:%S).bak" ; }
 # generate space report
 function space() { du -skh * | sort -hr ; }
 # processor
@@ -124,8 +122,6 @@ function graph() { lspci | grep -i vga | cut -d: -f3 ; }
 function ethcard() { lspci | grep -i ethernet | cut -d: -f3 ; }
 # wireless card
 function wfcard() { lspci | grep -i network | cut -d: -f3 ; }
-# awk simples para operacoes via pipe (ex: cmd1 | fawk 1)
-function fawk() { local cmd="awk '{print \$$1}'";  eval $cmd ; }
 # display color para operacoes via parametro (ex: red $1)
 function onblack() { echo "$(tput setaf 0)$*$(tput sgr0)"; }
 function onred() { echo "$(tput setaf 1)$*$(tput sgr0)"; }
@@ -145,36 +141,36 @@ function on_magenta() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{
 function on_cyan() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;36m %s \x1b[0m",$i);print ""}'; }
 function on_white() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;37m %s \x1b[0m",$i);print ""}'; }
 # cat  em cores
-function cblk() { cat $1 | on_black ; }
-function cred() { cat $1 | on_red ; }
-function cgre() { cat $1 | on_green ; }
-function cyel() { cat $1 | on_yellow ; }
-function cblu() { cat $1 | on_blue ; }
-function cmag() { cat $1 | on_magenta ; }
-function ccya() { cat $1 | on_cyan ; }
-function cwhi() { cat $1 | on_white ; }
+function cblk() { cat "$1" | on_black ; }
+function cred() { cat "$1" | on_red ; }
+function cgre() { cat "$1" | on_green ; }
+function cyel() { cat "$1" | on_yellow ; }
+function cblu() { cat "$1" | on_blue ; }
+function cmag() { cat "$1" | on_magenta ; }
+function ccya() { cat "$1" | on_cyan ; }
+function cwhi() { cat "$1" | on_white ; }
 # commandline FU MOTD
-function cm_fu_motd () { curl http://www.commandlinefu.com/commands/random/plaintext -o $HOME/.motd -s -L && cgre $HOME/.motd ; }
+function cm_fu_motd () { curl http://www.commandlinefu.com/commands/random/plaintext -o "$HOME"/.motd -s -L && cgre "$HOME"/.motd ; }
 #calculos na linha de comando
-function calc() { echo "scale=3;$@" | bc -l ; }
+function calc() { echo "scale=3;$*" | bc -l ; }
 # Run `dig` and display the most useful info
 function digga() { dig +nocmd "$1" any +multiline +noall +answer; }
 # tre is a shorthand for tree with hidden files and color enabled, ignoring `.git` directory, listing directories first.
 function tre() { tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | most -FRNX; }
 # pre adiciona caminho ao path
-function prepend-path() { [ -d $1 ] && PATH="$1:$PATH" ; }
+function prepend-path() { [ -d "$1" ] && PATH="$1:$PATH" ; }
 # Show duplicate/unique lines
-function duplines() {  sort $1 | uniq -d ; }
+function duplines() {  sort "$1" | uniq -d ; }
 # Show unique lines
-function uniqlines() { sort $1 | uniq -u ;}
+function uniqlines() { sort "$1" | uniq -u ; }
 # Get IP from hostname
 function hostname2ip() { ping -c 1 "$1" | egrep -m1 -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' ; }
 # Logging stuff. header
-function e_header() { printf "\n${_cl_bold}${_cl_purple}===  %s  ===${_cl_reset}\n" "$@" ;}
+function e_header() { printf "\n${_cl_bold}${_cl_purple}===  %s  ===${_cl_reset}\n" "$@" ; }
 # Logging stuff. arrow
-function e_arrow() { printf "➜ $@\n"; }
+function e_arrow() { printf "➜ %s\n" "$@" ; }
 # Logging stuff. success
-function e_success() { printf "${_cl_green}✔ %s${_cl_reset}\n" "$@" ;}
+function e_success() { printf "${_cl_green}✔ %s${_cl_reset}\n" "$@" ; }
 # Logging stuff. Error
 function e_error() { printf "${_cl_red}✖ %s${_cl_reset}\n" "$@" ; }
 # Logging stuff. Warning
@@ -192,47 +188,58 @@ function e_itemnok() { echo -e " \033[1;31m✖\033[0m  $@"; }
 # Logging stuff.
 function e_itemarrow() { echo -e " \033[1;34m➜\033[0m  $@"; }
 # Echo assertion fail
-function echo_fail() { printf "${1} \e[31m[✘] ";  echo -e "\033[0m" ; }
+function echo_fail() { printf "%s \e[31m[✘] " "$@";  echo -e "\033[0m" ; }
 # Echo assertion pass
-function echo_pass() { printf "${1} \e[32m[✔] ";  echo -e "\033[0m"; }
+function echo_pass() { printf "%s \e[32m[✔] " "$@";  echo -e "\033[0m"; }
 # appends your key to a server's authorized keys file
-function authme() { ssh $1 'cat >>.ssh/authorized_keys' <~/.ssh/id_rsa.pub ; }
+function authme() { ssh "$1" 'cat >>.ssh/authorized_keys' <~/.ssh/id_rsa.pub ; }
 # Parses manpage for a command's option description -> usage manopt man t
-function manopt() { man $1 | sed 's/.\x08//g' | sed -n "/^\s\+-\+$2\b/,/^\s*$/p" | sed '$d;' | on_yellow; }
+function manopt() { man "$1" | sed 's/.\x08//g' | sed -n "/^\s\+-\+$2\b/,/^\s*$/p" | sed '$d;' | on_yellow; }
 # web helper get
-function couch-get() { curl -s -X GET $@ 2>&1 ; }
+function couch-get() { curl -s -X GET "$@" 2>&1 ; }
 # web helper put
-function couch-put() { curl -s -X PUT $@ 2>&1 ; }
+function couch-put() { curl -s -X PUT "$@" 2>&1 ; }
 # web helper post
-function couch-post() { curl -s -X POST $@ 2>&1 ; }
+function couch-post() { curl -s -X POST "$@" 2>&1 ; }
 # web helper delete
-function couch-delete() { curl -s -X DELETE $@ 2>&1 ; }
+function couch-delete() { curl -s -X DELETE "$@" 2>&1 ; }
 # awk helper
 function awksub () { awk '{a[$3]+=1;}END{for(i in a)print i" "a[i];}';}
 # conversao para hexadecimal
-function decimal2hex() { echo 16o $1 p | dc ; }
+function decimal2hex() { echo 16o "$1" p | dc ; }
 # rsync backup
-function rsync_bpk() { rsync $1 -rvhzI --size-only --inplace --human-readable --compress --compress-level=1 $2 ; }
+function rsync_bpk() { rsync "$1" -rvhzI --size-only --inplace --human-readable --compress --compress-level=1 "$2" ; }
 # edit and exec?
-function editexec() { $EDITOR `which $1` ; }
+function editexec() { $EDITOR "$(which '$1')" ; }
 # Funcoes auxiliares - dir count
-function _dir_count() { echo "`/bin/ls -lagFXh1 | grep '/' | awk '!/\.\./' | awk '!/\.\//' | /usr/bin/wc -l | /bin/sed 's: ::g'`" ; }
+function _dir_count() { /bin/ls -lagFXh1 | grep '/' | awk '!/\.\./' | awk '!/\.\//' | /usr/bin/wc -l | /bin/sed 's: ::g' ; }
 # Funcoes auxiliares - file count
-function _file_count() { echo "`/bin/ls -lagFXh1 | grep '\-rw' | /usr/bin/wc -l | /bin/sed 's: ::g'`" ;  }
+function _file_count() { /bin/ls -lagFXh1 | grep '\-rw' | /usr/bin/wc -l | /bin/sed 's: ::g' ;  }
 # Funcoes auxiliares - pwd_size
-function _pwd_size() { echo "`/bin/ls -lagFXh1 | /bin/grep -m 1 total | /bin/sed 's/total //'`" ; }
+function _pwd_size() { /bin/ls -lagFXh1 | /bin/grep -m 1 total | /bin/sed 's/total //' ; }
 # Commit and push everything
 function gitdone() { git add -A; git commit -S -v -m "$1"; git push; }
 
 
 #==============================================
+# Open the man page for the previous command.
+#==============================================
+#function lman () { 
+#    set -- $(fc -nl -1);
+#    while [ "$#" -gt 0 -a '(' "sudo" = "$1" -o "-" = "${1:0:1}" ')' ]; do 
+#        shift; 
+#    done; 
+#    man "$1" || help "$1"; 
+#}
+
+#==============================================
 # execute some cmds like magic
 #==============================================
-function do_magic() {
-    for p in "$@"; do
-        [ -O "$p" -a -x "$p" ] && /bin/bash "$p"
-    done
-}
+#function do_magic() {
+#    for p in "$@"; do
+#        [ -O "$p" -a -x "$p" ] && /bin/bash "$p"
+#    done
+#}
 
 #==============================================
 # This function returns every element + their respective offsets
@@ -241,7 +248,7 @@ function do_magic() {
 #==============================================
 function ArrayElemDisplay() {
     local n=0                                            # $n initialized to "0" (used in the below while loop)
-    local array=$1                                       # Array to be processed is given as first parameter
+    local array="$1"                                       # Array to be processed is given as first parameter
     local array_final=( $(eval echo \${${array}[@]}) )   # append the result of the $(eval ...) command to array_final (this way i create a dynamic array name)
 
     while (( n < "${#array_final[@]}" )) ; do            # while loop iterating on each element up to the last one
@@ -260,17 +267,17 @@ function GetLastElem() {
     declare -a array
     local array=( $@ )        # set the function parameters as the array content
     local LastElem=${!#}      # numbers of elements within the array (#) + indirect reference (!) = last element value
-    echo ${LastElem}
+    echo "${LastElem}"
 }
 
 #==============================================
 # Search history.
 #==============================================
 function qh() {
-    #           ┌─ enable colors for pipe
-    #           │  ("--color=auto" enables colors only if
-    #           │  the output is in the terminal)
-    grep --color=always "$*" "$HISTFILE" | less -RX
+    #          ┌─ enable colors for pipe
+    #          │  ("--color=auto" enables colors only if
+    #          │  the output is in the terminal)
+    grep --color=always "$*" "$HISTFILE" |       less -RX
     # display ANSI color escape sequences in raw form ─┘│
     #       don't clear the screen after quitting less ─┘
 }
@@ -279,19 +286,21 @@ function qh() {
 # Search for text within the current directory.
 #==============================================
 function qtxt() {
+    #     ┌─ ignore case
+    #     │┌── search all files under each directory, recursively
     grep -ir --color=always "$*" --exclude-dir=".git" --exclude-dir="node_modules" . | less -RX
-    #     │└─ search all files under each directory, recursively
-    #     └─ ignore case
+    #       display ANSI color escape sequences in raw form ─────────────────────────────────┘│
+    #           don't clear the screen after quitting less ───────────────────────────────────┘
 }
 
 #==============================================
 # mkdir default permission
 #==============================================
 function _mkdir() {
-  local d="$1"               # get dir name
+  local d="$1"            # get dir name
   local p=${2:-0755}      # get permission, set default to 0755
   [ $# -eq 0 ] && { echo "$0: dirname"; return; }
-  [ ! -d "$d" ] && mkdir -m $p -p "$d"
+  [ ! -d "$d" ] && mkdir -m "$p" -p "$d"
 }
 
 #==============================================
@@ -354,7 +363,7 @@ function display_status () {
 # Verifies if such a package exists
 #==============================================
 function is_installed() {
-  dpkg -s $1 &> /dev/null
+  dpkg -s "$1" &> /dev/null
 
   if [ $? -eq 0 ]; then
       echo_pass "Package $1 is installed!"
@@ -373,7 +382,7 @@ function ip_inf() {
         curl ipinfo.io/"$1"
     else
         local ipawk=($(host "$1" | awk '/address/ { print $NF }'));
-        curl ipinfo.io/${ipawk[0]}
+        curl ipinfo.io/"${ipawk[0]}"
     fi
     echo
 }
@@ -414,11 +423,11 @@ function is_newer() {
           return 1
      fi
 
-     if [ ! -f $1 -o ! -f $2 ]; then
+     if [ ! -f "$1" -o ! -f "$2" ]; then
           return 1       # No
      fi
 
-     if [ -n "`find $1 -newer $2 -print`" ]; then
+     if [ -n "`find "$1" -newer "$2" -print`" ]; then
           return 0       # Yes
      else
           return 1       # No
@@ -434,7 +443,7 @@ function is_newer() {
 # @param {String} $1  SystemType string
 #==============================================
 function is_systype() {
-     if [ -z $1 ] ; then
+     if [ -z "$1" ] ; then
           echo "Usage: is_systype string"
           return 1
      fi
@@ -455,11 +464,11 @@ function is_systype() {
 # Ensures that input only consists of alphabetical and numeric characters.
 #==============================================
 function is_alpha() {
-    if [ -z $1 ] ; then
+    if [ -z "$1" ] ; then
         return 1
     fi
-    local i=$1
-    local c="$(echo $1 | sed -e 's/[^[:alnum:]]//g')"
+    local i="$1"
+    local c=$(echo "$1" | sed -e 's/[^[:alnum:]]//g')
 
     if [ "$c" != "$i" ] ; then
         return 1
@@ -475,7 +484,7 @@ function is_int() {
     local number="$1";
     local testvalue="";
 
-    if [ -z $number ] ; then
+    if [ -z "$number" ] ; then
           return 1
     fi
 
@@ -485,13 +494,13 @@ function is_int() {
         testvalue="$number"
     fi
 
-    if [ -z $testvalue ] ; then
+    if [ -z "$testvalue" ] ; then
         return 1
     fi
 
-    local nodigits="`echo $testvalue | sed 's/[[:digit:]]//g'`"
+    local nodigits=$(echo "$testvalue" | sed 's/[[:digit:]]//g')
 
-    if [ ! -z $nodigits ] ; then
+    if [ ! -z "$nodigits" ] ; then
       return 1
     fi
     return 0
@@ -502,11 +511,12 @@ function is_int() {
 #==============================================
 function is_float() {
   local fvalue="$1"
+  local pt=$(echo "$fvalue" | sed 's/[^.]//g')
 
-  if [ ! -z `echo $fvalue | sed 's/[^.]//g'` ] ; then
-      local decimalPart="`echo $fvalue | cut -d. -f1`"
-      local fractionalPart="`echo $fvalue | cut -d. -f2`"
-      if [ ! -z $decimalPart ] ; then
+  if [ ! -z "$pt" ] ; then
+      local decimalPart=$(echo "$fvalue" | cut -d. -f1)
+      local fractionalPart=$(echo "$fvalue" | cut -d. -f2)
+      if [ ! -z "$decimalPart" ] ; then
           if [ "$decimalPart" != "-"  ] ; then
               if ! is_int "$decimalPart" ; then
                   return 1
@@ -522,7 +532,7 @@ function is_float() {
           fi
       fi
       if [ "$decimalPart" == "-"  ] ; then
-          if [ -z $fractionalPart ] ; then
+          if [ -z "$fractionalPart" ] ; then
               return 1
           fi
       fi

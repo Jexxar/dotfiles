@@ -206,3 +206,9 @@ function _killall_completion()
 
 complete -F _killall_completion killall killps
 
+#===========================================
+# etc bash completion
+#===========================================
+if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+    . /etc/bash_completion
+fi

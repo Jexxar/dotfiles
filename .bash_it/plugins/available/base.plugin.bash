@@ -8,7 +8,7 @@ function ips ()
     if command -v ifconfig &>/dev/null
     then
         ifconfig | awk '/inet /{ gsub(/addr:/, ""); print $2 }'
-    elif command -v ip &>/dev/null
+elif command -v ip &>/dev/null
     then
         ip addr | grep -oP 'inet \K[\d.]+'
     else
@@ -29,7 +29,7 @@ function myip ()
 {
     about 'displays your ip address, as seen by the Internet'
     group 'base'
-    list=("http://myip.dnsomatic.com/" "http://checkip.dyndns.com/" "http://checkip.dyndns.org/")
+    list=("ifconfig.me" "http://myip.dnsomatic.com/" "http://checkip.dyndns.com/" "http://checkip.dyndns.org/")
     for url in ${list[*]}
     do
         res=$(curl -s "${url}")
@@ -72,7 +72,7 @@ function passgen ()
 # BASH_IT_LEGACY_PASS is true.
 if ! command -v pass &>/dev/null || [ "$BASH_IT_LEGACY_PASS" = true ]
 then
-  alias pass=passgen
+    alias pass=passgen
 fi
 
 function pmdown ()
@@ -83,9 +83,9 @@ function pmdown ()
     group 'base'
     if command -v markdown &>/dev/null
     then
-      markdown $1 | browser
+        markdown $1 | browser
     else
-      echo "You don't have a markdown command installed!"
+        echo "You don't have a markdown command installed!"
     fi
 }
 
@@ -135,7 +135,7 @@ function usage ()
         else
             du -hd 1
         fi
-
+        
     elif [ $(uname) = "Linux" ]; then
         if [ -n "$1" ]; then
             du -h --max-depth=1 "$1"
@@ -146,7 +146,7 @@ function usage ()
 }
 
 if [ ! -e "${BASH_IT}/plugins/enabled/todo.plugin.bash" ] && [ ! -e "${BASH_IT}/plugins/enabled/*${BASH_IT_LOAD_PRIORITY_SEPARATOR}todo.plugin.bash" ]; then
-# if user has installed todo plugin, skip this...
+    # if user has installed todo plugin, skip this...
     function t ()
     {
         about 'one thing todo'
@@ -169,7 +169,7 @@ function command_exists ()
     type "$1" &> /dev/null ;
 }
 
-mkiso ()
+function mkiso ()
 {
     about 'creates iso from current dir in the parent dir (unless defined)'
     param '1: ISO name'
@@ -178,12 +178,12 @@ mkiso ()
     example 'mkiso'
     example 'mkiso ISO-Name dest/path src/path'
     group 'base'
-
+    
     if type "mkisofs" > /dev/null; then
         [ -z ${1+x} ] && local isoname=${PWD##*/} || local isoname=$1
         [ -z ${2+x} ] && local destpath=../ || local destpath=$2
         [ -z ${3+x} ] && local srcpath=${PWD} || local srcpath=$3
-
+        
         if [ ! -f "${destpath}${isoname}.iso" ]; then
             echo "writing ${isoname}.iso to ${destpath} from ${srcpath}"
             mkisofs -V ${isoname} -iso-level 3 -r -o "${destpath}${isoname}.iso" "${srcpath}"

@@ -3,7 +3,6 @@
 # Exports (auto generated. Do not edit) - Bash Shell
 #==============================================
 function do_exports() {
-export -f lman
 export -f do_xarg
 export -f is_empty
 export -f is_not_empty
@@ -67,7 +66,6 @@ export -f core
 export -f graph
 export -f ethcard
 export -f wfcard
-export -f fawk
 export -f onblack
 export -f onred
 export -f ongreen
@@ -127,7 +125,6 @@ export -f _dir_count
 export -f _file_count
 export -f _pwd_size
 export -f gitdone
-export -f do_magic
 export -f ArrayElemDisplay
 export -f GetLastElem
 export -f qh
