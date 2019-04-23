@@ -13,6 +13,47 @@ if [ -e ~/.config/openbox/log/ob.log ]; then
     touch ~/.config/openbox/log/ob.log > /dev/null
 fi
 
+
+# launches a session dbus instance
+OB_str="dbus-launch session"
+OB_stts=""
+
+if [ -z "$DBUS_SESSION_BUS_ADDRESS" ] && type dbus-launch >/dev/null; then
+    dbus-launch --sh-syntax --exit-with-session &
+    OB_rc=$?
+    if [ $OB_rc -eq 0 ]; then
+        OB_stts="Ok  "
+    else
+        OB_stts="Erro"
+    fi
+    echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+    sleep 1
+else
+    echo "["`date +%F-%H:%M:%S`"] - dbus-launch ja ativo" >> ~/.config/openbox/log/ob.log
+fi
+
+
+# gnome-keyring-daemon
+if [ $(pgrep -lfc gnome-keyring-daemon) -ge 1 ] ; then
+  while 2>/dev/null killall gnome-keyring-daemon; do
+    sleep 1
+  done
+fi
+
+OB_str="/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh"
+OB_stts=""
+
+/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+
 # compton 
 if [ $(pgrep -lfc compton) -ge 1 ] ; then
   while 2>/dev/null killall compton; do
@@ -35,46 +76,6 @@ echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbo
 
 
 # Keyboard
-
-
-# launches a session dbus instance
-OB_str="dbus-launch session"
-OB_stts=""
-
-if [ -z "$DBUS_SESSION_BUS_ADDRESS" ] && type dbus-launch >/dev/null; then
-    sleep 1
-    dbus-launch --sh-syntax --exit-with-session &
-    OB_rc=$?
-    if [ $OB_rc -eq 0 ]; then
-        OB_stts="Ok  "
-    else
-        OB_stts="Erro"
-    fi
-    echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
-else
-    echo "["`date +%F-%H:%M:%S`"] - dbus-launch ja ativo" >> ~/.config/openbox/log/ob.log
-fi
-
-
-# Stop gnome-keyring-daemon if it exists
-if [ $(pgrep -lfc gnome-keyring-daemon) -ge 1 ] ; then
-  while 2>/dev/null killall gnome-keyring-daemon; do
-    sleep 1
-  done
-fi
-
-OB_str="/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh"
-OB_stts=""
-
-/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh &
-
-OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 
 # Start mate settings

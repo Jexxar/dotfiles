@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # help-pipemenu
 # Adapted from a script by damo <damo@bunsenlabs.org> 
 

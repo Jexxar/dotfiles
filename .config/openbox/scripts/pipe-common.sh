@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # common functions for pipe menus
 
@@ -27,7 +27,11 @@ function findPNG(){
 }
 
 function findSVG(){
-    if [ [ -z "$1" ] || [ -z "$2" ] ]; then
+    if [ -z "$1" ]; then
+        echo ""
+        return 1
+    fi
+    if [ -z "$2" ]; then
         echo ""
         return 1
     fi

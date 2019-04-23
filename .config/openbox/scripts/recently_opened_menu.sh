@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #    recently_opened_menu.sh - a script to parse .recently-used.xbel
 #    and generate openbox pipe menu
 #    Copyright (C) 2010  John Crawley
