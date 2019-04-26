@@ -14,6 +14,10 @@
 # "./delayctl 120 &" will Check every 120 seconds if any of the supported
 # applications are fullscreen and delay screensaver and Power Management if so.
 
+if [ -f "$HOME/bin/mylog" ]; then
+    . "$HOME/bin/mylog"
+fi
+
 # DC_DEBUG=0 for NO output
 # DC_DEBUG=1 for sleep prints
 # DC_DEBUG=2 for everything
@@ -72,13 +76,21 @@ function DC_log() {
     d=$(date +%H:%M:%S)
     if [ $DC_DEBUG -eq 2 ]; then
         echo "[$d] - " "$@"
-        echo "[$d] - " "$@" >> "$DC_logFile"
+        log "$@" 
     elif [ $DC_DEBUG -eq 1 ]; then
         if [ "$(echo "$@" | grep -c 'sleeping for')" == "1" ]; then
             echo "[$d] - " "$@"
-            echo "[$d] - " "$@" >> "$DC_logFile"
+            log "$@"
         fi
     fi
+}
+
+# builtin sleep in bash
+function snore()
+{
+    local IFS
+    [[ -n "${_snore_fd:-}" ]] || exec {_snore_fd}<> <(:)
+    read ${1:+-t "$1"} -u $_snore_fd || :
 }
 
 # save current state
@@ -134,7 +146,7 @@ function DC_disableXautolock() {
         if [ "$1" == "force" ]; then
             DC_log "DC_disableXautolock(): Shutting down xautolock daemon..."
             while 2>/dev/null killall xautolock; do
-                sleep 1
+                snore 1
             done
         fi
     fi
@@ -148,7 +160,7 @@ function DC_enableXautolock() {
         if [ "$(DC_whichScrSvrRunning)" = "xautolock" ]; then
             # remove obsolete processes
             while 2>/dev/null killall xautolock; do
-                sleep 1
+                snore 1
             done
         fi
         DC_log "DC_enableXautolock(): Restarting xautolock daemon..."
@@ -159,33 +171,25 @@ function DC_enableXautolock() {
     DC_XSetOn
 }
 
-# show process name
-function DC_pname() {
-    ps -p "$1" -o comm=
-    if [ $? -ne 0 ]; then
-        echo ""
-    fi
-}
-
 # only one instance of this job
 function DC_kill_older() {
-    local bf_proc=( $(ps -aux | grep "$DC_scriptName" | egrep -v 'grep --color=auto' | sort -u | awk '{print $1"_"$2"_"$9}') )
-    local bf_len=${#bf_proc[@]}
-    let bf_len=bf_len-1
+    local v_pid=( $(ps -aux | grep "$DC_scriptName" | egrep -v 'grep --color=auto' | sort -u | awk '{print $1"_"$2"_"$9"_"$12}') )
+    local v_len=${#v_pid[@]}
+    let v_len=v_len-1
     local aux=""
-    local pc_id="0"
+    local one_pid="0"
     local i="0"
     local mypid=$$
     local pnm=""
-    pnm=$(DC_pname $mypid)
-    #echo "$mypid $pnm"
-    for i in $(seq 0 $bf_len ); do 
-        aux=$(echo "${bf_proc[$i]}" | sed -e "s/_/ /g");
-        pc_id=$(echo "$aux" | awk '{print $2}');
-        pnm=$(DC_pname "$pc_id")
-        #echo "elem $i : ${bf_proc[$i]}  pc_id=$pc_id  pc_nm=$pnm "
-        if [ "$pc_id" != "$mypid" ] && [ "$pnm" == "$DC_scriptName" ]; then
-            kill "$pc_id" > /dev/null
+    DC_log "Mypid = $mypid $DC_scriptName"
+    for i in $(seq 0 $v_len ); do 
+        aux=$(echo "${v_pid[$i]}" | sed -e "s/_/ /g");
+        one_pid=$(echo "$aux" | awk '{print $2}');
+        aux=$(echo "$aux" | awk '{print $4}')
+        pnm="${aux##*/}"
+        DC_log "$i : ${v_pid[$i]}  pid=$one_pid  name=$pnm "
+        if [ "$one_pid" != "$mypid" ] && [ "$pnm" == "$DC_scriptName" ]; then
+            kill "$one_pid" &>/dev/null
         fi
     done
     return 0
@@ -732,32 +736,44 @@ function DC_sleep() {
     if [ $DC_enableDynDelay -eq 0 ]; then
         DC_log "DC_sleep(): sleeping for $DC_delay"
         DC_log "--------------- loop done! ---------------"
-        sleep "$DC_delay"
-    else
-        local DC_systemSleepDelay=""
-        local DC_sleepDelay=""
-        if [ -f /sys/class/power_supply/AC/online ]; then
+        snore "$DC_delay"
+        return 0
+    fi
+    local DC_systemSleepDelay=""
+    local DC_sleepDelay=""
+    if [ $DC_mateScrSvrPresent -eq 1 ]; then
+        if [ -f /sys/class/power_supply/ADP1/online ]; then
             if [ $DC_gsettingsPresent -eq 1 ]; then
-                if [ "$(cat /sys/class/power_supply/AC/online)" == "1" ]; then
-                    DC_systemSleepDelay=$(gsettings get org.gnome.settings-daemon.plugins.power sleep-display-ac 2>/dev/null)
+                if [ "$(cat /sys/class/power_supply/ADP1/online)" == "1" ]; then
+                    DC_systemSleepDelay=$(gsettings get org.mate.power-manager sleep-display-ac 2>/dev/null)
                 else
-                    DC_systemSleepDelay=$(gsettings get org.gnome.settings-daemon.plugins.power sleep-display-battery 2>/dev/null)
+                    DC_systemSleepDelay=$(gsettings get org.mate.power-manager sleep-display-battery 2>/dev/null)
                 fi
             fi
         fi
-        if [ "$(echo "$DC_systemSleepDelay" | egrep -c "^[0-9]+$")" == "1" ]; then
-            if [ $DC_systemSleepDelay -le $(($DC_defaultSleepDelay+5)) ]; then
-                DC_sleepDelay=$DC_defaultSleepDelay
-            else
-                DC_sleepDelay=$(($DC_systemSleepDelay-5))
+    elif [ $DC_gnomeScrSvrPresent -eq 1 ]; then
+        if [ -f /sys/class/power_supply/ADP1/online ]; then
+            if [ $DC_gsettingsPresent -eq 1 ]; then
+                if [ "$(cat /sys/class/power_supply/ADP1/online)" == "1" ]; then
+                    DC_systemSleepDelay=$(gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 2>/dev/null)
+                else
+                    DC_systemSleepDelay=$(gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout 2>/dev/null)
+                fi
             fi
-        else
-            DC_sleepDelay=$DC_defaultSleepDelay
         fi
-        DC_log "DC_sleep(): sleeping for $DC_sleepDelay (system idle timeout is $DC_systemSleepDelay)"
-        DC_log "--------------- loop done! ---------------"
-        sleep "$DC_sleepDelay"
     fi
+    if [ "$(echo "$DC_systemSleepDelay" | egrep -c "^[0-9]+$")" == "1" ]; then
+        if [ $DC_systemSleepDelay -le $(($DC_defaultSleepDelay+5)) ]; then
+            DC_sleepDelay=$DC_defaultSleepDelay
+        else
+            DC_sleepDelay=$(($DC_systemSleepDelay-5))
+        fi
+    else
+        DC_sleepDelay=$DC_defaultSleepDelay
+    fi
+    DC_log "DC_sleep(): sleeping for $DC_sleepDelay (system idle timeout is $DC_systemSleepDelay)"
+    DC_log "--------------- loop done! ---------------"
+    snore "$DC_sleepDelay"
 }
 
 # if we are using custom xautolock configs, we can kill all other screensavers daemons 
@@ -765,25 +781,25 @@ function DC_disableOtherSS() {
     if [ $(pgrep -lfc cinnamon-screensaver) -ge 1 ] ; then
         DC_log "Shutting down cinnamon-screensaver daemon..."
         while 2>/dev/null killall cinnamon-screensaver; do
-            sleep 1
+            snore 1
         done
     fi
     if [ $(pgrep -lfc mate-screensaver) -ge 1 ] ; then
         DC_log "Shutting down mate-screensaver daemon..."
         while 2>/dev/null killall mate-screensaver; do
-            sleep 1
+            snore 1
         done
     fi
     if [ $(pgrep -lfc gnome-screensaver) -ge 1 ] ; then
         DC_log "Shutting down gnome-screensaver daemon..."
         while 2>/dev/null killall gnome-screensaver; do
-            sleep 1
+            snore 1
         done
     fi
     if [ $(pgrep -lfc xscreensaver) -ge 1 ] ; then
         DC_log "Shutting down xscreensaver daemon..."
         while 2>/dev/null killall xscreensaver; do
-            sleep 1
+            snore 1
         done
     fi
     return 0
@@ -899,7 +915,7 @@ DC_save_state "ENABLED"
 if [ "$DC_screenSaverProgram" = "xautolock" ]; then 
     DC_log "Shutting down previous xautolock daemon..."
     while 2>/dev/null killall xautolock; do
-        sleep 1
+        snore 1
     done
     DC_log "Starting xautolock daemon..."
     DC_enableXautolock "force"
