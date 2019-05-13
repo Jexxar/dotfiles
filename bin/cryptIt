@@ -1,0 +1,209 @@
+#!/usr/bin/env bash
+
+# help text
+function usage() {
+    echo "Usage:  cryptIt [options] [filename]."
+    echo "Purpose: encrypt/decrypt files."
+    echo "       "
+    echo "Options"
+    echo "-h:   Show this help"
+    echo "-e:   Encrypt a file"
+    echo "-d:   Decrypt a file"
+    echo "Example."
+    echo "cryptIt -e  "
+    echo "cryptIt -e  README.txt"
+    echo "cryptIt -d  "
+    echo "cryptIt -d  README.txt.asc"
+    echo "       "
+}
+
+# Select a file using zenity/yad dialog
+function selcryptfile () {
+    local has_yad=`which yad`
+    if [ -z "$has_yad" ]; then
+        local f=`zenity --title="zcrypt: Select a file to $1" --file-selection`
+    else
+        local f=`yad --title="zcrypt: Select a file to $1" --file-selection --center`
+    fi
+    
+    [ $? -gt 0 ] && f="";
+    
+    echo "$f"
+}
+
+# Encrypt selected file
+function encryptselfile () {
+    local f=`selcryptfile "encrypt"`
+    if [ -z "$f" ]; then
+        zenity --error --title "File Selection" --text "You must select a file to encrypt !"
+    else
+        encryptit "${f}"
+        
+        if [ $? -gt 0  ]; then
+            zenity --error --title "File Encrypted" --text "$f has NOT been encrypted"
+        else
+            zenity --info --title "File Encrypted" --text "$f has been encrypted"
+        fi
+    fi
+}
+
+# Decrypt selected file
+# NOTE: This will OVERWRITE existing files with the same name !!!
+function decryptselfile () {
+    local f=`selcryptfile "decrypt"`
+    if [ -z "$f" ]; then
+        zenity --error --title "File Selection" --text "You must select a file to encrypt !"
+    else
+        decryptit "${f}"
+        
+        if [ $? -gt 0  ]; then
+            zenity --error --title "File Decrypted" --text "$f has NOT been decrypted"
+        else
+            zenity --info --title "File Decrypted" --text "$f has been decrypted"
+        fi
+    fi
+}
+
+# Encrypt file using ascii armor and symmetric cipher
+function encryptit () {
+    if [ -z "$1" ] || [ ! -f "$1" ]; then
+        return 1
+    fi
+    
+    if [ -z "$2" ] ; then
+        gpg -acq --yes "${1}"
+        [ $? -gt 0  ] && return 1;
+
+    else
+        echo "$2" | gpg -acq --batch --yes --passphrase-fd 0 "${1}"
+    fi
+    return 0
+}
+
+# Decrypt a file
+# NOTE: This will OVERWRITE existing files with the same name !!!
+function decryptit () {
+    if [ -z "$1" ] || [ ! -f "$1" ]; then
+        return 1
+    fi
+    if [ -z "$2" ] ; then
+        gpg --yes -q "${1}"
+        [ $? -gt 0  ] && return 1;
+        return 0
+    else
+        echo "$2" | gpg -q --batch --yes --passphrase-fd 0 "${1}"
+    fi
+}
+
+# Passphrase reader
+function read_pf() {
+    # Disable echo.
+    stty -echo
+    
+    # Set up trap to ensure echo is enabled before exiting if the script
+    # is terminated while echo is disabled.
+    trap 'stty echo' EXIT
+    
+    # Read secret.
+    read "$@"
+    
+    # Enable echo.
+    stty echo
+    trap - EXIT
+    
+    # Print a newline because the newline entered by the user after
+    # entering the passcode is not echoed. This ensures that the
+    # next line of output begins at a new line.
+    echo
+}
+
+# Encryption helper
+function do_encr() {
+    if [ -z "$1" ]; then
+        encryptselfile
+    else
+        [ -f "$1" ] || { echo "$1 not found. You must select a file to encrypt !"; return 1; }
+        local pf=""
+        printf "Passphrase: "
+        while [ -z "$pf" ]; do
+            read_pf pf
+        done
+        encryptit "$1" "$pf"
+        if [ $? -gt 0  ]; then
+            unset pf
+            echo "$1 has NOT been encrypted"
+            return 1
+        else
+            unset pf
+            echo "$1 has been encrypted"
+            return 0
+        fi
+    fi
+}
+
+# Decryption helper
+function do_decr() {
+    if [ -z "$1" ]; then
+        decryptselfile
+    else
+        [ -f "$1" ] || { echo "$1 not found. You must select a file to decrypt !"; return 1; }
+        local pf=""
+        printf "Passphrase: "
+        while [ -z "$pf" ]; do
+            read_pf pf
+        done
+        decryptit "$1" "$pf"
+        if [ $? -gt 0  ]; then
+            unset pf
+            echo "$1 has NOT been decrypted"
+            return 1
+        else
+            unset pf
+            echo "$1 has been decrypted"
+            return 0
+        fi
+    fi
+}
+
+# Main
+if [ $# -eq 0 ] ; then
+    usage ;
+    exit 0
+fi
+
+# Option strings
+SHORT=":d::e::h"
+LONG=":decrypt,encrypt,help"
+
+# read the options
+OPTS=$(getopt --options $SHORT --long $LONG --name "$0" -- "$@")
+if [ $? -ne 0 ] ; then
+    echo "Wrong parameters $*";
+    usage ;
+    exit 1
+fi
+
+#eval set -- "$OPTS"
+
+if [ $? -ne 0 ] ; then
+    usage ;
+    exit 1
+fi
+
+fname=""
+
+while true ; do
+    case "$1" in
+        -d | --decrypt )
+            [ $# -gt 1 ] && fname="$2" ; shift 2
+            do_decr "$fname"
+            [ $? -gt 0  ] && exit 1 || exit 0
+        ;;
+        -e | --encrypt )
+            [ $# -gt 1 ] && fname="$2" ; shift 2
+            do_encr "$fname"
+            [ $? -gt 0  ] && exit 1 || exit 0
+        ;;
+        *)  usage; exit;;
+    esac
+done

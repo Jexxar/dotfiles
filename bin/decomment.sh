@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+[ $# -ge 1 -a -f "$1" ] && INPUT="$1" || INPUT="-"
+egrep -v '^($|[[:space:]]*#|\;)' $INPUT
