@@ -29,7 +29,7 @@
 W=$(tput cols) H=$(tput lines)
 # maximal random value + 1
 M=32768
-
+f=75
 SETS=('╱╲' '/\')
 COLORS=(31 32 33 34 35 36 37)
 
@@ -39,6 +39,8 @@ T=0
 I=0.05
 P=25
 R=$((W * H / 4))
+NOCOLOR=0
+
 
 HELP="Usage: $(basename $0) [OPTIONS]
 Animated pipes.sh terminal screensaver at an angle.
@@ -90,13 +92,21 @@ while getopts "n:t:i:P:r:RCXh" arg; do
 done
 
 do_exit() {
-  # Show cursor and echo stdin
-  echo -ne "\e[?25h"
-  stty echo
-  clear
-  exit 0
-  }
-trap do_exit INT TERM
+    # clear up standard input
+    read -t 0.001 && cat </dev/stdin>/dev/null
+
+    # terminal has no smcup and rmcup capabilities
+    ((FORCE_RESET)) && reset && exit 0
+
+    tput rmcup
+    tput cnorm
+    stty echo
+    ((NOCOLOR)) && echo -ne '\e[0m'
+    clear
+    exit 0
+}
+trap do_exit INT HUP TERM
+#trap 'break 2' INT
 
 # No echo stdin and hide the cursor
 stty -echo
@@ -119,8 +129,13 @@ for ((n = 0; n < N; n++)); do
   C[n]=${COLORS[${#COLORS[@]} * RANDOM / M]}
 done
 
+stty -echo
+tput smcup || FORCE_RESET=1
+tput civis
+tput clear
 clear
-while :; do
+
+while REPLY=; read -t 0.0$((1000/f)) -n 1; [[ -z $REPLY ]]; do
   for ((n = 0; n < N; n++, CC = 0)); do
     x=${X[n]} y=${Y[n]}
     d=${D[n]} c=${C[n]}

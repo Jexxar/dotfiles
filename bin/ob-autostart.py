@@ -410,7 +410,7 @@ if __name__ == "__main__":
                     if timer > 0:
                         cmd = "sleep %ss && %s" % (timer,cmd)
                     print cmd
-                    os.spawnl(os.P_NOWAIT, "/bin/sh", "/bin/sh", "-c", cmd)
+                    os.spawnl(os.P_NOWAIT, "/bin/bash", "/bin/bash", "-c", cmd)
     else:
         conf = Conf()
         conf.main()

@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 
 # just a command to launch urxvt with charmander background
 # replace zsh with bash if are using bash

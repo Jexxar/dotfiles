@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Copyright (C) Sept 13, 2001 Shane Mueller <smueller@umich.edu>
 # http://g-scripts.sourceforge.net
 #
