@@ -3,30 +3,30 @@
 #==============================================
 # Oneliners
 #==============================================
-#Xargs com function. Ex. echo "abc" | do_xarg echo_pass
+# Xargs com function. Ex. echo "abc" | do_xarg echo_pass
 function do_xarg() { local funnm=$1; xargs -I{} bash -c "$funnm"\ \{\}; }
-# logical test functions
+# Logical test functions
 function is_empty() { local var=$1;  [[ -z $var ]] ; }
 function is_not_empty() { local var=$1;  [[ -n $var ]] ;}
 function is_file() { local file=$1;  [[ -f $file ]] ; }
 function is_dir() { local dir=$1;  [[ -d $dir ]]; }
-#Random passw. ex: rpass 6
+# Random passw. ex: rpass 6
 function rpass() { cat /dev/urandom | tr -cd '[:graph:]' | head -c ${1:-12}; }
-# Returns system load as percentage, i.e., '40' rather than '0.40)'.
+# Return system load as percentage, i.e., '40' rather than '0.40)'.
 function sys_load() { local SYSLOAD=$(cut -d " " -f1 /proc/loadavg | tr -d '.');  echo $((10#$SYSLOAD)) ; }
-# Criptografa arquivo usando ascii armor
+# Crypt file using ascii armor
 function aencrypt () {  gpg -ac --no-options "$1" ; }
-# Criptografa arquivo binario. jpegs/gifs/vobs/etc.
+# Crypt binary file. jpegs/gifs/vobs/etc.
 function bencrypt () { gpg -c --no-options "$1" ; }
-#Descriptografa (with no options)
+# Drcrypt (with no options)
 function decrypt () { gpg --no-options "$1" ; }
 # Number of CPUs
 function ncpu() { grep -c 'processor' /proc/cpuinfo ; }
-# custom  ps my user processes
+# Custom ps my user processes
 function my_ps() { ps "$@" -u "$USER" -o pid,%cpu,%mem,bsdtime,command ; }
-# custom  my user processes tree
+# Custom my user processes tree
 function psgrep() { my_ps f | awk '!/awk/ && $0~var' var="${1:-".*"}" ; }
-# Submit job
+# Submit a job
 function sub() { ($1 &) ;}
 # Goto dir
 function goto() { [ -d "$1" ] && cd "$1" || cd "$(dirname "$1")"; }
@@ -36,17 +36,17 @@ function cpf() { cp "$@" && goto "$_"; }
 function mvf() { mv "$@" && goto "$_"; }
 # Mkdir and Goto dir
 function mkf() { mkdir -p "$1" && goto "$1"; }
-# Cmd exists
+# Test if a such command exists
 function cmd_exists() { command -v "$1" &> /dev/null; }
 # Top used cmds
 function top_cmds() { grep -Ev '^#' "$HISTFILE" | awk '{ print $1 }' | grep -Ev '^`' | grep -Ev ' ' | sort | uniq -c | sort  -n -k1 | sort -rn | head ; }
 # Color tree of current dir
 function lsr() { tree -ChvugapfF --dirsfirst | most -ct4 +82 +s ; }
-# alternative clear
+# Reset terminal
 function cls() { printf "%b" "\ec"; }
-# decode base64
+# Decode base64
 function decode_64 () { echo "$@" | base64 -d ; }
-# encode base64
+# Encode base64
 function encode_64 () {  echo "$@" | base64 - ; }
 # DICTIONARY FUNCTIONS
 function dwordnet () { curl dict://dict.org/d:"${1}":wn; }
@@ -54,41 +54,41 @@ function dacron () { curl dict://dict.org/d:"${1}":vera; }
 function djargon () { curl dict://dict.org/d:"${1}":jargon; }
 function dfoldoc () { curl dict://dict.org/d:"${1}":foldoc; }
 function dthesaurus () { curl dict://dict.org/d:"${1}":moby-thes; }
-# hora
+# Hour (24 h format)
 function hora () { date -Ins | cut -b 12-19 ; }
-# data formato ISO
+# Date ISO format
 function dataiso () { date -Ins | cut -b 1-10 ; }
-# data
+# Data (european format)
 function data () { date +"%d-%m-%Y" ; }
-# data n dias atras
+# Date n days ago
 function yday() { local dstr="date --date='-$1 day'";  eval "$dstr"; }
-# data n dias a frente
+# Date +n dias ahead
 function tday() { local dstr="date --date='+$1 day'";  eval "$dstr"; }
-# grep enhance
+# Grep enhance
 function bro-grep() { grep -E "(^#)|$1" "$2"; }
-# grep enhance zip files
+# Grep enhance zip files
 function bro-zgrep() { zgrep -E "(^#)|$1" "$2"; }
-# search javascripts files for
+# Search javascripts files for
 function jsgrep() { find . \( -name "*.js" -print \)  | xargs grep -in "$1" ; }
-# search development css files
+# Search development css files
 function cssgrep() { find . \( -name "*.css" -print \)  | xargs grep -in "$1"; }
-# search php files
+# Search php files
 function phpgrep() { find . \( -name "*.php" -print \)  | xargs grep -in "$1"; }
-# search html files
+# Search html files
 function htmgrep() { find . \( -name "*.html" -print \)  | xargs grep -in "$1"; }
-# search php files and development scripts/styles
+# Search php files and development scripts/styles
 function wdevgrep() { find . \( -name "*.php" -print -or -name "*.js" -or -name "*.css" -print \)  | xargs grep -n "$1"; }
-# top count lines
+# Top count lines
 function topcount() { sort | uniq -c | sort -rn | head -n "${1:-10}"; }
-# most color
+# Most color
 function mostcolor() { cat "$1" | sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[%sm %s \x1b[0m",(i%7)+31,$i);print ""}' | most -RS; }
-# uptime desde
+# Uptime since
 function uptime_since() { uptime -ps ; }
-# memoria livre
+# Free memory
 function free_mem() { awk '/MemFree/{print $2"M"}' /proc/meminfo ; }
-# memoria total
+# Total memory
 function total_mem() { awk '/MemTotal/{print $2"M"}' /proc/meminfo ; }
-# memoria disponivel
+# Available memory
 function avail_mem() { awk '/MemAvailable/{print $2"M"}' /proc/meminfo ; }
 # Fuzzy find file
 function ff() {  find . -type f -iname "$*";}
@@ -100,29 +100,29 @@ function fd() {  find . -type d -iname "$*";}
 function fdf() { find . -type d -iname '*'"$*"'*';}
 # Find a file with pattern $1 in name and Execute $2 on it:
 function fe() { find . -type f -iname '*'"${1:-}"'*' -exec "${2:-file}" {} \;  ; }
-# Conta jobs Ativos
+# Number of active jobs
 function jobs_count() { jobs -r | wc -l | sed -e "s/ //g" ; }
-# Conta jobs parados
+# Number of stopped jobs
 function stoppedjobs() { jobs -s | wc -l | sed -e "s/ //g" ; }
-# Bateria laptop %
+# Laptop battery %
 function laptop_battery() { upower -i "$(upower -e | grep 'BAT')" | grep -E "state|to\ full|percentage" ; }
-# Bateria mouse %
+# Mouse battery %
 function mouse_battery() { upower -i "$(upower -e | grep 'mouse')" | grep -E "state|to\ full|percentage" ; }
-# volta n diretórios
+# Back n dirs
 function up() { cd $(eval printf '../'%.0s {1..$1}) ; }
-# bkp simples
+# Simple backup
 function bak() { cp "$1" "$1_$(date +%Y-%m-%d_%H:%M:%S).bak" ; }
-# generate space report
+# Generate space report
 function space() { du -skh * | sort -hr ; }
-# processor
+# Processor info
 function core() { cat /proc/cpuinfo | grep "model name" | cut -c14- ; }
-# graphic card
+# Graphic card
 function graph() { lspci | grep -i vga | cut -d: -f3 ; }
-# ethernet card
+# Ethernet card
 function ethcard() { lspci | grep -i ethernet | cut -d: -f3 ; }
-# wireless card
+# Wireless card
 function wfcard() { lspci | grep -i network | cut -d: -f3 ; }
-# display color para operacoes via parametro (ex: red $1)
+# Display on a desired color (ex: red $1)
 function onblack() { echo "$(tput setaf 0)$*$(tput sgr0)"; }
 function onred() { echo "$(tput setaf 1)$*$(tput sgr0)"; }
 function ongreen() { echo "$(tput setaf 2)$*$(tput sgr0)"; }
@@ -131,7 +131,7 @@ function onblue() { echo "$(tput setaf 4)$*$(tput sgr0)"; }
 function onmagenta() { echo "$(tput setaf 5)$*$(tput sgr0)"; }
 function oncyan() { echo "$(tput setaf 6)$*$(tput sgr0)"; }
 function onwhite() { echo "$(tput setaf 7)$*$(tput sgr0)"; }
-# display color para operacoes via pipe (ex: cmd1 | on_green)
+# Display on a desired via pipe (ex: cmd1 | on_green)
 function on_black() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;30m %s \x1b[0m",$i);print ""}'; }
 function on_red() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;31m %s \x1b[0m",$i);print ""}'; }
 function on_green() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;32m %s \x1b[0m",$i);print ""}'; }
@@ -140,27 +140,18 @@ function on_blue() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for
 function on_magenta() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;35m %s \x1b[0m",$i);print ""}'; }
 function on_cyan() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;36m %s \x1b[0m",$i);print ""}'; }
 function on_white() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;37m %s \x1b[0m",$i);print ""}'; }
-# cat  em cores
-function cblk() { cat "$1" | on_black ; }
-function cred() { cat "$1" | on_red ; }
-function cgre() { cat "$1" | on_green ; }
-function cyel() { cat "$1" | on_yellow ; }
-function cblu() { cat "$1" | on_blue ; }
-function cmag() { cat "$1" | on_magenta ; }
-function ccya() { cat "$1" | on_cyan ; }
-function cwhi() { cat "$1" | on_white ; }
-# commandline FU MOTD
+# Commandline FU MOTD
 function cm_fu_motd () { curl http://www.commandlinefu.com/commands/random/plaintext -o "$HOME"/.motd -s -L && cgre "$HOME"/.motd ; }
-#calculos na linha de comando
-function calc() { echo "scale=3;$*" | bc -l ; }
+# Command line Calculations
+function calc() { printf '%s\n' "scale=3;${*//[ ]}" | bc -l ; }
 # Run `dig` and display the most useful info
 function digga() { dig +nocmd "$1" any +multiline +noall +answer; }
 # tre is a shorthand for tree with hidden files and color enabled, ignoring `.git` directory, listing directories first.
 function tre() { tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | most -FRNX; }
-# pre adiciona caminho ao path
+# Pre append a path to the PATH
 function prepend-path() { [ -d "$1" ] && PATH="$1:$PATH" ; }
 # Show duplicate/unique lines
-function duplines() {  sort "$1" | uniq -d ; }
+function duplines() { sort "$1" | uniq -d ; }
 # Show unique lines
 function uniqlines() { sort "$1" | uniq -u ; }
 # Get IP from hostname
@@ -169,7 +160,7 @@ function hostname2ip() { ping -c 1 "$1" | egrep -m1 -o '[0-9]{1,3}\.[0-9]{1,3}\.
 function e_header() { printf "\n${_cl_bold}${_cl_purple}===  %s  ===${_cl_reset}\n" "$@" ; }
 # Logging stuff. arrow
 function e_arrow() { printf "➜ %s\n" "$@" ; }
-# Logging stuff. success
+# Logging stuff. Success
 function e_success() { printf "${_cl_green}✔ %s${_cl_reset}\n" "$@" ; }
 # Logging stuff. Error
 function e_error() { printf "${_cl_red}✖ %s${_cl_reset}\n" "$@" ; }
@@ -179,122 +170,100 @@ function e_warning() { printf "${_cl_yellow}➜ %s${_cl_reset}\n" "$@" ; }
 function e_underline() { printf "${_cl_underline}$_cl_{bold}%s${_cl_reset}\n" "$@"; }
 # Logging stuff. Bold
 function e_bold() { printf "${_cl_bold}%s${_cl_reset}\n" "$@"; }
-# Logging stuff. note in blue
+# Logging stuff. Note in blue
 function e_note() { printf "${_cl_underline}${_cl_bold}${_cl_blue}Note:${_cl_reset}  ${_cl_blue}%s${_cl_reset}\n" "$@"; }
 # Logging stuff. List item
 function e_itemok() { echo -e " \033[1;32m✔\033[0m  $@"; }
 # Logging stuff. Error list item
 function e_itemnok() { echo -e " \033[1;31m✖\033[0m  $@"; }
-# Logging stuff.
+# Logging stuff. Arrow item
 function e_itemarrow() { echo -e " \033[1;34m➜\033[0m  $@"; }
 # Echo assertion fail
 function echo_fail() { printf "%s \e[31m[✘] " "$@";  echo -e "\033[0m" ; }
 # Echo assertion pass
 function echo_pass() { printf "%s \e[32m[✔] " "$@";  echo -e "\033[0m"; }
-# appends your key to a server's authorized keys file
+# Appends your key to a server's authorized keys file
 function authme() { ssh "$1" 'cat >>.ssh/authorized_keys' <~/.ssh/id_rsa.pub ; }
-# Parses manpage for a command's option description -> usage manopt man t
-function manopt() { man "$1" | sed 's/.\x08//g' | sed -n "/^\s\+-\+$2\b/,/^\s*$/p" | sed '$d;' | on_yellow; }
-# web helper get
+# Web helper get
 function couch-get() { curl -s -X GET "$@" 2>&1 ; }
-# web helper put
+# Web helper put
 function couch-put() { curl -s -X PUT "$@" 2>&1 ; }
-# web helper post
+# Web helper post
 function couch-post() { curl -s -X POST "$@" 2>&1 ; }
-# web helper delete
+# Web helper delete
 function couch-delete() { curl -s -X DELETE "$@" 2>&1 ; }
-# awk helper
-function awksub () { awk '{a[$3]+=1;}END{for(i in a)print i" "a[i];}';}
-# conversao para hexadecimal
+# Hexadecimal conversion
 function decimal2hex() { echo 16o "$1" p | dc ; }
-# rsync backup
+# Rsync simple backup
 function rsync_bpk() { rsync "$1" -rvhzI --size-only --inplace --human-readable --compress --compress-level=1 "$2" ; }
-# edit and exec?
-function editexec() { $EDITOR "$(which '$1')" ; }
-# Funcoes auxiliares - dir count
+# Dir count
 function _dir_count() { /bin/ls -lagFXh1 | grep '/' | awk '!/\.\./' | awk '!/\.\//' | /usr/bin/wc -l | /bin/sed 's: ::g' ; }
-# Funcoes auxiliares - file count
+# File count
 function _file_count() { /bin/ls -lagFXh1 | grep '\-rw' | /usr/bin/wc -l | /bin/sed 's: ::g' ;  }
-# Funcoes auxiliares - pwd_size
+# Current pwd_dir size
 function _pwd_size() { /bin/ls -lagFXh1 | /bin/grep -m 1 total | /bin/sed 's/total //' ; }
 # Commit and push everything
 function gitdone() { git add -A; git commit -S -v -m "$1"; git push; }
 
-
 #==============================================
-# Open the man page for the previous command.
+# strip_all - Strip a pattern from a string.
+#
+# Examples:
+#    strip_all "The Quick Brown Fox" "[aeiou]"
+#
+# @param {String} $1  string 
+# @param {String} $2  string pattern inside
 #==============================================
-#function lman () { 
-#    set -- $(fc -nl -1);
-#    while [ "$#" -gt 0 -a '(' "sudo" = "$1" -o "-" = "${1:0:1}" ')' ]; do 
-#        shift; 
-#    done; 
-#    man "$1" || help "$1"; 
-#}
-
-#==============================================
-# execute some cmds like magic
-#==============================================
-#function do_magic() {
-#    for p in "$@"; do
-#        [ -O "$p" -a -x "$p" ] && /bin/bash "$p"
-#    done
-#}
-
-#==============================================
-# This function returns every element + their respective offsets
-# + Usage: Call the function with the array name as "array"
-# (no need to use the full array naming scheme as ${array[@]})
-#==============================================
-function ArrayElemDisplay() {
-    local n=0                                            # $n initialized to "0" (used in the below while loop)
-    local array="$1"                                       # Array to be processed is given as first parameter
-    local array_final=( $(eval echo \${${array}[@]}) )   # append the result of the $(eval ...) command to array_final (this way i create a dynamic array name)
-
-    while (( n < "${#array_final[@]}" )) ; do            # while loop iterating on each element up to the last one
-                                                         #+ (${#array_final[@]} is the offset for the last element)
-        for i in "${array_final[@]}" ; do                # for each array element we print its offset and its value
-            echo "[$n]: ${i}" ; ((n++))                  #+ and increment the $n var.
-        done
-    done
+strip_all() {
+    printf '%s\n' "${1//$2}"
 }
 
 #==============================================
-# This function returns the last element of the given array,
-# + Usage: Call the function with the array name as ${array[*]}
-#==============================================
-function GetLastElem() {
-    declare -a array
-    local array=( $@ )        # set the function parameters as the array content
-    local LastElem=${!#}      # numbers of elements within the array (#) + indirect reference (!) = last element value
-    echo "${LastElem}"
-}
-
-#==============================================
-# Search history.
+# qh - Search bash history for a command.
+#
+# Examples:
+#    qh ls 
+#
+# @param {String} $*  search string
 #==============================================
 function qh() {
-    #          ┌─ enable colors for pipe
-    #          │  ("--color=auto" enables colors only if
-    #          │  the output is in the terminal)
-    grep --color=always "$*" "$HISTFILE" |       less -RX
-    # display ANSI color escape sequences in raw form ─┘│
-    #       don't clear the screen after quitting less ─┘
+    if cmd_exists "hstr"; then
+        hstr "$*"
+    else
+        #          ┌─ enable colors for pipe
+        #          │  ("--color=auto" enables colors only if
+        #          │  the output is in the terminal)
+        grep --color=always "$*" "$HISTFILE" |       less -RXS#3M~g
+        # display ANSI color escape sequences in raw form ─┘│
+        #       don't clear the screen after quitting less ─┘
+    fi 
 }
 
 #==============================================
-# Search for text within the current directory.
+# qtxt - Search for text within the current directory.
+#
+# Examples:
+#    qtxt test 
+#
+# @param {String} $*  search string
 #==============================================
 function qtxt() {
     #     ┌─ ignore case
     #     │┌── search all files under each directory, recursively
-    grep -ir --color=always "$*" --exclude-dir=".git" --exclude-dir="node_modules" . | less -RX
+    grep -ir --color=always "$*" --exclude-dir=".git" --exclude-dir="node_modules" . | less -RXS#3M~g
     #       display ANSI color escape sequences in raw form ─────────────────────────────────┘│
     #           don't clear the screen after quitting less ───────────────────────────────────┘
 }
 
 #==============================================
-# mkdir default permission
+# _mkdir - Make a dir with a default permission
+#
+# Examples:
+#    _mkdir test 
+#    _mkdir test 0644
+#
+# @param {String} $1  dir name 
+# @param {String} $2  permission mask 
 #==============================================
 function _mkdir() {
   local d="$1"            # get dir name
@@ -304,7 +273,10 @@ function _mkdir() {
 }
 
 #==============================================
-# set cursor positon
+# position_cursor - Set cursor positon to a fixed location
+#
+# Examples:
+#    position_cursor
 #==============================================
 function position_cursor () {
     local RES_COL
@@ -314,7 +286,12 @@ function position_cursor () {
 }
 
 #==============================================
-# display status in colors
+# display_status - Display status using colors
+#
+# Examples:
+#    display_status ok
+#
+# @param {String} $1  status description 
 #==============================================
 function display_status () {
     local STATUS="$1"
@@ -342,7 +319,7 @@ function display_status () {
             STATUS=" NOTICE  "
             STATUS_COLOUR="$_cl_blue"
             ;;
-    WARNING | Warning | warning | WARN )
+    WARNING | Warning | warning | WARN | warn )
             STATUS=" WARNING "
             STATUS_COLOUR="$_cl_yellow"
             ;;
@@ -350,17 +327,15 @@ function display_status () {
 
     position_cursor
     echo "[$_cl_bold$STATUS_COLOUR$STATUS$_cl_reset]"
-    #$reset ]"
-    #$reset
-    #$bold
-    #$STATUS_COLOUR
-    #echo -n "$STATUS"
-    #$reset
-    #echo "]"
 }
 
 #==============================================
-# Verifies if such a package exists
+# is_installed - Verify if such a package exists
+#
+# Examples:
+#    is_installed firefox
+#
+# @param {String} $1  package name 
 #==============================================
 function is_installed() {
   dpkg -s "$1" &> /dev/null
@@ -375,7 +350,12 @@ function is_installed() {
 }
 
 #==============================================
-# Detailed IP info about a host
+# ip_inf - Shows detailed IP info about a host
+#
+# Examples:
+#    ip_inf google.com
+#
+# @param {String} $1  URL to inspect
 #==============================================
 function ip_inf() {
     if grep -P "(([1-9]\d{0,2})\.){3}(?2)" <<< "$1"; then
@@ -438,13 +418,13 @@ function is_newer() {
 # is_systype - compare string with current system and return true (0) if it matches uname command
 #
 # Examples:
-#   is_systype Linux
+#   is_systype "Linux"
 #
 # @param {String} $1  SystemType string
 #==============================================
 function is_systype() {
      if [ -z "$1" ] ; then
-          echo "Usage: is_systype string"
+          echo "Usage: is_systype <string>"
           return 1
      fi
 
@@ -461,10 +441,16 @@ function is_systype() {
 }
 
 #==============================================
-# Ensures that input only consists of alphabetical and numeric characters.
+# is_alpha - Ensures that input only consists of alphabetical and numeric characters.
+#
+# Examples:
+#   is_alpha "T-Rex"
+#
+# @param {String} $1 string
 #==============================================
 function is_alpha() {
     if [ -z "$1" ] ; then
+        echo "Usage: is_alpha <string>"
         return 1
     fi
     local i="$1"
@@ -478,14 +464,20 @@ function is_alpha() {
 }
 
 #==============================================
-# Ensures that input only consists of numeric characters and initial sign.
+# is_int - Ensures that input only consists of numeric characters and initial sign.
+#
+# Examples:
+#   is_int "001"
+#
+# @param {String} $1 string
 #==============================================
 function is_int() {
     local number="$1";
     local testvalue="";
 
     if [ -z "$number" ] ; then
-          return 1
+        echo "Usage: is_int <string>"
+        return 1
     fi
 
     if [ "${number%${number#?}}" == "-" ] ; then   # first char '-' ?
@@ -507,54 +499,70 @@ function is_int() {
 }
 
 #==============================================
-# Ensures that input only consists of numeric characters, sign and decimal sep.
+# is_float - Ensures that input only consists of numeric characters, sign and decimal sep.
+#
+# Examples:
+#   is_float ".25"
+#
+# @param {String} $1 string
 #==============================================
 function is_float() {
-  local fvalue="$1"
-  local pt=$(echo "$fvalue" | sed 's/[^.]//g')
+    if [ -z "$1" ] ; then
+        echo "Usage: is_float <string>"
+        return 1
+    fi
+    local fvalue="$1"
+    local pt=$(echo "$fvalue" | sed 's/[^.]//g')
 
-  if [ ! -z "$pt" ] ; then
-      local decimalPart=$(echo "$fvalue" | cut -d. -f1)
-      local fractionalPart=$(echo "$fvalue" | cut -d. -f2)
-      if [ ! -z "$decimalPart" ] ; then
-          if [ "$decimalPart" != "-"  ] ; then
-              if ! is_int "$decimalPart" ; then
-                  return 1
-              fi
-          fi
-      fi
-      if [ "${fractionalPart%${fractionalPart#?}}" == "-" ] ; then
-          return 1
-      fi
-      if [ "$fractionalPart" != "" ] ; then
-          if ! is_int "$fractionalPart" ; then
-              return 1
-          fi
-      fi
-      if [ "$decimalPart" == "-"  ] ; then
-          if [ -z "$fractionalPart" ] ; then
-              return 1
-          fi
-      fi
-  else
-      if [ "$fvalue" == "-" ] ; then
-          return 1
-      fi
-      if ! is_int "$fvalue" ; then
-          return 1
-      fi
-  fi
-  return 0
+    if [ ! -z "$pt" ] ; then
+        local decimalPart=$(echo "$fvalue" | cut -d. -f1)
+        local fractionalPart=$(echo "$fvalue" | cut -d. -f2)
+        if [ ! -z "$decimalPart" ] ; then
+            if [ "$decimalPart" != "-"  ] ; then
+                if ! is_int "$decimalPart" ; then
+                    return 1
+                fi
+            fi
+        fi
+        if [ "${fractionalPart%${fractionalPart#?}}" == "-" ] ; then
+            return 1
+        fi
+        if [ "$fractionalPart" != "" ] ; then
+            if ! is_int "$fractionalPart" ; then
+                return 1
+            fi
+        fi
+        if [ "$decimalPart" == "-"  ] ; then
+            if [ -z "$fractionalPart" ] ; then
+                return 1
+            fi
+        fi
+    else
+        if [ "$fvalue" == "-" ] ; then
+            return 1
+        fi
+        if ! is_int "$fvalue" ; then
+            return 1
+        fi
+    fi
+    return 0
 }
 
 #==============================================
-# What this function does is cache the result of a command in a file, and
+# cache - Cache the result of a command in a file, and
 # use the file to output the results in case it exists.
-# Format is: cache "$basename_to_cache_in" $cmd $arg1 $arg2 $arg3...
+#
+# Examples:
+#   cache "~/.cache" "ls" "-lar"...
+#
+# @param {String} $1 filename to cache
+# @param {String} $2 command to execute
+# @param {String} $3 command arg1
+# @param {String} $.. command argn
 #==============================================
 function cache() {
     if [[ -z "$1" ]]; then
-        echo "Uso: cache <basename_to_cache_in> <cmd> <arg1> <arg2> <arg3> ..."
+        echo "Usage: cache <basename_to_cache_in> <cmd> <arg1> <arg2> <arg3> ..."
         return 0
     fi
 
@@ -575,7 +583,13 @@ function cache() {
 }
 
 #==============================================
-# Start an HTTP server from a directory, optionally specifying the port
+# serve_py - Start an HTTP server from a directory, optionally specifying the port
+#
+# Examples:
+#   serve_py
+#   serve_py 8080
+#
+# @param {String} $1 port number
 #==============================================
 function serve_py() {
     local port="${1:-8000}";
@@ -585,8 +599,13 @@ function serve_py() {
 }
 
 #==============================================
-# Start a PHP server from a directory, optionally specifying the port
-# (Requires PHP 5.4.0+.)
+# serve_php - Start a PHP server from a directory, optionally specifying the port (Requires PHP 5.4.0+.)
+#
+# Examples:
+#   serve_php
+#   serve_php 8080
+#
+# @param {String} $1 port number
 #==============================================
 function serve_php() {
     local port="${1:-4000}";
@@ -595,7 +614,12 @@ function serve_php() {
 }
 
 #==============================================
-# ask for a simple confirmation
+# ask_confirmation - Ask for a simple yes/no confirmation
+#
+# Examples:
+#   ask_confirmation "Are you ready?"
+#
+# @param {String} $1 question string
 #==============================================
 function ask_confirmation() {
     printf "\n${_cl_bold}$@${_cl_reset}"
@@ -604,7 +628,10 @@ function ask_confirmation() {
 }
 
 #==============================================
-# Test whether the result of an 'ask' is a confirmation
+# is_confirmed - Test whether the result of an 'ask' is a confirmation
+#
+# Examples:
+#   is_confirmed 
 #==============================================
 function is_confirmed() {
     if [[ "$REPLY" =~ ^[Yy]$ ]]; then
@@ -614,7 +641,7 @@ function is_confirmed() {
 }
 
 #==============================================
-# Get full file/directory path
+# get_full_path - Get full file/directory path
 #
 # Examples:
 #   full_path=$(get_full_path '/tmp');       # /tmp
@@ -637,26 +664,32 @@ function get_full_path() {
 }
 
 #==============================================
-# Execute a function or alias with sudo
+# exesudo - Execute a function or alias with sudo
 #
 # Examples:
 #   exesudo "funcname" followed by any param
 #   exesudo psonly mdm
 #
 # @Params {String} $1:   name of the object to be executed with sudo
+# @Params {String} $2:   arg1 
+# @Params {String} $..:  argn 
 #==============================================
 # Luca Borrione  2012
 #==============================================
 function exesudo () {
+    if [[ $# -eq 0 ]]; then
+        echo "Usage: exesudo <cmd> <arg1> <arg2> <arg3> ..."
+        return 0
+    fi
     local _funcname_="$1"
-    local params=( "$@" )               ## array containing all params passed here
-    local tmpfile=$(mktemp)    ## temporary file
-    local filecontent                   ## content of the temporary file
-    local regex                         ## regular expression
-    local func                          ## object source
+    local params=( "$@" )       ## array containing all params passed here
+    local tmpfile=$(mktemp)     ## temporary file
+    local filecontent           ## content of the temporary file
+    local regex                 ## regular expression
+    local func                  ## object source
 
     # Shift the first param (which is the name of the object)
-    unset params[0]              ## remove first element
+    unset params[0]             ## remove first element
     # params=( "${params[@]}" )     ## repack array
 
     # bash header for TEMPORARY FILE:
@@ -686,7 +719,7 @@ function exesudo () {
 }
 
 #==============================================
-# Rsync pull from server
+# servername_pull - Rsync pull from server
 #
 # @option -h:   help
 # @option -u:   Set a remote username
@@ -746,7 +779,7 @@ function servername_pull() {
 }
 
 #==============================================
-# Rsync pull to a server
+# servername_push - Rsync push to a server
 #
 # @option -h:   help
 # @option -u:   Set a remote username
@@ -813,185 +846,64 @@ function servername_push() {
 }
 
 #==============================================
-# Compile and execute a C source on the fly
+# c_loadandgo - Compile and execute a C source on the fly
+#
+# Examples:
+#   c_loadandgo "funcname" followed by any param
+#   c_loadandgo psonly mdm
+#
+# @Params {String} $1: C source filename
 #==============================================
 function c_loadandgo() {
     [[ $1 ]]    || { echo "Missing operand" >&2; return 1; }
     [[ -r $1 ]] || { printf "File %s does not exist or is not readable\n" "$1" >&2; return 1; }
     local o_path=${TMPDIR:-/tmp}/${1##*/};
-    echo "$o_path"
+    #echo "$o_path"
     local output_path=${o_path%.*};
-    echo "$output_path"
+    #echo "$output_path"
     gcc "$1" -o "$output_path.o" && "$output_path.o";
     rm -f "$output_path.o";
     return 0;
 }
 
-#==============================================
-# Pede senha sudo via zenity ou yad
-#==============================================
-function ask_pw() {
-    local has_yad=`which yad`
-    local Psw=""
-    local p
-    for p in $(seq 1 3 ); do
-        sudo -K
-        if [ -z "$has_yad" ]; then
-            Psw=`zenity --forms --modal --text="Autenticação Necessária $p / 3" --title="Entre com a senha"  --add-password="Senha:"`
-        else
-            Psw=`yad --entry --entry-text="xxxx" --hide-text --text="Autenticação Necessária $p / 3" --title="Entre com a senha"  --center --on-top --width=260`
-        fi
-        if [[ ${?} -ne 0 || -z ${Psw} ]]; then
-            Psw=""
-            echo "$Psw"
-            return 1
-        fi;
-        sudo -vSp '' <<<${Psw}
-        if [[ ${?} -eq 0 ]]; then
-            echo "$Psw"
-            return 0
-        fi;
-    done
-    notify-send -t 5000 -i /usr/share/icons/gnome/32x32/status/error.png "Senha Inválida após 3 tentativas"
-}
 
 #==============================================
-# Pede usuario via zenity
-#==============================================
-function ask_usr() {
-    local has_yad=`which yad`
-    local usrnm="$USER"
-    local p
-    for p in $(seq 1 3 ); do
-        if [ -z "$has_yad" ]; then
-            usrnm=`zenity --entry --text="Forneça um Usuário $p / 3" --title="Usuário" --entry-text "$usrnm"`
-        else
-            usrnm=`yad --entry --text="Forneça um Usuário $p / 3" --title="Usuário" --entry-text "$usrnm"  --center --on-top --width=260`
-        fi
-        if [[ ${?} -ne 0 ]]; then
-            usrnm=""
-            echo "$usrnm"
-            return 1
-        fi;
-        if [ ! -z $usrnm ] && test `id -u $usrnm;` ; then
-            echo "$usrnm"
-            return 0
-        fi;
-    done
-    notify-send -t 5000 -i /usr/share/icons/gnome/32x32/status/error.png "Usuário Inválido após 3 tentativas"
-    return 1
-}
-
-#==============================================
-# Executa o comando via ask_pw e sudo
-#==============================================
-function run_psudo() {
-    if [[ $# -eq 0 ]]; then
-        return 0
-    fi
-    local mPsw=`ask_pw`
-    if [[ ${?} -ne 0 || -z ${mPsw} ]]; then
-        return 0
-    fi
-    sudo -Sp '' "$@" <<<${mPsw}
-    unset mPsw
-    return 0
-}
-
-#==============================================
-# Seleciona arquivo via zenity
-#==============================================
-function selcryptfile () {
-    local has_yad=`which yad`
-    if [ -z "$has_yad" ]; then
-        local f=`zenity --title="zcrypt: Select a file to $1" --file-selection`
-    else
-        local f=`yad --title="zcrypt: Select a file to $1" --file-selection --center`
-    fi
-
-    if [ $? -gt 0  ]; then
-        f=""
-    fi
-    echo "$f"
- }
-
-#==============================================
-# Criptografa arquivo selecionado via zenity usando ascii armor
-#  --no-options (for NO gui usage)
-#==============================================
-function encryptfile () {
-    local f=`selcryptfile "encrypt"`
-
-    if [ -z "$f" ]; then
-        echo_fail "You must select a file to encrypt !"
-    else
-        gpg -acq --yes ${f}
-
-        if [ $? -gt 0  ]; then
-            zenity --error --title "File Encrypted" --text "$f has NOT been encrypted"
-        else
-            zenity --info --title "File Encrypted" --text "$f has been encrypted"
-        fi
-    fi
-}
-
-#==============================================
-# Descriptografa arquivo selecionado via zenity
-# NOTE: This will OVERWRITE existing files with the same name !!!
-#==============================================
-function decryptfile () {
-    local f=`selcryptfile "decrypt"`
-
-    if [ -z "$f" ]; then
-        echo_fail "You must select a file to decrypt !"
-    else
-        gpg --yes -q ${f}
-
-        if [ $? -gt 0  ]; then
-            zenity --error --title "File Decrypted" --text "$f has NOT been decrypted"
-        else
-            zenity --info --title "File Decrypted" --text "$f has been decrypted"
-        fi
-    fi
-}
-
-#==============================================
-#  Get remote host of the session (empty for localhost).
+#  get_xserver - Get remote host of the session (empty for localhost).
+#
+# Examples:
+#   get_xserver
 #==============================================
 function get_xserver () {
-    local XSERVER=`who am i | grep  '(' | awk '{print $NF}' | tr -d ')''(' `
-    case $TERM in
-        xterm )
-            XSERVER=${XSERVER%%:*}
-            ;;
-        aterm | rxvt)
-            # Find some code that works here. ...
-            XSERVER=${XSERVER%%:*}
-            ;;
-        *)
-            XSERVER=${XSERVER%%:*}
-            ;;
-    esac
+    local XSERVER=""
+    XSERVER=$(LANGUAGE=en who am i | grep  '(' | awk '{print $NF}' | tr -d ')''(' )
     echo "$XSERVER"
 }
 
 #==============================================
-#  Automatic setting of $DISPLAY (if not set already).
+#  set_display - Automatic setting of $DISPLAY (if not set already).
+#
+# Examples:
+#   set_display
 #==============================================
 function set_display() {
     if [ -z ${DISPLAY:=""} ]; then
         local XSERVER=`get_xserver`
         if [[ -z ${XSERVER}  || ${XSERVER} == $(hostname) || ${XSERVER} == "unix" ]]; then
-            DISPLAY=":0"          # Display on local host.
+            DISPLAY=":0"                # Display on local host.
         else
-           DISPLAY="$XSERVER:0.0"     # Display on remote host.
+            DISPLAY="$XSERVER:0.0"      # Display on remote host.
         fi
     fi
     export DISPLAY
 }
 
 #==============================================
-#checks to see if a file or directory already exists
+# exists_fileordir - Checks to see if a file or directory already exists
+#
+# Examples:
+#   exists_fileordir "/home" 
+#
+# @Params {String} $1: directory or filename
 #==============================================
 function exists_fileordir() {
     if [[ -e $1 && ! -L $1 ]]; then
@@ -1004,7 +916,12 @@ function exists_fileordir() {
 }
 
 #==============================================
-# Checa se um serviço está ativo no systemd
+# is_active - Check if a service is active on systemd
+#
+# Examples:
+#   is_active "ssh" 
+#
+# @Params {String} $1: service name
 #==============================================
 function is_active() {
     if [[ -z "$1" ]]; then
@@ -1024,7 +941,12 @@ function is_active() {
 }
 
 #==============================================
-# Ativa um serviço no systemd
+# activate - Activate a systemd service
+#
+# Examples:
+#   activate "ssh" 
+#
+# @Params {String} $1: service name
 #==============================================
 function activate() {
     if [[ -z "$1" ]]; then
@@ -1041,7 +963,12 @@ function activate() {
 }
 
 #==============================================
-# Desativa um serviço no systemd
+# deactivate - Deactivate a systemd service
+#
+# Examples:
+#   deactivate "ssh" 
+#
+# @Params {String} $1: service name
 #==============================================
 function deactivate() {
     if [[ -z "$1" ]]; then
@@ -1057,7 +984,12 @@ function deactivate() {
 }
 
 #==============================================
-# A tree alternative
+# t - A tree alternative
+#
+# Examples:
+#   t "/home" 
+#
+# @Params {String} $1: directory name
 #==============================================
 function t() {
     path="`readlink -m "${1:-$PWD}"`"
@@ -1066,53 +998,69 @@ function t() {
 }
 
 #==============================================
-# Mostra info sobre um processo
+# psproc - Show process info
+#
+# Examples:
+#   psproc "firefox" 
+#
+# @Params {String} $1: process name
 #==============================================
 function psproc() {
     if [[ -z "$1" ]]; then
-        echo "Uso: psproc <nome processo>"
+        echo "Usage: psproc <process name>"
         return 0
     fi
     if pgrep $1 > /dev/null; then
-        echo_pass "Processo(s) relacionados com $1 foram encontrado(s)"
+        echo_pass "Related processes found - $1"
         echo "=========="
         ps -aux | grep $1 | egrep -v 'grep --color=auto' | sort -u
         echo "=========="
     else
-        echo_fail "Nenhum processo Encontrado"
+        echo_fail "No process related to $1 found"
         return 0
     fi
 }
 
 #==============================================
-# Mostra informacoes sobre um processo
+# psonly - Show informacoes sobre um processo
+#
+# Examples:
+#   psonly "firefox" 
+#
+# @Params {String} $1: process name
 #==============================================
 function psonly() {
     if [[ -z "$1" ]]; then
-        echo "Uso: psonly <nome processo>"
+        echo "Usage: psonly <process name>"
         return 0
     fi
     if pgrep $1 > /dev/null; then
-        echo_pass "Instancia(s) de $1 encontrada(s)"
+        echo_pass "$1 instance(s) found"
         echo "=========="
         ps -aux | grep $1 | egrep -v 'grep --color=auto' | sort -u |  awk '{print $1,$2,$11,$12}' | grep $1
         echo "=========="
     else
-        echo_fail "Nenhuma instancia encontrada"
+        echo_fail "No instance of $1 found"
         return 0
     fi
 }
 
 #==============================================
-# Gera um lock file
+# gen_lock - Generat a lock file
+#
+# Examples:
+#   gen_lock "myscript" 
+#   gen_lock "myscript" 190
+#
+# @Params {String} $1: file name
+# @Params {String} $2: file descriptor (default 200)
 #==============================================
 function gen_lock() {
-    #readonly PROGNAME=$(basename "$0")
-    local readonly LOCKFILE_DIR=/tmp
+    local readonly LOCKFILE_DIR="/tmp"
     local readonly LOCK_FD=200
-    local prefix=$1
+    local prefix="$1"
     local fd=${2:-$LOCK_FD}
-    local lock_file=$LOCKFILE_DIR/$prefix.lock
+    local lock_file="$LOCKFILE_DIR/$prefix.lock"
 
     # create lock file
     eval "exec $fd>$lock_file"
@@ -1122,43 +1070,44 @@ function gen_lock() {
 }
 
 #==============================================
-# Exibe msg e sai com exit status 1
-#==============================================
-function eexit() {
-    local error_str="$@"
-    echo $error_str
-    exit 1
-}
-
-#==============================================
-# Mostra informacoes sobre uma interface de rede
+# interface_info - Show info about a network interface
+#
+# Examples:
+#   interface_info "lo" 
+#   interface_info "enp4s0"
+#
+# @Params {String} $1: interface name
 #==============================================
 function interface_info() {
     if [[ -z "$1" ]]; then
-        echo "Uso: interface_info <id interface>"
+        echo "Usage: interface_info <id interface>"
         return 0
     fi
     if ifdata -e $1; then
-        echo_pass "Interface $1 Encontrada"
+        echo_pass "Interface $1 found"
         echo "=========="
         ifdata -p -ph -pf -si -so $1
         echo "=========="
     else
-        echo_fail "Não Encontrada"
+        echo_fail "No interface $1 found"
         return 0
     fi
 }
 
 #==============================================
-# Traducao on-line
+# dtranslate - On-line translation
+#
+# Examples:
+#   dtranslate 
 #==============================================
 function dtranslate () {
     PS3="${_cl_blue}Select the dictionary: ${_cl_reset}"
     local _options="por-eng eng-por por-fra fra-por por-ita ita-por por-nld nld-por por-deu deu-por tur-por lat-por jpn-por afr-por gla-por exit"
+    local w=""
 
     select i in $_options; do
         if [ $i == "exit" ]; then
-            return
+            return 0
         else
             printf "${_cl_blue}Enter the word to translate: ${_cl_reset}"
             read w
@@ -1169,7 +1118,10 @@ function dtranslate () {
 }
 
 #==============================================
-# Most used Commands
+# mostused - Most used Commands
+#
+# Examples:
+#   mostused 
 #==============================================
 function mostused() {
     cat $HISTFILE | grep -Ev "^#" | awk '{ print $1 }' | grep -Ev '^`' | grep -Ev ' ' |
@@ -1181,7 +1133,13 @@ function mostused() {
 }
 
 #==============================================
-# cd helper
+# cd - cd helper
+#
+# Examples:
+#   cd 
+#   cd /bin
+# 
+# @Params {String} $1: directory name
 #==============================================
 function cd() {
     { [ -z "$1" ] && builtin cd "$HOME";           } || \
@@ -1191,14 +1149,24 @@ function cd() {
 }
 
 #==============================================
-# test markdown files, probably a better way to test for programs.
+# md_view - Test markdown files, probably a better way to test for programs.
+#
+# Examples:
+#   md_view  "README.md" 
+#   cd /bin
+# 
+# @Params {String} $1: filename
 #==============================================
 function md_view() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: md_view <filename>"
+        return 0
+    fi
     local i=true
     type -p markdown &> /dev/null || i=false
     if $i ; then
         local output="/tmp/md.view-$(date +%F).html";
-        markdown $1 > "$output";
+        markdown "$1" > "$output";
         xdg-open "$output"; # xdg-open would open default browser after remove line below runs :(
         sleep 2;
         rm -f "$output";
@@ -1208,11 +1176,17 @@ function md_view() {
 }
 
 #==============================================
-# multiline, case-insensitive grepping (modified from sed & awk O'Reilly book ~pg 138)
+# phrase - Multiline, case-insensitive grepping (modified from sed & awk O'Reilly book ~pg 138)
+#
+# Examples:
+#   phrase dot README
+# 
+# @Params {String} $1: text to search
+# @Params {String} $2: filename
 #==============================================
 function phrase() {
     if [[ ( -f "$1" ) || ( ! -f "$2" ) || ( $(echo "$1") == "" ) ]] ; then
-        echo 'usage: phrase "search term" filename';
+        echo 'Usage: phrase "search term" filename';
     fi
     search=$1
     shift
@@ -1222,31 +1196,10 @@ function phrase() {
 }
 
 #==============================================
-# gracias, @mathiasbynens
-#==============================================
-#function json_py() {
-#   if [ -p /dev/stdin ] ; then
-#       python -mjson.tool
-#   else
-#       python -mjson.tool <<< "$@"
-#   fi
-#}
-
-#==============================================
-# Syntax-highlight JSON strings or files
+# MIT - use like this in a directory with code you want MIT-licensed: MIT > LICENSE
 #
-# Usage: `json '{"foo":42}'` or `echo '{"foo":42}' | json`
-#==============================================
-function json_py() {
-    if [ -t 0 ]; then # argument
-        python -mjson.tool <<< "$*" | pygmentize -l javascript;
-    else # pipe
-        python -mjson.tool | pygmentize -l javascript;
-    fi;
-}
-
-#==============================================
-# use like this in a directory with code you want MIT-licensed: MIT > LICENSE
+# Examples:
+#   MIT
 #==============================================
 function MIT() {
 cat <<EOF
@@ -1263,7 +1216,13 @@ EOF
 }
 
 #==============================================
-# Show line, optionally show surrounding lines
+# at_line_no - Show line, optionally show surrounding lines
+#
+# Examples:
+#   at_line_no 1 2
+# 
+# @Params {String} $1: line number
+# @Params {String} $2: lines around (default 0)
 #==============================================
 function at_line_no() {
     local LINE_NUMBER=$1
@@ -1272,7 +1231,10 @@ function at_line_no() {
 }
 
 #==============================================
-# Weather
+# meteo - Weather from wttr
+#
+# Examples:
+#   meteo
 #==============================================
 function meteo() {
     local LOCALE=`echo ${LANG:-en} | cut -c1-2`
@@ -1286,7 +1248,13 @@ function meteo() {
 }
 
 #==============================================
-# UTF-8-encode a string of Unicode symbols
+# escape - UTF-8-encode a string of Unicode symbols
+#
+# Examples:
+#   escape "\u02BBUtthay\u0101n h\u01E3ng"
+#   escape "test"
+# 
+# @Params {String} $1: text to encode
 #==============================================
 function escape() {
     printf "\\\x%s" $(printf "$@" | xxd -p -c1 -u);
@@ -1297,13 +1265,21 @@ function escape() {
 }
 
 #==============================================
-# Truncate each line of the input to X characters
-# flag -s STRING (optional): add STRING when truncated
-# switch -l (optional): truncate from left instead of right
-# param 1: (optional, default 70) length to truncate to
+# shorten - Truncate each line of the input to X characters (used on pipes)
+#
+# @option -h:   Help
+# @option -l:   Truncate from left instead of right (optional)
+# @option -s:   Add STRING when truncated (optional) 
+#
+# Examples:
+#   ls | shorten -s ... 15
+#   echo "012345678901234567890" | shorten -s "..." 11
+#   echo "012345678901234567890" | shorten -ls "<eol>" 12
+# 
+# @Params {String} $1: length to truncate to (optional, default 70) 
 #==============================================
 function shorten () {
-    local helpstring="Truncate each line of the input to X characters\n\t-l              Shorten from left side\n\t-s STRING         replace truncated characters with STRING\n\n\t$ ls | shorten -s ... 15"
+    local helpstring="Truncate each line of the input to X characters\n\t-h              Shows this help\n\t-l              Shorten from left side\n\t-s STRING         replace truncated characters with STRING\n\n\t$ ls | shorten -s ... 15"
     local ellip=""
     local left=false
     OPTIND=1
@@ -1325,13 +1301,19 @@ function shorten () {
 }
 
 #==============================================
-# Find files in the current directory containing the most occurrences of a pattern
-# switch -c: turn on display of occurrence counts
-# switch -r: reverse sort order (default ascending)
-# flag -m COUNT: minimum number of occurrences required to include file in results
-# param 1: (required) search pattern (regex allowed, case insensitive)
+# matches - Find files in the current directory containing the most occurrences of a pattern
+#           (Results are output in ascending order by occurrence count)
 #
-# Results are output in ascending order by occurrence count
+# @option -c Include occurrence counts in output
+# @option -r Reverse sort order (default ascending)
+# @option -m COUNT Minimum number of matches required to include file in results
+# @option -h Display this help screen
+#
+# Examples:
+#   matches -c -m 3 "jekyll"
+#   matches -c -r "bash"
+# 
+# @Params {String} $1: text for search 
 #==============================================
 function matches () {
     local counts=false
@@ -1355,7 +1337,7 @@ function matches () {
 
     if [ $# -ne 1 ]; then
         echo -e $helpstring
-        return 1
+        return 0
     fi
 
     patt=$1; shift
@@ -1383,14 +1365,25 @@ function matches () {
 }
 
 #==============================================
-#  Find a pattern in a set of files and highlight them:
-#+ (needs a recent version of egrep).
+#  fstr - Find a pattern in a set of files and highlight them. (needs a recent version of egrep).
+#
+# @option -c Include occurrence counts in output
+# @option -r Reverse sort order (default ascending)
+# @option -m COUNT Minimum number of matches required to include file in results
+# @option -h Display this help screen
+#
+# Examples:
+#   matches -c -m 3 "jekyll"
+#   matches -c -r "bash"
+# 
+# @Params {String} $1: pattern text for search 
+# @Params {String} $2: filename pattern 
 #==============================================
 function fstr() {
     local mycase=""
     local usage="fstr: find string in files. Usage: fstr [-i] \"pattern\" [\"filename pattern\"] "
     OPTIND=1
-    while getopts :it opt
+    while getopts :ih opt
     do
         case "$opt" in
            i) mycase="-i " ;;
@@ -1402,44 +1395,30 @@ function fstr() {
         echo "$usage"
         return;
     fi
-    find . -type f -name "${2:-*}" -print0 | xargs -0 egrep --color=always -sn ${case} "$1" 2>&- | most
+    find . -type f -name "${2:-*}" -print0 | xargs -0 egrep --color=always -sn ${mycase} "$1" 2>&- | less -RXS#3M~g
 }
 
 #==============================================
-#  Setup empty github repo
-#==============================================
-function mkgit() {
-    if [[ -z "$1" ]]; then
-        echo "Uso: mkgit <Path>"
-        return 0
-    fi
-    mkdir $1
-    cd $1
-    git init
-    touch README.MD
-    git add README.MD
-    git commit -m 'inital setup - automated'
-    git remote add origin git@github.com:Jexxar/$1.git
-    git push origin master
-}
-
-#==============================================
-# test if a file should be opened normally, or as root (edit)
-#==============================================
-function argc () {
-    local count=0;
-    for arg in "$@"; do
-        if [[ ! "$arg" =~ '-' ]]; then
-            count=$(($count+1));
-        fi;
-    done;
-    echo $count;
-}
-
-#==============================================
-# Edit a file normally, or as root
+# edit - Edit a file normally, or as root
+#
+# Examples:
+#   edit "README"
+# 
+# @Params {String} $1: filename  
+# @Params {String} $2: arg1
+# @Params {String} $..: argn
 #==============================================
 function edit () {
+    function argc () {
+        local count=0;
+        for arg in "$@"; do
+            if [[ ! "$arg" =~ '-' ]]; then
+                count=$(($count+1));
+            fi;
+        done;
+        echo $count;
+    }
+    
     if [ -z "$EDITOR" ]; then
         EDITOR="nano"
     fi
@@ -1448,21 +1427,85 @@ function edit () {
     elif [ -z "$1" ]; then
         $EDITOR;
     elif [ ! -f $1 ] || [ -w $1 ]; then
-        $EDITOR $@;
+        $EDITOR "$@";
     else
         echo -n "File is Read-only. Edit as root? (Y/n): "
         read -n 1 yn;
         echo;
         if [ "$yn" = 'n' ] || [ "$yn" = 'N' ]; then
-            $EDITOR $*;
+            $EDITOR "$*";
         else
-            sudo $EDITOR $*;
+            sudo $EDITOR "$*";
         fi
     fi
 }
 
 #==============================================
-# Doesn't catch named sessions, need to update
+# du_full - Disk usage (DU) full info
+#
+# Examples:
+#   du_full 
+#   du_full "/home"
+# 
+# @Params {String} $1: dirname  (optional)
+#==============================================
+function du_full() {
+    local dir="$1"
+    if [[ -z "$dir" ]]; then
+        dir=$( pwd )
+        dir=${dir}
+    fi
+
+    local usgstr=`df -h "$dir"`
+    local usdev=`echo "$usgstr" | awk 'NR==2 { print $1 }'`
+    local ustot=`echo "$usgstr" | awk 'NR==2 { print $2 }'`
+    local usused=`echo "$usgstr" | awk 'NR==2 { print $3 }'`
+    local usfree=`echo "$usgstr" | awk 'NR==2 { print $4 }'`
+    local usperc=`echo "$usgstr" | awk 'NR==2 { print $5 }'`
+    echo "$usdev - Total:$ustot, Used:$usused, Free:$usfree, Use%:$usperc"
+}
+
+#==============================================
+# du_short - Disk usage (DU) partial info
+#
+# Examples:
+#   du_short 
+#   du_short "/home"
+# 
+# @Params {String} $1: dirname  (optional)
+#==============================================
+function du_short() {
+    local d="$1"
+
+    if [[ -z "$d" ]]; then
+        d=$(pwd)
+        d=${d}
+    fi
+
+    local usgstr=`df -h "$d"`
+    local usdev=`echo "$usgstr" | awk 'NR==2 { print $1 }'`
+    local usperc=`echo "$usgstr" | awk 'NR==2 { print $5 }'`
+    echo "$usdev:$usperc"
+}
+
+#==============================================
+# hosts_up - Active hosts on your LAN
+#
+# Examples:
+#   hosts_up 
+#==============================================
+function hosts_up() {
+    local ip_local=`ip -br -h -4 address | grep "UP" | awk '/UP/{print $3}' | sed -e 's/\/24//g'`
+    local ip_neig=`ip -br -h -4 neigh | awk '/dev/{print $1}'`
+    local sor_ips=`echo -e "$ip_local\n$ip_neig" | sort`
+    echo "$sor_ips"
+}
+
+#==============================================
+# screens_count - Count active screens. (Doesn't catch named sessions, need to update)
+#
+# Examples:
+#   screens_count 
 #==============================================
 function screens_count() {
     local sScrPth="/var/run/screen/S-$USER"
@@ -1478,72 +1521,28 @@ function screens_count() {
 }
 
 #==============================================
-# DU completo
-#==============================================
-function du_full() {
-    local dir=$1
-    if [[ -z "$dir" ]]; then
-        dir=$( pwd )
-        dir=${dir}
-    fi
-
-    local usgstr=`df -h "$dir"`
-    local usdev=`echo "$usgstr" | awk 'NR==2 { print $1 }'`
-    local ustot=`echo "$usgstr" | awk 'NR==2 { print $2 }'`
-    local usused=`echo "$usgstr" | awk 'NR==2 { print $3 }'`
-    local usfree=`echo "$usgstr" | awk 'NR==2 { print $4 }'`
-    local usperc=`echo "$usgstr" | awk 'NR==2 { print $5 }'`
-    echo "$usdev - Total:$ustot, Usado:$usused, Disp.:$usfree, Uso%:$usperc"
-}
-
-#==============================================
-# DU parcial
-#==============================================
-function du_short() {
-    local d=$1
-
-    if [[ -z "$d" ]]; then
-        d=`pwd`
-    fi
-
-    local usgstr=`df -h "$d"`
-    local usdev=`echo "$usgstr" | awk 'NR==2 { print $1 }'`
-    local usperc=`echo "$usgstr" | awk 'NR==2 { print $5 }'`
-    echo "$usdev:$usperc"
-}
-
-#==============================================
-# Mostra hosts ativos na sua rede
-#==============================================
-function hosts_up() {
-    local ip_local=`ip -br -h -4 address | grep "UP" | awk '/UP/{print $3}' | sed -e 's/\/24//g'`
-    local ip_neig=`ip -br -h -4 neigh | awk '/dev/{print $1}'`
-    local sor_ips=`echo -e "$ip_local\n$ip_neig" | sort`
-    echo "$sor_ips"
-}
-
-#==============================================
-# Combina display telas e jobs ativos
+# screens_and_jobs_count - Count Active Screen and Jobs
+#
+# Examples:
+#   screens_and_jobs_count 
 #==============================================
 function screens_and_jobs_count() {
-#   set -x
     local all_screens=`screens_count`
     local all_jobs=`jobs_count`
     local results=""
 
-    [ 0 -lt $all_screens ] && [ 0 -lt $all_jobs ] && echo -n "$all_screens Telas|$all_jobs Jobs|" && return
-    [ 0 -lt $all_screens ] && [ 0 -eq $all_jobs ] && echo -n "$all_screens Telas|" && return
+    [ 0 -lt $all_screens ] && [ 0 -lt $all_jobs ] && echo -n "$all_screens Scr|$all_jobs Jobs|" && return
+    [ 0 -lt $all_screens ] && [ 0 -eq $all_jobs ] && echo -n "$all_screens Scr|" && return
     [ 0 -eq $all_screens ] && [ 0 -lt $all_jobs ] && echo -n "$all_jobs Jobs|" && return
     echo -n "" && return
-#   set +x
 }
 
 #==============================================
-# Retorna o tamanho de uma string Localizada
+# Return string length (Locale based)
 #==============================================
 function strLen() {
     if [[ -z "$1" ]]; then
-        echo "Uso: strLen <string>"
+        echo "Usage: strLen <string>"
         return 0
     fi
     local bytlen
@@ -1552,11 +1551,11 @@ function strLen() {
 }
 
 #==============================================
-# Retorna o tamanho de uma string LANG=C
+# Return string length (LANG=C)
 #==============================================
 function strLenC() {
     if [[ -z "$1" ]]; then
-        echo "Uso: strLenC <string>"
+        echo "Usage: strLenC <string>"
         return 0
     fi
     local bytlen
@@ -1568,11 +1567,11 @@ function strLenC() {
 }
 
 #==============================================
-# Retorna diferenca de tamanho de uma string  entre sistemas de codificacao
+# Return diff between locale systems for a string
 #==============================================
 function strU8DiffLen () {
     if [[ -z "$1" ]]; then
-        echo "Uso: strU8DiffLen <string>"
+        echo "Usage: strU8DiffLen <string>"
         return 0
     fi
     local bytlen oLang=$LANG
@@ -1583,11 +1582,11 @@ function strU8DiffLen () {
 }
 
 #==============================================
-# Mostra nome do processo do PID passado como parm
+# Show process name of a PID
 #==============================================
 function process_name() {
     if [[ -z "$1" ]]; then
-        echo "Uso: process_name <PID>"
+        echo "Usage: process_name <PID>"
         return 0
     fi
     ps -p $1 -o comm=
@@ -1597,7 +1596,7 @@ function process_name() {
 }
 
 #==============================================
-# cd e ls em um so comando
+# cd and ls in a row
 #==============================================
 function cl() {
     local dir=$1
@@ -1613,11 +1612,11 @@ function cl() {
 }
 
 #==============================================
-# Extrai arquivos compactados
+# Extract files 
 #==============================================
 function do_extract {
     if [ -z "$1" ]; then
-        echo "Uso: do_extract <caminho/nome_do_arquivo>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
+        echo "Usage: do_extract <path/filename>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
     else
         local f=`echo "$1" | tr '[:upper:]' '[:lower:]'`
         if [ -f $1 ] ; then
@@ -1640,17 +1639,17 @@ function do_extract {
                 *)           echo_fail "do_extract: '$1' - método de compactação desconhecido" ;;
             esac
         else
-            echo_fail "$1 - arquivo não existe"
+            echo_fail "$1 - file do not exist"
         fi
     fi
 }
 
 #==============================================
-# Recupera a quantidade de e-mails pendentes
+# Retrieve pending e-mails quantity
 #==============================================
 function qt_mail() {
     local f="/var/mail/$USER"
-    if [ -e $f ]; then
+    if [ -e "$f" ]; then
         awk '/From:/{print $0}' $f | grep -c "From:"
     else
         echo "0"
@@ -1658,10 +1657,11 @@ function qt_mail() {
 }
 
 #==============================================
-# Emite msg de e-mails pendentes
+# Pending e-mails message
 #==============================================
 function tem_mail() {
-    local qm=`qt_mail`
+    local qm=""
+    qm=$(qt_mail)
     if  [[ $qm -gt 0 ]]; then
         echo "Voce tem $qm novo(s) e-mail(s)!"
     else
@@ -1670,15 +1670,15 @@ function tem_mail() {
 }
 
 #==============================================
-# String para status de repositorios Git
+# String for Git repos status
 #==============================================
 function prompt_git() {
     local s="";
     local branchName="";
-    local is_a_branch="`git branch &>/dev/null; if [ $? -eq 0 ]; then echo "yes"; else echo "no"; fi`"
+    local is_a_branch=$(git branch &>/dev/null; if [ $? -eq 0 ]; then echo "yes"; else echo "no"; fi)
 
     # Check if the current directory is in a Git repository.
-    if [ $is_a_branch == "yes" ]; then
+    if [ "$is_a_branch" == "yes" ]; then
         # check if the current directory is in .git before running git checks
         if [ "`git rev-parse --is-inside-git-dir 2> /dev/null`" == 'false' ]; then
             # Ensure the index is up to date.
@@ -1718,33 +1718,32 @@ function prompt_git() {
 }
 
 #==============================================
-# Cria a bash_prompt function
+# A bash_prompt function
 #==============================================
 function bash_prompt() {
     local git_b_str=""
     local git_prompt=""
     # Checks to see if the current directory is a git repo or not
-    local gitcheck_branch="`git branch &>/dev/null; if [ $? -eq 0 ]; then echo "yes"; else echo "no"; fi`"
+    local gitcheck_branch=$(git branch &>/dev/null; if [ $? -eq 0 ]; then echo "yes"; else echo "no"; fi)
 
-    if [ $gitcheck_branch == "yes" ]; then
+    if [ "$gitcheck_branch" == "yes" ]; then
         git_b_str=" "`prompt_git`;
         # If we are in a git repo, then check to see if there are uncommitted files
-        local gitcheck_status="`git status | grep "nada a submeter\|nothing to commit" > /dev/null 2>&1; if [ $? -eq 0 ]; then echo "clean"; else echo "unclean"; fi`"
-        if [ $gitcheck_status == "clean" ];
-        then
+        local gitcheck_status=$(git status | grep "nada a submeter\|nothing to commit" > /dev/null 2>&1; if [ $? -eq 0 ]; then echo "clean"; else echo "unclean"; fi)
+        if [ "$gitcheck_status" == "clean" ]; then
             # If there are no uncommitted files, then set the color of the git branch name to green
-            git_prompt=$BG$git_b_str
+            git_prompt="$BG$git_b_str"
         else
-            #    If there are uncommitted files, set it to red.
-            git_prompt=$BR$git_b_str
+            # If there are uncommitted files, set it to red.
+            git_prompt="$BR$git_b_str"
         fi
     else
         # If we're not in a git repo, then display nothing
         git_prompt=""
     fi
 
-    local sqm=`qt_mail`
-    local sQtma=`if [ $sqm -eq 0 ]; then echo ""; else echo "$BG✉ "; fi`
+    local sqm=$(qt_mail)
+    local sQtma=$(if [ $sqm -eq 0 ]; then echo ""; else echo "$BG✉ "; fi)
 
     PS1="\$(if [[ \$? == 0 ]]; then echo \"$BG✔\"; else echo \"$BR✘\"; fi) ${sQtma}$BW${debian_chroot:+($debian_chroot)}\u@\h $NONE$BY[\w]$NONE\n$BW  └${git_prompt}$BW─$BG[\A]$BW>$BR \\$ $NONE"
     PS2="\$(echo \"$BG✔\") $NONE"
@@ -1806,23 +1805,23 @@ function you_have_mail() {
 #==============================================
 function __rprompt() {
     # rprompt strings
-    local sDirc=`_dir_count`
+    local sDirc=$(_dir_count)
     sDirc=${sDirc}
-    local sArqc=`_file_count`
+    local sArqc=$(_file_count)
     sArqc=${sArqc}
-    local sTota=`_pwd_size`
+    local sTota=$(_pwd_size)
     sTota=${sTota}
-    local ScrJob=`screens_and_jobs_count`
+    local ScrJob=$(screens_and_jobs_count)
     ScrJob=${ScrJob}
-    local DuSho=`du_short`
+    local DuSho=$(du_short)
     DuSho=${DuSho}
     # terminal columns
-    local nCols=`tput cols`
+    local nCols=$(tput cols)
     # left side prompt strings length
-    local stPwd=`echo "$(dirs +0)"`
-    local nPwdlen=`strLen $stPwd`
-    local nUsrlen=`strLen $USER`
-    local nHstlen=`strLen $HOSTNAME`
+    local stPwd=$(echo "$(dirs +0)")
+    local nPwdlen=$(strLen $stPwd)
+    local nUsrlen=$(strLen $USER)
+    local nHstlen=$(strLen $HOSTNAME)
     local nQtm=$(qt_mail)
     # two more chars to count
     if  [[ $nQtm -gt 0 ]]; then
@@ -1833,7 +1832,7 @@ function __rprompt() {
     tput bold
     tput setaf 3
     # rprompt info
-    stPpt=`echo "$RPROMPT [${ScrJob}${sDirc} Dirs|${sArqc} Arqs|${sTota}b] ${DuSho}"`
+    stPpt=$(echo "$RPROMPT [${ScrJob}${sDirc} Dirs|${sArqc} Arqs|${sTota}b] ${DuSho}")
     # rprompt string length
     nPptlen=${#stPpt}
     # total prompt string length
@@ -1857,7 +1856,7 @@ function draw() {
     local size=$2
     local inc=$(( perc * size / 100 ))
     local out=
-    if [ -z $3 ]; then
+    if [ -z "$3" ]; then
         local color="36"
     else
         local color="$3"
@@ -1865,7 +1864,7 @@ function draw() {
     for v in `seq 0 $(( size - 1 ))`; do
         test "$v" -le "$inc" && out="${out}\e[1;${color}m${FULL}" \
         || out="${out}\e[0;${color}m${EMPTY}"
-    done
+    done 
     printf $out
 }
 
@@ -1891,7 +1890,7 @@ function greetings() {
     local DATE="`date +"%d/%m/%Y"`"
     #local DATE="`date +"%A, %d de %B de %Y"`"
     #local DATE="`date +"%a, %d %b de %Y - %T %Z UTC"`"
-    local DIST="`~/bin/distro_info -1 | capitalize`"
+    local DIST="`~/bin/distro_info -1 | ~/bin/capitalize.sh`"
     local KERNEL="`uname -rmo`"
     local TIMEU="`uptime_active`"
     local TIMEDe="`uptime_since`"
@@ -2016,4 +2015,3 @@ function greetings() {
     tput sgr0
     #color_bar
 }
-

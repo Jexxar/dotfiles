@@ -5,7 +5,11 @@ export BASH_IT="/home/usuario/.bash_it"
 
 # Lock and Load a custom theme file
 # location /.bash_it/themes/
-export BASH_IT_THEME='powerline-multiline-custom'
+if [ "$TERM" = "linux" ]; then
+    export BASH_IT_THEME='pure'
+else
+    export BASH_IT_THEME='powerline-multiline-custom'
+fi
 
 # (Advanced): Change this to the name of your remote repo if you
 # cloned bash-it with a remote other than origin such as `bash-it`.
@@ -73,4 +77,10 @@ exports_gen
 # Load Bash It
 source "$BASH_IT"/bash_it.sh
 
-greetings
+if [ "$TERM" != "linux" ]; then
+    greetings
+fi
+
+# Source goto
+[[ -s "/usr/local/share/goto.sh" ]] && source /usr/local/share/goto.sh
+
