@@ -2,7 +2,23 @@
 <!-- Startpage by Addy
 https://plus.google.com/+AdhiPambudi
 https://addy-dclxvi.deviantart.com
-https://github.com/addy-dclxvi -->
+https://github.com/addy-dclxvi 
+    #search-field {
+      width: 80%;
+      padding: .75em 1em;
+      box-sizing: border-box;
+      foreground-color: #FFFFFF;
+      background-color: #282A36;
+      border: solid 0px #282A36; 
+      font-family: "Noto Sans", Times, sans;
+      font-size: 18px;
+      text-align: center;
+      color: #FDFDFD;
+      outline: none;
+      border-radius: 6px;
+      margin-bottom: 1em;
+    }
+-->
 
 <meta name="experiment" content="noindex">
 <html lang="en-US">
@@ -12,9 +28,9 @@ https://github.com/addy-dclxvi -->
   
   <style type="text/css">
     a {
-	  color:#FFFFFF;
-	  text-decoration: none;
-	}
+	    color:#FFFFFF;
+	    text-decoration: none;
+	  }
     #wrap {
       overflow: hidden;
       margin-left: 10%;
@@ -22,6 +38,28 @@ https://github.com/addy-dclxvi -->
       font-family: "Noto Sans", Times, serif;
       font-size: 32px;
       text-align: center;
+    }
+    #search-field {
+      width: 67%;
+      padding: .75em 1em;
+      box-sizing: border-box;
+      font-family: "Noto Sans", Times, sans;
+      font-size: 18px;
+      text-align: center;
+      color: #282A36;
+      outline: none;
+      border-radius: 6px;
+      margin-bottom: 1em;
+      float: right;
+      align: center;
+      position: relative;
+    }
+    .pad-some {
+      width: 13%;
+      padding: .75em 1em;
+      color: #FFF;
+      position: relative;
+      float: left;
     }
     .box {	
       width: 30%;
@@ -39,7 +77,7 @@ https://github.com/addy-dclxvi -->
       background: #3B5998;
       padding-top: 24%;
     }
-      .innerContent2 {
+    .innerContent2 {
       position: absolute;
       left: 5%;
       right: 5%;
@@ -48,7 +86,7 @@ https://github.com/addy-dclxvi -->
       background: #DC4B3F;
       padding-top: 24%;
     }
-      .innerContent3 {
+    .innerContent3 {
       position: absolute;
       left: 5%;
       right: 5%;
@@ -57,7 +95,7 @@ https://github.com/addy-dclxvi -->
       background: #247E96;
       padding-top: 24%;
     }
-      .innerContent4 {
+    .innerContent4 {
       position: absolute;
       left: 5%;
       right: 5%;
@@ -66,7 +104,7 @@ https://github.com/addy-dclxvi -->
       background: #E62117;
       padding-top: 24%;
     }
-      .innerContent5 {
+    .innerContent5 {
       position: absolute;
       left: 5%;
       right: 5%;
@@ -75,7 +113,7 @@ https://github.com/addy-dclxvi -->
       background: #05CC47;
       padding-top: 24%;
     }
-      .innerContent6 {
+    .innerContent6 {
       position: absolute;
       left: 5%;
       right: 5%;
@@ -88,7 +126,10 @@ https://github.com/addy-dclxvi -->
   
 </head>
 <body>
-
+  <div id="search">
+      <div class="pad-some"></div>
+      <input id="search-field" type="text" name="search-field" onkeypress="return search(event)"/>
+  </div>
   <div id="wrap">
     <div class="box">
       <div class="innerContent1">
@@ -97,22 +138,22 @@ https://github.com/addy-dclxvi -->
     </div>
     <div class="box">
       <div class="innerContent2">
-        <a href="https://plus.google.com">Google+</a>
-      </div>
-    </div>
-    <div class="box">
-      <div class="innerContent3">
-        <a href="https://www.linkedin.com/">Linked in</a>
-      </div>
-    </div>
-    <div class="box">
-      <div class="innerContent4">
         <a href="https://www.youtube.com">YouTube</a>
       </div>
     </div>
     <div class="box">
+      <div class="innerContent3">
+        <a href="https://duckduckgo.com/?t=canonical">DuckDuckGo</a>
+      </div>
+    </div>
+    <div class="box">
+      <div class="innerContent4">
+        <a href="https://mail.protonmail.com/login">ProtonMail</a>
+      </div>
+    </div>
+    <div class="box">
       <div class="innerContent5">
-        <a href="https://deviantart.com">DeviantArt</a>
+        <a href="https://github.com/">GitHub</a>
       </div>
     </div>
     <div class="box">
@@ -120,7 +161,40 @@ https://github.com/addy-dclxvi -->
         <a href="https://alpha.wallhaven.cc/">Wallhaven</a>
       </div>
     </div>
+    <div class="box">
+      <div class="innerContent1">
+        <a href="https://deviantart.com">DeviantArt</a>
+      </div>
+    </div>
+    <div class="box">
+      <div class="innerContent2">
+        <a href="https://drive.google.com/">Google Drive</a>
+      </div>
+    </div>
+    <div class="box">
+      <div class="innerContent3">
+        <a href="https://www.linkedin.com/">Linked in</a>
+      </div>
+    </div>
   </div>
-  
+  <script>
+        // Search on enter key event
+        function search(e) {
+            if (e.keyCode == 13) {
+                var val = document.getElementById("search-field").value;
+                window.open("https://duckduckgo.com/?q=" + val);
+            }
+        }
+        window.onload = () => {
+            document.getElementById('search-field').value = '';
+            document.getElementById('search').style.display = 'flex';
+            document.getElementById('search-field').focus();
+        }
+        document.addEventListener("keydown", event => {
+            if (event.keyCode == 27) {   // Esc to close search
+                document.getElementById('search-field').value = '';
+            }
+        });
+  </script>
 </body>
 </html>
