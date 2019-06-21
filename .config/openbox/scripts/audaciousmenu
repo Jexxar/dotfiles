@@ -63,23 +63,16 @@ function doMenuControl() {
 }
 
 function doMenuControl_en(){
-    local cursong=`audtool --current-song`
-    local cslen=`audtool --current-song-length`
-    local rpstatus=`audtool --playlist-repeat-status`
-    local shfstatus=`audtool --playlist-shuffle-status`
-    menuBegin
-
-    if [ "$rpstatus" = "off" ]; then
-        rpstatus="Off"
-    else
-        rpstatus="On"
-    fi
+    local cursong=""
+    local cslen=""
+    local rpstatus=""
+    local shfstatus=""
+    cursong=$(audtool --current-song)
+    cslen=$(audtool --current-song-length)
+    rpstatus=$(audtool --playlist-repeat-status | sed -e "s/\b\(.\)/\u\1/g")
+    shfstatus=$(audtool --playlist-shuffle-status | sed -e "s/\b\(.\)/\u\1/g")
     
-    if [ "$shfstatus" = "off" ]; then
-        shfstatus="Off"
-    else
-        shfstatus="On"
-    fi
+    menuBegin
 
     if [ ! -z "$cursong" ]; then
         menuSep "$cursong ($cslen)"
@@ -101,11 +94,14 @@ function doMenuControl_en(){
 }
 
 function doMenuControl_pt(){
-    local cursong=$(audtool --current-song)
-    local cslen=$(audtool --current-song-length)
-    local rpstatus=`audtool --playlist-repeat-status`
-    local shfstatus=`audtool --playlist-shuffle-status`
-    menuBegin
+    local cursong=""
+    local cslen=""
+    local rpstatus=""
+    local shfstatus=""
+    cursong=$(audtool --current-song)
+    cslen=$(audtool --current-song-length)
+    rpstatus=$(audtool --playlist-repeat-status)
+    shfstatus=$(audtool --playlist-shuffle-status)
 
     if [ "$rpstatus" = "off" ]; then
         rpstatus="Desligado"
@@ -118,6 +114,8 @@ function doMenuControl_pt(){
     else
         shfstatus="Ligado"
     fi
+
+    menuBegin
 
     if [ ! -z "$cursong" ]; then
         menuSep "$cursong ($cslen)"

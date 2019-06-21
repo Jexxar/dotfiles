@@ -14,50 +14,51 @@ fi
 function main(){
 	menuBegin
 
+    menuSep 'Geral'
+    menuItem 'Indice Local' "xdg-open \"file:///$HOME//bin/help/index.html\"" "text-html"
     # menuSep 'Debian'
-    # menuItem 'Debian Documentation' 'x-www-browser "https://www.debian.org/doc/"' "text-html"
-    # menuItem 'Forum' 'x-www-browser "http://forums.debian.net/"' "text-html"
-    # menuItem 'Package Search' 'x-www-browser "https://www.debian.org/distrib/packages"' "text-html"
-    # menuItem 'Packages Sid' 'x-www-browser "https://packages.debian.org/sid/allpackages"'
-    # menuItem 'Packages Testing' 'x-www-browser "https://packages.debian.org/testing/allpackages"' "text-html"
-    # menuItem 'Package Tracker' 'x-www-browser "https://tracker.debian.org/"' "text-html"
-    # menuItem 'Security Tracker' 'x-www-browser "https://security-tracker.debian.org/tracker/"' "text-html"
-    # menuItem 'Wiki' 'x-www-browser "https://wiki.debian.org/"' "text-html"
+    # menuItem 'Debian Documentation' 'xdg-open "https://www.debian.org/doc/"' "text-html"
+    # menuItem 'Forum' 'xdg-open "http://forums.debian.net/"' "text-html"
+    # menuItem 'Package Search' 'xdg-open "https://www.debian.org/distrib/packages"' "text-html"
+    # menuItem 'Packages Sid' 'xdg-open "https://packages.debian.org/sid/allpackages"'
+    # menuItem 'Packages Testing' 'xdg-open "https://packages.debian.org/testing/allpackages"' "text-html"
+    # menuItem 'Package Tracker' 'xdg-open "https://tracker.debian.org/"' "text-html"
+    # menuItem 'Security Tracker' 'xdg-open "https://security-tracker.debian.org/tracker/"' "text-html"
+    # menuItem 'Wiki' 'xdg-open "https://wiki.debian.org/"' "text-html"
 
     menuSep 'Util'
-    # menuItem 'Arch Wiki' 'x-www-browser "https://wiki.archlinux.org/index.php/Table_of_contents"' "text-html"
-    # menuItem 'Classical Stations' 'x-www-browser "http://classicalwebcast.com/"' "text-html"
-    menuItem 'Crontab' 'x-www-browser "http://code.tutsplus.com/tutorials/scheduling-tasks-with-cron-jobs--net-8800"' "text-html"
-    menuItem 'E2fsprogs' 'x-www-browser "https://en.wikipedia.org/wiki/E2fsprogs"' "text-html"
-    menuItem 'Internet Tools' 'x-www-browser "http://www.infobyip.com/internettools.php"' "text-html"
-    # menuItem 'Xwd Screenshot' 'x-www-browser "http://blog.tordeu.com/?p=135"' "text-html"
+    # menuItem 'Arch Wiki' 'xdg-open "https://wiki.archlinux.org/index.php/Table_of_contents"' "text-html"
+    # menuItem 'Classical Stations' 'xdg-open "http://classicalwebcast.com/"' "text-html"
+    menuItem 'Crontab' 'xdg-open "http://code.tutsplus.com/tutorials/scheduling-tasks-with-cron-jobs--net-8800"' "text-html"
+    menuItem 'E2fsprogs' 'xdg-open "https://en.wikipedia.org/wiki/E2fsprogs"' "text-html"
+    menuItem 'Internet Tools' 'xdg-open "http://www.infobyip.com/internettools.php"' "text-html"
+    # menuItem 'Xwd Screenshot' 'xdg-open "http://blog.tordeu.com/?p=135"' "text-html"
 
     menuSep  'Conky'
-    menuItem 'Conky Configuration Settings' 'x-www-browser "http://conky.sourceforge.net/config_settings.html"' "text-html"
-    menuItem 'Conky Variables' 'x-www-browser "http://conky.sourceforge.net/variables.html"' "text-html"
+    menuItem 'Conky Configuration Settings' 'xdg-open "http://conky.sourceforge.net/config_settings.html"' "text-html"
+    menuItem 'Conky Variables' 'xdg-open "http://conky.sourceforge.net/variables.html"' "text-html"
     menuItem 'Conky man pages' 'x-terminal-emulator -T "Conky man page" -e man conky' "text-html"
 
     # menuSep  'Fbpanel'
-    # menuItem 'Fbpanel About' 'x-www-browser "http://fbpanel.sourceforge.net/index.html"' "text-html"
-    # menuItem 'Fbpanel-Lxlinux' 'x-www-browser "http://lxlinux.com/fbpanel.html"' "text-html"
+    # menuItem 'Fbpanel About' 'xdg-open "http://fbpanel.sourceforge.net/index.html"' "text-html"
+    # menuItem 'Fbpanel-Lxlinux' 'xdg-open "http://lxlinux.com/fbpanel.html"' "text-html"
     # menuItem 'Fbpanel man page' 'x-terminal-emulator -T "fbpanel man page" -e man fbpanel' "text-html"
 
     menuSep 'Openbox'
-    menuItem 'Indice Local' "x-www-browser \"file:///$HOME//bin/help/index.html\"" "text-html"
-    menuItem 'ArchWiki Openbox Guide' 'x-www-browser "http://wiki.archlinux.org/index.php/Openbox"' "text-html"
-    # menuItem 'Debian Wiki Openbox Guide' 'x-www-browser "https://wiki.debian.org/Openbox"' "text-html"
-    menuItem 'Openbox Lxlinux' 'x-www-browser "http://lxlinux.com"' "text-html"
-    menuItem 'Openbox Homepage' 'x-www-browser "http://openbox.org/"' "text-html"
-    menuItem 'Openbox Rc.xml-PCMag' 'x-www-browser "http://pclosmag.com/html/Issues/201107/page08.html"' "text-html"
-    menuItem 'Urukramas Openbox Guide' 'x-www-browser "https://urukrama.wordpress.com/openbox-faq/"' "text-html"
+    menuItem 'ArchWiki Openbox Guide' 'xdg-open "http://wiki.archlinux.org/index.php/Openbox"' "text-html"
+    # menuItem 'Debian Wiki Openbox Guide' 'xdg-open "https://wiki.debian.org/Openbox"' "text-html"
+    menuItem 'Openbox Lxlinux' 'xdg-open "http://lxlinux.com"' "text-html"
+    menuItem 'Openbox Homepage' 'xdg-open "http://openbox.org/"' "text-html"
+    menuItem 'Openbox Rc.xml-PCMag' 'xdg-open "http://pclosmag.com/html/Issues/201107/page08.html"' "text-html"
+    menuItem 'Urukramas Openbox Guide' 'xdg-open "https://urukrama.wordpress.com/openbox-faq/"' "text-html"
 
     # menuSep 'Pcmanfm'
-    # menuItem 'Archlinux Pcmanfm Guide' 'x-www-browser "https://wiki.archlinux.org/index.php/PCManFM"' "text-html"
-    # menuItem 'Lxde Pcmanfm Guide' 'x-www-browser "https://wiki.lxde.org/en/PCManFM"' "text-html"
+    # menuItem 'Archlinux Pcmanfm Guide' 'xdg-open "https://wiki.archlinux.org/index.php/PCManFM"' "text-html"
+    # menuItem 'Lxde Pcmanfm Guide' 'xdg-open "https://wiki.lxde.org/en/PCManFM"' "text-html"
 
     # menuSep 'Theme'
-    # menuItem 'Box-Look.org' 'x-www-browser "http://www.box-look.org"' "text-html"
-    # menuItem 'Gnome-look.org' 'x-www-browser "http://gnome-look.org/"' "text-html"
+    # menuItem 'Box-Look.org' 'xdg-open "http://www.box-look.org"' "text-html"
+    # menuItem 'Gnome-look.org' 'xdg-open "http://gnome-look.org/"' "text-html"
     
 	menuEnd
 }

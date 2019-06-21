@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -eu
+#set -eu
 
 if [ -f "$HOME/bin/mylog" ]; then
     . "$HOME/bin/mylog"
@@ -18,35 +18,18 @@ function is_running_X(){
 # Is the screen already locked?
 function locked() {
     local DebugMode=${1:-no}
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "i3lock" &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "i3lock found and active"
+    local scrsvApps=('i3lock' 'mate-screensaver-dialog' 'cinnamon-screensaver-pam-helper' 'slimlock' 'gnome-screensaver-dialog' 'xscreensaver')
+    local c=0
+    for p1 in "${scrsvApps[@]}"; do
+        c=$(pgrep -lfc "${p1}")
+        if [ $c -gt 0 ] ; then
+            if [ "$DebugMode" = "debug" ]; then
+                log "${p1} found and active";
+                return 0;
+            fi
         fi
-        return 0;
-    fi
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "mate-screensaver-dialog" &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "mate-screensaver-dialog found and active"
-        fi
-        return 0;
-    fi
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "cinnamon-screensaver-pam-helper" &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "cinnamon-screensaver-pam-helper found and active"
-        fi
-        return 0;
-    fi
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "slimlock" &>/dev/null 
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "slimlock found and active"
-        fi
-        return 0;
-    fi
-    return 1
+    done
+    return 1;
 }
 
 # Return 0 if xset is found.
@@ -58,13 +41,13 @@ function xset_ok() {
 #off the screen if possible.
 function do_off() {
     # Only works if X is running.
-    if [ is_running_X ]; then
-        true
-    else
+    is_running_X
+    if [ $? -ne 0 ]; then
         log "X server is not running";
         return 0;
     fi
-    if [ xset_ok ]; then
+    xset_ok
+    if [ $? -eq 0 ]; then
         # if "off" is given as parameter, then spawn a new thread to turn off the screen
         sleep 1 && xset dpms force off &
     else
@@ -73,22 +56,25 @@ function do_off() {
  }
 
 function do_test() {
-    if [ is_running_X ]; then
+    is_running_X
+    if [ $? -eq 0 ]; then
         log "X is running"
     else
         log "X server down"
     fi
     
-    if [ `locked "debug"` ]; then
-        log "Screen already locked"
-    else
-        log "Screen not locked"
-    fi
-
-    if [ xset_ok ]; then
+    xset_ok
+    if [ $? -eq 0 ]; then
         log "xset command can be used";
     else
         log "xset command not found";
+    fi
+
+    locked "debug"
+    if [ $? -eq 0 ]; then
+        log "Screen already locked"
+    else
+        log "Screen not locked"
     fi
 }
 

@@ -29,14 +29,14 @@
 # make sure you have cbpp-recent-files-pipemenu somewhere, and enter its path below.
 
 # path to your "recent files" script, if you want to incorporate it:
-recent_script=/usr/bin/cbpp-recent-files-pipemenu
+recent_script=~/bin/obrecent.sh
 
 # Command to open folders at "Browse here..." - any file manager
 open_folder_cmd=pcmanfm
 # Default command to open files with - others might be xdg-open, gnome-open, pcmanfm...
-default_open_cmd=exo-open  # exo-open comes with thunar
+default_open_cmd=xdg-open  # exo-open comes with thunar
 # Text editor of choice
-text_editor=geany
+text_editor=subl
 
 # function to open files with default open command, or alternative command for certain files
 # - add other conditions to choice

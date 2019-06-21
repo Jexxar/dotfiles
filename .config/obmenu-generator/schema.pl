@@ -38,7 +38,7 @@ our $SCHEMA = [
     #          COMMAND                 LABEL              ICON
     {sep => mk_distro },
 
-    {item => ['pcmanfm --no-desktop -n .',       'Arquivos', 'system-file-manager']},
+    {item => ['pcmanfm-qt .',       'Arquivos', 'system-file-manager']},
     {item => ['tilix',            'Terminal',     'utilities-terminal']},
     {item => ['xdg-open http://', 'Web Browser',  'web-browser']},
     {item => ['gmrun',            'Executar comando',  'system-run']},
@@ -109,15 +109,15 @@ our $SCHEMA = [
     #{pipe => ['~/.config/openbox/scripts/obpipemenu-places', 'Diretórios', 'folder']}, 
     {pipe => ["~/.config/openbox/scripts/obbrowser", "Locais", "drive-harddisk"]},
     {pipe => ['~/.config/openbox/scripts/help-pipemenu', 'Ajuda', 'help']}, 
-    #{pipe => ['~/.config/openbox/scripts/dir-menu.py', 'Diretórios', 'folder']}, 
+    # {pipe => ['~/.config/openbox/scripts/dir-menu.py', 'pyDiretórios', 'folder']}, 
     # {pipe => ['~/.config/openbox/scripts/dir-menu.py', 'Computador', '']},
     {pipe => ['~/.config/openbox/scripts/inxi-pipemenu', 'Inxi Info', 'dialog-information-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/storageinfo', 'StorageInfo', 'dialog-information-symbolic']}, 
-    #{pipe => ['~/.config/openbox/scripts/ob-sysinfo.pl', 'SysInfo', 'dialog-information-symbolic']}, 
-    #{pipe => ['~/.config/openbox/scripts/sysInfo.sh pipe', 'SysInfo', 'dialog-information-symbolic']}, 
-    {pipe => ['~/.config/openbox/scripts/obrecent.sh', 'Recentes', 'view-wrapped-symbolic']}, 
+    #{pipe => ['~/.config/openbox/scripts/sysInfo.sh', 'SysInfo', 'dialog-information-symbolic']}, 
+    #{pipe => ['~/.config/openbox/scripts/cbpp-places-pipemenu', 'cbpp-places', 'view-wrapped-symbolic']}, 
+    #{pipe => ['~/.config/openbox/scripts/obrecent.sh', 'Recentes', 'view-wrapped-symbolic']}, 
+    {pipe => ['~/.config/openbox/scripts/recently_opened_menu.sh', 'Recentes', 'view-wrapped-symbolic']}, 
     {pipe => ['~/.config/openbox/scripts/audaciousmenu', 'Audacious', 'multimedia']}, 
-    #{pipe => ['~/.config/openbox/scripts/recently_opened_menu.sh', 'Recentes', 'view-wrapped-symbolic']}, 
     # 
     
     # {sep => undef},

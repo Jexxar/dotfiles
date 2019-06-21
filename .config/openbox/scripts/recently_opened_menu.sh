@@ -23,7 +23,7 @@ maximum_entries=15 # max. number of entries in menu
 #######################################################################
 
 # look for recently-used.xbel
-if [ $XDG_DATA_HOME ] && [ -r "${XDG_DATA_HOME}/recently-used.xbel" ]
+if [ "$XDG_DATA_HOME" ] && [ -r "${XDG_DATA_HOME}/recently-used.xbel" ]
 then
     file_path="${XDG_DATA_HOME}/recently-used.xbel"
 elif [ -r "${HOME}/.local/share/recently-used.xbel" ]
@@ -60,8 +60,9 @@ mid='">
     <action name="Execute"><command>'
 post='</command></action>
     </item>'
+cmd='xdg-open'
 
-files=$( tac "${file_path}" |  awk -v MAX="$maximum_entries" -v PR="$pre" -v MI="$mid" -v PO="$post" 'BEGIN {
+files=$( tac "${file_path}" |  awk -v MAX="$maximum_entries" -v PR="$pre" -v MI="$mid" -v CM="$cmd" -v PO="$post" 'BEGIN {
     RS="</bookmark>";
     FS="<info>";
 }
@@ -82,8 +83,9 @@ files=$( tac "${file_path}" |  awk -v MAX="$maximum_entries" -v PR="$pre" -v MI=
     sub(/^.*\//,"",name)
     gsub(/_/,"__",name)
     gsub(/\&apos;/,"\\&apos;\\&quot;\\&apos;\\&quot;\\&apos;",$2)
-    print (PR name MI $1 " '"'"'" $2 "'"'"'" PO)
+    print (PR name MI CM " '"'"'" $2 "'"'"'" PO)
 }' )
+#    print (PR name MI $1 " '"'"'" $2 "'"'"'" PO)
 
 # use perl to decode urlencoded characters
 files=$(perl -MURI::Escape -e 'print uri_unescape($ARGV[0]);' "$files")

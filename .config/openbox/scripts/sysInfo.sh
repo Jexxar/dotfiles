@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-# pipeSysInfo
+# sysInfo
 
 # call from .config/openbox/menu.xml like
-#        <menu id="sysInfo" label="sysInfo" execute="pipeSysInfo pipe" />
+#        <menu id="sysInfo" label="sysInfo" execute="sysInfo menu" />
 
-# or from cli: pypeSysinfo
+# or from cli: sysInfo
 
 # required awk, bc, inxi
 
@@ -18,16 +18,29 @@ else
     exit 1
 fi
 
+# -------------------------------------------------------------------
+# Audio Card
+# -------------------------------------------------------------------
 function doAudioCard() {
-    local tmp=$(inxi -A -c0 | grep 'Card' | sed 's/Card/!/g' | sed 's,.*!,,' | sed "s/^[ \t]*//" | sed 's/ driver:/!driver:/g')
-    tmp=${tmp%!*}
-    echo "$tmp" | tr -s '[:blank:]'''
+    local t=""
+    t=$(inxi -A -c0 | grep evice | sed 's,Device..,,' | sed 's,: ,!,' | sed 's,.*!,,' | sed 's,driver:,!,' | sed 's,!.*,,')
+    t=$(echo "$t" | sed 's,: ,,')
+    echo "${t#"${t%%[![:space:]]*}"}"
 }
 
+# -------------------------------------------------------------------
+# Audio Card Driver
+# -------------------------------------------------------------------
 function doAudioCardDriver() {
-    inxi -A -c0 | grep 'Card' | sed 's/driver:/!/g' | sed 's,.*!,,' | sed "s/^[ \t]*//" 
+    local t=""
+    t=$(inxi -A -c0 | grep 'driver' | sed 's/driver:/!/g' | sed 's,.*!,,' | sed "s/^[ \t]*//")
+    t=$(echo "$t" | sed 's,: ,,')
+    echo "${t#"${t%%[![:space:]]*}"}"
 }
 
+# -------------------------------------------------------------------
+# Audio Vol
+# -------------------------------------------------------------------
 function doAudioVol() {
     if amixer get Master | grep -q 'Right'
     then
@@ -37,666 +50,464 @@ function doAudioVol() {
     fi
 }
 
+# -------------------------------------------------------------------
+# Adapter 
+# -------------------------------------------------------------------
 function doAdapter() {
     acpi -a | grep "Adapter" | cut -f 2 -d':' | sed 's/\n//g' | sed "s/^[ \t]*//"
 }
 
+# -------------------------------------------------------------------
+# Brightness 
+# -------------------------------------------------------------------
 function doBrightness(){
-    local ab=$(cat /sys/class/backlight/intel_backlight/actual_brightness);
-    local mb=$(cat /sys/class/backlight/intel_backlight/max_brightness);
+    local ab=""
+    ab=$(cat /sys/class/backlight/intel_backlight/actual_brightness);
+    local mb=""
+    mb=$(cat /sys/class/backlight/intel_backlight/max_brightness);
     echo "$ab/$mb*100" | bc;
 }
 
+# -------------------------------------------------------------------
+# Battery 
+# -------------------------------------------------------------------
 function doBatteryPerc() {
-    acpi -b | grep "Battery" | cut -f 2 -d':' | awk '{print $2}'
+    upower -i $(upower -e | grep 'BAT') | grep -E "state|to\ full|percentage" | awk '/percentage/ {print $2}'
 }
 
+# -------------------------------------------------------------------
+# CPU description
+# -------------------------------------------------------------------
 function doCPU() {
-    cat /proc/cpuinfo | grep 'model name' | cut -f 2 -d':' | uniq
+    grep 'model name' /proc/cpuinfo | cut -f 2 -d':' | uniq
 }
 
+# -------------------------------------------------------------------
+# CPU usage in percents 
+# -------------------------------------------------------------------
 function doCPUUsage() {
-    local tmp=$(ps -A -o pcpu | tail -n+2 | paste -sd+ | bc)
+    local tmp=""
+    tmp=$(ps -A -o pcpu | tail -n+2 | paste -sd+ | bc)
     tmp=$(awkRound 0 "$tmp")
     echo "$tmp%"
 }
 
+# -------------------------------------------------------------------
+# HDD info 
+# -------------------------------------------------------------------
 function doDriveHDD() {
-    inxi -d -c0 | grep 'HDD' | sed 's/(/!(/g' | sed 's,.*!,,' | sed 's/ID-1://g' | sed 's/(//g' | sed 's/)//g' | sed "s/^[ \t]*//" | awk '{print $3, $5, $7, $1}'
+    local t=""
+    t=$(inxi -d -c0 | grep 'ID' | sed 's/(/!(/g' | sed 's,.*!,,' | sed 's/ID-1://g' | sed 's/(//g' | sed 's/)//g' | sed "s/^[ \t]*//" | awk '{print $1":",$3,$5,$6,$7,$8}')
+    t=$(echo "$t" | sed 's/size: /!/g' | sed 's,!.*,,')
+    echo "${t#"${t%%[![:space:]]*}"}"
 }
 
+# -------------------------------------------------------------------
+# Optical info 
+# -------------------------------------------------------------------
 function doDriveOptical() {
-    inxi -d -c0 | grep 'Optical' | sed 's/Optical:/Optical:!/g' | sed 's,.*!,,' | sed "s/^[ \t]*//" | awk '{print $1,$3,$4,$5}'
+    local t=""
+    t=$(inxi -d -c0 | grep 'Optical' | sed 's/Optical:/Optical:!/g' | sed 's,.*!,,' | sed "s/^[ \t]*//" | awk '{print $2":",$4,$6,$7,$8}')
+    echo "${t#"${t%%[![:space:]]*}"}"
 }
 
+# -------------------------------------------------------------------
+# Filesystem usage in percents and free space
+# -------------------------------------------------------------------
 function doDriveUU() {
     local d=${1}
-    [ -z $d ] && d=$PWD
-    local dv=$(df -h $d | awk 'NR==2 {print $1}')
-    d=$(df -h $d | awk 'NR==2 {print $6}')
-    local dus=$(inxi -pu -c0 | grep "$dv" | sed 's/size:/!size:/g' | sed 's,.*!,,' | awk '{print $9,$7,$2,$4,$5}')
-    local ui=$(cat /etc/fstab | grep "$d " | grep "UUID" | sed 's/UUID=/UUID=!/g' | sed 's,.*!,,' | sed "s/^[ \t]*//" | awk '{print $1}')
+    [ -z "$d" ] && d=$PWD
+    local dv=""
+    dv=$(df -h "$d" | awk 'NR==2 {print $1}')
+    d=$(df -h "$d" | awk 'NR==2 {print $6}')
+    local dus=""
+    dus=$(inxi -pu -c0 | grep "$dv" | sed 's/size:/!size:/g' | sed 's,.*!,,' | awk '{print $9,$7,$2,$4,$5}')
+    local ui=""
+    ui=$(grep "$d " /etc/fstab | grep "UUID" | sed 's/UUID=/UUID=!/g' | sed 's,.*!,,' | sed "s/^[ \t]*//" | awk '{print $1}')
     echo "$ui $dus"
 }
 
+# -------------------------------------------------------------------
+# Graphic Card
+# -------------------------------------------------------------------
 function doGraphicCard() {
-    inxi -G -c0 | awk '/Card/ {print $3, $4, $5, $6, $7}'
+    local t=""
+    t=$(inxi -G -c0 | grep evice | sed 's,Device..,,' | sed 's,: ,!,' | sed 's,.*!,,' | sed 's,driver:,!,' | sed 's,!.*,,')
+    t=$(echo "$t" | sed 's,: ,,')
+    echo "${t#"${t%%[![:space:]]*}"}"
 }
 
+# -------------------------------------------------------------------
+# Graphic Server
+# -------------------------------------------------------------------
 function doGraphicServer() {
-    inxi -G -c0 | awk '/Server/ {print $3, $4 " / " $5, $6}'
+    local t=""
+    t=$(inxi -G -c0 | awk '/erver/ {print $0}' | sed 's,: ,!,' | sed 's,.*!,,' | sed 's,:.*,,')
+    t=$(echo "$t" | sed 's,: ,,')
+    echo "${t#"${t%%[![:space:]]*}"}"
 }
 
+# -------------------------------------------------------------------
+# Graphic Renderer
+# -------------------------------------------------------------------
 function doGraphicRenderer() {
-    inxi -G -c0 | awk '/Renderer/ {print $3, $12 " / " $4, $5, $6, $7 " / " $8, $10}'
+    local t=""
+    t=$(inxi -G -c0 | awk '/ender/ {print $0}' | sed 's,renderer: ,,' | sed 's,: ,!,' | sed 's,.*!,,')
+    t=$(echo "$t" | sed 's,: ,,')
+    echo "${t#"${t%%[![:space:]]*}"}"
 }
 
+# -------------------------------------------------------------------
+# Desktop Environment
+# -------------------------------------------------------------------
 function doDE() {
-    inxi -S -c0 | awk '/Desktop/ {print $10, $11}'
+    local t=""
+    t=$(inxi -S -c0 | awk '/esktop/ {print $0}' | sed 's,esktop: ,!,' | sed 's,.*!,,')
+    t=$(echo "$t" | sed 's,: ,,')
+    echo "${t#"${t%%[![:space:]]*}"}"
 }
 
+# -------------------------------------------------------------------
+# Load 
+# -------------------------------------------------------------------
 function doLoad() {
-    local tmp=$(uptime | awk '{print $10}' | cut -d ',' -f 1-2 | sed 's/\,/\./g');
+    local tmp=""
+    tmp=$(uptime | awk '{print $10}' | cut -d ',' -f 1-2 | sed 's/\,/\./g');
     tmp=$(echo "$tmp * 100" | bc)
     awkRound 0 "$tmp"
 }
     
+# -------------------------------------------------------------------
+# Machine Info
+# -------------------------------------------------------------------
 function doMachine() {
-    inxi -M -c0 | awk '{print $3, $5, $6, $7, $9}'
+    local t=""
+    t=$(inxi -M -c0 | awk '/obo/ {print $0}' | sed 's,: ,!,' | sed 's,.*!,,' | sed 's,model: ,,' | sed 's,serial:.*,,')
+    t=$(echo "$t" | sed 's,: ,,')
+    echo "${t#"${t%%[![:space:]]*}"}"
 }
 
+# -------------------------------------------------------------------
+# Wan IP (public IP) 
+# -------------------------------------------------------------------
 function doNetWANIP() {
-    inxi -i -c0 | awk '/WAN IP/ {print $3}'
+    local res=""
+    res=$(curl -s "ifconfig.me");
+    if [ $? -ne 0 ]; then
+        res="";
+    fi;
+    res=$(echo "$res" | grep -Eo '[0-9\.]+');
+    echo -e "$res"
 }
 
+# -------------------------------------------------------------------
+# Network adapter 1 info
+# -------------------------------------------------------------------
 function doNetCard1() {
-    inxi -i -c0 | grep 'Card-1' | sed 's/Card-1:/!/g' | sed 's,.*!,,' | sed "s/^[ \t]*//" | sed 's/driver:/\/ driver:/g'
+    inxi -i -c0 | grep 'Device-1' | sed 's/Device-1:/!/g' | sed 's,.*!,,' | sed "s/^[ \t]*//" | sed 's/driver:/\/ driver:/g'
 }
 
+# -------------------------------------------------------------------
+# Network adapter 2 info
+# -------------------------------------------------------------------
 function doNetCard2() {
-    inxi -i -c0 | grep 'Card-2' | sed 's/Card-2:/!/g' | sed 's,.*!,,' | sed "s/^[ \t]*//" | sed 's/driver:/\/ driver:/g'
+    inxi -i -c0 | grep 'Device-2' | sed 's/Device-2:/!/g' | sed 's,.*!,,' | sed "s/^[ \t]*//" | sed 's/driver:/\/ driver:/g'
 }
 
+# -------------------------------------------------------------------
+# Wifi Interface name
+# -------------------------------------------------------------------
 function doNetWifiIF() {
     nmcli device status | awk '/wifi/ {print $1}'
 }
 
+# -------------------------------------------------------------------
+# WiFi SSID 
+# -------------------------------------------------------------------
 function doNetWifiSSID() {
     nmcli device status | awk '/wifi/ {print $4}'
 }
 
+# -------------------------------------------------------------------
+# WiFi Status 
+# -------------------------------------------------------------------
 function doNetWifiStatus() {
     nmcli device status | awk '/wifi/ {print $3}'
 }
 
+# -------------------------------------------------------------------
+# WiFi Performance
+# -------------------------------------------------------------------
+function doNetWifiPerf() {
+    local tmp=""
+    tmp=$(nmcli device status | awk '/wifi/ {print $4}')
+    nmcli dev wifi | grep $tmp | grep "Mbit/s" | tr -s '[:blank:]''' | cut -d ' ' -f 3-9 | awk '{print $1,$2,$3 " Mb",$5"%",$7}'
+}
+
+# -------------------------------------------------------------------
+# Wired Interface name
+# -------------------------------------------------------------------
 function doNetWiredIF() {
     nmcli device status | awk '/ethernet/ {print $1}'
 }
 
+# -------------------------------------------------------------------
+# Wired Status 
+# -------------------------------------------------------------------
 function doNetWiredStatus() {
     nmcli device status | awk '/ethernet/ {print $3}'
 }
 
-function doNetWifiPerf() {
-    local tmp=$(nmcli device status | awk '/wifi/ {print $4}')
-    nmcli dev wifi | grep $tmp | grep "Mbit/s" | tr -s '[:blank:]''' | cut -d ' ' -f 3-9 | awk '{print $1,$2,$3 " Mb",$5"%",$7}'
-}
-
+# -------------------------------------------------------------------
+# Local IPv4 
+# -------------------------------------------------------------------
 function doNetIPv4() {
     ifconfig -a | grep "inet " | grep -v 127 | cut -d ' ' -f 1-14 | awk '{print $3}'
 }
 
+# -------------------------------------------------------------------
+# Local IPv6 
+# -------------------------------------------------------------------
 function doNetIPv6() {
     ifconfig -a | grep "inet6" | grep -v "::1" | cut -d ' ' -f 1-14 | awk '{print $3}'
 }
 
+# -------------------------------------------------------------------
+# Process Summary
+# -------------------------------------------------------------------
 function doProc() {
-    inxi -I -c0 | awk '/Processes/ {print $3}'
+    inxi -I -c0 | awk '/Processes/ {print $2}'
 }
 
+# -------------------------------------------------------------------
+# Memory (available) 
+# -------------------------------------------------------------------
 function doMemAvail() {
     free -m | sed -n '2,2p' | tr -s '[:blank:]''' | cut -f 7 -d' '
 }
 
+# -------------------------------------------------------------------
+# Memory (free)
+# -------------------------------------------------------------------
 function doMemFree() {
     free -m | awk 'NR==2{print ($2-$4)"M"}'
 }
 
+# -------------------------------------------------------------------
+# Memory (total)
+# -------------------------------------------------------------------
 function doMemTotal() {
     free -m | awk 'NR==2{print $2"M"}'
 }
 
+# -------------------------------------------------------------------
+# Memory (swap)
+# -------------------------------------------------------------------
 function doFreeSwap() {
     free -m | sed -n '3,3p' | tr -s '[:blank:]''' | cut -f 4 -d' '
 }
 
+# -------------------------------------------------------------------
+# Memory (summary)
+# -------------------------------------------------------------------
 function doMemSummary() {
+    local mem=""
+    local memslash=""
     read -r memslash mem <<< $(free -m | awk 'NR==2{printf "%s/%sM %.0f%%", ($2-$4),$2,($2-$4)*100/$2 }')
-    local mem="${mem//%}"
+    mem="${mem//%}"
     echo "$mem"
 }
 
+# -------------------------------------------------------------------
+# Uptime 
+# -------------------------------------------------------------------
 function doUptime() {
     uptime -p | sed 's/days/d/g' | sed 's/day/d/g' | sed 's/hours/h/g' |  sed 's/hour/h/g' |  sed 's/minutes/m/g' |  sed 's/minute/m/g' |  sed 's/up //g'
 }
 
+# -------------------------------------------------------------------
+# Service Manager
+# -------------------------------------------------------------------
 function doServerMan() {
-    cat /proc/1/comm | awk '{print $1}'
+    awk '{print $1}' < /proc/1/comm
 }
 
+# -------------------------------------------------------------------
+# Resolution
+# -------------------------------------------------------------------
 function doResolution() {
-    inxi -G -c0 | grep Resolution  | awk '{print $8}'
+    inxi -G -c0 | awk '/esolution/ {print $9}'
 }
 
+# -------------------------------------------------------------------
+# Thermal 
+# -------------------------------------------------------------------
 function doTemperature() {
-    local tmp=$(acpi -t | grep 'Thermal' | awk 'NR==1 {print $4}')
+    local tmp=""
+    tmp=$(acpi -t | grep 'Thermal' | awk 'NR==1 {print $4}')
     tmp=$(awkRound 0 "$tmp")
     echo "$tmp C" | awk '{print $1""$2}'
 }
 
+# -------------------------------------------------------------------
+# Swappiness 
+# -------------------------------------------------------------------
 function doSwappiness() {
-    cat /proc/sys/vm/swappiness | sed "s/^[ \t]*//"
+    #cat /proc/sys/vm/swappiness | sed "s/^[ \t]*//"
+    sed "s/^[ \t]*//" /proc/sys/vm/swappiness 
 }
 
+# -------------------------------------------------------------------
+# Weather 
+# -------------------------------------------------------------------
 function doWeather() {
-    ${HOME}/bin/weather
+    local t=""
+    t=$(inxi -xxx -w -c0 | grep 'emperat' | awk 'NR==1 {print $2,$3,$4,$5,$7,$8}')
+    echo "${t#"${t%%[![:space:]]*}"}"
 }
 
+# -------------------------------------------------------------------
+# Distro 
+# -------------------------------------------------------------------
 function doDistro() {
-    ${HOME}/bin/distro_info -3 | tr -s '[:blank:]'''
+    grep 'DISTRIB_DESCRIPTION' /etc/*-release  2> /dev/null | sed 's,=,!,' | sed 's,.*!,,' | sed -e "s/\"//g" | sed "s/$/ /g"
 }
 
+# -------------------------------------------------------------------
+# Host 
+# -------------------------------------------------------------------
 function doHost() {
     uname -n
 }
 
+# -------------------------------------------------------------------
+# OS 
+# -------------------------------------------------------------------
 function doOS() {
     uname -o
 }
 
+# -------------------------------------------------------------------
+# Architecture 
+# -------------------------------------------------------------------
 function doArch() {
     uname -m | sed 's/_/-/g'
 }
 
+# -------------------------------------------------------------------
+# Kernel 
+# -------------------------------------------------------------------
 function doKernel() {
     uname -r
 }
 
+# -------------------------------------------------------------------
+# Create Openbox Pipe Menu
+# -------------------------------------------------------------------
 function doMenu() {
-    # l10n support
-    case "${LANG:-}" in
-        de_* ) doMenu_en ;; # Deutsch
-        da_* ) doMenu_en ;; # Danish
-        es_* ) doMenu_en ;; # Española
-        fr_* ) doMenu_en ;; # Français
-        id_* ) doMenu_en ;; # Bahasa Indonesia
-        it_* ) doMenu_en ;; # Italian
-        lv_* ) doMenu_en ;; # Latvian
-        pl_* ) doMenu_en ;; # Polish
-        pt_* ) doMenu_en ;; # Português
-        ru_* ) doMenu_en ;; # Russian
-        * ) doMenu_en ;; # Default to English
-    esac
-}
-
-function doMenu_en() {
     menuBegin
     menuSep 
-
-    # -------------------------------------------------------------------
-    # Audio Card
-    # -------------------------------------------------------------------
-    local auc=$(doAudioCard);
-
-    menuItem "Audio Card: $auc"
-    
-    # -------------------------------------------------------------------
-    # Audio Card Driver
-    # -------------------------------------------------------------------
-    local aud=$(doAudioCardDriver);
-
-    menuItem "Audio Card Driver: $aud"
-    
-    # -------------------------------------------------------------------
-    # Audio Vol
-    # -------------------------------------------------------------------
-    local avl=$(doAudioVol);
-
-    menuItem "Volume: $avl%"
-
-    # -------------------------------------------------------------------
-    # Distro 
-    # -------------------------------------------------------------------
-    local dis=$(doDistro);
-    menuItem "Distro: $dis"
-    
-    # -------------------------------------------------------------------
-    # Host 
-    # -------------------------------------------------------------------
-    local hst=$(doHost);
-    menuItem "Host: $hst"
-    
-    # -------------------------------------------------------------------
-    # OS 
-    # -------------------------------------------------------------------
-    local os=$(doOS);
-    menuItem "OS: $os"
-    
-    # -------------------------------------------------------------------
-    # Architecture 
-    # -------------------------------------------------------------------
-    local arc=$(doArch);
-    menuItem "Architecture: $arc"
-    
-    # -------------------------------------------------------------------
-    # Kernel 
-    # -------------------------------------------------------------------
-    local krn=$(doKernel);
-    menuItem "Kernel: $krn"
-    
-    # -------------------------------------------------------------------
-    # Service Manager
-    # -------------------------------------------------------------------
-    local svm=$(doServerMan);
-    menuItem "Service Manager: $svm"
-    
-    # -------------------------------------------------------------------
-    # Adapter 
-    # -------------------------------------------------------------------
-    local adp=$(doAdapter);
-    menuItem "Adapter: $adp"
-    
-    # -------------------------------------------------------------------
-    # Battery 
-    # -------------------------------------------------------------------
-    local btp=$(doBatteryPerc);
-    menuItem "Battery: $btp"
-    
-    # -------------------------------------------------------------------
-    # Brightness 
-    # -------------------------------------------------------------------
-    local bgh=$(doBrightness);
-    menuItem "Brightness: $bgh"
-    
-    # -------------------------------------------------------------------
-    # Load 
-    # -------------------------------------------------------------------
-    local lod=$(doLoad);
-    menuItem "Load: $lod%"
-    
-    # -------------------------------------------------------------------
-    # Memory 
-    # -------------------------------------------------------------------
-    local mav=$(doMemAvail);
-    menuItem "Memory: Available $mav"
-    
-    # -------------------------------------------------------------------
-    # Swap 
-    # -------------------------------------------------------------------
-    local fsw=$(doFreeSwap);
-    menuItem "Free Swap: $fsw"
-    
-    # -------------------------------------------------------------------
-    # Swappiness 
-    # -------------------------------------------------------------------
-    local swp=$(doSwappiness);
-    menuItem "Swappiness: $swp"
-    
-    # -------------------------------------------------------------------
-    # Memory (summary) 
-    # -------------------------------------------------------------------
-    local msu=$(doMemSummary);
-    menuItem "Memory (summary): $msu%"
-        
-    # -------------------------------------------------------------------
-    # Resolution
-    # -------------------------------------------------------------------
-    local rsl=$(doResolution);
-    menuItem "Resolution: $rsl"
-    
-    # -------------------------------------------------------------------
-    # Thermal 
-    # -------------------------------------------------------------------
-    local thm=$(doTemperature);
-    menuItem "Temperature: $thm"
-    
-    # -------------------------------------------------------------------
-    # Time 
-    # -------------------------------------------------------------------
-    local tdt=$(date +"%d-%m-%Y, %R");
-    menuItem "Time: $tdt"
-    
-    # -------------------------------------------------------------------
-    # Uptime 
-    # -------------------------------------------------------------------
-    local upt=$(doUptime);
-    menuItem "Uptime: $upt"
-    
-    # -------------------------------------------------------------------
-    # WiFi Interface 
-    # -------------------------------------------------------------------
-    local wif=$(doNetWifiIF);
-    menuItem "WiFi Interface: $wif"
-    
-    # -------------------------------------------------------------------
-    # WiFi SSID 
-    # -------------------------------------------------------------------
-    local wss=$(doNetWifiSSID);
-    menuItem "WiFi SSID: $wss"
-    
-    # -------------------------------------------------------------------
-    # WiFi Status 
-    # -------------------------------------------------------------------
-    local wst=$(doNetWifiStatus);
-    menuItem "WiFi Status: $wst"
-    
-    # -------------------------------------------------------------------
-    # WiFi Performance
-    # -------------------------------------------------------------------
-    local wfp=$(doNetWifiPerf);
-    menuItem "WiFi Performance: $wfp"
-    
-    # -------------------------------------------------------------------
-    # Local IPv4 
-    # -------------------------------------------------------------------
-    local ip4=$(doNetIPv4);
-    menuItem "Local IPv4: $ip4"
-    
-    # -------------------------------------------------------------------
-    # WiFi Inet6 
-    # -------------------------------------------------------------------
-    local ip6=$(doNetIPv6);
-    menuItem "Local IPv6: $ip6"
-    
-    # -------------------------------------------------------------------
-    # Wired Interface
-    # -------------------------------------------------------------------
-    local eif=$(doNetWiredIF);
-    menuItem "Wired Interface: $eif"
-    
-    # -------------------------------------------------------------------
-    # Wired Status
-    # -------------------------------------------------------------------
-    local est=$(doNetWiredStatus);
-    menuItem "Wired Status: $est"
-    
-    # -------------------------------------------------------------------
-    # CPU description
-    # -------------------------------------------------------------------
-    local cpd=$(doCPU);
-    menuItem "CPU description: $cpd"
-
-    # -------------------------------------------------------------------
-    # CPU usage in percents 
-    # -------------------------------------------------------------------
-    local cpu=$(doCPUUsage);
-    menuItem "CPU usage: $cpu"
-    
-    # -------------------------------------------------------------------
-    # Memory summary
-    # -------------------------------------------------------------------
-    local mus=$(doMemSummary);
-    menuItem "Memory summary: $mus%"
-    
-    # -------------------------------------------------------------------
-    # /home disk usage in percents and free space in Gb (32% used, 65G free)
-    # -------------------------------------------------------------------
-    local hdk=$(doDriveUU "$HOME");
-    menuItem "$HOME $hdk" 
-    
-    # -------------------------------------------------------------------
-    # / disk usage in percents and free space in Gb (32% used, 65G free)
-    # -------------------------------------------------------------------
-    local rdk=$(doDriveUU "/ ");
-    menuItem "/ $rdk" 
-
-    # -------------------------------------------------------------------
-    # Machine Info
-    # -------------------------------------------------------------------
-    local mci=$(doMachine);
-    menuItem "Machine Info: $mci"
-
-    # -------------------------------------------------------------------
-    # Process Summary
-    # -------------------------------------------------------------------
-    #local prc=$(doProc);
-    #menuItem "Process Summary: $prc"
-        
+    menuItem "Audio Card: $(doAudioCard)";
+    menuItem "Audio Card Driver: $(doAudioCardDriver)";
+    menuItem "Volume: $$(doAudioVol)";
+    menuItem "Distro: $(doDistro)";
+    menuItem "Host: $(doHost)";
+    menuItem "OS: $(doOS)";
+    menuItem "Architecture: $(doArch)";
+    menuItem "Kernel: $(doKernel)";
+    menuItem "Service Manager: $(doServerMan)";
+    menuItem "Adapter: $(doAdapter)";
+    menuItem "Battery: $(doBatteryPerc)";
+    menuItem "Brightness: $(doBrightness)";
+    menuItem "Load: $(doLoad)";
+    menuItem "Memory: Available $(doMemAvail)";
+    menuItem "Free Swap: $(doFreeSwap)";
+    menuItem "Swappiness: $(doSwappiness)";
+    menuItem "Memory (summary): $(doMemSummary)";
+    menuItem "Graphic Card: $(doGraphicCard)";
+    menuItem "Graphic Server: $(doGraphicServer)";
+    menuItem "Graphic Renderer: $(doGraphicRenderer)";
+    menuItem "Resolution: $(doResolution)";
+    menuItem "Desktop Environment: $(doDE)";
+    menuItem "Temperature: $(doTemperature)";
+    menuItem "Time: $(date +"%d-%m-%Y, %R")";
+    menuItem "Uptime: $(doUptime)";
+    menuItem "WiFi Interface: $(doNetWifiIF)";
+    menuItem "WiFi SSID: $(doNetWifiSSID)";
+    menuItem "WiFi Status: $(doNetWifiStatus)";
+    menuItem "WiFi Performance: $(doNetWifiPerf)";
+    menuItem "Local IPv4: $(doNetIPv4)";
+    menuItem "Local IPv6: $(doNetIPv6)";
+    menuItem "Wired Interface: $(doNetWiredIF)";
+    menuItem "Wired Status: $(doNetWiredStatus)";
+    menuItem "CPU description: $(doCPU)";
+    menuItem "CPU usage: $(doCPUUsage)";
+    menuItem "Memory summary: $(doMemSummary)";
+    menuItem "HDD: $(doDriveHDD)";
+    menuItem "Optical: $(doDriveOptical)";
+    #menuItem "($HOME) $(doDriveUU "$HOME")" 
+    #menuItem "(/) $(doDriveUU "/")" 
+    menuItem "Machine Info: $(doMachine)"
+    #menuItem "Processes: $(doProc)";
+    #menuItem "Weather: $(doWeather)"
     menuEnd
 }
 
-function doMenu_pt() {
-    menuBegin
-    menuSep 
-    menuItem 'Audio' '~/.config/openbox/scripts/inxi-pipemenu Audio'
-    #menuItem 'Battery' '~/.config/openbox/scripts/inxi-pipemenu Battery'
-    menuItem 'CPU' '~/.config/openbox/scripts/inxi-pipemenu CPU'
-    menuItem 'Discos Info' '~/.config/openbox/scripts/inxi-pipemenu DrivesGI'
-    menuItem 'Uso UUID' '~/.config/openbox/scripts/inxi-pipemenu DrivesUU'
-    menuItem 'Não Montado' '~/.config/openbox/scripts/inxi-pipemenu DrivesUN'
-    menuItem 'Graficos' '~/.config/openbox/scripts/inxi-pipemenu Graphics'
-    menuItem 'Host' '~/.config/openbox/scripts/inxi-pipemenu HostKBD'
-    menuItem 'Máquina' '~/.config/openbox/scripts/inxi-pipemenu MachineInfo'
-    menuItem 'Rede' '~/.config/openbox/scripts/inxi-pipemenu Network'
-    menuItem 'Processos' '~/.config/openbox/scripts/inxi-pipemenu Processes'
-    menuItem 'Sumario' '~/.config/openbox/scripts/inxi-pipemenu ProcUptimeMemory'
-    menuItem 'Repositórios' '~/.config/openbox/scripts/inxi-pipemenu Repositories'
-    menuItem 'Resolução' '~/.config/openbox/scripts/inxi-pipemenu Resolution'
-    menuItem 'Temperatura' '~/.config/openbox/scripts/inxi-pipemenu Temperature'
-    menuItem 'Clima' '~/.config/openbox/scripts/inxi-pipemenu Weather'
-    menuEnd
-}
-
+# -------------------------------------------------------------------
+# Command line interface
+# -------------------------------------------------------------------
 function doCli() {
-    # -------------------------------------------------------------------
-    # Audio Card
-    # -------------------------------------------------------------------
-    local auc=$(doAudioCard);
-    echo "Audio Card = $auc"
-
-    # -------------------------------------------------------------------
-    # Audio Card Driver
-    # -------------------------------------------------------------------
-    local aud=$(doAudioCardDriver);
-    echo "Audio Card Driver = $aud"
-
-    # -------------------------------------------------------------------
-    # Audio Vol
-    # -------------------------------------------------------------------
-    local avl=$(doAudioVol);
-    echo "Audio Vol = $avl%"
-
-    # -------------------------------------------------------------------
-    # Distro 
-    # -------------------------------------------------------------------
-    local dis=$(doDistro);
-    echo "Distro = $dis"
-    
-    # -------------------------------------------------------------------
-    # Host 
-    # -------------------------------------------------------------------
-    local hst=$(doHost);
-    echo "Host = $hst"
-    
-    # -------------------------------------------------------------------
-    # OS 
-    # -------------------------------------------------------------------
-    local os=$(doOS);
-    echo "OS = $os"
-    
-    # -------------------------------------------------------------------
-    # Architecture 
-    # -------------------------------------------------------------------
-    local arc=$(doArch);
-    echo "Architecture = $arc"
-    
-    # -------------------------------------------------------------------
-    # Kernel 
-    # -------------------------------------------------------------------
-    local krn=$(doKernel);
-    echo "Kernel = $krn"
-    
-    # -------------------------------------------------------------------
-    # Service Manager
-    # -------------------------------------------------------------------
-    local svm=$(doServerMan);
-    echo "Service Manager = $svm"
-    
-    # -------------------------------------------------------------------
-    # Adapter 
-    # -------------------------------------------------------------------
-    local adp=$(doAdapter);
-    echo "Adapter = $adp"
-    
-    # -------------------------------------------------------------------
-    # Battery 
-    # -------------------------------------------------------------------
-    local btp=$(doBatteryPerc);
-    echo "Battery = $btp"
-    
-    # -------------------------------------------------------------------
-    # Brightness 
-    # -------------------------------------------------------------------
-    local bgh=$(doBrightness);
-    echo "Brightness = $bgh"
-    
-    # -------------------------------------------------------------------
-    # Load 
-    # -------------------------------------------------------------------
-    local lod=$(doLoad);
-    echo "Load = $lod"
-    
-    # -------------------------------------------------------------------
-    # Memory 
-    # -------------------------------------------------------------------
-    local mav=$(doMemAvail);
-    echo "Memory = $mav"
-    
-    # -------------------------------------------------------------------
-    # Swap 
-    # -------------------------------------------------------------------
-    local fsw=$(doFreeSwap);
-    echo "Swap = $fsw"
-    
-    # -------------------------------------------------------------------
-    # Swappiness 
-    # -------------------------------------------------------------------
-    local swp=$(doSwappiness);
-    echo "Swappiness = $swp"
-    
-    # -------------------------------------------------------------------
-    # Memory (summary) 
-    # -------------------------------------------------------------------
-    local msu=$(doMemSummary);
-    echo "Memory (summary) = $msu" 
-        
-    # -------------------------------------------------------------------
-    # Resolution
-    # -------------------------------------------------------------------
-    local rsl=$(doResolution);
-    echo "Resolution = $rsl"
-    
-    # -------------------------------------------------------------------
-    # Thermal 
-    # -------------------------------------------------------------------
-    local thm=$(doTemperature);
-    echo "Thermal = $thm"
-    
-    # -------------------------------------------------------------------
-    # Time 
-    # -------------------------------------------------------------------
-    local tdt=$(date +"%d-%m-%Y, %R");
-    echo "Time = $tdt"
-    
-    # -------------------------------------------------------------------
-    # Uptime 
-    # -------------------------------------------------------------------
-    local upt=$(doUptime);
-    echo "Uptime = $upt"
-    
-    # -------------------------------------------------------------------
-    # WiFi Interface 
-    # -------------------------------------------------------------------
-    local wif=$(doNetWifiIF);
-    echo "WiFi Interface = $wif"
-    
-    # -------------------------------------------------------------------
-    # WiFi SSID 
-    # -------------------------------------------------------------------
-    local wss=$(doNetWifiSSID);
-    echo "WiFi SSID = $wss"
-    
-    # -------------------------------------------------------------------
-    # WiFi Status 
-    # -------------------------------------------------------------------
-    local wst=$(doNetWifiStatus);
-    echo "WiFi Status = $wst"
-    
-    # -------------------------------------------------------------------
-    # WiFi Performance
-    # -------------------------------------------------------------------
-    local wfp=$(doNetWifiPerf);
-    echo "WiFi Performance = $wfp"
-    
-    # -------------------------------------------------------------------
-    # WiFi Inet 
-    # -------------------------------------------------------------------
-    local ip4=$(doNetIPv4);
-    echo "IP v4 = $ip4" 
-    
-    # -------------------------------------------------------------------
-    # WiFi Inet6 
-    # -------------------------------------------------------------------
-    local ip6=$(doNetIPv6);
-    echo "IP v6 = $ip6" 
-    
-    # -------------------------------------------------------------------
-    # Wired Interface
-    # -------------------------------------------------------------------
-    local eif=$(doNetWiredIF);
-    echo "Wired Interface = $eif"
-    
-    # -------------------------------------------------------------------
-    # Wired Status
-    # -------------------------------------------------------------------
-    local est=$(doNetWiredStatus);
-    echo "Wired Status = $est"
-    
-    # -------------------------------------------------------------------
-    # CPU description
-    # -------------------------------------------------------------------
-    local cpd=$(doCPU);
-    echo "CPU description = $cpd"
-
-    # -------------------------------------------------------------------
-    # CPU usage in percents 
-    # -------------------------------------------------------------------
-    local cpu=$(doCPUUsage);
-    echo "CPU usage in percents = $cpu"
-    
-    # -------------------------------------------------------------------
-    # mem summary
-    # -------------------------------------------------------------------
-    local mus=$(doMemSummary);
-    echo "mem summary = $mus"
-    
-    # -------------------------------------------------------------------
-    # /home disk usage 
-    # -------------------------------------------------------------------
-    local hdk=$(doDriveUU "$HOME");
-    echo "/home usage = $hdk"
-    
-    # -------------------------------------------------------------------
-    # / disk usage 
-    # -------------------------------------------------------------------
-    local rdk=$(doDriveUU "/ ");
-    echo "/ usage = $rdk"
+    echo "Audio Card = $(doAudioCard)";
+    echo "Audio Card Driver = $(doAudioCardDriver)";
+    echo "Audio Vol = $(doAudioVol)";
+    echo "Distro = $(doDistro)";
+    echo "Host = $(doHost)";
+    echo "OS = $(doOS)";
+    echo "Architecture = $(doArch)";
+    echo "Kernel = $(doKernel)";
+    echo "Service Manager = $(doServerMan)";
+    echo "Adapter = $(doAdapter)";
+    echo "Battery = $(doBatteryPerc)";
+    echo "Brightness = $(doBrightness)";
+    echo "Load = $(doLoad)";
+    echo "Memory = $(doMemAvail)";
+    echo "Swap = $(doFreeSwap)";
+    echo "Swappiness = $(doSwappiness)";
+    echo "Memory (summary) = $(doMemSummary)";    
+    echo "Graphic Card = $(doGraphicCard)";
+    echo "Graphic Server = $(doGraphicServer)";
+    echo "Graphic Renderer = $(doGraphicRenderer)";
+    echo "Resolution = $(doResolution)";
+    echo "DE = $(doDE)";
+    echo "Thermal = $(doTemperature)";
+    echo "Time = $(date +"%d-%m-%Y, %R")";
+    echo "Uptime = $(doUptime)";
+    echo "Wan IP = $(doNetWANIP)";
+    echo "Network Card1 = $(doNetCard1)";
+    echo "Network Card2 = $(doNetCard2)";
+    echo "WiFi Interface = $(doNetWifiIF)";
+    echo "WiFi SSID = $(doNetWifiSSID)";
+    echo "WiFi Status = $(doNetWifiStatus)";
+    echo "WiFi Performance = $(doNetWifiPerf)";
+    echo "IP v4 = $(doNetIPv4)" 
+    echo "IP v6 = $(doNetIPv6)" 
+    echo "Wired Interface = $(doNetWiredIF)"
+    echo "Wired Status = $(doNetWiredStatus)"
+    echo "CPU description = $(doCPU)"
+    echo "CPU usage in percents = $(doCPUUsage)"
+    echo "HDD = $(doDriveHDD)"
+    echo "Optical = $(doDriveOptical)"
+    echo "($HOME) = $(doDriveUU "$HOME")"
+    echo "(/) = $(doDriveUU "/")"
+    echo "Machine Info = $(doMachine)"
+    echo "Processes = $(doProc)"
+    echo "Weather = $(doWeather)"
 }
 
 function main() {
-    local cmd=${1:-Menu}
+    local cmd=${1:-menu}
     case "$cmd" in
-        Cli)
+        cli)
             doCli
             ;;
         *)
@@ -704,5 +515,5 @@ function main() {
     esac
 }
 
-main $1
+main "$1"
 

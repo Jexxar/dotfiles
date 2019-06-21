@@ -9,37 +9,35 @@ fi
 cmd=${1:-notify}
 
 function is_running_X(){
-    if ! xset q &>/dev/null; then
-        return 1
-    fi
-    return 0
+    xset q &>/dev/null && return 0;
+    return 1
 }
 
 # Is the screen already locked?
 function locked() {
     local DebugMode=${1:-no}
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "i3lock" &>/dev/null
+    ps f -u "$USER" -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "i3lock" &>/dev/null
     if [ $? -eq 0 ]; then
         if [ "$DebugMode" = "debug" ]; then
             log "i3lock found and active"
         fi
         return 0;
     fi
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "mate-screensaver-dialog" &>/dev/null
+    ps f -u "$USER" -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "mate-screensaver-dialog" &>/dev/null
     if [ $? -eq 0 ]; then
         if [ "$DebugMode" = "debug" ]; then
             log "mate-screensaver-dialog found and active"
         fi
         return 0;
     fi
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "cinnamon-screensaver-pam-helper" &>/dev/null
+    ps f -u "$USER" -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "cinnamon-screensaver-pam-helper" &>/dev/null
     if [ $? -eq 0 ]; then
         if [ "$DebugMode" = "debug" ]; then
             log "cinnamon-screensaver-pam-helper found and active"
         fi
         return 0;
     fi
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "slimlock" &>/dev/null 
+    ps f -u "$USER" -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "slimlock" &>/dev/null 
     if [ $? -eq 0 ]; then
         if [ "$DebugMode" = "debug" ]; then
             log "slimlock found and active"
@@ -53,7 +51,7 @@ function locked() {
 function do_notify() {
     # Only works if X is running.
     if [ is_running_X ]; then
-        true
+        log "X server is running"
     else
         log "X server is not running";
         return 0;
@@ -61,16 +59,20 @@ function do_notify() {
 
     # Notification should not be issued while locked.
     locked && return 0;
-    log "Sending notification."
+    log "Sending notification.";
+    
+    local secs="";
 
     # grep finds either Xautolock.notify or Xautolock*notify
-    secs="$(xrdb -query | grep -m1 '^Xautolock.notify' | cut -f2)"
+    secs="$(xrdb -query | grep -m1 '^Xautolock.notify' | cut -f2)";
     
-    test -n "$secs" && secs="Locking in $secs seconds"
+    test -n "$secs" || secs="30"
+
+    log "Locking in $secs seconds";
 
     notify-send --urgency="normal" --app-name="mynotify" \
         --icon='/usr/share/icons/Adwaita/48x48/actions/system-lock-screen.png' \
-        -- "Screen Lock" "$secs"
+        -- "Screen Lock in " "$secs seconds";
     return 0
 }
 
@@ -87,7 +89,8 @@ function do_test() {
         log "Screen not locked"
     fi
     
-    local secs="$(xrdb -query | grep -m1 '^Xautolock.notify' | cut -f2)"
+    local secs=""
+    secs="$(xrdb -query | grep -m1 '^Xautolock.notify' | cut -f2)"
     
     if [ -n "$secs" ]; then
         log "Locking in $secs seconds"

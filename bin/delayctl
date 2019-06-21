@@ -28,7 +28,7 @@ DC_DEBUG=0
 
 # Names of programs which, when running, you wish to delay the screensaver.
 # For example ('ardour2' 'gmpc').
-DC_mandatoryApps=('wineserver' 'dbgl' 'dgen' 'lutris' 'playonlinux' 'avidemux' 'synaptic' 'scummvm' 'flare' 'frozen-bubble' '0ad' 'TeamViewer' 'remmina' 'dosbox' 'wine')
+DC_mandatoryApps=('cura' 'wineserver' 'dbgl' 'dgen' 'lutris' 'playonlinux' 'avidemux' 'synaptic' 'scummvm' 'flare' 'frozen-bubble' '0ad' 'TeamViewer' 'remmina' 'dosbox' 'wine')
 
 # Names of programs which, when running, you wish to delay the screensaver.
 # For example ('ardour2' 'gmpc').

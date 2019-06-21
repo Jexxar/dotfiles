@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Script in $HOME/.config/openbox/autostart
 # to run user-specific things.
 #
@@ -7,12 +7,18 @@
 #. $GLOBALAUTOSTART
 
 export OB_rc=0
+[ -z "$XDG_CURRENT_DESKTOP"] && export XDG_CURRENT_DESKTOP="mate"
 
 if [ -e ~/.config/openbox/log/ob.log ]; then
     mv ~/.config/openbox/log/ob.log ~/.config/openbox/log/ob.2.log > /dev/null
-    touch ~/.config/openbox/log/ob.log > /dev/null
+    touch ~/.config/openbox/log/ob.log &>/dev/null
 fi
 
+# If the .xsession-errors file is not a symbolic link, delete it and create it as such
+if [ ! -h $HOME/.xsession-errors ]; then
+    /bin/rm $HOME/.xsession-errors
+    ln -s /dev/null $HOME/.xsession-errors
+fi
 
 # launches a session dbus instance
 OB_str="dbus-launch session"
@@ -35,9 +41,9 @@ fi
 
 # gnome-keyring-daemon
 if [ $(pgrep -lfc gnome-keyring-daemon) -ge 1 ] ; then
-  while 2>/dev/null killall gnome-keyring-daemon; do
-    sleep 1
-  done
+    while 2>/dev/null killall gnome-keyring-daemon; do
+        sleep 1
+    done
 fi
 
 OB_str="/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh"
@@ -54,11 +60,11 @@ fi
 echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 
-# compton 
+# compton
 if [ $(pgrep -lfc compton) -ge 1 ] ; then
-  while 2>/dev/null killall compton; do
-    sleep 1
-  done
+    while 2>/dev/null killall compton; do
+        sleep 1
+    done
 fi
 
 OB_str="compton -b --config ~/.config/compton.conf"
@@ -80,9 +86,9 @@ echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbo
 
 # Start mate settings
 if [ $(pgrep -lfc mate-settings-daemon) -ge 1 ] ; then
-  while 2>/dev/null killall mate-settings-daemon; do
-    sleep 1
-  done
+    while 2>/dev/null killall mate-settings-daemon; do
+        sleep 1
+    done
 fi
 
 OB_str="mate-settings-daemon"
@@ -101,9 +107,9 @@ echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbo
 
 # Start polkit deamon
 if [ $(pgrep -lfc polkit-mate-authentication-agent-1) -ge 1 ] ; then
-  while 2>/dev/null killall polkit-mate-authentication-agent-1; do
-    sleep 1
-  done
+    while 2>/dev/null killall polkit-mate-authentication-agent-1; do
+        sleep 1
+    done
 fi
 
 OB_str="polkit-mate-authentication-agent-1"
@@ -125,9 +131,9 @@ echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbo
 
 # Start power manager deamon
 if [ $(pgrep -lfc mate-power-manager) -ge 1 ] ; then
-  while 2>/dev/null killall mate-power-manager; do
-    sleep 1
-  done
+    while 2>/dev/null killall mate-power-manager; do
+        sleep 1
+    done
 fi
 
 OB_str="mate-power-manager"
@@ -162,9 +168,9 @@ done
 
 #Sound Applet
 if [ $(pgrep -lfc mate-volume-control-applet) -ge 1 ] ; then
-  while 2>/dev/null killall mate-volume-control-applet; do
-    sleep 1
-  done
+    while 2>/dev/null killall mate-volume-control-applet; do
+        sleep 1
+    done
 fi
 
 OB_str="mate-volume-control-applet"
@@ -183,24 +189,24 @@ echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbo
 
 #screensaver (mate-screensaver)
 if [ $(pgrep -lfc cinnamon-screensaver) -ge 1 ] ; then
-  while 2>/dev/null killall cinnamon-screensaver; do
-    sleep 1
-  done
+    while 2>/dev/null killall cinnamon-screensaver; do
+        sleep 1
+    done
 fi
 if [ $(pgrep -lfc mate-screensaver) -ge 1 ] ; then
-  while 2>/dev/null killall mate-screensaver; do
-    sleep 1
-  done
+    while 2>/dev/null killall mate-screensaver; do
+        sleep 1
+    done
 fi
 if [ $(pgrep -lfc gnome-screensaver) -ge 1 ] ; then
-  while 2>/dev/null killall gnome-screensaver; do
-    sleep 1
-  done
+    while 2>/dev/null killall gnome-screensaver; do
+        sleep 1
+    done
 fi
 if [ $(pgrep -lfc xscreensaver) -ge 1 ] ; then
-  while 2>/dev/null killall xscreensaver; do
-    sleep 1
-  done
+    while 2>/dev/null killall xscreensaver; do
+        sleep 1
+    done
 fi
 
 #OB_str="mate-screensaver"
@@ -219,9 +225,9 @@ fi
 
 # Start network manager applet
 if [ $(pgrep -lfc nm-applet) -ge 1 ] ; then
-  while 2>/dev/null killall nm-applet; do
-    sleep 1
-  done
+    while 2>/dev/null killall nm-applet; do
+        sleep 1
+    done
 fi
 
 OB_str="/usr/bin/nm-applet"
@@ -293,9 +299,9 @@ echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbo
 sleep 1
 
 if [ $(pgrep -lfc tint2) -ge 1 ] ; then
-  while 2>/dev/null killall tint2; do
-    sleep 1
-  done
+    while 2>/dev/null killall tint2; do
+        sleep 1
+    done
 fi
 
 OB_str="tint2"
@@ -357,9 +363,9 @@ export OB_rc
 
 # changer
 if [ $(pgrep -lfc changer.sh) -ge 1 ] ; then
-  while 2>/dev/null killall changer.sh; do
-    sleep 1
-  done
+    while 2>/dev/null killall changer.sh; do
+        sleep 1
+    done
 fi
 
 OB_str="~/bin/changer.sh"

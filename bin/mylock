@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -eu
+#set -eu
 
 if [ -f "$HOME/bin/mylog" ]; then
     . "$HOME/bin/mylog"
@@ -11,44 +11,25 @@ fi
 cmd=${1:-lock}
 
 function is_running_X(){
-    if ! xset q &>/dev/null; then
-        return 1
-    fi
-    return 0
+    xset q &>/dev/null && return 0;
+    return 1
 }
 
 # Is the screen already locked?
 function locked() {
     local DebugMode=${1:-no}
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "i3lock" &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "i3lock found and active"
+    local scrsvApps=('i3lock' 'mate-screensaver-dialog' 'cinnamon-screensaver-pam-helper' 'slimlock' 'gnome-screensaver-dialog' 'xscreensaver')
+    local c=0
+    for p1 in "${scrsvApps[@]}"; do
+        c=$(pgrep -lfc "${p1}")
+        if [ $c -gt 0 ] ; then
+            if [ "$DebugMode" = "debug" ]; then
+                log "${p1} found and active";
+                return 0;
+            fi
         fi
-        return 0;
-    fi
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "mate-screensaver-dialog" &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "mate-screensaver-dialog found and active"
-        fi
-        return 0;
-    fi
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "cinnamon-screensaver-pam-helper" &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "cinnamon-screensaver-pam-helper found and active"
-        fi
-        return 0;
-    fi
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "slimlock" &>/dev/null 
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "slimlock found and active"
-        fi
-        return 0;
-    fi
-    return 1
+    done
+    return 1;
 }
 
 # Control the dunst daemon, if it is running.
@@ -74,9 +55,8 @@ function dunst() {
 # Lock screen if possible.
 function do_lock() {
     # Only works if X is running.
-    if [ is_running_X ]; then
-        true
-    else
+    is_running_X
+    if [ $? -ne 0 ]; then
         log "X server is not running";
         return 0;
     fi
@@ -89,7 +69,7 @@ function do_lock() {
 
     # Fork both i3lock and its monitor to avoid blocking xautolock.
     # this must be the last command, and it must be 'non forking', as expected by 'xautolock'
-    $HOME/bin/lock -gpf Comic-Sans-MS -- scrot -z &
+    "$HOME"/bin/lock -gpf Comic-Sans-MS -- scrot -z &
     
     pid="$!"
     log "Waiting for PID $pid to end..."
@@ -101,19 +81,25 @@ function do_lock() {
 }
 
 function do_test() {
-    if [ is_running_X ]; then
+    is_running_X
+    
+    if [ $? -eq 0 ]; then
         log "X is running"
     else
         log "X server down"
     fi
+
+    locked "debug"
     
-    if [ `locked "debug"` ]; then
+    if [ $? -eq 0 ]; then
         log "Screen already locked"
     else
         log "Screen not locked"
     fi
     
-    if [ `pkill -0 --exact dunst` ]; then
+    pkill -0 --exact dunst
+
+    if [ $? -eq 0 ]; then
         log "dunst found"
     else
         log "dunst not found"

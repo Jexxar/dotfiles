@@ -118,7 +118,7 @@ my $config_documentation = <<"EOD";
 EOD
 
 my %CONFIG = (
-              file_manager      => 'pcmanfm',
+              file_manager      => 'pcmanfm-qt',
               browse_label      => 'Abrir...',
               terminal_label    => 'Terminal aqui...',
               terminal_icon     => 'utilities-terminal',

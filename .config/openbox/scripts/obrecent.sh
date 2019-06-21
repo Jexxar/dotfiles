@@ -9,20 +9,19 @@ else
 fi
 
 function doMenu(){
-    local file=""
-    local name=""
+    local f=""
     menuBegin
     
-    cat ~/.local/share/recently-used.xbel | grep file:///  | tail -n15 |  cut -d "\"" -f 2 | tac | while read line; do
-        file=$(echo "$line" | sed 'y/+/ /; s/%/\\x/g')
-        name=$(echo -en "$file" | sed 's,.*/,,' | sed 's/ //g')
-        menuItem $name "xdg-open $line"
+    grep "file:///" ~/.local/share/recently-used.xbel | tail -n15 | cut -d "\"" -f 2 | tac | while read line; do
+        f=$(echo "$line" | sed 's,.*/,,' | sed 'y/+/ /; s/%/\\x/g')
+        f=$(echo -en "$f")
+        menuItem "$f" "xdg-open \"$line\""
     done;
     
-    menuItem "$name"
+    menuSep 
     menuItem "Limpar lista" "rm ~/.local/share/recently-used.xbel"
-    
     menuEnd
 }
 
 doMenu
+
