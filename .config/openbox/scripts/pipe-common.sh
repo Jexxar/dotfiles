@@ -70,7 +70,7 @@ function iconPath(){
             echo ""
             return 1
         fi
-        echo "$tmpIconPath/$tmpIconName"
+        echo "$tmpIconPath$tmpIconName"
         return 0
     fi
     

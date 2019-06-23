@@ -12,6 +12,10 @@ Icon=gnome-stock-mail-fwd
 Profiles=profile-zero;
 
 
+Icon[pt_BR]=gnome-stock-mail-fwd
+Icon[pt]=gnome-stock-mail-fwd
+TargetContext=false
+
 [X-Action-Profile profile-zero]
 Name=Copy To
 Name[pt_BR]=Copiar Para

@@ -106,18 +106,17 @@ our $SCHEMA = [
 
     {sep => undef},
 
-    #{pipe => ['~/.config/openbox/scripts/obpipemenu-places', 'Diretórios', 'folder']}, 
-    {pipe => ["~/.config/openbox/scripts/obbrowser", "Locais", "drive-harddisk"]},
+    {pipe => ["~/.config/openbox/scripts/places-pipemenu", "Locais", "drive-harddisk"]},
+    #{pipe => ['~/.config/openbox/scripts/ob-places.pl', 'Diretórios', 'drive-harddisk']}, 
+    #{pipe => ['~/.config/openbox/scripts/cb-places-pipemenu', 'cbpp-places', 'drive-harddisk']}, 
     {pipe => ['~/.config/openbox/scripts/help-pipemenu', 'Ajuda', 'help']}, 
-    # {pipe => ['~/.config/openbox/scripts/dir-menu.py', 'pyDiretórios', 'folder']}, 
-    # {pipe => ['~/.config/openbox/scripts/dir-menu.py', 'Computador', '']},
+    {pipe => ['~/.config/openbox/scripts/template-pipemenu', 'Modelos', 'folder-templates-symbolic']},
     {pipe => ['~/.config/openbox/scripts/inxi-pipemenu', 'Inxi Info', 'dialog-information-symbolic']}, 
-    #{pipe => ['~/.config/openbox/scripts/storageinfo', 'StorageInfo', 'dialog-information-symbolic']}, 
-    #{pipe => ['~/.config/openbox/scripts/sysInfo.sh', 'SysInfo', 'dialog-information-symbolic']}, 
-    #{pipe => ['~/.config/openbox/scripts/cbpp-places-pipemenu', 'cbpp-places', 'view-wrapped-symbolic']}, 
-    #{pipe => ['~/.config/openbox/scripts/obrecent.sh', 'Recentes', 'view-wrapped-symbolic']}, 
-    {pipe => ['~/.config/openbox/scripts/recently_opened_menu.sh', 'Recentes', 'view-wrapped-symbolic']}, 
-    {pipe => ['~/.config/openbox/scripts/audaciousmenu', 'Audacious', 'multimedia']}, 
+    #{pipe => ['~/.config/openbox/scripts/storage-pipemenu', 'StorageInfo', 'dialog-information-symbolic']}, 
+    #{pipe => ['~/.config/openbox/scripts/sysinfo-pipemnu', 'SysInfo', 'dialog-information-symbolic']}, 
+    {pipe => ['~/.config/openbox/scripts/recent-pipemenu', 'Recentes', 'view-wrapped-symbolic']}, 
+    #{pipe => ['~/.config/openbox/scripts/recent2-pipemenu', 'Recentes', 'view-wrapped-symbolic']}, 
+    {pipe => ['~/.config/openbox/scripts/audacious-pipemenu', 'Audacious', 'multimedia']}, 
     # 
     
     # {sep => undef},
