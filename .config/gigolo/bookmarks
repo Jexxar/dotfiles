@@ -1,0 +1,13 @@
+[box.com]
+host=dav.box.com
+user=jonas.s.baptista@protonmail.com
+scheme=davs
+path=dav
+port=443
+
+[ubm-rv411]
+host=17.0.0.100
+folder=/home/usuario
+user=usuario
+scheme=sftp
+port=22

@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Action
+Name=Delete
+Name[pt_BR]=Excluir
+Tooltip=Exclude 
+Tooltip[pt_BR]=Exclui Permanentemente
+ToolbarLabel=Delete
+ToolbarLabel[pt_BR]=Excluir
+Icon=remove
+Profiles=profile-zero;
+TargetToolbar=true
+
+[X-Action-Profile profile-zero]
+MimeTypes=all/all;
+Schemes=file;
+Exec=xdotool key "Shift+Delete"
