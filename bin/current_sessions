@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+##########################################################################
+# Title      :  user - show current users with session counts
+# Author     :  Heiner Steven <heiner.steven@odn.de>
+# Date       :  1994-04-19
+# Requires   :  who
+# Category   :  System Utilities
+# SCCS-Id.   :  @(#) user   1.2 03/12/19
+##########################################################################
+# Beschreibung:
+#
+##########################################################################
+
+who | awk '{ User [$1]++; } END { for (i in User) printf "%-9s  %s\n", i, User [i] }'
