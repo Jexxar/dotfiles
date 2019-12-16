@@ -14,8 +14,8 @@ function do_motd() {
       [ -f ~/.plan ] && rm -f ~/.plan &>/dev/null
       ${__fortune} -a > ~/.plan
     done
-    #cat ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1' | cowsay -f $(random_cow_file)
-    cat ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1'
+    # awk '{ print $0 }' ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1' | cowsay -f $(random_cow_file)
+    awk '{ print $0 }' ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1'
 }
 
 do_motd

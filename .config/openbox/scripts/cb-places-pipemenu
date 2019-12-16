@@ -32,7 +32,7 @@
 recent_script=~/bin/obrecent.sh
 
 # Command to open folders at "Browse here..." - any file manager
-open_folder_cmd=pcmanfm-qt
+open_folder_cmd=nautilus
 # Default command to open files with - others might be xdg-open, gnome-open, pcmanfm...
 default_open_cmd=xdg-open  # exo-open comes with thunar
 # Text editor of choice

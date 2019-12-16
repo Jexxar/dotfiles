@@ -50,7 +50,7 @@ echo "Current ip is $CURRENT_IP"
 
 #Check file for previous IP address
 if [ -f $EXT_IP_FILE ]; then
-    KNOWN_IP=$(cat $EXT_IP_FILE)
+    KNOWN_IP=$(awk '{ print $0 }' $EXT_IP_FILE)
 else
     KNOWN_IP=
 fi

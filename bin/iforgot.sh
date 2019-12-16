@@ -1,31 +1,15 @@
-# iforgot.sh
+#!/usr/bin/env bash
 # This bash source file is for functions showing you
 # samples of code that you always forget.
 
 # <<EOF expands heredoc, <<"EOF" leaves it as is.
 
-
-iforgot-restart-daemons-from-the-runlevel-i-am-in() {
-echo 'USE CAREFUL.'
-cat <<"EOF"
-    for i in `rc-update | sed -rn 's/[ ]+([^ ]+) \| '"runlevel"'.*/\1/p'`; do
-        /etc/init.d/$i restart
-    done
-EOF
-}
-
-iforgot-make-etags-for-emacs() {
-cat <<"EOF"
-    find . -name '*.c' -exec etags -a {} \;
-EOF
-}
-
 iforgot-htmlize-my-code() {
-    echo man code2html
+    echo "man code2html"
 }
 
 iforgot-mount-options-for-my-flash-stick() {
-    echo mount -t vfat -o user,rw,fmask=0111,dmask=0000,codepage=866,nls=iso8859-5,utf8,noexec
+    echo "mount -t vfat -o user,rw,fmask=0111,dmask=0000,codepage=866,nls=iso8859-5,utf8,noexec"
 }
 
 iforgot-uname-opts() {
@@ -59,23 +43,23 @@ iforgot-android-screenshot-via-sdk() {
 
 iforgot-load-all-possible-sensors-modules() {
 cat <<"EOF"
-    for i in `modprobe -l | sed -rn 's|.*/hwmon/([^/]+)$|\1|p'`; do
-        modprobe $i
-    done
+for i in `modprobe -l | sed -rn 's|.*/hwmon/([^/]+)$|\1|p'`; do
+    modprobe $i
+done
 EOF
 }
 
 iforgot-fsck-force-check() {
-    echo -e \\t touch /forcefsck
+    echo -e "\\t touch /forcefsck"
 }
 
 iforgot-make-a-debug-build() {
 cat <<"EOF"
-    FEATURES="ccache nostrip" \
-        USE="debug" \
-        CFLAGS="…-ggdb" \
-        CXXFLAGS="<CFLAGS>" \
-        emerge $package
+FEATURES="ccache nostrip" \
+    USE="debug" \
+    CFLAGS="…-ggdb" \
+    CXXFLAGS="<CFLAGS>" \
+    emerge $package
 OR
     gdb --pid <pid>
     thread apply all bt
@@ -84,31 +68,31 @@ EOF
 
 iforgot-read-via-x0() {
 cat <<"EOF"
-    while IFS= read -r -d $'\0'; do
-        echo "$REPLY"
-    done <  <(find -type f -print0)
+while IFS= read -r -d $'\0'; do
+    echo "$REPLY"
+done <  <(find -type f -print0)
 
-    (-d '' also works since \0 is a marker for an empty string.)
+(-d '' also works since \0 is a marker for an empty string.)
 EOF
 }
 
 iforgot-where-is-my-completion() {
 cat <<"EOF"
-    eselect bashcomp list --global
-    eselect bashcomp enable --global base
-    eselect bashcomp enable --global man
-    eselect bashcomp enable --global gentoo
-    env-update && . /etc/profile
+eselect bashcomp list --global
+eselect bashcomp enable --global base
+eselect bashcomp enable --global man
+eselect bashcomp enable --global gentoo
+env-update && . /etc/profile
 EOF
 }
 
 iforgot-what-is-that-window-class() {
-    echo -e \\txprop
+    echo -e "\\txprop"
 }
 
 iforgot-what-to-do-if-something-messed-the-fonts() {
 cat <<"EOF"
-    xset +fp /usr/share/fonts/terminus && xset fp rehash
+xset +fp /usr/share/fonts/terminus && xset fp rehash
 EOF
 }
 
@@ -120,74 +104,73 @@ iforgot-extended-regex-purpose() {
 
 iforgot-how-to-trace-and-debug() {
 cat <<EOF
-    # Trace library and system calls:
-    strace -p PID
-    ltrace -p PID
-    # Look for opened files of process with pid PID
-    ls -l /proc/PID/fd/*
-    # Kill a process to see its core
-    kill -11 PID
+# Trace library and system calls:
+strace -p PID
+ltrace -p PID
+# Look for opened files of process with pid PID
+ls -l /proc/PID/fd/*
+# Kill a process to see its core
+kill -11 PID
 EOF
 }
 
 iforgot-bookmarks-in-manpages() {
 cat <<"EOF"
-    man -P 'most -p \"^\s+Colors\"' eix
+man -P 'most -p \"^\s+Colors\"' eix
 EOF
 }
 
 iforgot-git-new-repo() {
 cat <<"EOF"
-    git init
-    git remote add origin git@example.com:project_team.git
-                          ssh://git@example.com:port/reponame.git
-    git add .
-    git commit -m "fgsfds"
-    git push origin refs/heads/master:refs/heads/master
+git init
+git remote add origin git@example.com:project_team.git ssh://git@example.com:port/reponame.git
+git add .
+git commit -m "fgsfds"
+git push origin refs/heads/master:refs/heads/master
 EOF
 }
 
 iforgot-select-figlet-font-for-me() {
 cat <<"EOF"
-    echo '' > ~/cool_fonts
-    for i in `ls /usr/share/figlet/*flf`; do
-        clear
-        echo $i
-        figlet -f $i -c 12345
-        figlet -f $i -c 67890
-        read -n1
-        [ $REPLY = 'y' ] && echo $i>>~/cool_fonts
-    done
-    cat ~/cool_fonts
+echo '' > ~/cool_fonts
+for i in `ls /usr/share/figlet/*flf`; do
+    clear
+    echo $i
+    figlet -f $i -c 12345
+    figlet -f $i -c 67890
+    read -n1
+    [ $REPLY = 'y' ] && echo $i>>~/cool_fonts
+done
+cat ~/cool_fonts
 EOF
 }
 
 iforgot-draw-me-cool-figlet-fonts() {
 cat <<"EOF"
-    for i in `cat ~/cool_fonts`; do
-        echo $i
-        figlet -f $i -c 12345
-        figlet -f $i -c 67890
-    done
+for i in `cat ~/cool_fonts`; do
+    echo $i
+    figlet -f $i -c 12345
+    figlet -f $i -c 67890
+done
 EOF
 }
 
 iforgot-chroot-procedure() {
 cat <<"EOF"
-    mount -t proc none /mnt/chroot/proc
-    mount --rbind /sys /mnt/chroot/sys
-    mount --rbind /dev /mnt/chroot/dev
-    [linux32] chroot /mnt/chroot /bin/bash
+mount -t proc none /mnt/chroot/proc
+mount --rbind /sys /mnt/chroot/sys
+mount --rbind /dev /mnt/chroot/dev
+[linux32] chroot /mnt/chroot /bin/bash
 
-        env-update && source /etc/profile
-        export PS1="(chroot) $PS1"
-        # mount /boot /usr etc.
-        …
-        exit
+    env-update && source /etc/profile
+    export PS1="(chroot) $PS1"
+    # mount /boot /usr etc.
+    …
+    exit
 
-    umount -l /mnt/chroot/proc
-    umount -l /mnt/chroot/dev{/pts,/shm}
-    umount -l /mnt/chroot/sys
+umount -l /mnt/chroot/proc
+umount -l /mnt/chroot/dev{/pts,/shm}
+umount -l /mnt/chroot/sys
 EOF
 }
 
@@ -197,19 +180,19 @@ iforgot-ordinary-user-groups() {
 
 # SMART
 iforgot-smart-immediate-check() {
-    echo -e '\tsmartctl -H /dev/sdX'
+    echo -e "\tsmartctl -H /dev/sdX"
 }
 
 iforgot-smart-selftest-short-now() {
-    echo -e '\tsmartctl -t short /dev/sdX'
+    echo -e "\tsmartctl -t short /dev/sdX"
 }
 
 iforgot-smart-selftest-long-now() {
-    echo -e '\tsmartctl -t long /dev/sdX'
+    echo -e "\tsmartctl -t long /dev/sdX"
 }
 
 iforgot-smart-selftest-long-later() {
-    echo -e '\tsmartctl -t long -s L/../.././23'
+    echo -e "\tsmartctl -t long -s L/../.././23"
 }
 
 iforgot-smart-selftest-sheduling-syntax() {
@@ -218,8 +201,7 @@ iforgot-smart-selftest-sheduling-syntax() {
 
 iforgot-mark-bad-sector-with-badblocks() {
 cat <<"EOF"
-    If situation looks like this
-
+If situation looks like this
 # smartctl -a /dev/sda
 SMART Attributes Data Structure revision number: 10
 Vendor Specific SMART Attributes with Thresholds:
@@ -229,7 +211,6 @@ ID# ATTRIBUTE_NAME          FLAG     VALUE WORST THRESH TYPE      UPDATED  WHEN_
 …
 197 Current_Pending_Sector  0x0012   100   100   000    Old_age   Always       -       1
 198 Offline_Uncorrectable   0x0010   100   100   000    Old_age   Offline      -       1
-
 …
 
 SMART Self-test log structure revision number 1
@@ -240,66 +221,57 @@ Num  Test_Description    Status                  Remaining  LifeTime(hours)  LBA
 
 badblocks -vs -b512 /dev/sda 1670581106 1670581106
 
-    -v – verbose, -s shows progress, -b is block size, 512 since 1670581106 is
-  an LBA, i.e. sector address and sectors are usually are 512 bytes long.
-  First address is the end of the range where badblocks seek, and the last one
-  points at the start of the range. Also there are useful -n and -w options
-  which mutually exclude themselves – -n safely rewrites block’s contents,
-  -w rewrites it with binary patterns and causes data loss. By default
-  badblocks does only read-only check (that works for me).
+-v – verbose, 
+-s shows progress, 
+-b is block size, 512 since 1670581106 is an LBA, i.e. sector address and sectors are usually are 512 bytes long.
 
-    If it confirms the sector is truly bad, then we need to get the address
-  in blocks on your partition, the offset, an pass it as the number of block
-  as your filesystem understands, usually it is multiple of 512, e.g. 4096.
+First address is the end of the range where badblocks seek, and the last one  points at the start of the range. 
+Also there are useful -n and -w options which mutually exclude themselves
+-n safely rewrites block’s contents
+-w rewrites it with binary patterns and causes data loss. 
+By default badblocks does only read-only check (that works for me).
+
+If it confirms the sector is truly bad, then we need to get the address in blocks on your partition,
+the offset, an pass it as the number of block as your filesystem understands, usually it is multiple of 512, e.g. 4096.
 
 fdisk /dev/sda
-
+    
    Device Boot      Start         End      Blocks   Id  System
 /dev/sda1   *          63       80324       40131   83  Linux
 /dev/sda2           80325   104952644    52436160   83  Linux
 /dev/sda3       104952645   109161674     2104515   83  Linux
 /dev/sda4       109162496  1953525167   922181336   83  Linux
 
-    So, the problem LBA belongs to /dev/sda4, now get the offset on that
-partition.
+So, the problem LBA belongs to /dev/sda4, now get the offset on that partition.
 
-echo 'scale=3;(1690581106-109162496)/8' | bc
-195177326.25
+echo 'scale=3;(1690581106-109162496)/8' | bc results in 195177326.25
 
-    Fraction part means it is the second sector of eight in that block.
-   (Since one block of 4096 bytes contains 8*512 bytes sectors, 1/8 is
-     0.125 and 2/8 is 0.25)
-    The formula is
+Fraction part means it is the second sector of eight in that block. (Since one block of 4096 bytes contains 8*512 bytes sectors, 1/8 is 0.125 and 2/8 is 0.25)
+The formula is:
 
 <bad_LBA> - <start_LBA_of_its_partition> / (<fs_block_size> / <sector_size>)
 
-    So, produce the list
+So, produce the list:
 
 echo '(1690581106-109162496)/8' | bc > /tmp/bb_list
 
-    And call e2fsck
+And call e2fsck
 
 umount /<mountpoint for partiton with bad LBA>
 e2fsck -l /tmp/bb_list /dev/sdX
 
-    If e2fsck called with -L option instead of -l, the passed file will rewrite
-  all the list of badblocks contained in the filesystem. That list can be
-  checked with
+If e2fsck called with -L option instead of -l, the passed file will rewrite all the list of badblocks contained in the filesystem.
+That list can be checked with:
 
 dumpe2fs -b /dev/sda4
-
 EOF
 }
 
 # Wi-Fi
 iforgot-wifi-connect() {
 cat <<"EOF"
-    iwconfig wlp2s0 \
-                   essid <point name> \
-                   mode managed       \
-                   key s: <password>
-
-    ifconfig wlp2s0 <ip address> netmask <mask>
+iwconfig wlp2s0 essid <point name> mode managed key s: <password>
+ifconfig wlp2s0 <ip address> netmask <mask>
 EOF
 }
 
@@ -309,30 +281,22 @@ iforgot-wifi-scan() {
 
 iforgot-ffmpeg-2-pass-vbr-encoding() {
 cat <<"EOF"
-    ffmpeg -y -i "$input_file" -an -pass 1 -threads 3 \
-           -vcodec libx264 -vpre slow_firstpass "$tmpfile"
+ffmpeg -y -i "$input_file" -an -pass 1 -threads 3 \
+       -vcodec libx264 -vpre slow_firstpass "$tmpfile"
 
-    ffmpeg -y -i "$input-file" \
-           -acodec libfaac -ar 44100 -ab 192k \
-           -pass 2 -threads 3 \
-           -vcodec libx264 -b 2000k -vpre slow "$tmpfile" "$output-file"
+ffmpeg -y -i "$input-file" \
+       -acodec libfaac -ar 44100 -ab 192k \
+       -pass 2 -threads 3 \
+       -vcodec libx264 -b 2000k -vpre slow "$tmpfile" "$output-file"
 EOF
 }
 
 iforgot-tee-usage() {
 cat <<"EOF"
-    wget -O - http://example.com/dvd.iso \
-        | tee dvd.iso | sha1sum > dvd.sha1
-
-    wget -O - http://example.com/dvd.iso \
-        | tee >(sha1sum > dvd.sha1) \
-              >(md5sum > dvd.md5) \
-              > dvd.iso
-
-    tardir=your-pkg-M.N
-    tar chof - "$tardir" \
-        | tee >(gzip -9 -c > your-pkg-M.N.tar.gz) \
-        | bzip2 -9 -c > your-pkg-M.N.tar.bz2
+wget -O - http://example.com/dvd.iso | tee dvd.iso | sha1sum > dvd.sha1
+wget -O - http://example.com/dvd.iso | tee >(sha1sum > dvd.sha1) >(md5sum > dvd.md5) > dvd.iso
+tardir=your-pkg-M.N
+tar chof - "$tardir" | tee >(gzip -9 -c > your-pkg-M.N.tar.gz) | bzip2 -9 -c > your-pkg-M.N.tar.bz2
 EOF
 }
 
@@ -383,8 +347,10 @@ iforgot-diff-patch() {
 
 iforgot-gpg-privkey() {
 cat <<"EOF"
-Very good! Now, like I said above, using this is pretty much like using a “regular” GPG keypair; the only exception is when signing other people’s keys, or add or revoking subordinate keys. For this you build a command pointing to the two locations. For example,
-
+Very good! 
+Now, like I said above, using this is pretty much like using a “regular” GPG keypair; the only exception is when signing other people’s keys, 
+or add or revoking subordinate keys. For this you build a command pointing to the two locations. 
+For example,
     gpg --homedir /media/Secure/dotgnupg/ \
         --keyring ~/.gnupg/pubring.gpg \
         --secret-keyring ~/.gnupg/secring.gpg \
@@ -403,7 +369,7 @@ EOF
 }
 
 iforgot-io-monitoring() {
-    echo iotop
+    echo "iotop"
 }
 
 iforgot-last-argument-passed-to-shell() {
@@ -412,7 +378,7 @@ iforgot-last-argument-passed-to-shell() {
 
 iforgot-qemu-create-image() {
 cat <<EOF
-    qemu-img create -f qcow2 -o
+qemu-img create -f qcow2 -o
         compat=1.1,
         cluster_size=512,
         preallocation=metadata,
@@ -431,82 +397,73 @@ iforgot-fonts-list() {
 
 iforgot-fsck-with-progressbar() {
 cat<<EOF
-    fsck -C -l /dev/sdb3 -- -c -f -y
-           \  \    \          \  \  \_ autoyes
-            \  \    \          \  \_ check even if fs looks clean
-             \  \    \          \_ check for bad blocks
-              \  \    \_ partition with filesystem
-               \  \_ lock the whole-disk device by an exclusive flock(2)
-                \_ use progressbar/completion for checkers that support it
-                  (generally ext2/3/4)
+fsck -C -l /dev/sdb3 -- -c -f -y
+       \  \    \          \  \  \_ autoyes
+        \  \    \          \  \_ check even if fs looks clean
+         \  \    \          \_ check for bad blocks
+          \  \    \_ partition with filesystem
+           \  \_ lock the whole-disk device by an exclusive flock(2)
+            \_ use progressbar/completion for checkers that support it
+              (generally ext2/3/4)
 EOF
 }
 
 iforgot-completion-keys() {
 cat<<"EOF"
-    "\e@": complete-hostname
-    "\e{": complete-into-braces
-    "\e~": complete-username
-    "\e$": complete-variable
+"\e@": complete-hostname
+"\e{": complete-into-braces
+"\e~": complete-username
+"\e$": complete-variable
 EOF
 }
 
 iforgot-shell-colours() {
 cat <<"EOF"
-    There are only 8 colors in general. From man terminfo:
-    Color     #define         Value   RGB
-    black     COLOR_BLACK       0     0, 0, 0
-    red       COLOR_RED         1     max,0,0
-    green     COLOR_GREEN       2     0,max,0
-    yellow    COLOR_YELLOW      3     max,max,0
-    blue      COLOR_BLUE        4     0,0,max
-    magenta   COLOR_MAGENTA     5     max,0,max
-    cyan      COLOR_CYAN        6     0,max,max
-    white     COLOR_WHITE       7     max,max,max
+There are only 8 colors in general. From man terminfo:
+Color     #define         Value   RGB
+black     COLOR_BLACK       0     0, 0, 0
+red       COLOR_RED         1     max,0,0
+green     COLOR_GREEN       2     0,max,0
+yellow    COLOR_YELLOW      3     max,max,0
+blue      COLOR_BLUE        4     0,0,max
+magenta   COLOR_MAGENTA     5     max,0,max
+cyan      COLOR_CYAN        6     0,max,max
+white     COLOR_WHITE       7     max,max,max
 
-    Escape sequence to set a color is \e[00;3xm, where x is 0–7.
-    Some interesting capabilities:
+Escape sequence to set a color is \e[00;3xm, where x is 0–7.
+Some interesting capabilities:
 EOF
-echo -e '   - \e[0;1mbold:\e[00m \\e[0;1m (in normal terminals bold replaced\n    with bright version of a color);'
-echo -e '   - \e[0;4munderline:\e[00m \\e[0;4m (don’t expect that the line will be\n      of same color as the char above it);'
-echo -e '   - \e[07;36mreverse:\e[00m \\e[0;7m (background and foreground);'
-echo -e '   - stop: \\e[00m.\n'
-echo -e '   Example of \\e[01;32m\e[01;32mbold green text\e[00m\\e[00m.'
+    echo -e '   - \e[0;1mbold:\e[00m \\e[0;1m (in normal terminals bold replaced\n    with bright version of a color);'
+    echo -e '   - \e[0;4munderline:\e[00m \\e[0;4m (dont expect that the line will be\n      of same color as the char above it);'
+    echo -e '   - \e[07;36mreverse:\e[00m \\e[0;7m (background and foreground);'
+    echo -e '   - stop: \\e[00m.\n'
+    echo -e '   Example of \\e[01;32m\e[01;32mbold green text\e[00m\\e[00m.'
 
 cat <<"EOF"
-
-    As far as I know, there’s no way to query the colors of the terminal
-emulator. You can change them with \e]4;NUMBER;#RRGGBB\a (where NUMBER is
-the terminal color number (0–7 for light colors, 8–15 for bright colors)
-and #RRGGBB is a hexadecimal RGB color value) if your terminal supports
-that sequence (reference: ctlseqs). —http://unix.stackexchange.com/a/1772/10075
+As far as I know, there’s no way to query the colors of the terminal emulator. 
+You can change them with \e]4;NUMBER;#RRGGBB\a (where NUMBER is the terminal color number (0–7 for light colors, 8–15 for bright colors)
+and #RRGGBB is a hexadecimal RGB color value) if your terminal supports that sequence (reference: ctlseqs). —http://unix.stackexchange.com/a/1772/10075
 See also http://misc.flogisoft.com/bash/tip_colors_and_formatting
 EOF
 }
 
 iforgot-webm-conversion() {
 cat <<"EOF"
-    ffmpeg -threads 4 -i input.mov \
-           -acodec libvorbis -ac 2 -b:a 192k -ar 44100 \
-           -b:v 1000k -s 640x360 output.webm
+ffmpeg -threads 4 -i input.mov -acodec libvorbis -ac 2 -b:a 192k -ar 44100 -b:v 1000k -s 640x360 output.webm
 EOF
 }
 
 iforgot-x264-conversion() {
 cat <<EOF
-    ffmpeg -threads 4 -i input.mov \
-           -acodec libfaac -b:a 96k \
-           -vcodec libx264 -vpre slower -vpre main \
-           -level 21 -refs 2 -b:v 345k -bt 345k \
-           -threads 0 -s 640x360 output.mp4
+ffmpeg -threads 4 -i input.mov -acodec libfaac -b:a 96k -vcodec libx264 -vpre slower -vpre main -level 21 -refs 2 -b:v 345k -bt 345k -threads 0 -s 640x360 output.mp4
 EOF
 }
 
 iforgot-image-conversion() {
 cat <<EOF
-    ffmpeg  -y -threads 4 -pattern_type glob \
-            -framerate 1/5 -i "file_name_000*.png" \
-            -c:v libvpx -r 1 -pix_fmt yuv420p out.webm
+ffmpeg  -y -threads 4 -pattern_type glob \
+        -framerate 1/5 -i "file_name_000*.png" \
+        -c:v libvpx -r 1 -pix_fmt yuv420p out.webm
 
 https://trac.ffmpeg.org/wiki/Create%20a%20video%20slideshow%20from%20images
 EOF
@@ -514,20 +471,20 @@ EOF
 
 iforgot-clean-gentoo() {
 cat <<EOF
-    # Remove unnecessary packages
-    1. emerge -av --depclean
-    # …distfiles except matching by exact installed version
-        and those downloaded earlier than two days ago.
-        2w [eeks] 3m [onth] also accepted.
-    2. eclean-dist -d -t2d
-    # Remove binary packages
-    3. eclean packages
+# Remove unnecessary packages
+1. emerge -av --depclean
+# …distfiles except matching by exact installed version
+    and those downloaded earlier than two days ago.
+    2w [eeks] 3m [onth] also accepted.
+2. eclean-dist -d -t2d
+# Remove binary packages
+3. eclean packages
 EOF
 }
 
 iforgot-cut-video-with-ffmpeg() {
 cat <<EOF
-    ffmpeg -y -threads 8 -i in.webm -ss 00:00:01 -t 00:02:22 -async 1 -b:v 500k out.webm
+ffmpeg -y -threads 8 -i in.webm -ss 00:00:01 -t 00:02:22 -async 1 -b:v 500k out.webm
 
 +crop
     -filter:v "crop=WIDTH:HEIGHT:X_OFFSET:Y_OFFSET"
@@ -541,15 +498,16 @@ EOF
 
 iforgot-catenate-video-with-ffmpeg() {
 cat <<EOF
-    find . -iname "part*.webm" | sort >files
-    ffmpeg -y -threads 8 -f concat -i files -c copy -async 1 out.webm
+find . -iname "part*.webm" | sort >files
+ffmpeg -y -threads 8 -f concat -i files -c copy -async 1 out.webm
 EOF
 }
 
 iforgot-create-video-from-image-sequence-with-ffmpeg() {
-echo 'ffmpeg -y -framerate 1/5 -pattern_type glob_sequence -i "./[Commie] Psycho-Pass 2 - 08 [A844F60A]_%*.png" -c:v libvpx -b:v 500k -r 30 -pix_fmt yuv420p out.webm && mpv out.webm'
-
-echo Actually, someday they should fix -pattern_type glob and '*.png' and '%d'
+cat <<EOF
+ffmpeg -y -framerate 1/5 -pattern_type glob_sequence -i "./[Commie] Psycho-Pass 2 - 08 [A844F60A]_%*.png" -c:v libvpx -b:v 500k -r 30 -pix_fmt yuv420p out.webm && mpv out.webm'
+Actually, someday they should fix -pattern_type glob and '*.png' and '%d'
+EOF
 }
 
 iforgot-record-my-desktop() {
@@ -560,9 +518,9 @@ iforgot-record-my-desktop() {
 
 iforgot-check-own-process-memory() {
 cat <<EOF
-    pmap from procps.
-    # pmap -d `pidof X`
-    Writeable — this is it.
+pmap from procps.
+# pmap -d `pidof X`
+Writeable — this is it.
 EOF
 }
 
@@ -584,8 +542,10 @@ EOF
 
 
 iforgot-mpv-crunchyroll-streaming() {
-    # requires ffmpeg to be compiled with networking and rtmp
-    echo 'mpv --ytdl http://www.crunchyroll.com/parasyte-the-maxim-/episode-1-metamorphosis-662583'
+cat <<EOF
+# requires ffmpeg to be compiled with networking and rtmp
+mpv --ytdl http://www.crunchyroll.com/parasyte-the-maxim-/episode-1-metamorphosis-662583
+EOF
 }
 
 
@@ -617,71 +577,86 @@ EOF
 }
 
 iforgot-wcpe-station-time-zone-difference() {
-    -3
+    echo "-3"
 }
 
 iforgot-libreoffice-writer-images() {
-    cat <<"EOF"
-    When an image is inserted in a libreoffice writer document, lowriter uses 90 dpi by default. Thus, importing SVG file in GIMP it’s necesary to set corresponding dpi and count appropriate width according to that. GIMP advises 1000px width by default, but that gives 282.24 mm of width after import to libreoffice. ESPD doc width excluding fields is 180 mm. After import to lowriter, in the document body image will look awry even if you guess the 100 % scale right. But it only seems like it, after the export to PDF with lossless image compression it’ll look as it should.
+cat <<"EOF"
+When an image is inserted in a libreoffice writer document, lowriter uses 90 dpi by default. 
+Thus, importing SVG file in GIMP it’s necesary to set corresponding dpi and count appropriate width according to that. 
+GIMP advises 1000px width by default, but that gives 282.24 mm of width after import to libreoffice. 
+ESPD doc width excluding fields is 180 mm. 
+After import to lowriter, in the document body image will look awry even if you guess the 100 % scale right. 
+But it only seems like it, after the export to PDF with lossless image compression it’ll look as it should.
 EOF
 }
 
 iforgot-libreoffice-pdf-export() {
-    cat <<"EOF"
-    take off flag  embedding ODT when sending to potential employer.
-    set flag for PDF/A-1a, that format is for docs to be stored for a long term. Fonts are embedded.
+cat <<"EOF"
+take off flag  embedding ODT when sending to potential employer.
+set flag for PDF/A-1a, that format is for docs to be stored for a long term. Fonts are embedded.
 EOF
 }
 
 iforgot-pdf-split() {
-    echo -e '\t$ gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER -dFirstPage=1
--dLastPage=4 -sOutputFile=outputT4.pdf T4.pdf'
+    echo -e '\t$ gs -sDEVICE=pdfwrite -dNOPAUSE -dBATCH -dSAFER -dFirstPage=1 -dLastPage=4 -sOutputFile=outputT4.pdf T4.pdf'
 }
 
 iforgot-pdf-grep() {
-    cat <<"EOF"
-    find /path -name '*.pdf' -exec sh -c 'pdftotext "{}" - | grep --with-filename --label="{}" --color "your pattern"' \;
+cat <<"EOF"
+find /path -name '*.pdf' -exec sh -c 'pdftotext "{}" - | grep --with-filename --label="{}" --color "your pattern"' \;
 EOF
 }
 
 iforgot-ffmpeg-add-image-to-video() {
-    cat<<"EOF"
-    # Add five seconds of video
-    ffmpeg -loop 1 -f image2 -i image.png -r 30 -t 5 image.webm
-    # Create input file for ffmpeg
-    find -iname "*.webm" -printf "file '%p'\n" | sort >inp
-    # Catenating the files
-    ffmpeg -f concat -i inp -codec copy output.webm
+cat<<"EOF"
+# Add five seconds of video
+ffmpeg -loop 1 -f image2 -i image.png -r 30 -t 5 image.webm
+# Create input file for ffmpeg
+find -iname "*.webm" -printf "file '%p'\n" | sort >inp
+# Catenating the files
+ffmpeg -f concat -i inp -codec copy output.webm
 EOF
 }
 
 iforgot-voip-via-netcat() {
-    cat <<"EOF"
-    (read; echo; rec --buffer 17 -q -w -s -r 48000 -c 1 -t raw -)|netcat -u -l -p 8888|(read; play -w -s -r 48000 --buffer 17 -t raw -)
-    (echo; rec --buffer 17 -q -w -s -r 48000 -c 1 -t raw -)|netcat -u 10.0.0.1 8888|(read; play -w -s -r 48000 --buffer 17 -t raw -)
+cat <<"EOF"
+(read; echo; rec --buffer 17 -q -w -s -r 48000 -c 1 -t raw -)|netcat -u -l -p 8888|(read; play -w -s -r 48000 --buffer 17 -t raw -)
+(echo; rec --buffer 17 -q -w -s -r 48000 -c 1 -t raw -)|netcat -u 10.0.0.1 8888|(read; play -w -s -r 48000 --buffer 17 -t raw -)
 EOF
 }
 
 iforgot-wget-mirror-site() {
-    cat <<"EOF"
-    wget --mirror --convert-links --adjust-extension --page-requisites --no-parent http://example.org'
+cat <<"EOF"
+wget --mirror --convert-links --adjust-extension --page-requisites --no-parent http://example.org'
 or shorter:
-    wget -mkEpnp http://example.org
+wget -mkEpnp http://example.org
 EOF
 }
 
 iforgot-wifi-why-it-doesnt-work() {
 cat <<"EOF"
-    card is requiring CONFIG_CFG802011_WEXT=y
-    card is hw/soft bloced: rfkill list
-    card is in wrong CRDA region: iw reg get/set <AA>
+card is requiring CONFIG_CFG802011_WEXT=y
+card is hw/soft bloced: rfkill list
+card is in wrong CRDA region: iw reg get/set <AA>
+EOF
+}
+
+iforgot-file-copier-with-progress-bar() {
+cat <<"EOF"
+Usage: rsync -vau
 EOF
 }
 
 iforgot() {
-    
     local keywords="$@"
     local myself=$0
+    local out_file="/tmp/iforgot.txt"
+    local searched=""
+    local underwhat=""
+    local astat=($(</proc/$$/stat))    # create an array
+    local ppid=${astat[3]}
+    local underwhat=$(ps -p $ppid -o comm=)
     [ "$keywords" ] || {
         keywords=$(yad --list --text="Choose one option" --title="Make a Choice" --center\
                      --on-top --height=360 --width=360 --separator="" --column="What have you forgot, darling?"\
@@ -695,9 +670,21 @@ iforgot() {
         return 1
     fi
     
+    if [ -f "$out_file" ]; then
+        rm -f "$out_file"
+    fi
+
     for keyword in $keywords; do
-        eval "`declare -F | sed -nr 's/^declare -f (iforgot-.*'$keyword'.*)/\1/p'`" ;
-    done 
+        searched=$(declare -F | sed -nr 's/^declare -f (iforgot-.*'$keyword'.*)/\1/p') ;
+        echo "$searched" > "$out_file"
+        echo -e "\n" >> "$out_file"
+        echo "$searched"
+        eval "$searched" ;
+        eval "$searched" >> "$out_file" ;
+    done
+    if [ -f "$out_file" ] && [ "$underwhat" != "bash" ]; then
+        xdg-open "$out_file"
+    fi
 }
 
 # call arguments verbatim:

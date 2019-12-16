@@ -32,6 +32,7 @@ function main(){
     menuItem 'Crontab' 'xdg-open "http://code.tutsplus.com/tutorials/scheduling-tasks-with-cron-jobs--net-8800"' "text-html"
     menuItem 'E2fsprogs' 'xdg-open "https://en.wikipedia.org/wiki/E2fsprogs"' "text-html"
     menuItem 'Internet Tools' 'xdg-open "http://www.infobyip.com/internettools.php"' "text-html"
+    menuItem 'I Forgot' '~/bin/iforgot.sh' "text-html"
     # menuItem 'Xwd Screenshot' 'xdg-open "http://blog.tordeu.com/?p=135"' "text-html"
 
     menuSep  'Conky'

@@ -28,7 +28,7 @@ DC_DEBUG=0
 
 # Names of programs which, when running, you wish to delay the screensaver.
 # For example ('ardour2' 'gmpc').
-DC_mandatoryApps=('cura' 'wineserver' 'dbgl' 'dgen' 'lutris' 'playonlinux' 'avidemux' 'synaptic' 'scummvm' 'flare' 'frozen-bubble' '0ad' 'TeamViewer' 'remmina' 'dosbox' 'wine')
+DC_mandatoryApps=('cura' 'wineserver' 'dbgl' 'openscad' 'dgen' 'lutris' 'playonlinux' 'avidemux' 'synaptic' 'scummvm' 'flare' 'frozen-bubble' '0ad' 'TeamViewer' 'remmina' 'dosbox' 'wine')
 
 # Names of programs which, when running, you wish to delay the screensaver.
 # For example ('ardour2' 'gmpc').
@@ -115,7 +115,7 @@ function DC_disable_dpms() {
 # query state
 function DC_read_state() {
     if [ -f "$DC_stateFile" ]; then
-        cat "$DC_stateFile"
+         awk '{ print $0 }' "$DC_stateFile"
     else
         echo "ENABLED"
     fi
@@ -744,7 +744,7 @@ function DC_sleep() {
     if [ $DC_mateScrSvrPresent -eq 1 ]; then
         if [ -f /sys/class/power_supply/ADP1/online ]; then
             if [ $DC_gsettingsPresent -eq 1 ]; then
-                if [ "$(cat /sys/class/power_supply/ADP1/online)" == "1" ]; then
+                if [ "$( awk '{ print $0 }' /sys/class/power_supply/ADP1/online)" == "1" ]; then
                     DC_systemSleepDelay=$(gsettings get org.mate.power-manager sleep-display-ac 2>/dev/null)
                 else
                     DC_systemSleepDelay=$(gsettings get org.mate.power-manager sleep-display-battery 2>/dev/null)
@@ -754,7 +754,7 @@ function DC_sleep() {
     elif [ $DC_gnomeScrSvrPresent -eq 1 ]; then
         if [ -f /sys/class/power_supply/ADP1/online ]; then
             if [ $DC_gsettingsPresent -eq 1 ]; then
-                if [ "$(cat /sys/class/power_supply/ADP1/online)" == "1" ]; then
+                if [ "$( awk '{ print $0 }' /sys/class/power_supply/ADP1/online)" == "1" ]; then
                     DC_systemSleepDelay=$(gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 2>/dev/null)
                 else
                     DC_systemSleepDelay=$(gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout 2>/dev/null)

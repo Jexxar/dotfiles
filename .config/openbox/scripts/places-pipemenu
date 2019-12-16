@@ -118,7 +118,7 @@ my $config_documentation = <<"EOD";
 EOD
 
 my %CONFIG = (
-              file_manager      => 'pcmanfm-qt',
+              file_manager      => 'xdg-open',
               browse_label      => 'Abrir...',
               terminal_label    => 'Terminal aqui...',
               terminal_icon     => 'utilities-terminal',
@@ -227,7 +227,7 @@ sub get_icon_path {
 }
 
 sub check_icon {
-    $cache_db{$_[0]} //= get_icon_path($_[0]);
+    $cache_db{$_[0]} = get_icon_path($_[0]);
 }
 
 my $path = @ARGV ? shift(@ARGV) : $CONFIG{start_path};

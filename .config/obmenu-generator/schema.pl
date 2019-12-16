@@ -38,7 +38,7 @@ our $SCHEMA = [
     #          COMMAND                 LABEL              ICON
     {sep => mk_distro },
 
-    {item => ['pcmanfm-qt .',       'Arquivos', 'system-file-manager']},
+    {item => ['xdg-open .',       'Arquivos', 'system-file-manager']},
     {item => ['tilix',            'Terminal',     'utilities-terminal']},
     {item => ['xdg-open http://', 'Web Browser',  'web-browser']},
     {item => ['gmrun',            'Executar comando',  'system-run']},

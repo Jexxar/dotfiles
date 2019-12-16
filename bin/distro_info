@@ -1,67 +1,67 @@
-#! /bin/bash
+#!/usr/bin/env bash
 # Show distro informations
 
 #==============================================
 # DISTRIB_ID
 #==============================================
 function do_DISTRIB_ID() {
-    cat /etc/*-release  2> /dev/null | grep 'DISTRIB_ID' | sed -e "s/DISTRIB_ID=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
+    awk '/DISTRIB_ID/ { print $0 }' /etc/*-release | sed -e "s/DISTRIB_ID=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
 # DISTRIB_RELEASE
 #==============================================
 function do_DISTRIB_RELEASE() {
-    cat /etc/*-release  2> /dev/null | grep 'DISTRIB_RELEASE' | sed -e "s/DISTRIB_RELEASE=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
+    awk '/DISTRIB_RELEASE/ { print $0 }' /etc/*-release | sed -e "s/DISTRIB_RELEASE=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
 # DISTRIB_CODENAME
 #==============================================
 function do_DISTRIB_CODENAME() {
-    cat /etc/*-release  2> /dev/null | grep 'DISTRIB_CODENAME' | sed -e "s/DISTRIB_CODENAME=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
+    awk '/DISTRIB_CODENAME/ { print $0 }' /etc/*-release | sed -e "s/DISTRIB_CODENAME=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
 # DISTRIB_DESCRIPTION
 #==============================================
 function do_DISTRIB_DESCRIPTION() {
-    cat /etc/*-release  2> /dev/null | grep 'DISTRIB_DESCRIPTION' | sed -e "s/DISTRIB_DESCRIPTION=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
+    awk '/DISTRIB_DESCRIPTION/ { print $0 }' /etc/*-release | sed -e "s/DISTRIB_DESCRIPTION=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
 # NAME
 #==============================================
 function do_NAME() {
-    cat /etc/*-release  2> /dev/null | grep '^NAME' | sed -e "s/^NAME=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
+    awk '/^NAME/ { print $0 }' /etc/*-release | sed -e "s/^NAME=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
 # VERSION
 #==============================================
 function do_VERSION() {
-    cat /etc/*-release  2> /dev/null | grep '^VERSION=' | sed -e "s/^VERSION=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
+    awk '/^VERSION=/ { print $0 }' /etc/*-release | sed -e "s/^VERSION=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
 # ID
 #==============================================
 function do_ID() {
-    cat /etc/*-release  2> /dev/null | grep '^ID=' | sed -e "s/^ID=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
+    awk '/^ID=/ { print $0 }' /etc/*-release | sed -e "s/^ID=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
 # PRETTY_NAME
 #==============================================
 function do_PRETTY_NAME() {
-    cat /etc/*-release  2> /dev/null | grep '^PRETTY_NAME' | sed -e "s/^PRETTY_NAME=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
+    awk '/^PRETTY_NAME/ { print $0 }' /etc/*-release | sed -e "s/^PRETTY_NAME=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
 # VERSION_ID
 #==============================================
 function do_VERSION_ID() {
-    cat /etc/*-release  2> /dev/null | grep '^VERSION_ID' | sed -e "s/^VERSION_ID=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
+    awk '/^VERSION_ID/ { print $0 }' /etc/*-release | sed -e "s/^VERSION_ID=//g" | sed -e "s/\"//g" | sed "s/$/ /g" ;
 }
 
 #==============================================
@@ -111,8 +111,8 @@ function this_usage() {
     echo "-d pname: Show PRETTY_NAME contents"
     echo "-d versionid: Show VERSION_ID contents"
     echo "-1: Show option 1 concatenation info"
-    echo "-2: Show option 1 concatenation info"
-    echo "-3: Show option 1 concatenation info";
+    echo "-2: Show option 2 concatenation info"
+    echo "-3: Show option 3 concatenation info";
     return 0;
 }
 
@@ -178,6 +178,4 @@ shift $((OPTIND-1))
 #echo "vi" && do_VERSION_ID
 #echo "1" && do_distro1
 
-
 exit 0
-

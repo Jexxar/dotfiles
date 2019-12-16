@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-:
 ##########################################################################
 # Title      :  cfcat - print contents of configuration files
 # Author     :  Heiner Steven <heiner.steven@odn.de>
@@ -20,24 +19,22 @@
 PN=`basename "$0"`          # Program name
 VER='1.2'
 
-[ $# -ge 1 -a "$1" = "-h" ] &&  {
-    echo "$PN - print contents of configuration files, $VER"
-    echo "usage: [file  ...]"
+function hhelp {
+    echo "$1 - print contents of configuration files, $2"
+    echo "usage: cfcat [file  ...]"
     echo
     echo "Comments and empty lines are removed."
-    exit 1
+    echo "  - Label \"loop\" concatenates with \"\\\" continued lines"
+    echo "  - Comments are removed"
+    echo "  - Empty lines are removed"
 }
 
-# Print files without empty lines and comments
-# Description:
-#    o  Label "loop" concatenates with "\" continued lines
-#    o  processing of quoted '#' characters
-#    o  comments are removed
-#   - lines consisting entirely of comments
-#   - lines with trailing comments
-#    o  empty lines are removed
+if [ $# -eq 0 ] || [ "$1" = "-h" ]; then 
+    hhelp $PN $VER
+    exit 1
+fi
 
-cat "$@" | sed -n -e '
+ awk '{ print $0 }' "$@" | sed -n -e '
     :loop
     /\\$/{
     h; n; H; x

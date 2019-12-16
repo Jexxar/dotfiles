@@ -4,7 +4,7 @@
 
 # required awk, bc
 
-function findJPG(){
+function findJPGPath(){
     if [ -z "$1" ] || [ -z "$2" ]; then
         echo ""
         return 1
@@ -15,7 +15,7 @@ function findJPG(){
     return 0
 }
 
-function findPNG(){
+function findPNGPath(){
     if [ -z "$1" ] || [ -z "$2" ]; then
         echo ""
         return 1
@@ -26,7 +26,7 @@ function findPNG(){
     return 0
 }
 
-function findSVG(){
+function findSVGPath(){
     if [ -z "$1" ] || [ -z "$2" ]; then
         echo ""
         return 1
@@ -37,45 +37,112 @@ function findSVG(){
     return 0
 }
 
+function findIconThemeName(){
+    local tn=""
+    tn=$(gsettings get org.mate.interface icon-theme | tr -d "'")
+    [ -z "$tn" ] && tn=$(gsettings get org.gnome.desktop.interface icon-theme | tr -d "'")
+    echo "$tn"
+    return 0
+}
+
+function findIconThemePath(){
+    if [ -z "$1" ]; then
+        echo ""
+        return 1
+    fi
+    local tn="$1"
+    local tp=""
+    tp="/usr/share/icons/$tn"
+    
+    if [ -d "$tp" ]; then
+        echo "$tp"
+        return 0
+    else
+        tp="$HOME/.icons/$tn"
+        if [ -d "$tp" ]; then
+            echo "$tp"
+            return 0
+        fi
+    fi
+    echo ""
+    return 1
+}
+
+function FindIconPath(){
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        echo ""
+        return 1
+    fi
+    
+    local tp="$2"
+    local nip=""
+    
+    nip=$(findSVGPath "$tp" "${1}")
+    [ -z "$nip" ] && nip=$(findPNGPath "$tp" "${1}")
+    [ -z "$nip" ] && nip=$(findJPGPath "$tp" "${1}")
+    if [ -z "$nip" ]; then
+        echo ""
+        return 1
+    fi
+    
+    echo "$tp$nip"
+    return 0
+}
+
+function FallbackiconPath(){
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        echo ""
+        return 1
+    fi
+    
+    local tp="$2"
+    local seaDirs=( $(grep "nherit" "$tp/index.theme" | cut -d"=" -f2 | xargs -d ",") )
+    local tp=""
+    local iconPath=""
+    
+    for i in "${seaDirs[@]}"; do
+        tp=$(findIconThemePath "$i");
+        iconPath=$(FindIconPath "$1" "$tp");
+        #echo "o i = $i e o tp = $tp e o iconName=$1  e o iconPath = $iconPath"
+        if [ ! -z "$iconPath" ]; then
+            echo "$iconPath"
+            return 0
+        fi
+    done
+    echo ""
+    return 1
+}
+
 function iconPath(){
     if [ -z "$1" ]; then
         echo ""
         return 1
     fi
     
-    local pathFound="no"
-    local tmpIconName=""
-    local tmpIconThemeName=""
-    tmpIconThemeName=$(gsettings get org.mate.interface icon-theme | tr -d "'")
+    local themePath=""
+    local iconPath=""
+    local themeName=""
+
+    themeName=$(findIconThemeName)
+    themePath=$(findIconThemePath "$themeName")
     
-    [ -z "$tmpIconThemeName" ] && tmpIconThemeName=$(gsettings get org.gnome.desktop.interface icon-theme | tr -d "'")
-    
-    local tmpIconPath="/usr/share/icons/$tmpIconThemeName"
-    
-    if [ -d "$tmpIconPath" ]; then
-        pathFound="yes"
-    else
-        tmpIconPath="$HOME/.icons/$tmpIconThemeName"
-        if [ -d "$tmpIconPath" ]; then
-            pathFound="yes"
-        fi
+    if [ -z "$themePath" ]; then
+        echo ""
+        return 1
     fi
     
-    if [ "$pathFound" = "yes" ]; then
-        local tmpIconName=""
-        tmpIconName=$(findSVG "$tmpIconPath" "${1}")
-        [ -z "$tmpIconName" ] && tmpIconName=$(findPNG "$tmpIconPath" "${1}")
-        [ -z "$tmpIconName" ] && tmpIconName=$(findJPG "$tmpIconPath" "${1}")
-        if [ -z "$tmpIconName" ]; then
+    iconPath=$(FindIconPath "$1" "$themePath");
+    
+    if [ -z "$iconPath" ]; then
+        iconPath=$(FallbackiconPath "$1" "$themePath")
+        if [ -z "$iconPath" ]; then
             echo ""
             return 1
         fi
-        echo "$tmpIconPath$tmpIconName"
-        return 0
     fi
     
-    echo ""
-    return 1
+    echo "$iconPath"
+    return 0
 }
 
 function awkRound () {

@@ -42,7 +42,7 @@
                   'Active' - where the active window is -->
   </placement>
   <theme>
-    <name>Adapta-Nokto</name>
+    <name>Adapta-Eta</name>
     <titleLayout>NSDLIMC</titleLayout>
     <!--
       available characters are NDSLIMC, each can occur at most once.
@@ -53,9 +53,10 @@
       C: close
       S: shade (roll up/down)
       D: omnipresent (on all desktops).
+    <cornerRadius menu="yes">8</cornerRadius>
   -->
-    <cornerRadius>8</cornerRadius>
-    <keepBorder>yes</keepBorder>
+    <cornerRadius menu="yes">4</cornerRadius>
+    <keepBorder>no</keepBorder>
     <animateIconify>no</animateIconify>
     <font place="ActiveWindow">
       <name>Ubuntu Medium</name>
@@ -339,9 +340,9 @@
       <action name="Execute">
         <startupnotify>
           <enabled>true</enabled>
-          <name>Pcmanfm</name>
+          <name>FileManager</name>
         </startupnotify>
-        <command>pcmanfm --no-desktop</command>
+        <command>xdg-open .</command>
       </action>
     </keybind>
     <keybind key="XF86AudioRaiseVolume">
@@ -379,7 +380,7 @@
           <enabled>true</enabled>
           <name>rofi-run</name>
         </startupnotify>
-        <command>~/bin/rof.sh</command>
+        <command>~/bin/rofi-apps</command>
       </action>
     </keybind>
     <keybind key="W-f">
@@ -424,7 +425,7 @@
           <enabled>true</enabled>
           <name>Mediaplayer</name>
         </startupnotify>
-        <command>vlc</command>
+        <command>smplayer</command>
       </action>
     </keybind>
     <keybind key="W-v">
@@ -449,9 +450,9 @@
       <action name="Execute">
         <startupnotify>
           <enabled>true</enabled>
-          <name>SlingsCold</name>
+          <name>Synapse</name>
         </startupnotify>
-        <command>slingscold</command>
+        <command>synapse</command>
       </action>
     </keybind>
     <keybind key="W-Tab">
@@ -949,6 +950,14 @@
 
   # end of the example
 -->
+    <application name="polkit-mate-authentication-agent-1">
+      <skip_pager>yes</skip_pager>
+      <skip_taskbar>yes</skip_taskbar>
+      <focus>yes</focus>
+      <layer>above</layer>
+      <fullscreen>no</fullscreen>
+      <maximized>no</maximized>
+    </application>
     <application name="gksudo">
       <skip_pager>yes</skip_pager>
       <skip_taskbar>yes</skip_taskbar>

@@ -82,7 +82,7 @@ function greets() {
 function environ() {
     local name="$USER"
     local host=$(hostname)
-    local distro=$(cat /etc/issue.net | sed "s/$/ \n/g")
+    local distro=$(awk '{ print $0 }' /etc/issue.net | sed "s/$/ \n/g")
     local kernel=$(uname -r)
     local pkgs=$(dpkg --get-selections | grep -cv deinstall$)
     local bversion="$BASH_VERSION"
@@ -150,8 +150,8 @@ function batt_inf() {
     local battery=/sys/class/power_supply/BAT1
     local b_full=$battery/charge_full
     local b_now=$battery/charge_now
-    local bf=$(cat $b_full)
-    local bn=$(cat $b_now)
+    local bf=$(awk '{ print $0 }' $b_full)
+    local bn=$(awk '{ print $0 }' $b_now)
     local charge=$(printf $(( 100 * $bn / $bf )))
     local color=""
     

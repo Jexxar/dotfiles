@@ -32,7 +32,7 @@ function doMenu_en() {
     menuSep 
     menuItem "Audio" "$HOME/.config/openbox/scripts/inxi-pipemenu Audio" "gnome-volume-control"
     menuItem "Battery" "$HOME/.config/openbox/scripts/inxi-pipemenu Battery" "dialog-information-symbolic"
-    menuItem "CPU" "$HOME/.config/openbox/scripts/inxi-pipemenu CPU" "cpuinfo"
+    menuItem "CPU" "$HOME/.config/openbox/scripts/inxi-pipemenu CPU" "cpu"
     menuItem "Drives Info" "$HOME/.config/openbox/scripts/inxi-pipemenu DrivesGI" "drive-harddisk"
     menuItem "Drives UUID Used" "$HOME/.config/openbox/scripts/inxi-pipemenu DrivesUU" "drive-harddisk"
     menuItem "Drives Unmounted" "$HOME/.config/openbox/scripts/inxi-pipemenu DrivesUN" "drive-harddisk"
@@ -54,7 +54,7 @@ function doMenu_pt() {
     menuSep 
     menuItem "Audio" "$HOME/.config/openbox/scripts/inxi-pipemenu Audio" "gnome-volume-control"
     menuItem "Bateria" "$HOME/.config/openbox/scripts/inxi-pipemenu Battery" "dialog-information-symbolic"
-    menuItem "CPU" "$HOME/.config/openbox/scripts/inxi-pipemenu CPU" "cpuinfo"
+    menuItem "CPU" "$HOME/.config/openbox/scripts/inxi-pipemenu CPU" "cpu"
     menuItem "Discos Info" "$HOME/.config/openbox/scripts/inxi-pipemenu DrivesGI" "drive-harddisk"
     menuItem "Uso UUID" "$HOME/.config/openbox/scripts/inxi-pipemenu DrivesUU" "drive-harddisk"
     menuItem "Não Montado" "$HOME/.config/openbox/scripts/inxi-pipemenu DrivesUN" "drive-harddisk"
