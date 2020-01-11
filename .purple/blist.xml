@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='UTF-8' ?>
-
-<purple version='1.0'>
-	<blist/>
-	<privacy>
-		<account proto='prpl-bonjour' name='usuario' mode='1'/>
-	</privacy>
-</purple>
