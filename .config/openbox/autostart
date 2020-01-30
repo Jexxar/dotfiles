@@ -382,3 +382,18 @@ fi
 echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
 
 export OB_rc
+
+OB_str="~/bin/touchpadctl"
+OB_stts=""
+
+~/bin/touchpadctl -d &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+export OB_rc

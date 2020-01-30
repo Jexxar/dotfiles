@@ -72,144 +72,213 @@ function doMenu_pt() {
 }
 
 function doAudio() {
-    inxi -A -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    if [ -z "$1" ]; then
+        inxi -A -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -A -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0
 }
 
 function doBattery() {
-    inxi -B -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    if [ -z "$1" ]; then
+        inxi -B -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -B -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0
 }
 
 function doCPU() {
-    inxi -C -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    if [ -z "$1" ]; then
+        inxi -C -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -C -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0
 }
 
 function doDrivesGI() {
-    inxi -d -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    if [ -z "$1" ]; then
+        inxi -d -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -d -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0
 }
 
 function doDrivesUU() {
-    inxi -plu -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    if [ -z "$1" ]; then
+        inxi -plu -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -plu -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0
 }
 
 function doDrivesUN() {
-    inxi -o -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    if [ -z "$1" ]; then
+        inxi -o -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -o -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0
 }
 
 function doGraphics() {
-    inxi -G -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    if [ -z "$1" ]; then
+        inxi -G -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -G -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0
 }
 
 function doHostKBD() {
-    inxi -S -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    if [ -z "$1" ]; then
+        inxi -S -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -S -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0
 }
 
 function doMachine() {
-    inxi -MZ -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    if [ -z "$1" ]; then
+        inxi -MZ -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -MZ -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0 
 }
 
 function doNetwork() {
-    inxi -NnixxxZ -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    if [ -z "$1" ]; then
+        inxi -NnixxxZ -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -NnixxxZ -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0
 }
 
 function doProcesses() {
-    inxi -t cm -x -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    if [ -z "$1" ]; then
+        inxi -t cm -x -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -t cm -x -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0
 }
 
 function doProcUptimeMemory() {
-    inxi -I -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    if [ -z "$1" ]; then
+        inxi -I -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -I -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0
 }
 
 function doRepositories() {
-    inxi -r -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    if [ -z "$1" ]; then
+        inxi -r -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -r -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0
 }
 
 function doResolution() {
-    inxi -G -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    if [ -z "$1" ]; then
+        inxi -G -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -G -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0
 }
 
 function doTemperature() {
-    inxi -s -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    if [ -z "$1" ]; then
+        inxi -s -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -s -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0
 }
 
 function doWeather() {
+    if [ -z "$1" ]; then
     #inxi -xxx -W 55051 -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9"
-    inxi -xxx -W curitiba,brazil -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+        inxi -xxx -W curitiba,brazil -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -xxx -W curitiba,brazil -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0
 }
 
 function doAll() {
-    inxi -Fxxxz -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    if [ -z "$1" ]; then
+        inxi -Fxxxz -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -Fxxxz -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
     return 0
 }
 
 function main() {
     local cmd=${1:-menu}
+    local outapp=$(which gxmessage)
     case "$cmd" in
         All)
-            doAll
+            doAll $outapp
             ;;
         Audio)
-            doAudio
+            doAudio $outapp
             ;;
         Battery)
-            doBattery
+            doBattery $outapp
             ;;
         CPU)
-            doCPU
+            doCPU $outapp
             ;;
         DrivesGI)
-            doDrivesGI
+            doDrivesGI $outapp
             ;;
         DrivesUU)
-            doDrivesUU
+            doDrivesUU $outapp
             ;;
         DrivesUN)
-            doDrivesUN
+            doDrivesUN $outapp
             ;;
         Graphics)
-            doGraphics
+            doGraphics $outapp
             ;;
         HostKBD)
-            doHostKBD
+            doHostKBD $outapp
             ;;
         MachineInfo)
-            doMachine Info
+            doMachine $outapp
             ;;
         Network)
-            doNetwork
+            doNetwork $outapp
             ;;
         Processes)
-            doProcesses
+            doProcesses $outapp
             ;;
         ProcUptimeMemory)
-            doProcUptimeMemory
+            doProcUptimeMemory $outapp
             ;;
         Repositories)
-            doRepositories
+            doRepositories $outapp
             ;;
         Resolution)
-            doResolution
+            doResolution $outapp
             ;;
         Temperature)
-            doTemperature
+            doTemperature $outapp
             ;;
         Weather)
-            doWeather
+            doWeather $outapp
             ;;
         *)
             doMenu
