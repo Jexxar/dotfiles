@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="22px"
+   height="22px"
+   viewBox="0 0 22 22"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="drive-removable-media-ieee1394.svg">
+  <metadata
+     id="metadata38">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="723"
+     id="namedview36"
+     showgrid="false"
+     inkscape:zoom="23.424006"
+     inkscape:cx="1.7674778"
+     inkscape:cy="11"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <!-- Generator: Sketch 41.2 (35397) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4">drive-removable-media-ieee1394</title>
+  <desc
+     id="desc6">Created with Sketch.</desc>
+  <defs
+     id="defs8">
+    <linearGradient
+       x1="7.7701352"
+       y1="0.22671154"
+       x2="7.7701352"
+       y2="15.217547"
+       id="linearGradient-1"
+       gradientTransform="scale(0.90088525,1.1100193)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         stop-color="#CE85FE"
+         offset="0%"
+         id="stop11" />
+      <stop
+         stop-color="#A170FC"
+         offset="100%"
+         id="stop13" />
+    </linearGradient>
+  </defs>
+  <g
+     id="g3410"
+     transform="translate(14.628756,0.14241529)">
+    <rect
+       id="rect4"
+       style="fill:#839496;fill-opacity:1;stroke:none"
+       rx="1"
+       y="2.8362391"
+       x="-9.6287556"
+       height="16"
+       width="12" />
+    <g
+       style="fill:#ffffff;fill-rule:evenodd;stroke:none;stroke-width:1"
+       transform="translate(-9.6857888,6.7141384)"
+       id="Group">
+      <path
+         inkscape:connector-curvature="0"
+         id="Shape"
+         d="M 6,3 C 4.8958333,3 4,3.8952206 4,5 4,6.1047794 4.8952206,7 6,7 7.1041667,7 8,6.1047794 8,5 8,3.8952206 7.1041667,3 6,3 L 6,3 Z M 5,5 C 5,4.4477124 5.4477124,4 6,4 6.5522876,4 7,4.4477124 7,5 7,5.5522876 6.5522876,6 6,6 5.4477124,6 5,5.5522876 5,5 Z" />
+      <rect
+         height="1"
+         width="4"
+         y="8"
+         x="4"
+         id="Rectangle-path" />
+      <rect
+         height="1"
+         width="4"
+         y="10"
+         x="4"
+         id="rect27" />
+      <g
+         transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0.42298566,2.272411)"
+         id="Group-3">
+        <rect
+           height="1"
+           width="3"
+           y="0"
+           x="0"
+           id="rect30" />
+        <rect
+           height="1"
+           width="3"
+           y="2"
+           x="0"
+           id="rect32" />
+      </g>
+      <rect
+         height="3.0304129"
+         width="3.4051847"
+         y="0.82662427"
+         x="7.670558"
+         transform="matrix(-0.70710678,-0.70710678,0.70710678,-0.70710678,14.345043,10.625574)"
+         id="rect34" />
+    </g>
+    <rect
+       id="rect6"
+       style="opacity:0.46400003;fill:#fdf6e3;fill-opacity:1;stroke:none"
+       y="2.8789303"
+       x="-0.69144577"
+       height="16"
+       width="2" />
+  </g>
+</svg>

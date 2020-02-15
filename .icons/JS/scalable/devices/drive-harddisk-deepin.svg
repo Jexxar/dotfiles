@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="22px"
+   height="22px"
+   viewBox="0 0 22 22"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="drive-harddisk-deepin.svg">
+  <metadata
+     id="metadata28">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="723"
+     id="namedview26"
+     showgrid="false"
+     inkscape:zoom="12.787128"
+     inkscape:cx="31.290897"
+     inkscape:cy="6.7948092"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <!-- Generator: Sketch 41.2 (35397) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4">drive-harddisk-deepin</title>
+  <desc
+     id="desc6">Created with Sketch.</desc>
+  <defs
+     id="defs8">
+    <linearGradient
+       x1="7.7701352"
+       y1="0.063801332"
+       x2="7.7701352"
+       y2="15.54027"
+       id="linearGradient-1"
+       gradientTransform="scale(0.90088525,1.1100193)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         stop-color="#9DDA00"
+         offset="0%"
+         id="stop11" />
+      <stop
+         stop-color="#73C300"
+         offset="100%"
+         id="stop13" />
+    </linearGradient>
+  </defs>
+  <g
+     id="g3391"
+     transform="translate(0.79679251,0.54798222)">
+    <rect
+       id="rect4"
+       style="fill:#839496;fill-opacity:1;stroke:none"
+       rx="1"
+       y="2.4306722"
+       x="4.2032075"
+       height="16"
+       width="12" />
+    <path
+       style="fill:#ffffff;fill-rule:evenodd;stroke:none;stroke-width:1"
+       inkscape:connector-curvature="0"
+       id="path24"
+       d="m 10.188866,14.64276 c -0.2717949,0 -0.5378199,-0.02628 -0.7948719,-0.07628 1.0807689,-0.302564 2.3647439,-1.05 2.9749999,-2.25 0,0 1.251282,-2.050642 -0.866025,-3.8961549 0,0 0.54423,0.8564102 0.560897,1.7179479 0,0 0.129487,1.132693 -0.872436,1.840386 -1.4775639,1.042947 -3.7794879,0.573075 -4.7589749,0.302562 -0.26282,-0.546154 -0.410256,-1.158334 -0.410256,-1.805129 0,-0.9679487 0.330128,-1.858333 0.883974,-2.5660253 0.273077,1.3185896 0.83718,2.4198713 1.216667,2.8288453 0.505769,0.544231 1.250641,1.122437 2.2070519,0.883975 0.955769,-0.239103 1.150641,-1.284616 1.150641,-1.284616 0.211538,-0.8891017 -0.08974,-1.945512 -0.10577,-1.9679479 -0.01603,-0.022436 -0.159615,-0.046795 -0.159615,-0.046795 0.15,1.4006412 -0.21859,2.0205129 -0.21859,2.0205129 -0.535897,1.098077 -1.3230769,0.758333 -1.3230769,0.758333 -0.875,-0.446154 -0.833974,-1.7032047 -0.833974,-1.7032047 -0.02564,-0.8429488 0.295513,-2.2160257 0.914744,-3.0673078 0.142948,-0.014744 0.2878199,-0.022436 0.4346149,-0.022436 0.557692,0 1.089744,0.1096154 1.576282,0.3089744 -0.516667,0.4339743 -1.31282,1.2461538 -1.31282,1.2461538 -1.2897439,1.1955125 -1.0397439,2.2012823 -1.0397439,2.2012823 0.205128,1.05641 0.8448719,0.344871 0.8448719,0.344871 0.672436,-0.6948708 0.622436,-2.0788456 0.622436,-2.0788456 -0.272436,0.044231 -0.444872,0.1942308 -0.444872,0.1942308 -0.03333,0.923077 -0.5782049,1.4955128 -0.5782049,1.4955128 -0.210898,0.233333 -0.360898,0.0109 -0.360898,0.0109 -0.110897,-0.1666658 0.110898,-0.2833328 0.110898,-0.2833328 0.311538,-0.272436 0.4044869,-0.73718 0.4006409,-0.9115385 -0.0045,-0.175 0.08846,-0.2224359 0.08846,-0.2224359 0.439745,-0.3391026 0.878847,-0.5391026 0.878847,-0.5391026 0.589103,-0.300641 1.639744,-0.350641 1.639744,-0.350641 0.248718,0.00833 0.48718,-0.00128 0.689103,-0.016667 0.654487,0.7358977 1.051923,1.705128 1.051923,2.7673078 0,2.301283 -1.865385,4.166668 -4.166667,4.166668 M 5.1888661,10.476095 c 0,2.76143 2.238571,5.000001 4.9999999,5.000001 2.761429,0 5,-2.238571 5,-5.000001 0,-2.7614284 -2.238571,-4.9999998 -5,-4.9999998 -2.7614289,0 -4.9999999,2.2385714 -4.9999999,4.9999998 z" />
+    <rect
+       id="rect6"
+       style="opacity:0.46400003;fill:#fdf6e3;fill-opacity:1;stroke:none"
+       y="2.4733634"
+       x="13.140517"
+       height="16"
+       width="2" />
+  </g>
+</svg>

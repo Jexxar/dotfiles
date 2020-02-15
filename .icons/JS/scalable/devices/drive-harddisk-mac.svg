@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="22px"
+   height="22px"
+   viewBox="0 0 22 22"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="drive-harddisk-mac.svg">
+  <metadata
+     id="metadata28">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="723"
+     id="namedview26"
+     showgrid="false"
+     inkscape:zoom="23.424006"
+     inkscape:cx="11"
+     inkscape:cy="11"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <!-- Generator: Sketch 41.2 (35397) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4">drive-harddisk-mac</title>
+  <desc
+     id="desc6">Created with Sketch.</desc>
+  <defs
+     id="defs8">
+    <linearGradient
+       x1="7.7701352"
+       y1="0.063801332"
+       x2="7.7701352"
+       y2="15.54027"
+       id="linearGradient-1"
+       gradientTransform="scale(0.90088525,1.1100193)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         stop-color="#9DDA00"
+         offset="0%"
+         id="stop11" />
+      <stop
+         stop-color="#73C300"
+         offset="100%"
+         id="stop13" />
+    </linearGradient>
+  </defs>
+  <g
+     id="g3386"
+     transform="translate(18.001365,0.74009275)">
+    <rect
+       id="rect4"
+       style="fill:#839496;fill-opacity:1;stroke:none"
+       rx="1"
+       y="2.2385616"
+       x="-13.001365"
+       height="16"
+       width="12" />
+    <path
+       style="fill:#ffffff;fill-rule:evenodd;stroke:none;stroke-width:1"
+       inkscape:connector-curvature="0"
+       id="path24"
+       d="m -2.9361933,14.135696 c -0.235075,0.520479 -0.347395,0.753098 -0.649371,1.212814 -0.422275,0.642619 -1.016407,1.442365 -1.753547,1.449116 -0.654895,0.0061 -0.823069,-0.425958 -1.711197,-0.421048 -0.888743,0.0049 -1.074102,0.428413 -1.7289971,0.422889 -0.7371405,-0.0068 -1.3005836,-0.729161 -1.7222446,-1.371781 -1.180285,-1.795897 -1.303653,-3.903591 -0.575719,-5.02434 0.51741,-0.7960623 1.3324998,-1.2619155 2.0997152,-1.2619155 0.7813325,0 1.2723495,0.4277993 1.9180385,0.4277993 0.626048,0 1.007814,-0.4290268 1.910673,-0.4290268 0.682515,0 1.405539,0.371946 1.921107,1.014566 -1.688487,0.924955 -1.414131,3.336466 0.291542,3.980927 l 0,0 z m -2.89768,-5.7127473 c 0.327754,-0.4210478 0.576946,-1.0157931 0.486721,-1.6234277 -0.535823,0.036826 -1.162484,0.3780837 -1.528293,0.8224549 -0.332664,0.4032484 -0.607021,1.0016763 -0.49961,1.5835325 0.584925,0.017799 1.190104,-0.3314371 1.541182,-0.7825597 l 0,0 z" />
+    <rect
+       id="rect6"
+       style="opacity:0.46400003;fill:#fdf6e3;fill-opacity:1;stroke:none"
+       y="2.2812529"
+       x="-4.064055"
+       height="16"
+       width="2" />
+  </g>
+</svg>
