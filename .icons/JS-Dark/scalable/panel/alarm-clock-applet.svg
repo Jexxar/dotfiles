@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   height="512"
+   viewBox="0 0 144.5 144.5"
+   width="512"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="alarm-clock-applet.svg">
+  <metadata
+     id="metadata18">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs16" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1184"
+     inkscape:window-height="724"
+     id="namedview14"
+     showgrid="false"
+     inkscape:zoom="0.4609375"
+     inkscape:cx="256"
+     inkscape:cy="256"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <rect
+     fill="#ffffff"
+     height="5.386"
+     rx="2.693"
+     transform="matrix(-.74940374 -.66211331 .66211331 -.74940374 0 0)"
+     width="44.31"
+     x="-99.13"
+     y="-8.98"
+     id="rect6" />
+  <rect
+     fill="#ffffff"
+     height="5.887"
+     rx="2.943"
+     transform="matrix(.70710678 -.70710678 .70710678 .70710678 0 0)"
+     width="54.02"
+     x="-2.23"
+     y="96.82"
+     id="rect8" />
+  <rect
+     fill="#ffffff"
+     height="2.818"
+     rx="1.409"
+     transform="matrix(.4772 -.87879 .85224 .52315 0 0)"
+     width="46.48"
+     x="-74.2"
+     y="96.3"
+     id="rect10" />
+  <path
+     d="m77.306 71.418a5.8915 5.8915 0 0 1 -11.783 0 5.8915 5.8915 0 1 1 11.783 0"
+     fill="#ffffff"
+     id="path12" />
+  <path
+     style="fill:#cccccc"
+     d="m 167.91864,408.73413 c 0,-1.43082 16.62435,-33.21446 36.94299,-70.63031 l 36.94298,-68.02884 -4.40061,-5.59447 c -2.42034,-3.07696 -4.40247,-8.14756 -4.40473,-11.268 -0.003,-4.67768 -9.14265,-13.76816 -52.0678,-51.79002 -28.63502,-25.36407 -52.06367,-47.5045 -52.06367,-49.20097 0,-3.77319 5.85147,-9.90288 9.45341,-9.90288 1.44926,0 25.85642,20.5017 54.23813,45.55933 32.81026,28.96749 53.29038,45.55932 56.23615,45.55932 3.16452,0 22.90176,-18.22284 62.26937,-57.49153 60.40665,-60.25488 64.68133,-63.43088 69.9146,-51.94513 2.43942,5.35395 0.59349,7.48108 -53.19906,61.30349 l -55.72616,55.7571 0,10.04938 c 0,12.17834 -4.82222,18.96747 -14.94249,21.03729 -6.94858,1.42113 -8.76522,4.29471 -44.42237,70.26773 -26.7392,49.473 -38.24349,68.80482 -40.97413,68.853 -2.08813,0.0368 -3.79661,-1.10368 -3.79661,-2.53449 z"
+     id="path3346"
+     inkscape:connector-curvature="0"
+     transform="scale(0.28222655,0.28222655)" />
+</svg>
