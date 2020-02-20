@@ -1,5 +1,29 @@
 #!/usr/bin/env bash
 # A fuzzy file-finder and opener based on dmenu
-# Requires: dmenu, exo-open
-# find ~/ | sed 's/ /\\ /g' | sort -f | dmenu -i -l 20 -nb '#2e3436' -nf '#9999CC' | xargs exo-open
-ls ~/ | sed 's/ /\\ /g' | sort -f | dmenu -i -l 20 -nb '#2e3436' -nf '#9999CC' | xargs exo-open
+# Requires: dmenu, xdg-open
+
+handle_file() {
+    if [ -d "$1" ]; then
+        cd "$1"
+    elif [ -f "$1" ]; then
+        exec xdg-open "$(pwd)/$1" &
+        exit 0
+    else
+        printf "%s is neither a file nor a directory\n" "$(pwd)/$1" >&2
+    fi
+}
+
+#ls ~/ | sed 's/ /\\ /g' | sort -f | dmenu -i -l 20 -nb '#2e3436' -nf '#9999CC' | xargs xdg-open
+
+old_IFS=$IFS
+while : ; do
+    IFS=$'\n'
+    file=$(ls -1a --group-directories-first | sort -f | dmenu -l 20 -nb '#2e3436' -nf '#9999CC' -p "Browse $(basename $(pwd)):")
+    IFS=$old_IFS
+    
+    if [ -e "$file" ]; then
+        handle_file "$file"
+    else
+        break
+    fi
+done

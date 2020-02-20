@@ -20,6 +20,49 @@ if [ ! -h $HOME/.xsession-errors ]; then
     ln -s /dev/null $HOME/.xsession-errors
 fi
 
+### SETTINGS START
+
+##Start bitmap Font
+##xset +fp ~/.fonts/misc/
+
+##DUNST
+#dunst -config ~/.config/dunst/dunstrc
+
+## XsetD
+#xsettingsd &
+
+## Turn on/off system beep.
+#xset b off
+
+## Set keyboard settings - 250 ms delay and 25 cps (characters per second) repeat rate.
+## Adjust the values according to your preferances.
+#xset r rate 250 25
+
+## Add keyboard mapping.
+#xmodmap -e "keysym Insert = Multi_key"
+
+## Disable CapsLock
+#setxkbmap -option ctrl:nocaps
+# alternative: use as compose key
+#setxkbmap -option compose:caps
+
+# Alias Super key to Super+Space for single-key menu.
+# See 'man xcape' for other possibilities.
+#xcape -e 'Super_L=Super_L|space'
+
+### TOUCHPAD: comment out the next two entries if you don't have one
+
+## Configure touchpad. See 'man synaptics' for more info.
+## (Now might be using libinput instead of synaptics.)
+#synclient VertEdgeScroll=1 HorizEdgeScroll=1 TapButton1=1 TapButton2=3 2>/dev/null
+
+## Disable touchpad while typing
+#syndaemon -i .5 -K -t -R -d &
+
+### TOUCHPAD END
+
+#
+
 # launches a session dbus instance
 OB_str="dbus-launch session"
 OB_stts=""

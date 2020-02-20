@@ -161,7 +161,7 @@ function menuSep() {
     if [ -z "$1" ]; then 
         echo "<separator />"
     else
-        echo "<separator label=\"$1\"/>"
+        echo "<separator label=\"$@\"/>"
     fi
 }
 

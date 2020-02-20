@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-yadOrzen=`which zenity || which yad`
+yadOrzen=$(which yad || which zenity)
 
 [ -z "$yadOrzen" ] && exit 1
 

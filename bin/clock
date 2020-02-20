@@ -5,7 +5,11 @@
 # Cheers!
 # Addy
 
-CLOCK=$(LANG=en_US.utf8 LC_TIME=en_US.utf8 date +"%a %d // %H:%M")
+#US clock style
+#CLOCK=$(env LC_ALL=en_US.utf8 LC_TIME=en_US.utf8 date +"%a %m/%d/%Y %H:%M")
+
+#European style
+CLOCK=$(date +"%a %d/%m/%Y %H:%M")
 
 if  [[ $1 = "-i" ]]; then
     echo "  ${CLOCK}"

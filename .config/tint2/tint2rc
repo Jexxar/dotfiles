@@ -183,7 +183,7 @@ clock_tooltip =
 clock_tooltip_timezone = 
 clock_lclick_command = gsimplecal
 clock_rclick_command = osmo
-clock_mclick_command = gnome-clock
+clock_mclick_command = gnome-clocks
 clock_uwheel_command = 
 clock_dwheel_command = 
 

@@ -42,7 +42,7 @@
                   'Active' - where the active window is -->
   </placement>
   <theme>
-    <name>Adapta-Eta</name>
+    <name>Adapta-Nokto-Eta</name>
     <titleLayout>NSDLIMC</titleLayout>
     <!--
       available characters are NDSLIMC, each can occur at most once.
@@ -345,14 +345,29 @@
         <command>xdg-open .</command>
       </action>
     </keybind>
+    <keybind key="XF86HomePage">
+      <action name="Execute">
+        <execute>xdg-open https://</execute>
+      </action>
+    </keybind>
+    <keybind key="XF86Mail">
+      <action name="Execute">
+        <execute>thunderbird</execute>
+      </action>
+    </keybind>
     <keybind key="XF86AudioRaiseVolume">
       <action name="Execute">
-        <command>pactl set-sink-volume 0 +5%</command>
+        <command>pactl set-sink-volume "$(LANGUAGE=C pactl info | grep "Default Sink" | cut -d " " -f3)" +5%</command>
       </action>
     </keybind>
     <keybind key="XF86AudioLowerVolume">
       <action name="Execute">
-        <command>pactl set-sink-volume 0 -5%</command>
+        <command>pactl set-sink-volume "$(LANGUAGE=C pactl info | grep "Default Sink" | cut -d " " -f3)" -5%</command>
+      </action>
+    </keybind>
+    <keybind key="XF86AudioMute">
+      <action name="Execute">
+        <execute>pactl set-sink-mute "$(LANGUAGE=C pactl info | grep "Default Sink" | cut -d " " -f3)" "toggle"</execute>
       </action>
     </keybind>
     <keybind key="XF86MonBrightnessUp">
