@@ -8,9 +8,10 @@
 # Copyright 2007 - 2009 Christopher Bratusek		
 #							
 #########################################################
-if [[ $# -eq 0 ]]; then 
-    exit 1
+if [ $# -eq 0 ]; then 
+    exit 0
 fi
+
 # Set IFS so that it won't consider spaces as entry separators.  
 # Without this, spaces in file/folder names can make the loop go wacky.
 IFS=$'\n'
@@ -19,18 +20,33 @@ if [ -z $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS ]; then
     NAUTILUS_SCRIPT_SELECTED_FILE_PATHS=$*
 fi
 
+[ -f /tmp/temp_whichpkg_list ] && rm -f /tmp/temp_whichpkg_list
+[ -f /tmp/whichpkg.txt ] && rm -f /tmp/whichpkg.txt
+
 for i in $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS; do echo $i >> /tmp/temp_whichpkg_list; done
 
 #for i in $NAUTILUS_SCRIPT_SELECTED_URIS; do echo $i >> /tmp/temp_whichpkg_list; done
 
 for file in $(cat /tmp/temp_whichpkg_list); do
-    realfile=$(echo $file | sed -e 's/file:\/\///g' -e 's/\%20/\ /g')
-    pkg=$(grep -w $realfile /var/lib/dpkg/info/*.list | sed -e 's/\.list.*//g' -e 's/.*\/info\///g')
-    echo -en "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n" >> /tmp/whichpkg.txt
-    echo "$realfile belongs to the $pkg package." >> /tmp/whichpkg.txt;
+    realfile="$(realpath $(which $file) 2>/dev/null)"
+    [ -z "$realfile" ] && realfile=$(echo $file | sed -e 's/file:\/\///g' -e 's/\%20/\ /g')
+    pkg="$(apt-file search $realfile | grep -E ":.*[^-.a-zA-Z0-9]${realfile}$")"
+    [ -z "$pkg" ] && pkg=$(grep -w $realfile /var/lib/dpkg/info/*.list | sed -e 's/\.list.*//g' -e 's/.*\/info\///g')
+    echo -en "Searching results for $file\n\n" >> /tmp/whichpkg.txt
+    if [ -z "$pkg" ]; then
+        echo "no packages found" >> /tmp/whichpkg.txt;
+    else
+        echo "$pkg" >> /tmp/whichpkg.txt;
+    fi
 done
 
-zenity --text-info --title "Result" --width=640 --height=480 --filename=/tmp/whichpkg.txt
+outdsp=$(which gxmessage)
+
+if [ -z "$outdsp" ]; then
+    zenity --text-info --title "Result" --filename=/tmp/whichpkg.txt
+else
+    gxmessage -title "Result" -center -file /tmp/whichpkg.txt
+fi
 
 rm -f /tmp/temp_whichpkg_list
 rm -f /tmp/whichpkg.txt

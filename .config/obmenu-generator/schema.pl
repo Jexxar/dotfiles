@@ -27,14 +27,15 @@ require "$ENV{HOME}/.config/obmenu-generator/config.pl";
 
 ## Text editor
 my $editor = $CONFIG->{editor};
+my $lang = "$ENV{LANG}";
 
 # Distro -------------------------------------------------------------------
 sub mk_distro {
-    return `~/bin/distro_info -3`;
+    return `~/bin/distro_info -2`;
 }
 
+if ($lang eq "pt_BR.UTF8") {
 our $SCHEMA = [
-
     #          COMMAND                 LABEL              ICON
     {sep => mk_distro },
 
@@ -106,9 +107,10 @@ our $SCHEMA = [
 
     {sep => undef},
 
-    {pipe => ["~/.config/openbox/scripts/places-pipemenu", "Locais", "drive-harddisk"]},
+    #{pipe => ["~/.config/openbox/scripts/places-pipemenu", "Locais", "drive-harddisk"]},
     #{pipe => ['~/.config/openbox/scripts/ob-places.pl', 'Diretórios', 'drive-harddisk']}, 
-    #{pipe => ['~/.config/openbox/scripts/cb-places-pipemenu', 'cbpp-places', 'drive-harddisk']}, 
+    #{pipe => ['~/.config/openbox/scripts/cb-places-pipemenu', 'Locais', 'drive-harddisk']}, 
+    {pipe => ['~/.config/openbox/scripts/jb-places-pipemenu', 'Locais', 'drive-harddisk']}, 
     {pipe => ['~/.config/openbox/scripts/help-pipemenu', 'Ajuda', 'help']}, 
     {pipe => ['~/.config/openbox/scripts/template-pipemenu', 'Modelos', 'folder-templates-symbolic']},
     {pipe => ['~/.config/openbox/scripts/inxi-pipemenu', 'Inxi Info', 'dialog-information-symbolic']}, 
@@ -133,3 +135,107 @@ our $SCHEMA = [
     ## This uses the 'oblogout' menu
     # {item => ['oblogout', 'Exit', 'application-exit']},
 ]
+}
+else 
+{
+our $SCHEMA = [
+    #          COMMAND                 LABEL              ICON
+    {sep => mk_distro },
+
+    {item => ['xdg-open .',       'Files', 'system-file-manager']},
+    {item => ['tilix',            'Terminal',     'utilities-terminal']},
+    {item => ['xdg-open http://', 'Web Browser',  'web-browser']},
+    {item => ['gmrun',            'Run command',  'system-run']},
+
+    {sep       => undef},
+
+    #          NAME            LABEL                ICON
+    {cat => ['utility',     'Utilities', 'applications-utilities']},
+    {cat => ['development', 'Development', 'applications-development']},
+    {cat => ['education',   'Education',   'applications-science']},
+    {cat => ['game',        'Games',       'applications-games']},
+    {cat => ['graphics',    'Graphics',    'applications-graphics']},
+    {cat => ['audiovideo',  'Multimedia',  'applications-multimedia']},
+    {cat => ['network',     'Network',     'applications-internet']},
+    {cat => ['office',      'Office',      'applications-office']},
+    {cat => ['other',       'Others',       'applications-other']},
+    {cat => ['settings',    'Preferences',    'applications-accessories']},
+    {cat => ['system',      'System',      'applications-system']},
+
+    #                  LABEL          ICON
+    #{beg => ['My category',  'cat-icon']},
+    #          ... some items ...
+    #{end => undef},
+
+    #            COMMAND     LABEL        ICON
+    #{pipe => ['obbrowser', 'Disk', 'drive-harddisk']},
+
+    ## Generic advanced settings
+    #{sep       => undef},
+    #{obgenmenu => ['Openbox Settings', 'applications-engineering']},
+    #{sep       => undef},
+
+    ## Custom advanced settings
+    {sep       => undef},
+    {beg => ['Advanced Settings', 'applications-system']},
+
+      # Configuration files
+      {item => ["$editor ~/.conkyrc",              'Conky RC',    'text-x-generic']},
+      {item => ["$editor ~/.config/tint2/tint2rc", 'Tint2 Panel', 'text-x-generic']},
+
+      # obmenu-generator category
+      {beg => ['Obmenu-Generator', 'accessories-text-editor']},
+        {item      => ["$editor ~/.config/obmenu-generator/schema.pl", 'Menu Schema', 'text-x-generic']},
+        {item      => ["$editor ~/.config/obmenu-generator/config.pl", 'Menu Config', 'text-x-generic']},
+
+        {sep  => undef},
+        {item => ['obmenu-generator -s -c',    'Generate estatic menu ',             'accessories-text-editor']},
+        {item => ['obmenu-generator -s -i -c', 'Generate estatic menu with icons',  'accessories-text-editor']},
+        {sep  => undef},
+        {item => ['obmenu-generator -p',       'Generate dynamic menu ',            'accessories-text-editor']},
+        {item => ['obmenu-generator -p -i',    'Generate dynamic menu with icons', 'accessories-text-editor']},
+        {sep  => undef},
+
+        {item    => ['obmenu-generator -d', 'Refresh Icons', 'view-refresh']},
+      {end => undef},
+
+      # Openbox category
+      {beg => ['Openbox', 'openbox']},
+        {item      => ["$editor ~/.config/openbox/autostart", 'Openbox Autostart',   'text-x-generic']},
+        {item      => ["$editor ~/.config/openbox/rc.xml",    'Openbox RC',          'text-x-generic']},
+        {item      => ["$editor ~/.config/openbox/menu.xml",  'Openbox Menu',        'text-x-generic']},
+        {item      => ['openbox --reconfigure',               'Reconfigure Openbox', 'openbox']},
+      {end => undef},
+    {end => undef},
+
+    {sep => undef},
+
+    #{pipe => ["~/.config/openbox/scripts/places-pipemenu", "Places", "drive-harddisk"]},
+    {pipe => ['~/.config/openbox/scripts/ob-places.pl', 'Directories', 'drive-harddisk']}, 
+    #{pipe => ['~/.config/openbox/scripts/cb-places-pipemenu', 'cbpp-places', 'drive-harddisk']}, 
+    {pipe => ['~/.config/openbox/scripts/help-pipemenu', 'Help', 'help']}, 
+    {pipe => ['~/.config/openbox/scripts/template-pipemenu', 'Templates', 'folder-templates-symbolic']},
+    {pipe => ['~/.config/openbox/scripts/inxi-pipemenu', 'Inxi Info', 'dialog-information-symbolic']}, 
+    #{pipe => ['~/.config/openbox/scripts/storage-pipemenu', 'StorageInfo', 'dialog-information-symbolic']}, 
+    #{pipe => ['~/.config/openbox/scripts/sysinfo-pipemnu', 'SysInfo', 'dialog-information-symbolic']}, 
+    {pipe => ['~/.config/openbox/scripts/recent-pipemenu', 'Recent', 'view-wrapped-symbolic']}, 
+    #{pipe => ['~/.config/openbox/scripts/recent2-pipemenu', 'Recent', 'view-wrapped-symbolic']}, 
+    {pipe => ['~/.config/openbox/scripts/audacious-pipemenu', 'Audacious', 'multimedia']}, 
+    # 
+    
+    # {sep => undef},
+
+    ## The xscreensaver lock command
+    {item => ['~/bin/autolock.sh lock', 'Lock', 'system-lock-screen']},
+
+    ## This option uses the default Openbox's "Exit" action
+    {item => ['oblogout', 'Exit', 'application-exit']},
+
+    ## This option uses the default Openbox's "Exit" action
+    # {exit => ['Exit', 'application-exit']},
+
+    ## This uses the 'oblogout' menu
+    # {item => ['oblogout', 'Exit', 'application-exit']},
+]
+}
+

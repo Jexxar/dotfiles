@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+#apt-whatprovides ver. 201801010101 Copyright alexx, MIT Licence
+#rdfa:deps="[realpath,apt-file,grep,which,sh,echo]"
+
+PN=`basename "$0"`          # Program name
+VER='201801010101'
+AUTN='alexx'
+LIC="MIT"
+
+function hhelp {
+    echo "$1 ver. $2 - Copyright by $3, $4 Licence" 
+    echo "usage: $1 [filename]"
+    echo
+    echo "Find in what package(s) such filename is provided"
+}
+
+if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    hhelp $PN $VER $AUTN $LIC
+    exit 1
+fi
+
+BINARY="$(realpath $(which $@) 2>/dev/null)"
+[ -z "$BINARY" ] && BINARY="$@"
+echo Searching for $BINARY
+PACKAGE="$(apt-file search $BINARY|grep -E ":.*[^-.a-zA-Z0-9]${BINARY}$")"
+[ -z "$PACKAGE" ] && PACKAGE="no package(s) found"
+echo "${PACKAGE}"
+

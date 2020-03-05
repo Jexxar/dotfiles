@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -eu
 
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
 if [ -f "$HOME/bin/mylog" ]; then
     . "$HOME/bin/mylog"
 fi
@@ -71,7 +75,7 @@ function do_notify() {
     log "Locking in $secs seconds";
 
     notify-send --urgency="normal" --app-name="mynotify" \
-        --icon='/usr/share/icons/Adwaita/48x48/actions/system-lock-screen.png' \
+        --icon="$(iconPath system-lock-screen)" \
         -- "Screen Lock in " "$secs seconds";
     return 0
 }

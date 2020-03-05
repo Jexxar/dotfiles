@@ -1,3 +1,6 @@
+
+Xcursor.theme: Pixelfun3
+
 ! ------------------------------------------------------------------------------
 ! Nord Color Scheme
 ! By Arctic Ice Studio 
@@ -125,11 +128,11 @@ URxvt*scrollBar:        false
 URxvt*scrollBar_right:  false
 URxvt*internalBorder:   0
 URxvt*externalBorder:   0
-URxvt.colorIT:      	#a3be8c
-URxvt.colorBD:      	#e5e9f0
-URxvt.colorUL:      	#81a1c1
-URxvt.geometry: 		92x16
-URxvt.internalBorder:	16
+URxvt.colorIT:          #a3be8c
+URxvt.colorBD:          #e5e9f0
+URxvt.colorUL:          #81a1c1
+URxvt.geometry:         92x16
+URxvt.internalBorder:   16
 
 ! fonts
 urxvt*font: xft:Inconsolata\-dz for\ Powerline:pixelsize=13:antialias=true:hinting=true
@@ -140,14 +143,14 @@ urxvt*font: xft:Inconsolata\-dz for\ Powerline:pixelsize=13:antialias=true:hinti
 ! urxvt*font: xft:Ubuntu\ Mono\ derivative\ Powerline:pixelsize=12:antialias=true:hinting=true
 ! URxvt*font: xft:Source\ Code\ Pro\ Medium:pixelsize=13:antialias=true:hinting=true,xft:Source\ Code\ Pro\ Medium:pixelsize=13:antialias=true:hinting=true
 
-URxvt*letterSpace: 	    		0
-URxvt.lineSpace: 				0
-! Xft.size:						12
-URxvt*font:                 	xft:M+ 1mn:regular:size=12
-URxvt*imFont:               	xft:M+ 1mn:regular:size=12
-URxvt*boldFont:             	xft:M+ 1mn:bold:size=12
-URxvt*italicFont:           	xft:M+ 1mn:italic:size=12
-URxvt*boldItalicFont:     		xft:M+ 1mn:regular:size=12
+URxvt*letterSpace:              0
+URxvt.lineSpace:                0
+! Xft.size:                     12
+URxvt*font:                     xft:M+ 1mn:regular:size=12
+URxvt*imFont:                   xft:M+ 1mn:regular:size=12
+URxvt*boldFont:                 xft:M+ 1mn:bold:size=12
+URxvt*italicFont:               xft:M+ 1mn:italic:size=12
+URxvt*boldItalicFont:           xft:M+ 1mn:regular:size=12
 ! run :.!fc-list | grep <font-name>
 
 ! perl extensions

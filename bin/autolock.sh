@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -eu
 
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
 if [ -f "$HOME/bin/mylog" ]; then
     . "$HOME/bin/mylog"
 fi
@@ -16,10 +20,8 @@ else
 fi
 
 function is_running_X(){
-    if ! xset q &>/dev/null; then
-        return 1
-    fi
-    return 0
+    xset q &>/dev/null && return 0;
+    return 1
 }
 
 # Is the screen already locked?
@@ -78,8 +80,12 @@ case "$cmd" in
     secs="$(xrdb -query | grep -m1 '^Xautolock.notify' | cut -f2)"
     test -n "$secs" && secs="Locking in $secs seconds"
 
+    #notify-send --urgency="normal" --app-name="xautolock" \
+    #  --icon='/usr/share/icons/Adwaita/48x48/actions/system-lock-screen.png' \
+    #  -- "Screen Lock" "$secs"
+
     notify-send --urgency="normal" --app-name="xautolock" \
-      --icon='/usr/share/icons/Adwaita/48x48/actions/system-lock-screen.png' \
+      --icon="$(iconPath system-lock-screen)" \
       -- "Screen Lock" "$secs"
     
     if [ $(pgrep -lfc cinnamon-screensaver) -ge 1 ] ; then

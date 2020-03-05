@@ -1,21 +1,23 @@
 #!/usr/bin/env bash
 
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
 if [ -f "$HOME/bin/mylog" ]; then
     . "$HOME/bin/mylog"
 fi
 
 function is_running_X(){
-    if ! xset q &>/dev/null; then
-        return 1
-    fi
-    return 0
+    xset q &>/dev/null && return 0;
+    return 1
 }
 
 function change_wallpaper(){
 	local old_IFS=$IFS
 	IFS="
 	"
-	local WallDir="$HOME/Imagens/Wallpaper"
+	local WallDir="${XDG_PICTURES_DIR:-$HOME/Imagens}/Wallpaper"
 	local WallList=( `find "$WallDir" -type f -iregex ".*/.*[.]\(jpe?g\|png\|gif\|bmp\)"` )
 	IFS=$old_IFS
 	local MaxFiles=${#WallList[@]}

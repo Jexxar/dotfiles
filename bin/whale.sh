@@ -9,10 +9,12 @@ os() {
     os=$(grep "^ID=" /etc/os-release | sed 's/ID=//')
     export os
 }
+
 packages="$(apt list 2>&1 | wc -l)"
 kernel="$(uname -r)"
 uptime="$(uptime -p | sed 's/up //')"
 shell=$(basename $SHELL)
+
 wm() {
     id=$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)
     id=${id##* }

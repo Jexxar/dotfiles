@@ -259,7 +259,15 @@
         <execute>gmrun</execute>
       </action>
     </keybind>
-    <!-- Keybindings for windows -->
+    <keybind key="A-F3">
+      <action name="Execute">
+        <startupnotify>
+          <enabled>true</enabled>
+          <name>rofi-run</name>
+        </startupnotify>
+        <command>~/bin/rofi-apps</command>
+      </action>
+    </keybind>
     <keybind key="A-F4">
       <action name="Close"/>
     </keybind>
@@ -372,12 +380,12 @@
     </keybind>
     <keybind key="XF86MonBrightnessUp">
       <action name="Execute">
-        <command>light -A 5</command>
+        <command>xbacklight -d $DISPLAY +5</command>
       </action>
     </keybind>
     <keybind key="XF86MonBrightnessDown">
       <action name="Execute">
-        <command>light -U 5</command>
+        <command>xbacklight -d $DISPLAY -5</command>
       </action>
     </keybind>
     <keybind key="C-S-Escape">
@@ -387,15 +395,6 @@
           <name>Monitor</name>
         </startupnotify>
         <command>gksudo -k -u root -- nice --10 qps</command>
-      </action>
-    </keybind>
-    <keybind key="A-F3">
-      <action name="Execute">
-        <startupnotify>
-          <enabled>true</enabled>
-          <name>rofi-run</name>
-        </startupnotify>
-        <command>~/bin/rofi-apps</command>
       </action>
     </keybind>
     <keybind key="W-f">

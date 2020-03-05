@@ -28,15 +28,24 @@
 # <menu id="places" label="Places" execute="/path/to/cbpp-places-pipemenu --recent ~/" />
 # make sure you have cbpp-recent-files-pipemenu somewhere, and enter its path below.
 
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/pipe-common.sh"
+
+if [ -f "$COMMON_FUNCTIONS" ]; then
+    . "${COMMON_FUNCTIONS}" 2> /dev/null
+else
+    echo $"Error: Failed to locate $COMMON_FUNCTIONS" >&2
+    exit 1
+fi
+
 # path to your "recent files" script, if you want to incorporate it:
 recent_script=~/bin/obrecent.sh
 
 # Command to open folders at "Browse here..." - any file manager
-open_folder_cmd=nautilus
+open_folder_cmd=xdg-open
 # Default command to open files with - others might be xdg-open, gnome-open, pcmanfm...
 default_open_cmd=xdg-open  # exo-open comes with thunar
 # Text editor of choice
-text_editor=subl
+text_editor=~/bin/myedit
 
 # function to open files with default open command, or alternative command for certain files
 # - add other conditions to choice
@@ -49,7 +58,7 @@ open_file() {
 
 # extra dotfiles to display in HOME folder (dotfiles are hidden by default)
 # edit the list (space separated, surrounded by single quotes) or comment this line out, to taste:
-shown_dotfiles='.config .conkyrc .local .wine .wmdrawerrc .bash_history .xsession-errors'
+shown_dotfiles='.config .conkyrc .local .cache .bashrc .bash_profile .wmdrawerrc .bash_history'
 
 # By default, this script will display directories separately, before files.
 # To change this behaviour, see NOTE1, NOTE2 and NOTE3 below, near end of page.
@@ -67,8 +76,7 @@ case $1 in
     shift
     output='<openbox_pipe_menu>
 '
-    if [ -x "$recent_script" ]
-    then
+    if [ -x "$recent_script" ]; then
         output="$output"'<separator label="Recently opened..." />
 <menu execute="'"$recent_script"'" id="recent" label="files" />
 '
@@ -83,6 +91,9 @@ esac
 path="${1:-$HOME}"  # default starting place is ~, otherwise $1
 path="$( echo "${path}"/ | tr -s '/' )"    # ensure one final slash
 [ -d "$path" ] || { echo "$0 : $path is not a directory" >&2; exit 1; }
+
+## aqui
+echo "$path"
 
 case "$path" in    # only escape if string needs it
 *\&*|*\<*|*\>*|*\"*|*\'*) pathe=$(sed "s/\&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g;s/\"/\&quot;/g;s/'/\&apos;/g;" <<XXX
@@ -102,8 +113,9 @@ XXX
 *) pathe_apos=$pathe;;
 esac
 
+lbl_browse=$( [ "$LANG" == "pt_BR.UTF8" ] && echo "Abrir" || echo "Browse here" )
 output="$output"'<separator label="'$pathe'" />
-<item label="Browse here...">
+<item label="'${lbl_browse}'...">
 	<action name="Execute">
 		<command>
 		 &apos;'"$open_folder_cmd"'&apos; &apos;'"$pathe_apos"'&apos;
@@ -115,13 +127,11 @@ output="$output"'<separator label="'$pathe'" />
 
 unset extra_entries directories_menu files_menu
 [ "$path" = "$HOME"/ ] && extra_entries="$shown_dotfiles"
-for i in "$path"* $extra_entries
-do
+for i in "$path"* $extra_entries; do
     [ -e "$i" ] || continue    # only output code if file exists
     shortname="${i##*/}"
 	case $shortname in
-	*\&*|*\<*|*\>*|*\"*|*\'*) shortnamee=$(sed "s/\&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g;s/\"/\&quot;/g;s/'/\&apos;/g;" <<XXX
-$shortname
+        *\&*|*\<*|*\>*|*\"*|*\'*) shortnamee=$(sed "s/\&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g;s/\"/\&quot;/g;s/'/\&apos;/g;" <<XXX $shortname
 XXX
 )
     ;;
@@ -160,13 +170,16 @@ done
 
 [ -n "$directories_menu" ] && {
 # NOTE2 comment out next 2 lines if you don't want "Directories" label
-output="${output}"'<separator label="Directories" />
+lbl_dirs=$( [ "$LANG" == "pt_BR.UTF8" ] && echo "Diretórios" || echo "Directories" )
+output="${output}"'<separator label="'$lbl_dirs'" />
 '
 output="${output}${directories_menu}"'
 '; }
 [ -n "$files_menu" ] && {
 # NOTE3 comment out next 2 lines if you don't want "Files" label
-output="${output}"'<separator label="Files" />
+
+lbl_files=$( [ "$LANG" == "pt_BR.UTF8" ] && echo "Arquivos" || echo "Files" )
+output="${output}"'<separator label="'$lbl_files'" />
 '
 output="${output}${files_menu}"'
 '; }

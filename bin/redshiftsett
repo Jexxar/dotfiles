@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+#This is a script to turn on bluelight filter
+
+RUNNING=$(pgrep -l redshift | awk '{print $2}')
+
+if [ "$RUNNING" = "redshift" ]; then
+    killall redshift
+else
+    LATITUDE=$(curl https://ipinfo.io/ip | xargs -I {} curl -s --get https://ipvigilante.com/{} | jq '. | .data.latitude' | sed s:'"'::g | sed s:','::g) ;
+    LONGITUDE=$(curl https://ipinfo.io/ip | xargs -I {} curl -s --get https://ipvigilante.com/{} | jq '. | .data.longitude' | sed s:'"'::g | sed s:','::g) ;
+    redshift -l "$LATITUDE":"$LONGITUDE" -m randr
+fi
