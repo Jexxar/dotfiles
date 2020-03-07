@@ -1,0 +1,178 @@
+#!/usr/bin/env bash
+# -pipemenu
+
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/pipe-common.sh"
+
+if [ -f "$COMMON_FUNCTIONS" ]; then
+    . "${COMMON_FUNCTIONS}" 2> /dev/null
+else
+    echo $"Error: Failed to locate $COMMON_FUNCTIONS" >&2
+    exit 1
+fi
+
+function doMenu() {
+    [ $(command -v mpd) ] && true || return 0
+    [ $(command -v mpc) ] && true || return 0
+    [ $(command -v ncmpcpp) ] && true || return 0
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) doMenu_en ;; # Deutsch
+        da_* ) doMenu_en ;; # Danish
+        es_* ) doMenu_en ;; # Española
+        fr_* ) doMenu_en ;; # Français
+        id_* ) doMenu_en ;; # Bahasa Indonesia
+        it_* ) doMenu_en ;; # Italian
+        lv_* ) doMenu_en ;; # Latvian
+        pl_* ) doMenu_en ;; # Polish
+        pt_* ) doMenu_pt ;; # Português
+        ru_* ) doMenu_en ;; # Russian
+        * ) doMenu_en ;; # Default to English
+    esac
+}
+
+function doMenu_en() {
+    # Start MPD server needed
+    if [ $(pgrep -lfc mpd) -eq 0 ] ; then
+        menuBegin
+        menuItem "Start MPD daemon" "mpd ~/.config/mpd/mpd.conf" "multimedia"
+        menuEnd
+        return 0
+    fi
+    
+    # replace "urxvtc" with your preferred terminal
+    local set_term=$(command -v urxvt || x-terminal-emulator)
+    
+    # gui mpd preference?
+    local set_player=$(command -v ncmpcpp)
+    
+    # Start ncmpcpp player needed
+    if [ $(pgrep -lfc ncmpcpp) -eq 0 ] ; then
+        menuBegin
+        menuItem "Start Music Player" "$set_term -e $set_player" "multimedia"
+        menuEnd
+        return 0
+    fi
+
+    #set variables
+    local track=$(mpc -f "%track%" | sed -n '1p')
+    if [ -z "$track" ]; then
+        local playing=$(mpc -f "%artist% - %title%" | sed -n '1p')
+    else
+        local playing=$(mpc -f "%track%. %artist% - %title%" | sed -n '1p')
+    fi
+
+    local nowstatus=$(mpc | sed -n '2p' | cut -d ' ' -f1 | tr '[:upper:]' '[:lower:]')
+    local repeat=$(mpc | tail -n 1 | cut -c 15-25)
+    local random=$(mpc | tail -n 1 | cut -c 29-39)
+    local single=$(mpc | tail -n 1 | cut -c 43-53)
+    local consume=$(mpc | tail -n 1 | cut -c 57-)
+    
+    # tell when mpc is stopped
+    
+    if [ "$nowstatus" != "[playing]" -a "$nowstatus" != "[paused]" ]; then
+        nowstatus="[stopped]"
+    fi
+    
+    if [ "$nowstatus" = "[stopped]" ]; then
+        playing="Play"
+    fi
+    
+    # convert reserved XML characters '&', '<', '>', '"' for songs containing characters
+    local dplaying=$(esc_enc "$playing $nowstatus")
+    repeat=$(esc_enc "$repeat")
+    random=$(esc_enc "$random")
+    consume=$(esc_enc "$consume")
+    single=$(esc_enc "$single")
+
+    menuBegin
+    menuSep "$dplaying"
+    #subMenuExec "${dpath}${dname}" "${dname}" "$0 &quot;$path$dname&quot;"
+    menuItem "Play/Pause" "<![CDATA[mpc toggle]]>" 'media-playback-start'
+    menuItem "Stop" "<![CDATA[mpc stop]]>" 'media-playback-stop'
+    menuItem "Previous" "<![CDATA[mpc prev]]>" 'media-skip-backward'
+    menuItem "Next" "<![CDATA[mpc next]]>" 'media-skip-forward'
+    menuItem "$repeat" "<![CDATA[mpc repeat]]>" 'dialog-information-symbolic'
+    menuItem "$random" "<![CDATA[mpc random]]>" 'dialog-information-symbolic'
+    menuItem "$consume" "<![CDATA[mpc consume]]>" 'dialog-information-symbolic'
+    menuItem "$single" "<![CDATA[mpc single]]>" 'dialog-information-symbolic'
+    menuItem "Update" "<![CDATA[mpc update]]>" 'gtk-jump-to-rtl'    
+    menuEnd
+}
+
+function doMenu_pt() {
+    # Start MPD server needed
+    if [ $(pgrep -lfc mpd) -eq 0 ] ; then
+        menuBegin
+        menuItem "Inicia servidor MPD" "mpd ~/.config/mpd/mpd.conf" "multimedia"
+        menuEnd
+        return 0
+    fi
+    
+    # replace "urxvtc" with your preferred terminal
+    local set_term=$(command -v urxvt || x-terminal-emulator)
+    
+    # gui mpd preference?
+    local set_player=$(command -v ncmpcpp)
+    
+    # Start ncmpcpp player needed
+    if [ $(pgrep -lfc ncmpcpp) -eq 0 ] ; then
+        menuBegin
+        menuItem "Inicia o player" "$set_term -e $set_player" "multimedia"
+        menuEnd
+        return 0
+    fi
+
+    #set variables
+    local track=$(mpc -f "%track%" | sed -n '1p')
+    if [ -z "$track" ]; then
+        local playing=$(mpc -f "%artist% - %title%" | sed -n '1p')
+    else
+        local playing=$(mpc -f "%track%. %artist% - %title%" | sed -n '1p')
+    fi
+
+    local nowstatus=$(mpc | sed -n '2p' | cut -d ' ' -f1 | tr '[:upper:]' '[:lower:]')
+    local repeat=$(mpc | tail -n 1 | cut -c 15-25)
+    local random=$(mpc | tail -n 1 | cut -c 29-39)
+    local single=$(mpc | tail -n 1 | cut -c 43-53)
+    local consume=$(mpc | tail -n 1 | cut -c 57-)
+    
+    # tell when mpc is stopped
+    
+    if [ "$nowstatus" != "[playing]" -a "$nowstatus" != "[paused]" ]; then
+        nowstatus="[stopped]"
+    fi
+    
+    if [ "$nowstatus" = "[stopped]" ]; then
+        playing="Tocar"
+    fi
+    local pt_status=$(echo "$nowstatus" | sed -e "s/playing/tocando/g" -e "s/: paused/: pausado/g" -e "s/stopped/parado/g")
+    local pt_repeat=$(echo "$repeat" | sed -e "s/repeat/Repetir/g" -e "s/: on/: ligado/g" -e "s/off/desligado/g")
+    local pt_random=$(echo "$random" | sed -e "s/random/Aleatorio/g" -e "s/: on/: ligado/g" -e "s/off/desligado/g")
+    local pt_consume=$(echo "$consume" | sed -e "s/consume/Consumo/g" -e "s/: on/: ligado/g" -e "s/off/desligado/g")
+    local pt_single=$(echo "$single" | sed -e "s/single/Solo/g" -e "s/: on/: ligado/g" -e "s/off/desligado/g")
+    
+    # convert reserved XML characters '&', '<', '>', '"' for songs containing characters
+    local dplaying=$(esc_enc "$playing $pt_status")
+    pt_repeat=$(esc_enc "$pt_repeat")
+    pt_random=$(esc_enc "$pt_random")
+    pt_consume=$(esc_enc "$pt_consume")
+    pt_single=$(esc_enc "$pt_single")
+
+    menuBegin
+    menuSep "$dplaying"
+    #subMenuExec "${dpath}${dname}" "${dname}" "$0 &quot;$path$dname&quot;"
+    menuItem "Tocar/Pausar" "<![CDATA[mpc toggle]]>" 'media-playback-start'
+    menuItem "Parar" "<![CDATA[mpc stop]]>" 'media-playback-stop'
+    menuItem "Previo" "<![CDATA[mpc prev]]>" 'media-skip-backward'
+    menuItem "Proximo" "<![CDATA[mpc next]]>" 'media-skip-forward'
+    menuItem "$pt_repeat" "<![CDATA[mpc repeat]]>" 'dialog-information-symbolic'
+    menuItem "$pt_random" "<![CDATA[mpc random]]>" 'dialog-information-symbolic'
+    menuItem "$pt_consume" "<![CDATA[mpc consume]]>" 'dialog-information-symbolic'
+    menuItem "$pt_single" "<![CDATA[mpc single]]>" 'dialog-information-symbolic'
+    menuItem "Atualizar" "<![CDATA[mpc update]]>"  'gtk-jump-to-rtl'   
+    menuEnd
+}
+
+doMenu "$*"
+
+exit
