@@ -27,6 +27,7 @@ function main(){
         fext="${fname##*.}"
         fname=$(echo -en "$fname")
         fbase=$(echo -en "$fbase")
+        fbase=$(esc_enc "$fbase")
         if [ ! -z "$fbase" ]; then
             case "$fext" in
               db)  menuItem "$fbase" "xdg-open \"file://$fname\"" "libreoffice-base"

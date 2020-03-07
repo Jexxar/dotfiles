@@ -157,6 +157,29 @@ function menuEnd() {
     echo "</openbox_pipe_menu>"
 }
 
+function esc_enc() {
+    local aux="$*"
+    local daux=""
+    local ddaux=""
+    # only escape if string needs it
+    case "$aux" in    # only escape if string needs it
+        *\&*|*\<*|*\>*|*\"*|*\'*)
+            #daux=$( echo "$aux" | sed "s/\&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g;s/\"/\&quot;/g;s/'/\&apos;/g;" | sed 's/\&apos;/\&apos;\&quot;\&apos;\&quot;\&apos;/g;' )
+            daux=$( echo "$aux" | sed "s/\&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g;s/\"/\&quot;/g;s/'/\&apos;/g;" )
+        ;;
+        *) daux=$aux;;
+    esac
+    echo "$daux"
+    return 0
+}
+
+function esc_space() {
+    local aux="$*"
+    local daux=$( echo "$aux" | sed "s/ /\\\ /g;" )
+    echo "$daux"
+    return 0
+}
+
 function menuSep() {
     if [ -z "$1" ]; then 
         echo "<separator />"

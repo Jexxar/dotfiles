@@ -67,6 +67,7 @@ function doMenuControl_en(){
     local cslen=""
     local rpstatus=""
     local shfstatus=""
+    local lblsong=""
     cursong=$(audtool --current-song)
     cslen=$(audtool --current-song-length)
     rpstatus=$(audtool --playlist-repeat-status | sed -e "s/\b\(.\)/\u\1/g")
@@ -75,21 +76,24 @@ function doMenuControl_en(){
     menuBegin
 
     if [ ! -z "$cursong" ]; then
-        menuSep "$cursong ($cslen)"
+        lblsong=$(esc_enc "$cursong ($cslen)")
+        menuSep "$lblsong"
     fi
+    rpstatus=$(esc_enc "$rpstatus")
+    shfstatus=$(esc_enc "$shfstatus")
 
-    menuItem "Play" "audtool --playback-play" 'media-playback-start'
-    menuItem "Pause" "audtool --playback-pause" 'media-playback-pause' 
-    menuItem "Stop" "audtool --playback-stop" 'media-playback-stop'
-    menuItem "Previous" "audtool --playlist-reverse" 'media-skip-backward'
-    menuItem "Next" "audtool --playlist-advance" 'media-skip-forward'
-    menuItem "Repeat $rpstatus" "audtool --playlist-repeat-toggle" 'media-playlist-repeat'
-    menuItem "Shuffle $shfstatus" "audtool --playlist-shuffle-toggle" 'media-playlist-shuffle'
-    menuItem "Jump to file" "audtool --jumptofile-show on" 'gtk-jump-to-rtl'
+    menuItem "Play" "<![CDATA[audtool --playback-play]]>" 'media-playback-start'
+    menuItem "Pause" "<![CDATA[audtool --playback-pause]]>" 'media-playback-pause' 
+    menuItem "Stop" "<![CDATA[audtool --playback-stop]]>" 'media-playback-stop'
+    menuItem "Previous" "<![CDATA[audtool --playlist-reverse]]>" 'media-skip-backward'
+    menuItem "Next" "<![CDATA[audtool --playlist-advance]]>" 'media-skip-forward'
+    menuItem "Repeat $rpstatus" "<![CDATA[audtool --playlist-repeat-toggle]]>" 'media-playlist-repeat'
+    menuItem "Shuffle $shfstatus" "<![CDATA[audtool --playlist-shuffle-toggle]]>" 'media-playlist-shuffle'
+    menuItem "Jump to file" "<![CDATA[audtool --jumptofile-show on]]>" 'gtk-jump-to-rtl'
     menuSep ""
-    menuItem "Add files" "audtool --filebrowser-show on --always-on-top on" 'fileopen'
-    menuItem "Preferences" "audtool --preferences-show on" 'preferences-system'    
-    menuItem "Quit audacious" "audtool --shutdown" 'system-shutdown'
+    menuItem "Add files" "<![CDATA[audtool --filebrowser-show on --always-on-top on]]>" 'fileopen'
+    menuItem "Preferences" "<![CDATA[audtool --preferences-show on]]>" 'preferences-system'    
+    menuItem "Quit audacious" "<![CDATA[audtool --shutdown]]>" 'application-exit'
     menuEnd
 }
 
@@ -118,21 +122,24 @@ function doMenuControl_pt(){
     menuBegin
 
     if [ ! -z "$cursong" ]; then
-        menuSep "$cursong ($cslen)"
+        lblsong=$(esc_enc "$cursong ($cslen)")
+        menuSep "$lblsong"
     fi
+    rpstatus=$(esc_enc "$rpstatus")
+    shfstatus=$(esc_enc "$shfstatus")
 
-    menuItem "Reproduzir" "audtool --playback-play" 'media-playback-start'
-    menuItem "Pausar" "audtool --playback-pause" 'media-playback-pause'
-    menuItem "Parar" "audtool --playback-stop" 'media-playback-stop'
-    menuItem "Anterior" "audtool --playlist-reverse" 'media-skip-backward'
-    menuItem "Proxima" "audtool --playlist-advance" 'media-skip-forward'
-    menuItem "Alterna Repetir ($rpstatus)" "audtool --playlist-repeat-toggle" 'media-playlist-repeat'
-    menuItem "Alterna Embaralhar ($shfstatus)" "audtool --playlist-shuffle-toggle" 'media-playlist-shuffle'
-    menuItem "Ir para..." "audtool --jumptofile-show on" 'gtk-jump-to-rtl'
+    menuItem "Reproduzir" "<![CDATA[audtool --playback-play]]>" 'media-playback-start'
+    menuItem "Pausar" "<![CDATA[audtool --playback-pause]]>" 'media-playback-pause'
+    menuItem "Parar" "<![CDATA[audtool --playback-stop]]>" 'media-playback-stop'
+    menuItem "Anterior" "<![CDATA[audtool --playlist-reverse]]>" 'media-skip-backward'
+    menuItem "Proxima" "<![CDATA[audtool --playlist-advance]]>" 'media-skip-forward'
+    menuItem "Alterna Repetir ($rpstatus)" "<![CDATA[audtool --playlist-repeat-toggle]]>" 'media-playlist-repeat'
+    menuItem "Alterna Embaralhar ($shfstatus)" "<![CDATA[audtool --playlist-shuffle-toggle]]>" 'media-playlist-shuffle'
+    menuItem "Ir para..." "<![CDATA[audtool --jumptofile-show on]]>" 'gtk-jump-to-rtl'
     menuSep ""
-    menuItem "Abrir Arquivo(s)" "audtool --filebrowser-show on --always-on-top on" 'fileopen'
-    menuItem "Configurações" "audtool --preferences-show on" 'preferences-system'
-    menuItem "Sair" "audtool --shutdown" 'system-shutdown'
+    menuItem "Abrir Arquivo(s)" "<![CDATA[audtool --filebrowser-show on --always-on-top on]]>" 'fileopen'
+    menuItem "Configurações" "<![CDATA[audtool --preferences-show on]]>" 'preferences-system'
+    menuItem "Sair" "<![CDATA[audtool --shutdown]]>" 'application-exit'
     menuEnd
 }
 
