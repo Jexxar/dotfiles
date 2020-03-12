@@ -1,40 +1,16 @@
 #!/usr/bin/env bash
 #set -eu
 
-if [ -f "$HOME/bin/mylog" ]; then
-    . "$HOME/bin/mylog"
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
 fi
 
 # This script is intended to be run as the main dpms off script for this installation.
 cmd=${1:-off}
 
-function is_running_X(){
-    if ! xset q &>/dev/null; then
-        return 1
-    fi
-    return 0
-}
-
-# Is the screen already locked?
-function locked() {
-    local DebugMode=${1:-no}
-    local scrsvApps=('i3lock' 'mate-screensaver-dialog' 'cinnamon-screensaver-pam-helper' 'slimlock' 'gnome-screensaver-dialog' 'xscreensaver')
-    local c=0
-    for p1 in "${scrsvApps[@]}"; do
-        c=$(pgrep -lfc "${p1}")
-        if [ $c -gt 0 ] ; then
-            if [ "$DebugMode" = "debug" ]; then
-                log "${p1} found and active";
-                return 0;
-            fi
-        fi
-    done
-    return 1;
-}
-
 # Return 0 if xset is found.
 function xset_ok() {
-    [ $(which xset) ] && return 0
+    [ $(command -v xset) ] && return 0
     return 1
 }
 

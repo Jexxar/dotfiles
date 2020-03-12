@@ -1,442 +1,473 @@
 #!/usr/bin/env bash
-# Script in $HOME/.config/openbox/autostart
-# to run user-specific things.
-#
-#GLOBALAUTOSTART="/etc/xdg/openbox/autostart"
-
-#. $GLOBALAUTOSTART
 
 export OB_rc=0
-[ -z "$XDG_CURRENT_DESKTOP"] && export XDG_CURRENT_DESKTOP="mate"
+export OB_logfile="/var/log/autostart.log"
+[ -z "$HOSTNAME" ] && export HOSTNAME=$(hostname)
 
-if [ -e ~/.config/openbox/log/ob.log ]; then
-    mv ~/.config/openbox/log/ob.log ~/.config/openbox/log/ob.2.log > /dev/null
-    touch ~/.config/openbox/log/ob.log &>/dev/null
+if [ ! -w "$OB_logfile" ]; then
+    OB_logfile="$HOME/.local/var/log/autostart.log"
 fi
+
+if [ -e "$OB_logfile" ]; then
+    mv "$OB_logfile" "$OB_logfile.old" &> /dev/null
+fi
+
+echo "`date +%F-%H:%M:%S` $HOSTNAME - autostart init" > "$OB_logfile"
+
+
+[ -z "$XDG_CURRENT_DESKTOP" ] && export XDG_CURRENT_DESKTOP="MATE"
+echo "`date +%F-%H:%M:%S` $HOSTNAME XDG_CURRENT_DESKTOP = $XDG_CURRENT_DESKTOP" >> "$OB_logfile"
 
 # If the .xsession-errors file is not a symbolic link, delete it and create it as such
-if [ ! -h $HOME/.xsession-errors ]; then
-    /bin/rm $HOME/.xsession-errors
-    ln -s /dev/null $HOME/.xsession-errors
+if [ ! -h "$HOME/.xsession-errors" ]; then
+    /bin/rm "$HOME/.xsession-errors"
+    ln -s /dev/null "$HOME/.xsession-errors"
+    echo "`date +%F-%H:%M:%S` $HOSTNAME xsession-errors files redirected to null" >> "$OB_logfile"
 fi
 
-### SETTINGS START
-
-##Start bitmap Font
-##xset +fp ~/.fonts/misc/
-
-##DUNST
-#dunst -config ~/.config/dunst/dunstrc
-
-## XsetD
-#xsettingsd &
-
-## Turn on/off system beep.
-#xset b off
-
-## Set keyboard settings - 250 ms delay and 25 cps (characters per second) repeat rate.
-## Adjust the values according to your preferances.
-#xset r rate 250 25
-
-## Add keyboard mapping.
-#xmodmap -e "keysym Insert = Multi_key"
-
-## Disable CapsLock
-#setxkbmap -option ctrl:nocaps
-# alternative: use as compose key
-#setxkbmap -option compose:caps
-
-# Alias Super key to Super+Space for single-key menu.
-# See 'man xcape' for other possibilities.
-#xcape -e 'Super_L=Super_L|space'
-
-### TOUCHPAD: comment out the next two entries if you don't have one
-
-## Configure touchpad. See 'man synaptics' for more info.
-## (Now might be using libinput instead of synaptics.)
-#synclient VertEdgeScroll=1 HorizEdgeScroll=1 TapButton1=1 TapButton2=3 2>/dev/null
-
-## Disable touchpad while typing
-#syndaemon -i .5 -K -t -R -d &
-
-### TOUCHPAD END
-
-#
-
+# ==================================
 # launches a session dbus instance
+# ==================================
+sleep 1
 OB_str="dbus-launch session"
 OB_stts=""
 
 if [ -z "$DBUS_SESSION_BUS_ADDRESS" ] && type dbus-launch >/dev/null; then
     dbus-launch --sh-syntax --exit-with-session &
     OB_rc=$?
-    if [ $OB_rc -eq 0 ]; then
-        OB_stts="Ok  "
-    else
-        OB_stts="Erro"
-    fi
-    echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+    [ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+    echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
     sleep 1
 else
-    echo "["`date +%F-%H:%M:%S`"] - dbus-launch ja ativo" >> ~/.config/openbox/log/ob.log
+    echo "`date +%F-%H:%M:%S` $HOSTNAME dbus-launch ja ativo" >> "$OB_logfile"
 fi
 
 
-# gnome-keyring-daemon
+# ==================================
+# Daemon status
+# ==================================
+if [ $(pgrep -lfc pulseaudio) -ge 1 ] ; then
+    echo "`date +%F-%H:%M:%S` $HOSTNAME pulseaudio ativo" >> "$OB_logfile"
+fi
+if [ $(pgrep -lfc mate-settings-daemon) -ge 1 ] ; then
+    echo "`date +%F-%H:%M:%S` $HOSTNAME mate-settings-daemon ativo" >> "$OB_logfile"
+fi
+if [ $(pgrep -lfc mate-power-manager) -ge 1 ] ; then
+    echo "`date +%F-%H:%M:%S` $HOSTNAME mate-power-manager ativo" >> "$OB_logfile"
+fi
+if [ $(pgrep -lfc mate-volume-control-applet) -ge 1 ] ; then
+    echo "`date +%F-%H:%M:%S` $HOSTNAME mate-volume-control-applet ativo" >> "$OB_logfile"
+fi
+if [ $(pgrep -lfc mate-screensaver) -ge 1 ] ; then
+    echo "`date +%F-%H:%M:%S` $HOSTNAME mate-screensaver ativo" >> "$OB_logfile"
+fi
+if [ $(pgrep -lfc redshift-gtk) -ge 1 ] ; then
+    echo "`date +%F-%H:%M:%S` $HOSTNAME redshift-gtk ativo" >> "$OB_logfile"
+fi
+if [ $(pgrep -lfc nm-applet) -ge 1 ] ; then
+    echo "`date +%F-%H:%M:%S` $HOSTNAME nm-applet ativo" >> "$OB_logfile"
+fi
+
+
+# ==================================
+# XDG Update user dirs
+# ==================================
+sleep 1
+OB_str="xdg-user-dirs-gtk-update"
+OB_stts=""
+xdg-user-dirs-gtk-update &
+OB_rc=$?
+[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+
+# ==================================
+# Xsettingsd
+# ==================================
+if [ $(pgrep -lfc mate-settings-daemon) -eq 0 ] ; then
+    OB_str="xsettingsd -c $HOME/.Xdefaults"
+    OB_stts=""
+    [ -f "$HOME/.Xdefaults" ] && xsettingsd -c "$HOME/.Xdefaults" &
+    OB_rc=$?
+    [ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+    echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+    sleep 1
+fi
+
+# ==================================
+# Turn on/off system beep.
+# ==================================
+OB_str="xset b off"
+OB_stts=""
+xset b off &
+OB_rc=$?
+[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+
+# ==================================
+##Start bitmap Font
+# ==================================
+#OB_str="xset +fp $HOME/.local/share/fonts/misc/"
+#OB_stts=""
+#xset +fp $HOME/.local/share/fonts/misc/ &
+#OB_rc=$?
+#[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+#echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+
+# ==================================
+## Set keyboard settings - 250 ms delay and 25 cps (characters per second) repeat rate.
+## Adjust the values according to your preferances.
+# ==================================
+#OB_str="xset r rate 250 25"
+#OB_stts=""
+#xset r rate 250 25
+#OB_rc=$?
+#[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+#echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+
+# ==================================
+## Add keyboard mapping.
+# ==================================
+#OB_str="xmodmap -e 'keysym Insert = Multi_key'"
+#OB_stts=""
+#xmodmap -e "keysym Insert = Multi_key"
+#OB_rc=$?
+#[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+#echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+
+# ==================================
+## Disable CapsLock
+# ==================================
+#OB_str="setxkbmap -option ctrl:nocaps"
+#OB_stts=""
+#setxkbmap -option ctrl:nocaps
+#OB_rc=$?
+#[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+#echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+
+# ==================================
+# alternative: use as compose key
+# ==================================
+#OB_str="setxkbmap -option compose:caps"
+#OB_stts=""
+#setxkbmap -option compose:caps
+#OB_rc=$?
+#[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+#echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+
+# ==================================
+# Alias Super key to Super+Space for single-key menu.
+# See 'man xcape' for other possibilities.
+# ==================================
+#OB_str="xcape -e 'Super_L=Super_L|space'"
+#OB_stts=""
+#xcape -e 'Super_L=Super_L|space'
+#OB_rc=$?
+#[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+#echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+
+# ==================================
+### TOUCHPAD: comment out the next two entries if you don't have one
+## Configure touchpad. See 'man synaptics' for more info.
+## (Now might be using libinput instead of synaptics.)
+# ==================================
+#OB_str="synclient VertEdgeScroll=1 HorizEdgeScroll=1 TapButton1=1 TapButton2=3"
+#OB_stts=""
+#synclient VertEdgeScroll=1 HorizEdgeScroll=1 TapButton1=1 TapButton2=3 2>/dev/null
+#OB_rc=$?
+#[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+#echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+
+# ==================================
+## Disable touchpad while typing
+# ==================================
+#OB_str="syndaemon -i .5 -K -t -R -d"
+#OB_stts=""
+#syndaemon -i .5 -K -t -R -d &
+#OB_rc=$?
+#[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+#echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+
+
+# ==================================
+# Start gnome-keyring-daemon
+# ==================================
+OB_str="/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh"
+OB_stts=""
 if [ $(pgrep -lfc gnome-keyring-daemon) -ge 1 ] ; then
     while 2>/dev/null killall gnome-keyring-daemon; do
         sleep 1
     done
 fi
-
-OB_str="/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh"
-OB_stts=""
-
 /usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh &
-
 OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
 
 
-# compton
-if [ $(pgrep -lfc compton) -ge 1 ] ; then
-    while 2>/dev/null killall compton; do
-        sleep 1
-    done
-fi
-
-OB_str="compton -b --config ~/.config/compton.conf"
-OB_stts=""
-
-compton -b --config ~/.config/compton.conf &
-
-OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
-
-
-# Keyboard
-
-
-# Start mate settings
-if [ $(pgrep -lfc mate-settings-daemon) -ge 1 ] ; then
-    while 2>/dev/null killall mate-settings-daemon; do
-        sleep 1
-    done
-fi
-
-OB_str="mate-settings-daemon"
-OB_stts=""
-
-mate-settings-daemon &
-
-OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
-
-
+# ==================================
 # Start polkit deamon
+# ==================================
+OB_str="polkit-mate-authentication-agent-1"
+OB_stts=""
 if [ $(pgrep -lfc polkit-mate-authentication-agent-1) -ge 1 ] ; then
     while 2>/dev/null killall polkit-mate-authentication-agent-1; do
         sleep 1
     done
 fi
-
-OB_str="polkit-mate-authentication-agent-1"
-OB_stts=""
 if [ -f /usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1 ]; then
     /usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1 &
 elif [ -f /usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1 ]; then
     /usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1 &
 fi
-
 OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
 
 
-# Start power manager deamon
-if [ $(pgrep -lfc mate-power-manager) -ge 1 ] ; then
-    while 2>/dev/null killall mate-power-manager; do
-        sleep 1
-    done
-fi
-
-OB_str="mate-power-manager"
+# ==================================
+# Sound global volume at VOLUME
+# ==================================
+OB_VOLUME='115%'
 OB_stts=""
-
-mate-power-manager &
-
-OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
-
-#Sound global volume at VOLUME
-VOLUME='115%'
-OB_str="pactl set-sink-volume <index> $VOLUME"
-OB_stts=""
-
-for SINK in `pacmd list-sinks | grep 'index:' | cut -b12-`
-do
-    pactl set-sink-volume $SINK $VOLUME
+for OB_SINK in $(pacmd list-sinks | grep 'index:' | cut -b12-); do
+    OB_str="pactl set-sink-volume index: $OB_SINK $OB_VOLUME"
+    pactl set-sink-volume $OB_SINK $OB_VOLUME
     OB_rc=$?
-    if [ $OB_rc -eq 0 ]; then
-        OB_stts="Ok  "
-    else
-        OB_stts="Erro"
-    fi
-    echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+    [ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+    echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
 done
+unset OB_VOLUME OB_SINK
 
-#Sound Applet
-if [ $(pgrep -lfc mate-volume-control-applet) -ge 1 ] ; then
-    while 2>/dev/null killall mate-volume-control-applet; do
-        sleep 1
-    done
-fi
 
-OB_str="mate-volume-control-applet"
-OB_stts=""
-
-mate-volume-control-applet &
-
-OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
+# ==================================
+# X compositor
+# ==================================
+if [ $(command -v picom) ]; then
+    if [ $(pgrep -lfc picom) -ge 1 ] ; then
+        while 2>/dev/null killall picom; do
+            sleep 1
+        done
+    fi
+    OB_str="picom -b --config $HOME/.config/picom/picom.conf"
+    OB_stts=""
+    picom -b --config "$HOME/.config/picom/picom.conf" &
+    OB_rc=$?
+    [ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+    echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
 else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
-
-
-#screensaver (mate-screensaver)
-if [ $(pgrep -lfc cinnamon-screensaver) -ge 1 ] ; then
-    while 2>/dev/null killall cinnamon-screensaver; do
-        sleep 1
-    done
-fi
-if [ $(pgrep -lfc mate-screensaver) -ge 1 ] ; then
-    while 2>/dev/null killall mate-screensaver; do
-        sleep 1
-    done
-fi
-if [ $(pgrep -lfc gnome-screensaver) -ge 1 ] ; then
-    while 2>/dev/null killall gnome-screensaver; do
-        sleep 1
-    done
-fi
-if [ $(pgrep -lfc xscreensaver) -ge 1 ] ; then
-    while 2>/dev/null killall xscreensaver; do
-        sleep 1
-    done
+    if [ $(pgrep -lfc compton) -ge 1 ] ; then
+        while 2>/dev/null killall compton; do
+            sleep 1
+        done
+    fi
+    OB_str="compton -b --config $HOME/.config/compton.conf"
+    OB_stts=""
+    compton -b --config "$HOME/.config/compton.conf" &
+    OB_rc=$?
+    [ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+    echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
 fi
 
+
+# ==================================
+# Start mate settings - (moved to xdg-autostart)
+# ==================================
+#OB_str="mate-settings-daemon"
+#OB_stts=""
+#if [ $(pgrep -lfc mate-settings-daemon) -ge 1 ] ; then
+#    while 2>/dev/null killall mate-settings-daemon; do
+#        sleep 1
+#    done
+#fi
+#mate-settings-daemon &
+#OB_rc=$?
+#[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+#echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+
+
+# ==================================
+# Start power manager deamon from mate - (moved to xdg-autostart)
+# ==================================
+#OB_str="mate-power-manager"
+#OB_stts=""
+#if [ $(pgrep -lfc mate-power-manager) -ge 1 ] ; then
+#    while 2>/dev/null killall mate-power-manager; do
+#        sleep 1
+#    done
+#fi
+#mate-power-manager &
+#OB_rc=$?
+#[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+#echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+
+
+# ==================================
+#Sound Applet from mate - (moved to xdg-autostart)
+# ==================================
+#OB_str="mate-volume-control-applet"
+#OB_stts=""
+#
+#if [ $(pgrep -lfc mate-volume-control-applet) -ge 1 ] ; then
+#    while 2>/dev/null killall mate-volume-control-applet; do
+#        sleep 1
+#    done
+#fi
+#
+#mate-volume-control-applet &
+#
+#OB_rc=$?
+#[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+#echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+
+
+# ==================================
+#Screensaver from mate - (moved to xdg-autostart)
+# ==================================
 #OB_str="mate-screensaver"
 #OB_stts=""
-
+#if [ $(pgrep -lfc cinnamon-screensaver) -ge 1 ] ; then
+#    while 2>/dev/null killall cinnamon-screensaver; do
+#        sleep 1
+#    done
+#fi
+#if [ $(pgrep -lfc mate-screensaver) -ge 1 ] ; then
+#    while 2>/dev/null killall mate-screensaver; do
+#        sleep 1
+#    done
+#fi
+#if [ $(pgrep -lfc gnome-screensaver) -ge 1 ] ; then
+#    while 2>/dev/null killall gnome-screensaver; do
+#        sleep 1
+#    done
+#fi
+#if [ $(pgrep -lfc xscreensaver) -ge 1 ] ; then
+#    while 2>/dev/null killall xscreensaver; do
+#        sleep 1
+#    done
+#fi
 #mate-screensaver &
-
 #OB_rc=$?
 #if [ $OB_rc -eq 0 ]; then
 #    OB_stts="Ok  "
 #else
 #    OB_stts="Erro"
 #fi
-#echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+#echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
 
-
-# Start network manager applet
-if [ $(pgrep -lfc nm-applet) -ge 1 ] ; then
-    while 2>/dev/null killall nm-applet; do
-        sleep 1
-    done
-fi
-
-OB_str="/usr/bin/nm-applet"
-OB_stts=""
-
-/usr/bin/nm-applet &
-
-OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
-
-
-# Update user dirs
-sleep 1
-OB_str="xdg-user-dirs-gtk-update"
-OB_stts=""
-
-xdg-user-dirs-gtk-update &
-
-OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
-
-
-# xautolock
-OB_str="~/bin/delayctl 30"
-OB_stts=""
-
-~/bin/delayctl 30 &
-
-OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
-
-
-# Conky
-#if [ $(pgrep -lfc conky) -ge 1 ] ; then
-#    killall conky > /dev/null
-#fi
-
+# ==================================
+# Start redshift - (moved to xdg-autostart)
+# ==================================
 #sleep 1
-#OB_str="~/bin/conky/conky-startup.sh"
+#OB_str="redshift-gtk"
 #OB_stts=""
-
-#~/bin/conky/conky-startup.sh &
-
-#OB_rc=$?
-#if [ $OB_rc -eq 0 ]; then
-#    OB_stts="Ok  "
-#else
-#    OB_stts="Erro"
+#
+#if [ $(pgrep -lfc redshift-gtk) -ge 1 ] ; then
+#    while 2>/dev/null redshift-gtk; do
+#        sleep 1
+#    done
 #fi
-#echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+#if [ $(pgrep -lfc redshift) -ge 1 ] ; then
+#    while 2>/dev/null killall redshift; do
+#        sleep 1
+#    done
+#fi
+#redshift-gtk &
+#OB_rc=$?
+#[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+#echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+
+# ==================================
+# Start network manager applet - (moved to xdg-autostart)
+# ==================================
+#OB_str="/usr/bin/nm-applet"
+#OB_stts=""
+#if [ $(pgrep -lfc nm-applet) -ge 1 ] ; then
+#    while 2>/dev/null killall nm-applet; do
+#        sleep 1
+#    done
+#fi
+#/usr/bin/nm-applet &
+#OB_rc=$?
+#[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+#echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
 
 
-# Tint2 panel
+# ==================================
+# Start Tint2 panel
+# ==================================
 sleep 1
-
+OB_str="tint2"
+OB_stts=""
 if [ $(pgrep -lfc tint2) -ge 1 ] ; then
     while 2>/dev/null killall tint2; do
         sleep 1
     done
 fi
-
-OB_str="tint2"
-OB_stts=""
-
 tint2 &
-
 OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
 
 
-# lightsOn
-#if [ $(pgrep -lfc lightsOn.sh) -ge 1 ] ; then
-#  while 2>/dev/null killall lightsOn.sh; do
-#    sleep 1
-#  done
+# ==================================
+# My settings to prevent screen blanking when demanded
+# ==================================
+sleep 0.3
+OB_str="$HOME/bin/delayctl 50"
+OB_stts=""
+~/bin/delayctl 50 &
+OB_rc=$?
+[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+
+
+# ==================================
+# My wallpaper changer
+# ==================================
+sleep 0.3
+OB_str="$HOME/bin/mywallchng"
+OB_stts=""
+#if [ $(pgrep -lfc mywallchng) -ge 1 ] ; then
+#    while 2>/dev/null killall mywallchng; do
+#        sleep 1
+#    done
 #fi
-
-#OB_str="~/bin/lightsOn.sh 20"
-#OB_stts=""
-
-#~/bin/lightsOn.sh 20 &
-
-#OB_rc=$?
-#if [ $OB_rc -eq 0 ]; then
-#    OB_stts="Ok  "
-#else
-#    OB_stts="Erro"
-#fi
-#echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
-
-# redshift
-if [ $(pgrep -lfc redshift-gtk) -ge 1 ] ; then
-    killall redshift-gtk > /dev/null
-fi
-if [ $(pgrep -lfc redshift) -ge 1 ] ; then
-    killall redshift > /dev/null
-fi
-sleep 1
-OB_str="redshift-gtk"
-OB_stts=""
-
-redshift-gtk &
-
+~/bin/mywallchng &
 OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
 
-export OB_rc
 
-# changer
-if [ $(pgrep -lfc changer.sh) -ge 1 ] ; then
-    while 2>/dev/null killall changer.sh; do
-        sleep 1
-    done
-fi
-
-OB_str="~/bin/changer.sh"
+# ==================================
+# My touchpad controller
+# ==================================
+sleep 0.5
+OB_str="$HOME/bin/touchpadctl"
 OB_stts=""
-
-~/bin/changer.sh &
-
-OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
-
-export OB_rc
-
-OB_str="~/bin/touchpadctl"
-OB_stts=""
-
 ~/bin/touchpadctl -d &
-
 OB_rc=$?
-if [ $OB_rc -eq 0 ]; then
-    OB_stts="Ok  "
-else
-    OB_stts="Erro"
-fi
-echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
 
-export OB_rc
+
+# ==================================
+# Orcsome WM_NET_ Window customizing
+# ==================================
+#sleep 1
+#OB_str="orcsome -c ~/.config/orcsome/rc.py"
+#OB_stts=""
+#if [ $(pgrep -lfc orcsome) -ge 1 ] ; then
+#    while 2>/dev/null killall orcsome; do
+#        sleep 1
+#    done
+#fi
+#orcsome -c ~/.config/orcsome/rc.py &
+#OB_rc=$?
+#[ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
+#echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
+
+
+unset OB_str OB_stts &
+export OB_rc &
+
+echo "`date +%F-%H:%M:%S` $HOSTNAME - autostart end" >> "$OB_logfile"

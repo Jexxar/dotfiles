@@ -963,6 +963,10 @@
   </application>
 
   # end of the example
+    <application groupclass="Firefox">
+      <decor>no</decor>
+      <shade>no</shade>
+    </application>
 -->
     <application name="polkit-mate-authentication-agent-1">
       <skip_pager>yes</skip_pager>
@@ -981,6 +985,14 @@
       <maximized>no</maximized>
     </application>
     <application name="gksu">
+      <skip_pager>yes</skip_pager>
+      <skip_taskbar>yes</skip_taskbar>
+      <focus>yes</focus>
+      <layer>above</layer>
+      <fullscreen>no</fullscreen>
+      <maximized>no</maximized>
+    </application>
+    <application name="pkexec">
       <skip_pager>yes</skip_pager>
       <skip_taskbar>yes</skip_taskbar>
       <focus>yes</focus>

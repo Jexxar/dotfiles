@@ -1,62 +1,39 @@
 #!/usr/bin/env bash
 set -eu
 
-if [ -f "$HOME/bin/mylog" ]; then
-    . "$HOME/bin/mylog"
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
 fi
 
 # This script is intended to be run as an editor helper.
 
-cmd=${2:-edit}
-
-function is_running_X(){
-    if ! xset q &>/dev/null; then
-        return 1
-    fi
-    return 0
-}
-
 function has_editor(){
-	[ -z "$1" ] && return 1;
-	local tmp=$(which $1)
-	if [ -z $tmp ]; then
-		echo ""
+    [ -z "$1" ] && return 1;
+    local tmp=""
+    tmp=$(command -v $1)
+    if [ -z "$tmp" ]; then
+        echo ""
         return 1
     fi
-	echo "$tmp"
+    echo "$tmp"
     return 0
 }
 
 function do_edit() {
-    if [ is_running_X ]; then
-        local edt=$(has_editor "subl")
-        if [ ! -z "$edt" ]; then 
-            $edt "$1"
-            return 0
-        fi
-        edt=$(has_editor "geany")
-        if [ ! -z "$edt" ]; then 
-            $edt "$1"
-            return 0
-        fi
-        edt=$(has_editor "xed")
-        if [ ! -z "$edt" ]; then 
-            $edt "$1"
-            return 0
-        fi
-        edt=$(has_editor "gedit")
-        if [ ! -z "$edt" ]; then 
-            $edt "$1"
-            return 0
-        fi
-        edt=$(has_editor "atom")
-        if [ ! -z "$edt" ]; then 
-            $edt "$1"
-            return 0
-        fi
+    local XedtApps=('subl' 'subl3' 'sublime-text' 'geany' 'xed' 'gedit' 'pluma' 'leafpad' 'atom' 'vim')
+    local edt=""
+    
+    if is_running_X ; then
+        for i in "${XedtApps[@]}"; do
+            edt=$(has_editor "${i}")
+            if [ -n "$edt" ]; then
+                $edt "$1"
+                return 0
+            fi
+        done
     else
-        local edt=$(has_editor "nano")
-        if [ ! -z "$edt" ]; then 
+        edt=$(has_editor "nano")
+        if [ -n "$edt" ]; then
             $edt "$1"
             return 0
         fi
@@ -70,20 +47,31 @@ function do_edit() {
 }
 
 function do_test() {
-    local subl_present=$(has_editor "subl")
-    local geany_present=$(has_editor "geany")
-    local xed_present=$(has_editor "xed")
-    local gedit_present=$(has_editor "gedit")
-    local atom_present=$(has_editor "atom")
-    local nano_present=$(has_editor "nano")
+    local subl_present=""
+    local geany_present=""
+    local xed_present=""
+    local gedit_present=""
+    local pluma_present=""
+    local atom_present=""
+    local leaf_present=""
+    local nano_present=""
 
+    subl_present=$(has_editor "subl" || has_editor "subl3")
+    geany_present=$(has_editor "geany")
+    xed_present=$(has_editor "xed")
+    gedit_present=$(has_editor "gedit")
+    pluma_present=$(has_editor "pluma")
+    atom_present=$(has_editor "atom")
+    leaf_present=$(has_editor "leafpad")
+    nano_present=$(has_editor "nano")
+    
     if [ ! -z "$1" ]; then
         log "target is $1"
     else
         log "no target found"
     fi
-
-    if [ is_running_X ]; then
+    
+    if is_running_X ; then
         log "X is running"
     else
         log "X server down"
@@ -102,21 +90,33 @@ function do_test() {
     fi
     
     if [ ! -z "$xed_present" ]; then
-        log "xed present"
+        log "xed present @ $xed_present"
     else
         log "xed not found"
     fi
-
+    
     if [ ! -z "$gedit_present" ]; then
         log "gedit present @ $gedit_present"
     else
         log "gedit not found"
     fi
-
+    
+    if [ ! -z "$pluma_present" ]; then
+        log "pluma present @ $pluma_present"
+    else
+        log "pluma not found"
+    fi
+    
     if [ ! -z "$atom_present" ]; then
         log "atom present @ $atom_present"
     else
         log "atom not found"
+    fi
+    
+    if [ ! -z "$leaf_present" ]; then
+        log "leafpad present @ $leaf_present"
+    else
+        log "leafpad not found"
     fi
 
     if [ ! -z "$nano_present" ]; then
@@ -124,17 +124,19 @@ function do_test() {
     else
         log "nano not found"
     fi
-
+    
     return 0
 }
 
+cmd=${2:-edit}
+
 case "$cmd" in
     edit)
-        do_edit $1
-        ;;  
+        do_edit "$1"
+    ;;
     debug)
-        do_test $1
-        ;;
+        do_test "$1"
+    ;;
     *)
         log "Unrecognized option: $2"
 esac

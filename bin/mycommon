@@ -1,16 +1,218 @@
 #!/usr/bin/env bash
 
-# common functions for pipe menus
+test -f ${XDG_CONFIG_HOME:-~/.config}/user-dirs.dirs && source ${XDG_CONFIG_HOME:-~/.config}/user-dirs.dirs
+
+# Find and/or create path for logging
+function doLogPath() {
+    local fpPath="/var/log"
+    [ ! -w "$fpPath" ] && fpPath="$HOME/.local/var/log" ;
+    [ ! -d "$fpPath" ] && mkdir -p $fpPath ;
+    if [ ! -d "$fpPath" ]; then
+        echo ""
+        return 1
+    fi
+    echo "$fpPath"
+    return 0
+}
+
+# Script name that is sourcing this
+myLogScriptName="${0##*/}"
+myLogSctiptBase="${myLogScriptName%%.*}"
+
+# Find a path to Log file
+myLogPath=$(doLogPath)
+myLogFile="$myLogPath/$myLogSctiptBase.log"
+
+# Print the given message with a timestamp.
+function info() { printf '%s %s\n' "$(date +%F_%H:%M:%S | tr '_' ' ') $HOSTNAME" "$*"; }
+
+# Standard log file
+function log() {
+    local LOCK_rc=0
+    if [ ! -f "$myLogFile" ]; then
+        touch "$myLogFile"
+        LOCK_rc=$?
+    fi
+    if [[ $LOCK_rc -eq 0 && -f "$myLogFile" ]]; then
+        info >>"$myLogFile" "$@"
+    else
+        info "$@"
+    fi
+}
+
+# Return 0 if user in the active session can issue power related commands via policykit
+function auth_user() {
+    [ $(loginctl show-session $XDG_SESSION_ID --property=Active | grep "yes") ] && return 0
+    return 1
+}
+
+function can_hibernate() {
+    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanHibernate | grep "yes") ] && return 0
+    return 1
+}
+
+function can_poweroff() {
+    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanPowerOff | grep "yes") ] && return 0
+    return 1
+}
+
+function can_reboot() {
+    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanReboot | grep "yes") ] && return 0
+    return 1
+}
+
+function can_suspend() {
+    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanSuspend | grep "yes") ] && return 0
+    return 1
+}
+
+# Hibernate using dbus logind (only if user is authorized)
+function dbus_suspend() {
+    dbus-send --system \
+    --print-reply=literal \
+    --dest=org.freedesktop.login1 \
+    /org/freedesktop/login1 "org.freedesktop.login1.Manager.Hibernate" boolean:true
+}
+
+# Poweroff using dbus logind  (only if user is authorized)
+function dbus_poweroff() {
+    dbus-send --system \
+    --print-reply=literal \
+    --dest=org.freedesktop.login1 \
+    /org/freedesktop/login1 "org.freedesktop.login1.Manager.PowerOff" boolean:true
+}
+
+# Reboot using dbus logind  (only if user is authorized)
+function dbus_reboot() {
+    dbus-send --system \
+    --print-reply=literal \
+    --dest=org.freedesktop.login1 \
+    /org/freedesktop/login1 "org.freedesktop.login1.Manager.Reboot" boolean:true
+}
+
+# Suspend using dbus logind (only if user is authorized)
+function dbus_suspend() {
+    dbus-send --system \
+    --print-reply=literal \
+    --dest=org.freedesktop.login1 \
+    /org/freedesktop/login1 "org.freedesktop.login1.Manager.Suspend" boolean:true
+}
+
+# Return 0 if systemctl is found.
+function systemctl_ok() {
+    [ $(command -v systemctl) ] && return 0
+    return 1
+}
+
+# Return 0 if shutdown is found.
+function shutdown_ok() {
+    [ $(command -v shutdown) ] && return 0
+    return 1
+}
+
+# Return 0 if init is found.
+function init_ok() {
+    [ $(command -v init) ] && return 0
+    return 1
+}
+
+# Is the screen already locked?
+function locked() {
+    local DebugMode=${1:-no}
+    local scrsvApps=('i3lock' 'mate-screensaver-dialog' 'cinnamon-screensaver-pam-helper' 'slimlock' 'gnome-screensaver-dialog' 'xscreensaver')
+    local c=0
+    for p1 in "${scrsvApps[@]}"; do
+        c=$(pgrep -lfc "${p1}")
+        if [ $c -gt 0 ] ; then
+            if [ "$DebugMode" = "debug" ]; then
+                log "${p1} found and active";
+                return 0;
+            fi
+        fi
+    done
+    return 1;
+}
+
+# Control the dunst daemon, if it is running.
+function dunstctl() {
+    pkill -0 --exact dunst || return 0
+    
+    case ${1:-} in
+        stop)
+            log "Stopping notifications and locking screen."
+            pkill -USR1 --euid "$(id -u)" --exact dunst
+        ;;
+        resume)
+            log "...Resuming notifications."
+            pkill -USR2 --euid "$(id -u)" --exact dunst
+        ;;
+        check)
+            log "Checking for dunst."
+            [ $(command -v dunst) ] && return 0 || return 1
+        ;;
+        *)
+            echo "dunstctl argument required: stop, resume or check"
+            return 1
+        ;;
+    esac
+    return 0
+}
+
+# Cleanup running processes.
+function stop_it() {
+    [ -z "$1" ] && return 1
+    
+    local pgrep_cmd="\$(pgrep -lfc $1)"
+    local stop_cmd="2>/dev/null killall $1"
+    
+    case ${2:-} in
+        stop)
+            if [ $(pgrep -lfc "$1") -ge 1 ] ; then
+                while 2>/dev/null killall "$1"; do
+                    sleep 0.1;
+                done
+            fi
+            return 0
+        ;;
+        debug)
+            log "$pgrep_cmd"
+            if [ $(pgrep -lfc "$1") -ge 1 ] ; then
+                log "$1 need to be terminated"
+                log "$stop_cmd"
+            fi
+            return 0
+        ;;
+        *)
+            log "2nd argument must be: stop or debug";
+            return 1
+        ;;
+    esac
+}
+
+# xset required
+# check for a running X server
+function is_running_X(){
+    if ! xset q &>/dev/null; then
+        return 1
+    fi
+    return 0
+}
+
+# builtin sleep in bash
+function snore(){
+    local IFS
+    [[ -n "${_snore_fd:-}" ]] || exec {_snore_fd}<> <(:)
+    read ${1:+-t "$1"} -u $_snore_fd || :
+}
 
 # required awk, bc
-
 function findJPGPath(){
     if [ -z "$1" ] || [ -z "$2" ]; then
         echo ""
         return 1
     fi
     local iconJPG="${2}.jpg"
-    cd "${1}" 
+    cd "${1}"
     find . -name "${iconJPG}" | grep "16" | cut -c 2- | tail -n 1
     return 0
 }
@@ -21,7 +223,7 @@ function findPNGPath(){
         return 1
     fi
     local iconPNG="${2}.png"
-    cd "${1}" 
+    cd "${1}"
     find . -name "${iconPNG}" | grep "16" | cut -c 2- | tail -n 1
     return 0
 }
@@ -32,7 +234,7 @@ function findSVGPath(){
         return 1
     fi
     local iconSVG="${2}.svg"
-    cd "${1}" 
+    cd "${1}"
     find . -name "${iconSVG}" | cut -c 2- | tail -n 1
     return 0
 }
@@ -122,7 +324,7 @@ function iconPath(){
     local themePath=""
     local iconPath=""
     local themeName=""
-
+    
     themeName=$(findIconThemeName)
     themePath=$(findIconThemePath "$themeName")
     
@@ -145,4 +347,3 @@ function iconPath(){
     return 0
 }
 
-test -f ${XDG_CONFIG_HOME:-~/.config}/user-dirs.dirs && source ${XDG_CONFIG_HOME:-~/.config}/user-dirs.dirs

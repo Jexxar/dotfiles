@@ -1,109 +1,14 @@
 #!/usr/bin/env bash
 set -eu
 
-if [ -f "$HOME/bin/mylog" ]; then
-    . "$HOME/bin/mylog"
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
 fi
-
-# This script is intended to be run as openbox exit helper.
-# It requires i3lock, and dunst is optional.
-
-cmd=${1:-exit}
-
-function is_running_X(){
-    if ! xset q &>/dev/null; then
-        return 1
-    fi
-    return 0
-}
-
-# Is the screen already locked?
-function locked() {
-    local DebugMode=${1:-no}
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "i3lock" &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "i3lock found and active"
-        fi
-        return 0;
-    fi
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "mate-screensaver-dialog" &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "mate-screensaver-dialog found and active"
-        fi
-        return 0;
-    fi
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "cinnamon-screensaver-pam-helper" &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "cinnamon-screensaver-pam-helper found and active"
-        fi
-        return 0;
-    fi
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "slimlock" &>/dev/null 
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "slimlock found and active"
-        fi
-        return 0;
-    fi
-    return 1
-}
-
-# Control the dunst daemon, if it is running.
-function dunst() {
-    pkill -0 --exact dunst || return 0
-
-    case ${1:-} in
-        stop)
-            log "Stopping notifications and locking screen."
-            pkill -USR1 --euid "$(id -u)" --exact dunst
-            ;;
-        resume)
-            log "...Resuming notifications."
-            pkill -USR2 --euid "$(id -u)" --exact dunst
-            ;;
-        *)
-            echo "dunst argument required: stop or resume"
-            return 1
-            ;;
-    esac
-}
-
-# Cleanup running processes.
-function stop_it() {
-    [ -z "$1" ] && return 1
-    
-    local pgrep_cmd="\$(pgrep -lfc $1)"
-    local stop_cmd="2>/dev/null killall $1"
-
-    case ${2:-} in
-        stop)
-            if [ $(pgrep -lfc "$1") -ge 1 ] ; then
-                while 2>/dev/null killall "$1"; do
-                    sleep 0.1;
-                done
-            fi
-            ;;
-        debug)
-            log "$pgrep_cmd"
-            if [ $(pgrep -lfc "$1") -ge 1 ] ; then
-                log "$1 need to be terminated"
-                log "$stop_cmd"
-            fi
-            ;;
-        *)
-            log "2nd argument must be: stop or debug";
-            return 1
-            ;;
-    esac
-}
 
 # Exit wm if possible.
 function do_this_exit() {
     # Only works if X is running.
-    if [ ! is_running_X ]; then
+    if ! is_running_X ; then
         log "X server is not running";
         return 0;
     fi
@@ -111,25 +16,28 @@ function do_this_exit() {
     # Screen must be unlocked first.
     locked && return 0;
     
-    dunst stop
+    dunstctl stop
 
     # Stop this session and daemon running processes.
+    stop_it "polkit-gnome-authentication-agent-1" "stop"
     stop_it "gnome-keyring-daemon" "stop"
-    stop_it "tint2" "stop"
     stop_it "gnome-settings-daemon" "stop"
-    stop_it "mate-settings-daemon" "stop"
-    stop_it "xautolock" "stop"
-    stop_it "polkit-mate-authentication-agent-1" "stop"
-    stop_it "mate-power-manager" "stop"
     stop_it "gnome-screensaver" "stop"
-    stop_it "xscreensaver" "stop"
+    stop_it "polkit-mate-authentication-agent-1" "stop"
+    stop_it "mate-settings-daemon" "stop"
+    stop_it "mate-power-manager" "stop"
+    stop_it "mate-volume-control-applet" "stop"
+    stop_it "mate-screensaver" "stop"
     stop_it "cinnamon-screensaver" "stop"
+    stop_it "xscreensaver" "stop"
+    stop_it "xautolock" "stop"
     stop_it "redshift-gtk" "stop"
     stop_it "redshift" "stop"
-    stop_it "delayctl" "stop"
-    stop_it "changer.sh" "stop"
+    stop_it "mylightson" "stop"
+    stop_it "mywallchng" "stop"
+    stop_it "tint2" "stop"
     stop_it "compton" "stop"
-    
+
     log "Exiting now..."
     openbox --exit;
 
@@ -141,7 +49,7 @@ function do_this_exit() {
 }
 
 function do_test() {
-    if [ is_running_X ]; then
+    if is_running_X ; then
         log "X is running"
     else
         log "X server down"
@@ -159,20 +67,23 @@ function do_test() {
         log "dunst not found"
     fi
 
+    stop_it "polkit-gnome-authentication-agent-1" "debug"
     stop_it "gnome-keyring-daemon" "debug"
-    stop_it "tint2" "debug"
     stop_it "gnome-settings-daemon" "debug"
-    stop_it "mate-settings-daemon" "debug"
-    stop_it "xautolock" "debug"
-    stop_it "polkit-mate-authentication-agent-1" "debug"
-    stop_it "mate-power-manager" "debug"
     stop_it "gnome-screensaver" "debug"
-    stop_it "xscreensaver" "debug"
+    stop_it "polkit-mate-authentication-agent-1" "debug"
+    stop_it "mate-settings-daemon" "debug"
+    stop_it "mate-power-manager" "debug"
+    stop_it "mate-volume-control-applet" "debug"
+    stop_it "mate-screensaver" "debug"
     stop_it "cinnamon-screensaver" "debug"
+    stop_it "xscreensaver" "debug"
+    stop_it "xautolock" "debug"
     stop_it "redshift-gtk" "debug"
     stop_it "redshift" "debug"
-    stop_it "delayctl" "debug"
-    stop_it "changer.sh" "debug"
+    stop_it "mylightson" "debug"
+    stop_it "mywallchng" "debug"
+    stop_it "tint2" "debug"
     stop_it "compton" "debug"
 
     log "Exiting now..."
@@ -182,6 +93,9 @@ function do_test() {
     
     return 0
 }
+
+
+cmd=${1:-exit}
 
 case "$cmd" in
     exit)

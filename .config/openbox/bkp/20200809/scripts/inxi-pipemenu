@@ -1,0 +1,289 @@
+#!/usr/bin/env bash
+# -pipemenu
+
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/pipe-common.sh"
+
+if [ -f "$COMMON_FUNCTIONS" ]; then
+    . "${COMMON_FUNCTIONS}" 2> /dev/null
+else
+    echo $"Error: Failed to locate $COMMON_FUNCTIONS" >&2
+    exit 1
+fi
+
+function doMenu() {
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) doMenu_en ;; # Deutsch
+        da_* ) doMenu_en ;; # Danish
+        es_* ) doMenu_en ;; # Española
+        fr_* ) doMenu_en ;; # Français
+        id_* ) doMenu_en ;; # Bahasa Indonesia
+        it_* ) doMenu_en ;; # Italian
+        lv_* ) doMenu_en ;; # Latvian
+        pl_* ) doMenu_en ;; # Polish
+        pt_* ) doMenu_pt ;; # Português
+        ru_* ) doMenu_en ;; # Russian
+        * ) doMenu_en ;; # Default to English
+    esac
+}
+
+function doMenu_en() {
+    menuBegin
+    menuSep 
+    menuItem "Audio" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Audio]]>" "gnome-volume-control"
+    menuItem "Battery" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Battery]]>" "dialog-information-symbolic"
+    menuItem "CPU" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu CPU]]>" "cpu"
+    menuItem "Drives Info" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu DrivesGI]]>" "drive-harddisk"
+    menuItem "Drives UUID Used" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu DrivesUU]]>" "drive-harddisk"
+    menuItem "Drives Unmounted" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu DrivesUN]]>" "drive-harddisk"
+    menuItem "Graphics" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Graphics]]>" "mate-preferences-desktop-display"
+    menuItem "Host Info" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu HostKBD]]>" "computer"
+    menuItem "Machine Info" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu MachineInfo]]>" "computer"
+    menuItem "Network" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Network]]>" "preferences-system-network"
+    menuItem "Processes" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Processes]]>" "utilities-system-monitor"
+    menuItem "Process Summary" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu ProcUptimeMemory]]>" "dialog-information-symbolic"
+    menuItem "Repositories" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Repositories]]>" "system-software-install"
+    menuItem "Resolution" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Resolution]]>" "mate-preferences-desktop-display"
+    menuItem "Temperature" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Temperature]]>" "hwinfo"
+    menuItem "Weather" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Weather]]>" "weather-overcast-symbolic"
+    menuEnd
+}
+
+function doMenu_pt() {
+    menuBegin
+    menuSep 
+    menuItem "$(esc_enc Audio)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Audio]]>" "gnome-volume-control"
+    menuItem "$(esc_enc Bateria)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Battery]]>" "dialog-information-symbolic"
+    menuItem "$(esc_enc CPU)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu CPU]]>" "cpu"
+    menuItem "$(esc_enc Discos Info)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu DrivesGI]]>" "drive-harddisk"
+    menuItem "$(esc_enc Uso UUID)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu DrivesUU]]>" "drive-harddisk"
+    menuItem "$(esc_enc Não Montado)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu DrivesUN]]>" "drive-harddisk"
+    menuItem "$(esc_enc Gráficos)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Graphics]]>" "mate-preferences-desktop-display"
+    menuItem "$(esc_enc Host)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu HostKBD]]>" "computer"
+    menuItem "$(esc_enc Máquina)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu MachineInfo]]>" "computer"
+    menuItem "$(esc_enc Rede)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Network]]>" "preferences-system-network"
+    menuItem "$(esc_enc Processos)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Processes]]>" "utilities-system-monitor"
+    menuItem "$(esc_enc Sumário)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu ProcUptimeMemory]]>" "dialog-information-symbolic"
+    menuItem "$(esc_enc Repositórios)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Repositories]]>" "system-software-install"
+    menuItem "$(esc_enc Resolução)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Resolution]]>" "mate-preferences-desktop-display"
+    menuItem "$(esc_enc Temperatura)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Temperature]]>" "hwinfo"
+    menuItem "$(esc_enc Clima)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Weather]]>" "weather-overcast-symbolic"
+    menuEnd
+}
+
+function doAudio() {
+    if [ -z "$1" ]; then
+        inxi -A -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -A -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0
+}
+
+function doBattery() {
+    if [ -z "$1" ]; then
+        inxi -B -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -B -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0
+}
+
+function doCPU() {
+    if [ -z "$1" ]; then
+        inxi -C -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -C -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0
+}
+
+function doDrivesGI() {
+    if [ -z "$1" ]; then
+        inxi -d -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -d -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0
+}
+
+function doDrivesUU() {
+    if [ -z "$1" ]; then
+        inxi -plu -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -plu -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0
+}
+
+function doDrivesUN() {
+    if [ -z "$1" ]; then
+        inxi -o -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -o -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0
+}
+
+function doGraphics() {
+    if [ -z "$1" ]; then
+        inxi -G -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -G -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0
+}
+
+function doHostKBD() {
+    if [ -z "$1" ]; then
+        inxi -S -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -S -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0
+}
+
+function doMachine() {
+    if [ -z "$1" ]; then
+        inxi -MZ -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -MZ -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0 
+}
+
+function doNetwork() {
+    if [ -z "$1" ]; then
+        inxi -NnixxxZ -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -NnixxxZ -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0
+}
+
+function doProcesses() {
+    if [ -z "$1" ]; then
+        inxi -t cm -x -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -t cm -x -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0
+}
+
+function doProcUptimeMemory() {
+    if [ -z "$1" ]; then
+        inxi -I -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -I -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0
+}
+
+function doRepositories() {
+    if [ -z "$1" ]; then
+        inxi -r -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -r -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0
+}
+
+function doResolution() {
+    if [ -z "$1" ]; then
+        inxi -G -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -G -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0
+}
+
+function doTemperature() {
+    if [ -z "$1" ]; then
+        inxi -s -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -s -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0
+}
+
+function doWeather() {
+    if [ -z "$1" ]; then
+    #inxi -xxx -W 55051 -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9"
+        inxi -xxx -W curitiba,brazil -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -xxx -W curitiba,brazil -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0
+}
+
+function doAll() {
+    if [ -z "$1" ]; then
+        inxi -Fxxxz -c0 | zenity  --text-info --title "Inxi information..." --width 900 --height 300 --font "Hack Nerd Font Mono 9" 2> /dev/null
+    else
+        inxi -Fxxxz -c0 | gxmessage -font "Hack Nerd Font Mono 9" -center -file - 2> /dev/null
+    fi
+    return 0
+}
+
+function main() {
+    local cmd=${1:-menu}
+    local outapp=$(which gxmessage)
+    case "$cmd" in
+        All)
+            doAll $outapp
+            ;;
+        Audio)
+            doAudio $outapp
+            ;;
+        Battery)
+            doBattery $outapp
+            ;;
+        CPU)
+            doCPU $outapp
+            ;;
+        DrivesGI)
+            doDrivesGI $outapp
+            ;;
+        DrivesUU)
+            doDrivesUU $outapp
+            ;;
+        DrivesUN)
+            doDrivesUN $outapp
+            ;;
+        Graphics)
+            doGraphics $outapp
+            ;;
+        HostKBD)
+            doHostKBD $outapp
+            ;;
+        MachineInfo)
+            doMachine $outapp
+            ;;
+        Network)
+            doNetwork $outapp
+            ;;
+        Processes)
+            doProcesses $outapp
+            ;;
+        ProcUptimeMemory)
+            doProcUptimeMemory $outapp
+            ;;
+        Repositories)
+            doRepositories $outapp
+            ;;
+        Resolution)
+            doResolution $outapp
+            ;;
+        Temperature)
+            doTemperature $outapp
+            ;;
+        Weather)
+            doWeather $outapp
+            ;;
+        *)
+            doMenu
+    esac
+}
+
+main "$1"
+

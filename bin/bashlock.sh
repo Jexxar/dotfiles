@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-if [ -f "$HOME/bin/mylog" ]; then
-    . "$HOME/bin/mylog"
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
 fi
 
 MAXRETRIES=5

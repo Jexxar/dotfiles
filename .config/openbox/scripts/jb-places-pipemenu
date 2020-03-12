@@ -131,23 +131,14 @@ function doMenu_files() {
     IFS=$'\n'
     lstfile=$(/bin/ls $path -L1h --group-directories-first )
     dpath=$(esc_enc $path)
-    #echo "$lstfile"
     #for i in "$path"* $extra_entries; do
     for i in $lstfile; do
         #[ -e "$i" ] || continue;    # only output code if file exists
         shortname="${i##*/}";
         dname=$(esc_enc $shortname);
-        #sdname=$(esc_space $dname)
-        #echo "$dpath$dname"
-        #[ -d "$path$shortname" ] && { subMenuExec "${dpath}${dname}" "${dname}" "$0 &quot;${dpath}${dname}&quot;" "inode-directory"; }
-        #[ -d "$path$shortname" ] && { subMenuExec "${dpath}${dname}" "${dname}" "$0 &quot;$path$dname&quot;" "inode-directory"; }
         [ -d "$path$shortname" ] && { subMenuExec "${dpath}${dname}" "${dname}" "$0 &quot;$path$dname&quot;"; }
         if [ -f "$path$shortname" ]; then
-            #mtype=$(/usr/bin/xdg-mime query filetype "$path$shortname" | awk -F '/' '{print $2}')
-            #mtype=$(/usr/bin/xdg-mime query filetype "$path$shortname" | sed "s/\//-/g;")
-            #echo "$mtype"
-            #menuItem "${dname}" "$0 --open '${dpath}${dname}'" "$mtype"; 
-            menuItem "${dname}" "$0 --open '${dpath}${dname}'"; 
+            menuItem "${dname}" "<![CDATA[$0 --open \"${dpath}${dname}\"]]>"; 
         fi
     done
     IFS=$old_IFS

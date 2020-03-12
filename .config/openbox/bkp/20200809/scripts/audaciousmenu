@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+# author:Matsuda Shinpei
+# Date:March 2011
+#
+# Openbox Pipe Menu for audacious
+# Feel free to change this script as you like.
+# Probably, it's not so hard to make rhythembox or other media player control menus like this,
+# as far as these media players support the CUI control commands.
+
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/pipe-common.sh"
+
+if [ -f "$COMMON_FUNCTIONS" ]; then
+    . "${COMMON_FUNCTIONS}" 2> /dev/null
+else
+    echo $"Error: Failed to locate $COMMON_FUNCTIONS" >&2
+    exit 1
+fi
+
+function doMenuRun() {
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) doMenuRun_en ;; # Deutsch
+        da_* ) doMenuRun_en ;; # Danish
+        es_* ) doMenuRun_en ;; # Española
+        fr_* ) doMenuRun_en ;; # Français
+        id_* ) doMenuRun_en ;; # Bahasa Indonesia
+        it_* ) doMenuRun_en ;; # Italian
+        lv_* ) doMenuRun_en ;; # Latvian
+        pl_* ) doMenuRun_en ;; # Polish
+        pt_* ) doMenuRun_pt ;; # Português
+        ru_* ) doMenuRun_en ;; # Russian
+        * ) doMenuRun_en ;; # Default to English
+    esac
+}
+
+function doMenuRun_en(){
+    menuBegin
+    menuItem "Run audacious" "audacious"
+    menuEnd
+}
+
+function doMenuRun_pt(){
+    menuBegin
+    menuItem "Rodar audacious" "audacious"
+    menuEnd
+}
+
+function doMenuControl() {
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) doMenuControl_en ;; # Deutsch
+        da_* ) doMenuControl_en ;; # Danish
+        es_* ) doMenuControl_en ;; # Española
+        fr_* ) doMenuControl_en ;; # Français
+        id_* ) doMenuControl_en ;; # Bahasa Indonesia
+        it_* ) doMenuControl_en ;; # Italian
+        lv_* ) doMenuControl_en ;; # Latvian
+        pl_* ) doMenuControl_en ;; # Polish
+        pt_* ) doMenuControl_pt ;; # Português
+        ru_* ) doMenuControl_en ;; # Russian
+        * ) doMenuControl_en ;; # Default to English
+    esac
+}
+
+function doMenuControl_en(){
+    local cursong=""
+    local cslen=""
+    local rpstatus=""
+    local shfstatus=""
+    cursong=$(audtool --current-song)
+    cslen=$(audtool --current-song-length)
+    rpstatus=$(audtool --playlist-repeat-status | sed -e "s/\b\(.\)/\u\1/g")
+    shfstatus=$(audtool --playlist-shuffle-status | sed -e "s/\b\(.\)/\u\1/g")
+    
+    menuBegin
+
+    if [ ! -z "$cursong" ]; then
+        menuSep "$cursong ($cslen)"
+    fi
+
+    menuItem "Play" "audtool --playback-play" 'media-playback-start'
+    menuItem "Pause" "audtool --playback-pause" 'media-playback-pause' 
+    menuItem "Stop" "audtool --playback-stop" 'media-playback-stop'
+    menuItem "Previous" "audtool --playlist-reverse" 'media-skip-backward'
+    menuItem "Next" "audtool --playlist-advance" 'media-skip-forward'
+    menuItem "Repeat $rpstatus" "audtool --playlist-repeat-toggle" 'media-playlist-repeat'
+    menuItem "Shuffle $shfstatus" "audtool --playlist-shuffle-toggle" 'media-playlist-shuffle'
+    menuItem "Jump to file" "audtool --jumptofile-show on" 'gtk-jump-to-rtl'
+    menuSep ""
+    menuItem "Add files" "audtool --filebrowser-show on --always-on-top on" 'fileopen'
+    menuItem "Preferences" "audtool --preferences-show on" 'preferences-system'    
+    menuItem "Quit audacious" "audtool --shutdown" 'system-shutdown'
+    menuEnd
+}
+
+function doMenuControl_pt(){
+    local cursong=""
+    local cslen=""
+    local rpstatus=""
+    local shfstatus=""
+    cursong=$(audtool --current-song)
+    cslen=$(audtool --current-song-length)
+    rpstatus=$(audtool --playlist-repeat-status)
+    shfstatus=$(audtool --playlist-shuffle-status)
+
+    if [ "$rpstatus" = "off" ]; then
+        rpstatus="Desligado"
+    else
+        rpstatus="Ligado"
+    fi
+    
+    if [ "$shfstatus" = "off" ]; then
+        shfstatus="Desligado"
+    else
+        shfstatus="Ligado"
+    fi
+
+    menuBegin
+
+    if [ ! -z "$cursong" ]; then
+        menuSep "$cursong ($cslen)"
+    fi
+
+    menuItem "Reproduzir" "audtool --playback-play" 'media-playback-start'
+    menuItem "Pausar" "audtool --playback-pause" 'media-playback-pause'
+    menuItem "Parar" "audtool --playback-stop" 'media-playback-stop'
+    menuItem "Anterior" "audtool --playlist-reverse" 'media-skip-backward'
+    menuItem "Proxima" "audtool --playlist-advance" 'media-skip-forward'
+    menuItem "Alterna Repetir ($rpstatus)" "audtool --playlist-repeat-toggle" 'media-playlist-repeat'
+    menuItem "Alterna Embaralhar ($shfstatus)" "audtool --playlist-shuffle-toggle" 'media-playlist-shuffle'
+    menuItem "Ir para..." "audtool --jumptofile-show on" 'gtk-jump-to-rtl'
+    menuSep ""
+    menuItem "Abrir Arquivo(s)" "audtool --filebrowser-show on --always-on-top on" 'fileopen'
+    menuItem "Configurações" "audtool --preferences-show on" 'preferences-system'
+    menuItem "Sair" "audtool --shutdown" 'system-shutdown'
+    menuEnd
+}
+
+function main(){
+    if [ ! "$(pidof audacious)" ]; then
+        doMenuRun
+        exit 0
+    fi
+    doMenuControl
+}
+
+main

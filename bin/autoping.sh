@@ -1,21 +1,16 @@
 #!/usr/bin/env bash
 set -eu
 
-if [ -f "$HOME/bin/mylog" ]; then
-    . "$HOME/bin/mylog"
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
 fi
 
-function snore()
-{
-    local IFS
-    [[ -n "${_snore_fd:-}" ]] || exec {_snore_fd}<> <(:)
-    read ${1:+-t "$1"} -u $_snore_fd || :
-}
+url=${1:-www.google.com.br}
 
-log "Initiating autoping ..."
+log "autoping $url ..."
 
-while 2>/dev/null ping -c3 www.google.com.br; do
+while 2>/dev/null ping -c3 "$url"; do
     snore 30
 done
 
-log "Terminating autoping."
+exit 0

@@ -41,7 +41,7 @@ our $SCHEMA = [
 
     {item => ['xdg-open .',       'Arquivos', 'system-file-manager']},
     {item => ['tilix',            'Terminal',     'utilities-terminal']},
-    {item => ['xdg-open http://', 'Web Browser',  'web-browser']},
+    {item => ['xdg-open https://', 'Web Browser',  'web-browser']},
     {item => ['gmrun',            'Executar comando',  'system-run']},
 
     {sep       => undef},
@@ -116,8 +116,9 @@ our $SCHEMA = [
     {pipe => ['~/.config/openbox/scripts/inxi-pipemenu', 'Inxi Info', 'dialog-information-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/storage-pipemenu', 'StorageInfo', 'dialog-information-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/sysinfo-pipemnu', 'SysInfo', 'dialog-information-symbolic']}, 
-    {pipe => ['~/.config/openbox/scripts/recent-pipemenu', 'Recentes', 'view-wrapped-symbolic']}, 
-    #{pipe => ['~/.config/openbox/scripts/recent2-pipemenu', 'Recentes', 'view-wrapped-symbolic']}, 
+    #{pipe => ['~/.config/openbox/scripts/recent-pipemenu', 'Recentes', 'view-wrapped-symbolic']}, 
+    {pipe => ['~/.config/openbox/scripts/recent2-pipemenu', 'Recentes', 'view-wrapped-symbolic']}, 
+    #{pipe => ['~/.config/openbox/scripts/mpc-pipemenu', 'MPC', 'multimedia']}, 
     {pipe => ['~/.config/openbox/scripts/audacious-pipemenu', 'Audacious', 'multimedia']}, 
     # 
     
@@ -150,7 +151,7 @@ our $SCHEMA = [
     {sep       => undef},
 
     #          NAME            LABEL                ICON
-    {cat => ['utility',     'Utilities', 'applications-utilities']},
+    {cat => ['utility',     'Utilities',   'applications-utilities']},
     {cat => ['development', 'Development', 'applications-development']},
     {cat => ['education',   'Education',   'applications-science']},
     {cat => ['game',        'Games',       'applications-games']},
@@ -158,8 +159,8 @@ our $SCHEMA = [
     {cat => ['audiovideo',  'Multimedia',  'applications-multimedia']},
     {cat => ['network',     'Network',     'applications-internet']},
     {cat => ['office',      'Office',      'applications-office']},
-    {cat => ['other',       'Others',       'applications-other']},
-    {cat => ['settings',    'Preferences',    'applications-accessories']},
+    {cat => ['other',       'Others',      'applications-other']},
+    {cat => ['settings',    'Preferences', 'applications-accessories']},
     {cat => ['system',      'System',      'applications-system']},
 
     #                  LABEL          ICON
@@ -210,9 +211,10 @@ our $SCHEMA = [
 
     {sep => undef},
 
-    #{pipe => ["~/.config/openbox/scripts/places-pipemenu", "Places", "drive-harddisk"]},
-    {pipe => ['~/.config/openbox/scripts/ob-places.pl', 'Directories', 'drive-harddisk']}, 
-    #{pipe => ['~/.config/openbox/scripts/cb-places-pipemenu', 'cbpp-places', 'drive-harddisk']}, 
+    #{pipe => ["~/.config/openbox/scripts/places-pipemenu", "Locais", "drive-harddisk"]},
+    #{pipe => ['~/.config/openbox/scripts/ob-places.pl', 'Diretórios', 'drive-harddisk']}, 
+    #{pipe => ['~/.config/openbox/scripts/cb-places-pipemenu', 'Locais', 'drive-harddisk']}, 
+    {pipe => ['~/.config/openbox/scripts/jb-places-pipemenu', 'Locais', 'drive-harddisk']}, 
     {pipe => ['~/.config/openbox/scripts/help-pipemenu', 'Help', 'help']}, 
     {pipe => ['~/.config/openbox/scripts/template-pipemenu', 'Templates', 'folder-templates-symbolic']},
     {pipe => ['~/.config/openbox/scripts/inxi-pipemenu', 'Inxi Info', 'dialog-information-symbolic']}, 

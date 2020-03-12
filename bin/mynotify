@@ -5,58 +5,12 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-if [ -f "$HOME/bin/mylog" ]; then
-    . "$HOME/bin/mylog"
-fi
-
 # This script is intended to be run as the main notifier script for this installation.
-cmd=${1:-notify}
-
-function is_running_X(){
-    xset q &>/dev/null && return 0;
-    return 1
-}
-
-# Is the screen already locked?
-function locked() {
-    local DebugMode=${1:-no}
-    ps f -u "$USER" -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "i3lock" &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "i3lock found and active"
-        fi
-        return 0;
-    fi
-    ps f -u "$USER" -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "mate-screensaver-dialog" &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "mate-screensaver-dialog found and active"
-        fi
-        return 0;
-    fi
-    ps f -u "$USER" -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "cinnamon-screensaver-pam-helper" &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "cinnamon-screensaver-pam-helper found and active"
-        fi
-        return 0;
-    fi
-    ps f -u "$USER" -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "slimlock" &>/dev/null 
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "slimlock found and active"
-        fi
-        return 0;
-    fi
-    return 1
-}
 
 # Notify desired message.
 function do_notify() {
     # Only works if X is running.
-    if [ is_running_X ]; then
-        log "X server is running"
-    else
+    if ! is_running_X; then
         log "X server is not running";
         return 0;
     fi
@@ -81,13 +35,13 @@ function do_notify() {
 }
 
 function do_test() {
-    if [ is_running_X ]; then
+    if is_running_X; then
         log "X is running"
     else
         log "X server down"
     fi
     
-    if [ `locked "debug"` ]; then
+    if locked "debug"; then
         log "Screen already locked"
     else
         log "Screen not locked"
@@ -102,6 +56,8 @@ function do_test() {
         log "secs not defined"
     fi
 }
+
+cmd=${1:-notify}
 
 case "$cmd" in
     notify)

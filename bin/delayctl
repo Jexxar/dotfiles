@@ -14,8 +14,8 @@
 # "./delayctl 120 &" will Check every 120 seconds if any of the supported
 # applications are fullscreen and delay screensaver and Power Management if so.
 
-if [ -f "$HOME/bin/mylog" ]; then
-    . "$HOME/bin/mylog"
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
 fi
 
 # DC_DEBUG=0 for NO output
@@ -32,7 +32,7 @@ DC_mandatoryApps=('cura' 'wineserver' 'dbgl' 'openscad' 'dgen' 'lutris' 'playonl
 
 # Names of programs which, when running, you wish to delay the screensaver.
 # For example ('ardour2' 'gmpc').
-DC_delayApps=('vlc' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
+DC_delayApps=('vlc' 'celluloid' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
 
 # Names of programs which, when using sound server, you wish to delay the screensaver.
 DC_delayWebBasedApps=('chrome' 'firefox' 'opera' 'Iceweasel' 'WebKit' 'vivaldi' 'brave' 'chromium' 'epiphany' 'youtube-dl' 'smtube' 'midori' 'min' 'falkon' 'slimjet' 'steam')
@@ -83,14 +83,6 @@ function DC_log() {
             log "$@"
         fi
     fi
-}
-
-# builtin sleep in bash
-function snore()
-{
-    local IFS
-    [[ -n "${_snore_fd:-}" ]] || exec {_snore_fd}<> <(:)
-    read ${1:+-t "$1"} -u $_snore_fd || :
 }
 
 # save current state
@@ -809,7 +801,7 @@ function DC_disableOtherSS() {
 function DC_isPresentAndExec() {
     [ -z "$1" ] && return 1;
     local tmp=""
-    tmp=$(which "$1")
+    tmp=$(command -v "$1")
     [ -z "$tmp" ] && return 1;
 
     if [ -x "${tmp}" ]; then 

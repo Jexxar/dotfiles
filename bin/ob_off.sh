@@ -1,99 +1,60 @@
-#!/usr/bin/env bash 
-gxmessage -font "Sans bold 16" "          Tem certeza que quer sair?" -center  -borderless -noescape -sticky -ontop -title "Escolha uma ação" -default "Cancelar" -buttons "_Cancelar":1,"_Bloquear":2,"_Sair":3,"_Reiniciar":4,"_Desligar":5 >/dev/null 
-case $? in 
-    1) 
+#!/usr/bin/env bash
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+# Only works if X is running.
+if ! is_running_X ; then
+    log "X server is not running";
+    return 0;
+fi
+
+gxmessage   -font "Sans bold 16" "          Tem certeza que quer sair?" -nofocus -center  -borderless \
+-noescape -sticky -ontop -title "Escolha uma ação" -default "Cancelar" \
+-buttons "_Cancelar":1,"_Bloquear":2,"_Sair":3,"_Reiniciar":4,"_Desligar":5 >/dev/null
+
+case $? in
+    1)
         echo "Ação Cancelada"
-        ;; 
-    2) 
-        mate-screensaver-command -l
-        ;; 
-    3) 
-        if [ $(pgrep -lfc gnome-keyring-daemon) -ge 1 ] ; then
-            while 2>/dev/null killall gnome-keyring-daemon; do
-                sleep 0.2
-            done
-        fi
-        if [ $(pgrep -lfc tint2) -ge 1 ]; then 
-            while 2>/dev/null killall tint2;do
-                sleep 0.2
-            done
-        fi
-        if [ $(pgrep -lfc gnome-settings-daemon) -ge 1 ]; then 
-            while 2>/dev/null killall gnome-settings-daemon; do
-                sleep 0.2
-            done
-        fi
-        if [ $(pgrep -lfc mate-settings-daemon) -ge 1 ]; then 
-            while 2>/dev/null killall mate-settings-daemon; do
-                sleep 0.2
-            done
-        fi
-        if [ $(pgrep -lfc xautolock) -ge 1 ]; then 
-            while 2>/dev/null killall xautolock; do
-                sleep 0.2
-            done
-        fi
-        if [ $(pgrep -lfc polkit-mate-authentication-agent-1) -ge 1 ]; then 
-            while 2>/dev/null killall polkit-mate-authentication-agent-1; do
-                sleep 0.2
-            done
-        fi
-        if [ $(pgrep -lfc mate-power-manager) -ge 1 ]; then 
-            while 2>/dev/null killall mate-power-manager; do
-                sleep 0.2
-            done
-        fi
-        if [ $(pgrep -lfc gnome-screensaver) -ge 1 ]; then 
-            while 2>/dev/null killall gnome-screensaver; do
-                sleep 0.2
-            done
-        fi
-        if [ $(pgrep -lfc xscreensaver) -ge 1 ]; then 
-            while 2>/dev/null killall xscreensaver; do
-                sleep 0.2
-            done
-        fi
-        if [ $(pgrep -lfc cinnamon-screensaver) -ge 1 ]; then 
-            while 2>/dev/null killall cinnamon-screensaver; do
-                sleep 0.2
-            done
-        fi
-        if [ $(pgrep -lfc redshift-gtk) -ge 1 ]; then 
-            while 2>/dev/null killall redshift-gtk; do
-                sleep 0.2
-            done
-        fi
-        if [ $(pgrep -lfc lightsOn.sh) -ge 1 ]; then 
-            while 2>/dev/null killall lightsOn.sh; do
-                sleep 0.2
-            done
-        fi
-        if [ $(pgrep -lfc changer.sh) -ge 1 ]; then 
-            while 2>/dev/null killall changer.sh; do
-                sleep 0.2
-            done
-        fi
-        if [ $(pgrep -lfc mate-screensaver) -ge 1 ]; then 
-            while 2>/dev/null killall mate-screensaver; do
-                sleep 0.2
-            done
-        fi
-        if [ $(pgrep -lfc compton) -ge 1 ]; then 
-            while 2>/dev/null killall compton; do
-                sleep 0.2
-            done
-        fi
+    ;;
+    2)
+        exec ~/bin/mylock lock
+    ;;
+    3)
+        dunstctl stop
+        
+        # Stop this session and daemon running processes.
+        stop_it "polkit-gnome-authentication-agent-1" "stop"
+        stop_it "gnome-keyring-daemon" "stop"
+        stop_it "gnome-settings-daemon" "stop"
+        stop_it "gnome-screensaver" "stop"
+        stop_it "polkit-mate-authentication-agent-1" "stop"
+        stop_it "mate-settings-daemon" "stop"
+        stop_it "mate-power-manager" "stop"
+        stop_it "mate-volume-control-applet" "stop"
+        stop_it "mate-screensaver" "stop"
+        stop_it "cinnamon-screensaver" "stop"
+        stop_it "xscreensaver" "stop"
+        stop_it "xautolock" "stop"
+        stop_it "redshift-gtk" "stop"
+        stop_it "redshift" "stop"
+        stop_it "mylightson" "stop"
+        stop_it "mywallchng" "stop"
+        stop_it "tint2" "stop"
+        stop_it "compton" "stop"
+        log "Exiting now..."
         
         # dbus-launch cleanup
         pkill -u $USER -t `tty | cut -d '/' -f 3,4` dbus-launch
-
+        
         openbox --exit;
         killall openbox;
-        ;;
-    4) 
+    ;;
+    4)
         systemctl reboot
-        ;; 
-    5) 
+    ;;
+    5)
         systemctl poweroff
-        ;; 
+    ;;
 esac

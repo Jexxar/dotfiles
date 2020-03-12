@@ -1,66 +1,104 @@
 #!/usr/bin/env bash
 set -eu
 
-if [ -f "$HOME/bin/mylog" ]; then
-    . "$HOME/bin/mylog"
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
 fi
 
 # This script is intended to be run as the main reboot script for this installation.
-cmd=${1:-reboot}
-
-# Return 0 if systemctl is found.
-function systemctl_ok() {
-    [ $(which systemctl) ] && return 0
-    return 1
-}
-
-# Return 0 if shutdown is found.
-function shutdown_ok() {
-    [ $(which shutdown) ] && return 0
-    return 1
-}
-
-# Return 0 if init is found.
-function init_ok() {
-    [ $(which init) ] && return 0
-    return 1
-}
-
 function do_reboot() {
-    if [ systemctl_ok ]; then
-        systemctl reboot
+    if is_running_X ; then
+        if locked ; then
+            return 0
+        fi
+        if auth_user; then
+            if systemctl_ok; then
+                systemctl reboot &
+                exit 0
+            fi
+            if can_reboot; then
+                dbus_reboot
+                exit 0
+            fi
+            if shutdown_ok; then
+                shutdown -r now &
+                exit 0
+            fi
+            if init_ok; then
+                init 6 &
+                exit 0
+            fi
+        fi
+    else
+        if auth_user; then
+            if systemctl_ok; then
+                systemctl reboot &
+                exit 0
+            fi
+            if shutdown_ok; then
+                shutdown -r now &
+                exit 0
+            fi
+            if init_ok; then
+                init 6 &
+                exit 0
+            fi
+        fi
     fi
-    if [ shutdown_ok ]; then
-        shutdown -r now
-    fi
-    if [ init_ok ]; then
-        init 6
-    fi
+    
 }
 
 function do_test() {
-    if [ systemctl_ok ]; then
-        log "using: systemctl reboot"
-        return 0
+    if is_running_X ; then
+        log "X is running"
+        if locked "debug" ; then
+            log "Screen locked"
+        else
+            log "Screen not locked"
+        fi
+        if auth_user; then
+            log "user $USER has polkit binding to reboot"
+            if systemctl_ok; then
+                log "can use: systemctl reboot"
+            fi
+            if can_reboot; then
+                log "can use: dbus logind to reboot"
+            fi
+            if shutdown_ok; then
+                log "can use: shutdown -r now"
+            fi
+            if init_ok; then
+                log "can use: init 6"
+            fi
+        fi
+    else
+        log "X is not running"
+        if auth_user; then
+            log "user $USER has polkit binding to reboot"
+            if systemctl_ok; then
+                log "can use: systemctl reboot"
+            fi
+            if shutdown_ok; then
+                log "can use: shutdown -r now"
+            fi
+            if init_ok; then
+                log "can use: init 6"
+            fi
+        fi
     fi
-    if [ shutdown_ok ]; then
-        log "using: shutdown -r now"
-        return 0
-    fi
-    if [ init_ok ]; then
-        log "using: init 6"
-        return 0
-    fi
+    return 0
 }
+
+cmd=${1:-reboot}
 
 case "$cmd" in
     reboot)
         log "reboot now..."
         do_reboot
-        ;;
+    ;;
     debug)
         do_test
-        ;;
+    ;;
     *)
         log "Unrecognized option: $1"
 esac

@@ -27,12 +27,15 @@ function doMenu() {
 
 function doMenu_en() {
     local f=""
+    local fpath=""
     menuBegin
-    
-    grep "file:///" ~/.local/share/recently-used.xbel | tail -n15 | cut -d "\"" -f 2 | tac | while read line; do
+
+    grep "file:///" ~/.local/share/recently-used.xbel | cut -d "\"" -f 2 | tac | while read line; do
         f=$(echo "$line" | sed 's,.*/,,' | sed 'y/+/ /; s/%/\\x/g')
         f=$(echo -en "$f")
-        menuItem "$f" "xdg-open \"$line\""
+        fpath=$(echo "$line" | sed 's/file:\/\///g' | sed 'y/+/ /; s/%/\\x/g')
+        fpath=$(echo -en "$fpath")
+        [ -e "$fpath" ] && menuItem "$f" "xdg-open \"$line\""
     done;
     
     menuSep 
@@ -44,10 +47,18 @@ function doMenu_pt() {
     local f=""
     menuBegin
     
-    grep "file:///" ~/.local/share/recently-used.xbel | tail -n15 | cut -d "\"" -f 2 | tac | while read line; do
+    #grep "file:///" ~/.local/share/recently-used.xbel | tail -n15 | cut -d "\"" -f 2 | tac | while read line; do
+    #    f=$(echo "$line" | sed 's,.*/,,' | sed 'y/+/ /; s/%/\\x/g')
+    #    f=$(echo -en "$f")
+    #    menuItem "$f" "xdg-open \"$line\""
+    #done;
+
+    grep "file:///" ~/.local/share/recently-used.xbel | cut -d "\"" -f 2 | tac | while read line; do
         f=$(echo "$line" | sed 's,.*/,,' | sed 'y/+/ /; s/%/\\x/g')
         f=$(echo -en "$f")
-        menuItem "$f" "xdg-open \"$line\""
+        fpath=$(echo "$line" | sed 's/file:\/\///g' | sed 'y/+/ /; s/%/\\x/g')
+        fpath=$(echo -en "$fpath")
+        [ -e "$fpath" ] && menuItem "$f" "xdg-open \"$line\""
     done;
     
     menuSep 

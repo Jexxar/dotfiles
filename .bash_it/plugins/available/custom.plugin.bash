@@ -3,8 +3,6 @@
 #==============================================
 # Oneliners
 #==============================================
-# Xargs com function. Ex. echo "abc" | do_xarg echo_pass
-function do_xarg() { local funnm=$1; xargs -I{} bash -c "$funnm"\ \{\}; }
 # Logical test functions
 function is_empty() { local var=$1;  [[ -z $var ]] ; }
 function is_not_empty() { local var=$1;  [[ -n $var ]] ;}
@@ -29,13 +27,13 @@ function psgrep() { my_ps f | awk '!/awk/ && $0~var' var="${1:-".*"}" ; }
 # Submit a job
 function sub() { ($1 &) ;}
 # Goto dir
-function goto() { [ -d "$1" ] && cd "$1" || cd "$(dirname "$1")"; }
+function gotod() { [ -d "$1" ] && cd "$1" || cd "$(dirname "$1")"; }
 # Copy and Goto dir
-function cpf() { cp "$@" && goto "$_"; }
+function cpf() { cp "$@" && gotod "$_"; }
 # Move and Goto dir
-function mvf() { mv "$@" && goto "$_"; }
+function mvf() { mv "$@" && gotod "$_"; }
 # Mkdir and Goto dir
-function mkf() { mkdir -p "$1" && goto "$1"; }
+function mkf() { mkdir -p "$1" && gotod "$1"; }
 # Test if a such command exists
 function cmd_exists() { command -v "$1" &> /dev/null; }
 # Top used cmds
@@ -57,17 +55,13 @@ function dthesaurus () { curl dict://dict.org/d:"${1}":moby-thes; }
 # Hour (24 h format)
 function hora () { date -Ins | cut -b 12-19 ; }
 # Date ISO format
-function dataiso () { date -Ins | cut -b 1-10 ; }
+function dateiso () { date -Ins | cut -b 1-10 ; }
 # Data (european format)
-function data () { date +"%d-%m-%Y" ; }
+function dateeur () { date +"%d-%m-%Y" ; }
 # Date n days ago
 function yday() { local dstr="date --date='-$1 day'";  eval "$dstr"; }
 # Date +n dias ahead
 function tday() { local dstr="date --date='+$1 day'";  eval "$dstr"; }
-# Grep enhance
-function bro-grep() { grep -E "(^#)|$1" "$2"; }
-# Grep enhance zip files
-function bro-zgrep() { zgrep -E "(^#)|$1" "$2"; }
 # Search javascripts files for
 function jsgrep() { find . \( -name "*.js" -print \)  | xargs grep -in "$1" ; }
 # Search development css files
@@ -75,7 +69,7 @@ function cssgrep() { find . \( -name "*.css" -print \)  | xargs grep -in "$1"; }
 # Search php files
 function phpgrep() { find . \( -name "*.php" -print \)  | xargs grep -in "$1"; }
 # Search html files
-function htmgrep() { find . \( -name "*.html" -print \)  | xargs grep -in "$1"; }
+function htmgrep() { find . \( -name "*.html" -or -name "*.htm" -print \)  | xargs grep -in "$1"; }
 # Search php files and development scripts/styles
 function wdevgrep() { find . \( -name "*.php" -print -or -name "*.js" -or -name "*.css" -print \)  | xargs grep -n "$1"; }
 # Top count lines
@@ -93,13 +87,11 @@ function avail_mem() { awk '/MemAvailable/{print $2"M"}' /proc/meminfo ; }
 # Fuzzy find file
 function ff() {  find . -type f -iname "$*";}
 # Find a file with a pattern in name:
-function fff() { find . -type f -iname '*'"$*"'*';}
+function ff_f() { find . -type f -iname '*'"$*"'*';}
 # Fuzzy find dir
 function fd() {  find . -type d -iname "$*";}
 # Find a dir with a pattern in name:
-function fdf() { find . -type d -iname '*'"$*"'*';}
-# Find a file with pattern $1 in name and Execute $2 on it:
-function fe() { find . -type f -iname '*'"${1:-}"'*' -exec "${2:-file}" {} \;  ; }
+function fd_f() { find . -type d -iname '*'"$*"'*';}
 # Number of active jobs
 function jobs_count() { jobs -r | wc -l | sed -e "s/ //g" ; }
 # Number of stopped jobs
@@ -108,8 +100,6 @@ function stoppedjobs() { jobs -s | wc -l | sed -e "s/ //g" ; }
 function laptop_battery() { upower -i "$(upower -e | grep 'BAT')" | grep -E "state|to\ full|percentage" ; }
 # Mouse battery %
 function mouse_battery() { upower -i "$(upower -e | grep 'mouse')" | grep -E "state|to\ full|percentage" ; }
-# Back n dirs
-function up() { cd $(eval printf '../'%.0s {1..$1}) ; }
 # Simple backup
 function bak() { cp "$1" "$1_$(date +%Y-%m-%d_%H:%M:%S).bak" ; }
 # Generate space report
@@ -122,32 +112,23 @@ function graph() { lspci | grep -i vga | cut -d: -f3 ; }
 function ethcard() { lspci | grep -i ethernet | cut -d: -f3 ; }
 # Wireless card
 function wfcard() { lspci | grep -i network | cut -d: -f3 ; }
-# Display on a desired color (ex: red $1)
-function onblack() { echo "$(tput setaf 0)$*$(tput sgr0)"; }
-function onred() { echo "$(tput setaf 1)$*$(tput sgr0)"; }
-function ongreen() { echo "$(tput setaf 2)$*$(tput sgr0)"; }
-function onyellow() { echo "$(tput setaf 3)$*$(tput sgr0)"; }
-function onblue() { echo "$(tput setaf 4)$*$(tput sgr0)"; }
-function onmagenta() { echo "$(tput setaf 5)$*$(tput sgr0)"; }
-function oncyan() { echo "$(tput setaf 6)$*$(tput sgr0)"; }
-function onwhite() { echo "$(tput setaf 7)$*$(tput sgr0)"; }
-# Display on a desired via pipe (ex: cmd1 | on_green)
-function on_black() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;30m %s \x1b[0m",$i);print ""}'; }
-function on_red() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;31m %s \x1b[0m",$i);print ""}'; }
-function on_green() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;32m %s \x1b[0m",$i);print ""}'; }
-function on_yellow() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;33m %s \x1b[0m",$i);print ""}'; }
-function on_blue() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;34m %s \x1b[0m",$i);print ""}'; }
-function on_magenta() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;35m %s \x1b[0m",$i);print ""}'; }
-function on_cyan() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;36m %s \x1b[0m",$i);print ""}'; }
-function on_white() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;37m %s \x1b[0m",$i);print ""}'; }
+# Display on a desired via pipe (ex: cmd1 | ongreen)
+function onblack() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;30m %s \x1b[0m",$i);print ""}'; }
+function onred() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;31m %s \x1b[0m",$i);print ""}'; }
+function ongreen() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;32m %s \x1b[0m",$i);print ""}'; }
+function onyellow() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;33m %s \x1b[0m",$i);print ""}'; }
+function onblue() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;34m %s \x1b[0m",$i);print ""}'; }
+function onmagenta() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;35m %s \x1b[0m",$i);print ""}'; }
+function oncyan() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;36m %s \x1b[0m",$i);print ""}'; }
+function onwhite() { sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[0;37m %s \x1b[0m",$i);print ""}'; }
 # Commandline FU MOTD
-function cm_fu_motd () { curl http://www.commandlinefu.com/commands/random/plaintext -o "$HOME"/.motd -s -L && cgre "$HOME"/.motd ; }
+function cm_fu_motd () { curl http://www.commandlinefu.com/commands/random/plaintext -o "$HOME"/.motd -s -L && cat "$HOME"/.motd ; }
 # Command line Calculations
 function calc() { printf '%s\n' "scale=3;${*//[ ]}" | bc -l ; }
 # Run `dig` and display the most useful info
-function digga() { dig +nocmd "$1" any +multiline +noall +answer; }
+function digga() { dig +nocmd  any +multiline +noall +answer "$1"; }
 # tre is a shorthand for tree with hidden files and color enabled, ignoring `.git` directory, listing directories first.
-function tre() { tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | most -FRNX; }
+function tre() { tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | most -N; }
 # Pre append a path to the PATH
 function prepend-path() { [ -d "$1" ] && PATH="$1:$PATH" ; }
 # Show duplicate/unique lines
@@ -156,28 +137,6 @@ function duplines() { sort "$1" | uniq -d ; }
 function uniqlines() { sort "$1" | uniq -u ; }
 # Get IP from hostname
 function hostname2ip() { ping -c 1 "$1" | egrep -m1 -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' ; }
-# Logging stuff. header
-function e_header() { printf "\n${_cl_bold}${_cl_purple}===  %s  ===${_cl_reset}\n" "$@" ; }
-# Logging stuff. arrow
-function e_arrow() { printf "➜ %s\n" "$@" ; }
-# Logging stuff. Success
-function e_success() { printf "${_cl_green}✔ %s${_cl_reset}\n" "$@" ; }
-# Logging stuff. Error
-function e_error() { printf "${_cl_red}✖ %s${_cl_reset}\n" "$@" ; }
-# Logging stuff. Warning
-function e_warning() { printf "${_cl_yellow}➜ %s${_cl_reset}\n" "$@" ; }
-# Logging stuff. Underline text
-function e_underline() { printf "${_cl_underline}$_cl_{bold}%s${_cl_reset}\n" "$@"; }
-# Logging stuff. Bold
-function e_bold() { printf "${_cl_bold}%s${_cl_reset}\n" "$@"; }
-# Logging stuff. Note in blue
-function e_note() { printf "${_cl_underline}${_cl_bold}${_cl_blue}Note:${_cl_reset}  ${_cl_blue}%s${_cl_reset}\n" "$@"; }
-# Logging stuff. List item
-function e_itemok() { echo -e " \033[1;32m✔\033[0m  $@"; }
-# Logging stuff. Error list item
-function e_itemnok() { echo -e " \033[1;31m✖\033[0m  $@"; }
-# Logging stuff. Arrow item
-function e_itemarrow() { echo -e " \033[1;34m➜\033[0m  $@"; }
 # Echo assertion fail
 function echo_fail() { printf "%s \e[31m[✘] " "$@";  echo -e "\033[0m" ; }
 # Echo assertion pass
@@ -214,9 +173,7 @@ function gitdone() { git add -A; git commit -S -v -m "$1"; git push; }
 # @param {String} $1  string 
 # @param {String} $2  string pattern inside
 #==============================================
-strip_all() {
-    printf '%s\n' "${1//$2}"
-}
+function strip_all() { printf '%s\n' "${1//$2}"; }
 
 #==============================================
 # qh - Search bash history for a command.
@@ -338,15 +295,24 @@ function display_status () {
 # @param {String} $1  package name 
 #==============================================
 function is_installed() {
-  dpkg -s "$1" &> /dev/null
+    [ $# -eq 0 ] && return 1;
+    local AFcmd=$(command -v apt-file 2>/dev/null)
+    if [ -z "$AFcmd" ]; then
+        local PACKAGE="$@"
+    else
+        local BINARY="$(realpath $(which $@) 2>/dev/null)"
+        [ -z "$BINARY" ] && BINARY="$@"
+        local PACKAGE="$(apt-file search $BINARY | grep -E ":.*[^-.a-zA-Z0-9]${BINARY}$" | awk -F ":" '{print $1}' | sort -u | head -n 1 )"
+    fi
 
-  if [ $? -eq 0 ]; then
-      echo_pass "Package $1 is installed!"
-      return 0
-  else
-      echo_fail "Package $1 is NOT installed!"
-      return 1
-  fi
+    dpkg -s "$PACKAGE" &> /dev/null
+    if [ $? -eq 0 ]; then
+        echo_pass "Package $PACKAGE is installed!"
+        return 0
+    else
+        echo_fail "Package $PACKAGE is NOT installed!"
+        return 1
+    fi
 }
 
 #==============================================
@@ -365,27 +331,6 @@ function ip_inf() {
         curl ipinfo.io/"${ipawk[0]}"
     fi
     echo
-}
-
-#==============================================
-# xfind - Will print out the files and the lines that contain the pattern
-#
-# Examples:
-#    xfind path pattern
-#
-# @param {String} $1  path
-# @param {String} $2  pattern to search for
-#==============================================
-function xfind() {
-    local FIND_VAR="$2";
-    local STACK="$1";
-    if [ -f "$STACK" ] || [ -d "$STACK" ]; then
-        find "$STACK" \
-            -exec grep --color "$FIND_VAR" -sl '{}' \; \
-            -exec grep "$FIND_VAR" -s '{}' \;
-    else
-        echo_fail "ERROR: No file or folder with the name '$STACK' exist";
-    fi
 }
 
 #==============================================
@@ -492,7 +437,7 @@ function is_int() {
 
     local nodigits=$(echo "$testvalue" | sed 's/[[:digit:]]//g')
 
-    if [ ! -z "$nodigits" ] ; then
+    if [ -n "$nodigits" ] ; then
       return 1
     fi
     return 0
@@ -514,10 +459,10 @@ function is_float() {
     local fvalue="$1"
     local pt=$(echo "$fvalue" | sed 's/[^.]//g')
 
-    if [ ! -z "$pt" ] ; then
+    if [ -n "$pt" ] ; then
         local decimalPart=$(echo "$fvalue" | cut -d. -f1)
         local fractionalPart=$(echo "$fvalue" | cut -d. -f2)
-        if [ ! -z "$decimalPart" ] ; then
+        if [ -n "$decimalPart" ] ; then
             if [ "$decimalPart" != "-"  ] ; then
                 if ! is_int "$decimalPart" ; then
                     return 1
@@ -546,40 +491,6 @@ function is_float() {
         fi
     fi
     return 0
-}
-
-#==============================================
-# cache - Cache the result of a command in a file, and
-# use the file to output the results in case it exists.
-#
-# Examples:
-#   cache "~/.cache" "ls" "-lar"...
-#
-# @param {String} $1 filename to cache
-# @param {String} $2 command to execute
-# @param {String} $3 command arg1
-# @param {String} $.. command argn
-#==============================================
-function cache() {
-    if [[ -z "$1" ]]; then
-        echo "Usage: cache <basename_to_cache_in> <cmd> <arg1> <arg2> <arg3> ..."
-        return 0
-    fi
-
-    local cache_fn="$1"
-    shift
-
-    local dir="${CACHE_DIR:-.}"
-
-    if ! test -d "$dir"; then
-        mkdir -p "$dir"
-    fi
-
-    local fn="$dir/$cache_fn"
-    if ! test -f "$fn" ; then
-        "$@" > "$fn"
-    fi
-    cat "$fn"
 }
 
 #==============================================
@@ -701,11 +612,10 @@ function exesudo () {
     regex="\s+"
     for param in "${params[@]}"
     do
-        if [[ "$param" =~ $regex ]]
-            then
-                content="${content}\t\"${param}\"\n"
-            else
-                content="${content}\t${param}\n"
+        if [[ "$param" =~ $regex ]]; then
+            content="${content}\t\"${param}\"\n"
+        else
+            content="${content}\t${param}\n"
         fi
     done
 
@@ -844,28 +754,6 @@ function servername_push() {
     echo "#rsync -avz --progress ${@:1:$(($#-1))} $usr_name@$srv_name:$last"
     #rsync -avz --progress ${@:1:$(($#-1))} $usr_name@$srv_name:$last
 }
-
-#==============================================
-# c_loadandgo - Compile and execute a C source on the fly
-#
-# Examples:
-#   c_loadandgo "funcname" followed by any param
-#   c_loadandgo psonly mdm
-#
-# @Params {String} $1: C source filename
-#==============================================
-function c_loadandgo() {
-    [[ $1 ]]    || { echo "Missing operand" >&2; return 1; }
-    [[ -r $1 ]] || { printf "File %s does not exist or is not readable\n" "$1" >&2; return 1; }
-    local o_path=${TMPDIR:-/tmp}/${1##*/};
-    #echo "$o_path"
-    local output_path=${o_path%.*};
-    #echo "$output_path"
-    gcc "$1" -o "$output_path.o" && "$output_path.o";
-    rm -f "$output_path.o";
-    return 0;
-}
-
 
 #==============================================
 #  get_xserver - Get remote host of the session (empty for localhost).
@@ -1176,26 +1064,6 @@ function md_view() {
 }
 
 #==============================================
-# phrase - Multiline, case-insensitive grepping (modified from sed & awk O'Reilly book ~pg 138)
-#
-# Examples:
-#   phrase dot README
-# 
-# @Params {String} $1: text to search
-# @Params {String} $2: filename
-#==============================================
-function phrase() {
-    if [[ ( -f "$1" ) || ( ! -f "$2" ) || ( $(echo "$1") == "" ) ]] ; then
-        echo 'Usage: phrase "search term" filename';
-    fi
-    search=$1
-    shift
-    for file ; do
-        sed "/$search/Ib;N;h;s/.*\n//;/$search/Ib;g;s/ *\n/ /;/$search/I{g;b;};g;D;" $file
-    done
-}
-
-#==============================================
 # MIT - use like this in a directory with code you want MIT-licensed: MIT > LICENSE
 #
 # Examples:
@@ -1362,40 +1230,6 @@ function matches () {
     done
 
     IFS=$OLDIFS
-}
-
-#==============================================
-#  fstr - Find a pattern in a set of files and highlight them. (needs a recent version of egrep).
-#
-# @option -c Include occurrence counts in output
-# @option -r Reverse sort order (default ascending)
-# @option -m COUNT Minimum number of matches required to include file in results
-# @option -h Display this help screen
-#
-# Examples:
-#   matches -c -m 3 "jekyll"
-#   matches -c -r "bash"
-# 
-# @Params {String} $1: pattern text for search 
-# @Params {String} $2: filename pattern 
-#==============================================
-function fstr() {
-    local mycase=""
-    local usage="fstr: find string in files. Usage: fstr [-i] \"pattern\" [\"filename pattern\"] "
-    OPTIND=1
-    while getopts :ih opt
-    do
-        case "$opt" in
-           i) mycase="-i " ;;
-           *) echo "$usage"; return ;;
-        esac
-    done
-    shift $(( $OPTIND - 1 ))
-    if [ "$#" -lt 1 ]; then
-        echo "$usage"
-        return;
-    fi
-    find . -type f -name "${2:-*}" -print0 | xargs -0 egrep --color=always -sn ${mycase} "$1" 2>&- | less -RXS#3M~g
 }
 
 #==============================================
@@ -1657,15 +1491,12 @@ function qt_mail() {
 }
 
 #==============================================
-# Pending e-mails message
+# Msg you have mail
 #==============================================
-function tem_mail() {
-    local qm=""
-    qm=$(qt_mail)
-    if  [[ $qm -gt 0 ]]; then
-        echo "Voce tem $qm novo(s) e-mail(s)!"
-    else
-        echo "Nenhum e-mail a ser lido"
+function you_have_mail() {
+    local nQtMail=`qt_mail`
+    if  [[ $nQtMail -gt 0 ]]; then
+        [ "$(echo ${LANG:-en} | cut -c1-2 )" = "pt" ] && echo "Voce tem $nQtMail novo(s) e-mail(s)!" || echo "You have $nQtMail unread mail(s)!"
     fi
 }
 
@@ -1753,51 +1584,35 @@ function bash_prompt() {
 }
 
 #==============================================
-# Uptime em portugues
+# Uptime em portugues/ingles
 #==============================================
 function uptime_active() {
-    local Utmc=`uptime -p | tr -d ',' | tr -s ' ' | sed -e 's/up //g' -e 's/year/ano/g' -e 's/month /mes /g' -e 's/months/meses/g' -e 's/week/semana/g' -e 's/day/dia/g' -e 's/hour/hora/g' -e 's/minute/minuto/g'`
-    local hasAn=`echo "$Utmc" | grep -o 'ano' | wc -l  || echo -n "0" `
-    local hasMe=`echo "$Utmc" | grep -o 'mes' | wc -l  || echo -n "0" `
-    local hasSe=`echo "$Utmc" | grep -o 'semana' | wc -l || echo -n "0" `
-    local hasDi=`echo "$Utmc" | grep -o 'dia' | wc -l || echo -n "0" `
-    local hasHo=`echo "$Utmc" | grep -o 'hora' | wc -l || echo -n "0" `
+    local Utmc=$(uptime -p | tr -d ',' | tr -s ' ' | sed -e 's/up //g')
+    local hasY=$(echo "$Utmc" | grep -o 'year' | wc -l  || echo -n "0")
+    local hasM=$(echo "$Utmc" | grep -o 'month' | wc -l  || echo -n "0")
+    local hasW=$(echo "$Utmc" | grep -o 'week' | wc -l || echo -n "0")
+    local hasD=$(echo "$Utmc" | grep -o 'day' | wc -l || echo -n "0")
+    local hasH=$(echo "$Utmc" | grep -o 'hour' | wc -l || echo -n "0")
 
-    if [ "$hasAn" == "1" ]; then
-        Utmc=`echo "$Utmc" | sed -e 's/ano /ano, /g' -e 's/anos/anos,/g' `
+    if [ "$hasY" == "1" ]; then
+        Utmc=$(echo "$Utmc" | sed -e 's/year /year, /g' -e 's/years/years,/g')
     fi
-    if [ "$hasMe" == "1" ]; then
-        Utmc=`echo "$Utmc" | sed -e 's/mes /mes, /g' -e 's/meses/meses,/g' `
+    if [ "$hasM" == "1" ]; then
+        Utmc=$(echo "$Utmc" | sed -e 's/month /month, /g' -e 's/months/months,/g')
     fi
-    if [ "$hasSe" == "1" ]; then
-        Utmc=`echo "$Utmc" | sed -e 's/semana /semana, /g' -e 's/semanas/semanas,/g' `
+    if [ "$hasW" == "1" ]; then
+        Utmc=$(echo "$Utmc" | sed -e 's/week /week, /g' -e 's/weeks/weeks,/g')
     fi
-    if [ "$hasDi" == "1" ]; then
-        Utmc=`echo "$Utmc" | sed -e 's/dia /dia, /g' -e 's/dias/dias,/g' `
+    if [ "$hasD" == "1" ]; then
+        Utmc=$(echo "$Utmc" | sed -e 's/day /day, /g' -e 's/days/days,/g')
     fi
-    if [ "$hasHo" == "1" ]; then
-        Utmc=`echo "$Utmc" | sed -e 's/hora /hora e /g' -e 's/horas/horas e/g' `
+    if [ "$hasH" == "1" ]; then
+        Utmc=$(echo "$Utmc" | sed -e 's/hour /hour e /g' -e 's/hours/hours e/g')
+    fi
+    if [ "$(echo $LANG | cut -c1-2)" = "pt" ]; then
+        Utmc=$(echo "$Utmc" | sed -e 's/year/ano/g' -e 's/month /mes /g' -e 's/months/meses/g' -e 's/week/semana/g' -e 's/day/dia/g' -e 's/hour/hora/g' -e 's/minute/minuto/g')
     fi
     echo "$Utmc"
-}
-
-#==============================================
-# Returns a random cow file
-#==============================================
-function random_cow_file() {
-    local dircow='/usr/share/cowsay/cows/'
-    local cow=`/bin/ls -1 "$dircow" | sort --random-sort | head -1`
-    echo "$dircow$cow"
-}
-
-#==============================================
-# Msg Vc tem email
-#==============================================
-function you_have_mail() {
-    local nQtMail=`qt_mail`
-    if  [[ $nQtMail -gt 0 ]]; then
-        echo "Voce tem $nQtMail novo(s) e-mail(s)!"
-    fi
 }
 
 #==============================================
@@ -1847,7 +1662,6 @@ function __rprompt() {
     tput sgr0
 }
 
-
 #==============================================
 # progress bar
 #==============================================
@@ -1886,125 +1700,128 @@ function color_bar() {
 # Saudacao de novo shell
 #==============================================
 function greetings() {
-    local USR="`whoami`"
-    local DATE="`date +"%d/%m/%Y"`"
-    #local DATE="`date +"%A, %d de %B de %Y"`"
-    #local DATE="`date +"%a, %d %b de %Y - %T %Z UTC"`"
-    local DIST="`~/bin/distro_info -1 | ~/bin/capitalize.sh`"
-    local KERNEL="`uname -rmo`"
-    local TIMEU="`uptime_active`"
-    local TIMEDe="`uptime_since`"
-    local FrMEM="`free_mem`"
-    local TtMEM="`total_mem`"
-    local AvMEM="`avail_mem`"
-    #local Wthico=`~/bin/weather -i`
-    #local Wthcnd=`~/bin/weather`
-    #local Wthmsg=`~/bin/weather -m`
+    local USR="$(whoami)"
+    local DIST="$(~/bin/distro_info -1 | ~/bin/capitalize.sh)"
+    local KERNEL="$(uname -rmo)"
+    local TIMEU="$(uptime_active)"
+    local TIMEDe="$(uptime_since)"
+    local FrMEM="$(free_mem)"
+    local TtMEM="$(total_mem)"
+    local AvMEM="$(avail_mem)"
     local BVERS="$BASH_VERSION"
-
+    local BASELANG=$(echo "$LANG" | awk -F'.' '{ print $1 }')
+    local BASELOC=$(echo "$LANG" | cut -c1-2)
     local FULL=━
-    #local EMPTY=━
-    #local EMPTY=─
     #local FULL=┅
     local EMPTY=┄
+    #local EMPTY=━
+    #local EMPTY=─
+
+    if [ "$BASELOC" = "pt" ]; then
+        local DATE="$(date +"%d/%m/%Y")"
+    elif [ "$BASELOC" = "en" ]; then
+        local DATE="$(date +"%m/%d/%Y")"
+    else
+        local DATE="$(date +"%Y/%m/%d")"
+    fi
 
     cls
 
-    printf " \e[1;33mOlá, seja bem vindo. $(you_have_mail)\e[0m\n\n"
-    #printf " \e[1;33mHoje está ( $Wthico) $Wthcnd. $Wthmsg.\e[0m\n\n"
-    printf " \e[1;36mStatus do Sistema em $DATE:\e[0m\n"
-    printf " \e[1;36m     distro  $DIST@ kernel $KERNEL\e[0m\n"
-    #printf " \e[1;33m   kernel \e[0m$KERNEL\n"
-    printf " \e[1;36m     uptime  $TIMEU desde $TIMEDe\e[0m\n"
+    if [ "$BASELOC" = "pt" ]; then
+        printf " \e[1;33mOlá, seja bem vindo. $(you_have_mail)\e[0m\n\n"
+        printf " \e[1;36mStatus do Sistema em $DATE:\e[0m\n"
+    else
+        printf " \e[1;33mHi, Welcome. $(you_have_mail)\e[0m\n\n"
+        printf " \e[1;36mSystem Status at $DATE:\e[0m\n"
+    fi
 
+    printf " \e[1;36m     distro  $DIST@ kernel $KERNEL\e[0m\n"
+
+    if [ "$BASELOC" = "pt" ]; then
+        printf " \e[1;36m     uptime  $TIMEU desde $TIMEDe\e[0m\n"
+    else
+        printf " \e[1;36m     uptime  $TIMEU since $TIMEDe\e[0m\n"
+    fi
+    
     if xhost >& /dev/null ; then
-        local id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
-        local id="${id##* }"
-        local wm="$(xprop -id "$id" -notype -len 100 -f _NET_WM_NAME 8t)"
-        local wm="${wm/*_NET_WM_NAME = }"
-        local wm="${wm/\"}"
-        local wm="${wm/\"*}"
+        local id=""
+        local wm=""
+        id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
+        id="${id##* }"
+        wm="$(xprop -id "$id" -notype -len 100 -f _NET_WM_NAME 8t)"
+        wm="${wm/*_NET_WM_NAME = }"
+        wm="${wm/\"}"
+        wm="${wm/\"*}"
         printf " \e[1;36m      shell  $BVERS @ $wm\e[0m\n"
     else
         printf " \e[1;36m      shell  $BVERS\e[0m\n"
     fi
 
-    #printf " \e[1;33m    clima \e[0m$Wthico $Wthcnd. $Wthmsg.\n"
-    #printf " \e[1;33m     data \e[0m$DATE\n"
-    #printf " \e[1;33m   distro \e[0m$DIST@ kernel $KERNEL\n"
-    ##printf " \e[1;33m   kernel \e[0m$KERNEL\n"
-    #printf " \e[1;33m   uptime \e[0m$TIMEU desde $TIMEDe\n"
-    #if xhost >& /dev/null ; then
-    #    printf " \e[1;33m    shell \e[0m$BVERS @ $wm\n"
-    #else
-    #    printf " \e[1;33m    shell \e[0m$BVERS\n"
-    #fi
-
-    #printf " \e[0m\n"
-
     # cpu
-    local CpuUsg=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}' | sed "s/\./,/g")
-    local CpuLvl=`printf "%.0f" $CpuUsg`
-    printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " cpu" "$CpuLvl%" `draw $CpuLvl 15`
+    if [ "$BASELOC" = "pt" ]; then
+        local CpuUsg=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}' | sed "s/\./,/g")
+    else
+        local CpuUsg=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}')
+    fi
+
+    local CpuLvl=$(printf "%.0f" $CpuUsg)
+    [ -n "$CpuLvl" ] && printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " cpu" "$CpuLvl%" `draw $CpuLvl 15`
 
     # ram
-    local RamM=`free | awk '/Mem/ {print int($3/$2 * 100.0)}'`
-    printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " ram" "$RamM%" `draw $RamM 15`
+    local RamM=$(free | awk '/Mem/ {print int($3/$2 * 100.0)}')
+    [ -n "$RamM" ] &&  printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " ram" "$RamM%" `draw $RamM 15`
 
     # battery
-    #local battery=/sys/class/power_supply/BAT1
-    #local BtyFull=$battery/charge_full
-    #local BtyNow=$battery/charge_now
-    #local bf=`cat $BtyFull`
-    #local bn=`cat $BtyNow`
     local charge="$(battery_percentage 2> /dev/null)"
-    case 1 in
-      $(($charge <= 15)))
-        local color='31'
-        ;;
-      *)
-        local color='36'
-        ;;
-    esac
-    printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" " bat" "$charge%" `draw $charge 15 $color`
-    # volume
-    if amixer get Master | grep -q 'Right'
-    then
-        local vol=`amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }' | tr -d '[]%'`
-    else
-        local vol=`awk -F"[][]" '/%/ { print $2 }' <(amixer sget Master)  | tr -d '[]%'`
-    fi
-    if amixer get Master | grep -q '\[off\]'
-    then
-        local color='31'
-    else
-        local color='36'
-    fi
-    printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" " vol" "$vol%" `draw $vol 15 $color`
-    # temperature
-    if sensors > /dev/null 2> /dev/null; then
-        local SensTemp=`sensors | awk '/Core\ 0/ {gsub(/\+/,"",$3); gsub(/\..+/,"",$3)    ; print $3}'`
+    if [ -n "$charge" ]; then
         case 1 in
-          $(($SensTemp <= 50)))
-              color='34'
-              ;;
-          $(($SensTemp >= 75)))
-              color='31'
-              ;;
+          $(($charge <= 15)))
+            local color='31'
+            ;;
           *)
-              color='36'
-              ;;
+            local color='36'
+            ;;
         esac
-        printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" "temp" "$SensTemp˚C " `draw $SensTemp 15 $color`
+        printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" " bat" "$charge%" `draw $charge 15 $color`
+    fi
+
+    # volume
+    # test amixer return first
+    amixer get Master &> /dev/null
+    if [ $? -eq 0 ]; then 
+        if amixer get Master | grep -q 'Right'; then
+            local vol=$(amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }' | tr -d '[]%')
+        else
+            local vol=$(awk -F"[][]" '/%/ { print $2 }' <(amixer sget Master)  | tr -d '[]%')
+        fi
+        if amixer get Master | grep -q '\[off\]'; then
+            local color='31'
+        else
+            local color='36'
+        fi
+        [ -n "$vol" ] && printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" " vol" "$vol%" `draw $vol 15 $color`
+    fi
+    
+    # temperature
+    if sensors &> /dev/null; then
+        local SensTemp=`sensors | awk '/Core 0/ {gsub(/\+/,"",$3); gsub(/\..+/,"",$3)    ; print $3}'`
+        if [ -n "$SensTemp" ]; then
+            case 1 in
+              $(($SensTemp <= 50)))
+                  color='34'
+                  ;;
+              $(($SensTemp >= 75)))
+                  color='31'
+                  ;;
+              *)
+                  color='36'
+                  ;;
+            esac
+            printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" "temp" "$SensTemp˚C " `draw $SensTemp 15 $color`
+        fi
     fi
     printf "\e[1;33m\n"
-    #echo "Data...: $DATE"
-    #echo "Distro.: $DIST"
-    #echo "Kernel.: $KERNEL"
-    #echo "Uptime.: $TIMEU desde $TIMEDe"
-    #echo "Memória: Livre: $FrMEM, Total: $TtMEM, Disp: $AvMEM"
-    #echo ""
-    #echo ""
+
     ~/bin/my_motd
 
     echo -e "\n"

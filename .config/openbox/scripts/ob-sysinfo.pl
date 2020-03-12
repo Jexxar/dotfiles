@@ -102,7 +102,7 @@ chomp $resolution;
 
 # Thermal -------------------------------------------------------------------
 my $thermal = `acpi -t | grep "Thermal" | cut -d ' ' -f 3,4,9,10,15,16,21,22,27,28 | cut -d '.' -f 1,3,5,7,9`;
-chop $thermal;
+chomp $thermal;
 
 # Time ---------------------------------------------------------------------
 my $time_date = strftime "%D, %R", localtime;

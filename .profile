@@ -13,6 +13,17 @@ else
 fi
 
 #===========================================
+# Prevents scroll bars misbehaviour
+#===========================================
+#export GTK_OVERLAY_SCROLLING=0
+#gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.UpdateActivationEnvironment '{"GTK_OVERLAY_SCROLLING": "0"}'
+
+#===========================================
+# QT style override
+#===========================================
+export QT_STYLE_OVERRIDE=GTK+
+
+#===========================================
 # Define script for sudo_askpass
 #===========================================
 export SUDO_ASKPASS="${HOME}/bin/askpw.sh"
@@ -56,19 +67,19 @@ else
 fi
 
 #===========================================
-# Your place for hosting Git repos. I use this for private repos.
-#===========================================
-export GIT_HOSTING='jexxar@github.com'
-
-#===========================================
 # Don't check mail when opening terminal.
 #===========================================
-#unset MAILCHECK
+unset MAILCHECK
 
 #===========================================
 # Change this to your console based IRC client of choice.
 #===========================================
-#export IRC_CLIENT='irssi'
+export IRC_CLIENT='irssi'
+
+#===========================================
+# Set this to the command you use for todo.txt-cli
+#===========================================
+#export TODO="t"
 
 #===========================================
 # Default console editor
@@ -80,6 +91,7 @@ export VISUAL="/bin/nano"
 # git author data comes from .gitconfig and is saved as environment variables
 # that are sent to ssh connections to maintain you identity across machines
 #===========================================
+export GIT_HOSTING='jexxar@github.com'
 export GIT_AUTHOR_NAME=`git config user.name`
 export GIT_AUTHOR_EMAIL=`git config user.email`
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
@@ -114,4 +126,3 @@ if [ $UID -ne "0" ]; then
     [ -f $HOME/.keychain/$HOSTNAME-sh ] && . $HOME/.keychain/$HOSTNAME-sh;
     [ -f $HOME/.keychain/$HOSTNAME-sh-gpg ] && . $HOME/.keychain/$HOSTNAME-sh-gpg;
 fi
-

@@ -1,34 +1,7 @@
 #!/usr/bin/env bash
 
-# Path to the bash it configuration
-export BASH_IT="/home/usuario/.bash_it"
-
-# Lock and Load a custom theme file
-# location /.bash_it/themes/
-if [ "$TERM" = "linux" ]; then
-    export BASH_IT_THEME='pure'
-else
-    export BASH_IT_THEME='powerline-multiline-custom'
-fi
-
-# (Advanced): Change this to the name of your remote repo if you
-# cloned bash-it with a remote other than origin such as `bash-it`.
-# export BASH_IT_REMOTE='bash-it'
-
-# Your place for hosting Git repos. I use this for private repos.
-export GIT_HOSTING='jexxar@github.com'
-
-# Don't check mail when opening terminal.
-unset MAILCHECK
-
-# Change this to your console based IRC client of choice.
-export IRC_CLIENT='irssi'
-
-# Set this to the command you use for todo.txt-cli
-export TODO="t"
-
-# Set this to false to turn off version control status checking within the prompt for all themes
-export SCM_CHECK=true
+# Source goto 
+[[ -s "/usr/local/share/goto.sh" ]] && source /usr/local/share/goto.sh
 
 # Set Xterm/screen/Tmux title with only a short hostname.
 # Uncomment this (or set SHORT_HOSTNAME to something else),
@@ -44,9 +17,30 @@ export SCM_CHECK=true
 # Uncomment this to set.
 #export SHORT_TERM_LINE=true
 
+# Set Xcursor environment
+export XCURSOR_PATH="/usr/share/icons:~/.local/share/icons:$XCURSOR_PATH"
+
 # Set vcprompt executable path for scm advance info in prompt (demula theme)
 # https://github.com/djl/vcprompt
 export VCPROMPT_EXECUTABLE=~/bin/vcprompt
+
+# Set this to false to turn off version control status checking within the prompt for all themes
+export SCM_CHECK=true
+
+# Path to the bash it configuration
+export BASH_IT="/home/usuario/.bash_it"
+
+# Lock and Load a custom theme file
+# location /.bash_it/themes/
+if [ "$TERM" = "linux" ]; then
+    export BASH_IT_THEME='pure'
+else
+    export BASH_IT_THEME='powerline-multiline-custom'
+fi
+
+# (Advanced): Change this to the name of your remote repo if you
+# cloned bash-it with a remote other than origin such as `bash-it`.
+# export BASH_IT_REMOTE='bash-it'
 
 # (Advanced): Uncomment this to make Bash-it reload itself automatically
 # after enabling or disabling aliases, plugins, and completions.
@@ -80,7 +74,3 @@ source "$BASH_IT"/bash_it.sh
 if [ "$TERM" != "linux" ]; then
     greetings
 fi
-
-# Source goto
-[[ -s "/usr/local/share/goto.sh" ]] && source /usr/local/share/goto.sh
-

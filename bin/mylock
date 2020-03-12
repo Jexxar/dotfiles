@@ -1,94 +1,47 @@
 #!/usr/bin/env bash
 #set -eu
 
-if [ -f "$HOME/bin/mylog" ]; then
-    . "$HOME/bin/mylog"
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
 fi
 
 # This script is intended to be run as the xautolock locker and notifier.
 # It requires i3lock, and dunst is optional.
 
-cmd=${1:-lock}
-
-function is_running_X(){
-    xset q &>/dev/null && return 0;
-    return 1
-}
-
-# Is the screen already locked?
-function locked() {
-    local DebugMode=${1:-no}
-    local scrsvApps=('i3lock' 'mate-screensaver-dialog' 'cinnamon-screensaver-pam-helper' 'slimlock' 'gnome-screensaver-dialog' 'xscreensaver')
-    local c=0
-    for p1 in "${scrsvApps[@]}"; do
-        c=$(pgrep -lfc "${p1}")
-        if [ $c -gt 0 ] ; then
-            if [ "$DebugMode" = "debug" ]; then
-                log "${p1} found and active";
-                return 0;
-            fi
-        fi
-    done
-    return 1;
-}
-
-# Control the dunst daemon, if it is running.
-function dunst() {
-    pkill -0 --exact dunst || return 0
-
-    case ${1:-} in
-        stop)
-            log "Stopping notifications and locking screen."
-            pkill -USR1 --euid "$(id -u)" --exact dunst
-            ;;
-        resume)
-            log "...Resuming notifications."
-            pkill -USR2 --euid "$(id -u)" --exact dunst
-            ;;
-        *)
-            echo "dunst argument required: stop or resume"
-            return 1
-            ;;
-    esac
-}
-
 # Lock screen if possible.
 function do_lock() {
     # Only works if X is running.
-    is_running_X
-    if [ $? -ne 0 ]; then
+    if ! is_running_X ; then
         log "X server is not running";
         return 0;
     fi
-
-    # Already locked.
+    
+    # Already locked
     locked && return 0;
     
     log "Locking screen now..."
-    dunst stop
-
+    dunstctl stop
+    
     # Fork both i3lock and its monitor to avoid blocking xautolock.
     # this must be the last command, and it must be 'non forking', as expected by 'xautolock'
     "$HOME"/bin/lock -gpf Comic-Sans-MS -- scrot -z &
-    
+        
     pid="$!"
     log "Waiting for PID $pid to end..."
     while 2>/dev/null kill -0 "$pid"; do
-      sleep 1
+        sleep 1
     done
     
-    dunst resume
+    dunstctl resume
 }
 
 function do_test() {
-    is_running_X
-    
-    if [ $? -eq 0 ]; then
+    if is_running_X ; then
         log "X is running"
     else
         log "X server down"
     fi
-
+    
     locked "debug"
     
     if [ $? -eq 0 ]; then
@@ -98,7 +51,7 @@ function do_test() {
     fi
     
     pkill -0 --exact dunst
-
+    
     if [ $? -eq 0 ]; then
         log "dunst found"
     else
@@ -106,13 +59,15 @@ function do_test() {
     fi
 }
 
+cmd=${1:-lock}
+
 case "$cmd" in
     lock)
         do_lock
-        ;;  
+    ;;
     debug)
         do_test
-        ;;
+    ;;
     *)
         log "Unrecognized option: $1"
 esac

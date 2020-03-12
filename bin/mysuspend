@@ -1,106 +1,79 @@
 #!/usr/bin/env bash
 set -eu
 
-if [ -f "$HOME/bin/mylog" ]; then
-    . "$HOME/bin/mylog"
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
 fi
 
 # This script is intended to be run as the main suspend script for this installation.
-cmd=${1:-suspend}
-
-function is_running_X(){
-    if ! xset q &>/dev/null; then
-        return 1
-    fi
-    return 0
-}
-
-# Is the screen already locked?
-function locked() {
-    local DebugMode=${1:-no}
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "i3lock" &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "i3lock found and active"
-        fi
-        return 0;
-    fi
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "mate-screensaver-dialog" &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "mate-screensaver-dialog found and active"
-        fi
-        return 0;
-    fi
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "cinnamon-screensaver-pam-helper" &>/dev/null
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "cinnamon-screensaver-pam-helper found and active"
-        fi
-        return 0;
-    fi
-    ps f -u $USER -o pid,%cpu,%mem,bsdtime,command  | grep -v "grep" | grep "slimlock" &>/dev/null 
-    if [ $? -eq 0 ]; then
-        if [ "$DebugMode" = "debug" ]; then
-            log "slimlock found and active"
-        fi
-        return 0;
-    fi
-    return 1
-}
-
-# Return 0 if systemctl is found.
-function systemctl_ok() {
-    [ $(which systemctl) ] && return 0
-    return 1
-}
-
-# Return 0 if dbus is found.
-function dbus_ok() {
-    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanSuspend | grep "yes") ] && return 0
-    return 1
-}
 
 function do_suspend() {
-    if [ systemctl_ok ]; then
-        systemctl suspend &
-        return 0;
-    fi
-    if [ dbus_ok ]; then
-        dbus-send --print-reply --system --dest=org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.Suspend boolean:true
-        return 0;
+    if is_running_X ; then
+        if locked ; then
+            return 0
+        fi
+        if auth_user; then
+            if systemctl_ok; then
+                systemctl suspend &
+                exit 0
+            fi
+            if can_suspend; then
+                dbus_suspend
+                exit 0
+            fi
+        fi
+    else
+        if auth_user; then
+            if systemctl_ok; then
+                systemctl suspend &
+                exit 0
+            fi
+        fi
     fi
 }
 
 function do_test() {
-    if [ is_running_X ]; then
+    if is_running_X ; then
         log "X is running"
+        if locked "debug" ; then
+            log "Screen locked"
+        else
+            log "Screen not locked"
+        fi
+        if auth_user; then
+            log "user $USER has polkit binding to suspend"
+            if systemctl_ok; then
+                log "using: systemctl suspend"
+                return 0
+            fi
+            if can_suspend; then
+                log "using: dbus logind to suspend"
+                return 0
+            fi
+        fi
     else
         log "X is not running"
+        if auth_user; then
+            log "user $USER has polkit binding to suspend"
+            if systemctl_ok; then
+                log "using: systemctl suspend"
+                return 0
+            fi
+        fi
     fi
-    if [ `locked "debug"` ]; then
-        log "Screen locked"
-    else
-        log "Screen not locked"
-    fi
-    if [ systemctl_ok ]; then
-        log "using: systemctl suspend"
-        return 0
-    fi
-    if [ dbus_ok ]; then
-        log "using: dbus + logind to suspend"
-        return 0
-    fi
+    return 0
 }
+
+cmd=${1:-suspend}
 
 case "$cmd" in
     suspend)
         log "suspend now..."
         do_suspend
-        ;;
+    ;;
     debug)
         do_test
-        ;;
+    ;;
     *)
         log "Unrecognized option: $1"
 esac

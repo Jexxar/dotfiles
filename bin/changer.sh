@@ -4,39 +4,28 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-if [ -f "$HOME/bin/mylog" ]; then
-    . "$HOME/bin/mylog"
-fi
-
-function is_running_X(){
-    xset q &>/dev/null && return 0;
-    return 1
-}
-
 function change_wallpaper(){
-	local old_IFS=$IFS
-	IFS="
-	"
-	local WallDir="${XDG_PICTURES_DIR:-$HOME/Imagens}/Wallpaper"
-	local WallList=( `find "$WallDir" -type f -iregex ".*/.*[.]\(jpe?g\|png\|gif\|bmp\)"` )
-	IFS=$old_IFS
-	local MaxFiles=${#WallList[@]}
-	#let "number = $RANDOM"
-	#let CurrIndex="`cat $WallDir/.last` + $number"
-	local LastFile="$WallDir/.last"
-	if [ -f "$LastFile" ]; then 
-	    let CurrIndex="`cat "$LastFile"` + 1"
-	    if [ $CurrIndex -ge $MaxFiles ]; then
-	        let CurrIndex=1
-	    fi
-	else
-	    let CurrIndex=1
-	fi
-	local number
-	let number=$CurrIndex
-	echo $number > "$WallDir"/.last
-	nitrogen --set-scaled --save "${WallList[$number]}"
-	log "Wallpaper changed to: ${WallList[$number]}"
+    local old_IFS=$IFS
+    IFS="
+    "
+    local WallDir="${XDG_PICTURES_DIR:-$HOME/Imagens}/Wallpaper"
+    local WallList=( `find "$WallDir" -type f -iregex ".*/.*[.]\(jpe?g\|png\|gif\|bmp\)"` )
+    IFS=$old_IFS
+    local MaxFiles=${#WallList[@]}
+    local LastFile="$WallDir/.last"
+    if [ -f "$LastFile" ]; then 
+        let CurrIndex="`cat "$LastFile"` + 1"
+        if [ $CurrIndex -ge $MaxFiles ]; then
+            let CurrIndex=1
+        fi
+    else
+        let CurrIndex=1
+    fi
+    local number
+    let number=$CurrIndex
+    echo $number > "$WallDir"/.last
+    nitrogen --set-scaled --save "${WallList[$number]}"
+    log "Wallpaper changed to: ${WallList[$number]}"
 }
 
 function kill_older(){
@@ -63,15 +52,8 @@ function kill_older(){
     return 0
 }
 
-function snore()
-{
-    local IFS
-    [[ -n "${_snore_fd:-}" ]] || exec {_snore_fd}<> <(:)
-    read ${1:+-t "$1"} -u $_snore_fd || :
-}
-
 function main(){
-	log "==[ Changer started ]=="
+    log "==[ Changer started ]=="
     if ! is_running_X ; then
         log "No X server at \$DISPLAY [$DISPLAY]" >&2
         exit 0
@@ -79,13 +61,13 @@ function main(){
     kill_older
     nitrogen --restore
     snore 0.2
-	while is_running_X ; do 
-	    if [ -z "$DISPLAY" ]; then
-    	    DISPLAY=:0.0
-    	fi
-		snore 420;
-		change_wallpaper;
-	done;	
+    while is_running_X ; do 
+        if [ -z "$DISPLAY" ]; then
+            DISPLAY=:0.0
+        fi
+        snore 420;
+        change_wallpaper;
+    done;   
 }
 
 main

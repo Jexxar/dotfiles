@@ -1,47 +1,36 @@
 #!/usr/bin/env bash
+set -eu
 
-if [ $(pgrep -lfc redshift) -ge 1 ] ; then
-    killall redshift
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
 fi
-if [ $(pgrep -lfc redshift-gtk) -ge 1 ] ; then
-    killall redshift-gtk
-fi
-if [ $(pgrep -lfc tint2) -ge 1 ] ; then
-    killall tint2
-fi
-if [ $(pgrep -lfc gnome-settings-daemon) -ge 1 ] ; then
-    killall gnome-settings-daemon
-fi
-if [ $(pgrep -lfc gnome-keyring-daemon) -ge 1 ] ; then
-    killall gnome-keyring-daemon &>/dev/null
-fi
-if [ $(pgrep -lfc mate-settings-daemon) -ge 1 ] ; then
-    killall mate-settings-daemon &>/dev/null
-fi
-if [ $(pgrep -lfc xautolock) -ge 1 ] ; then
-    killall xautolock &>/dev/null
-fi
-if [ $(pgrep -lfc polkit-mate-authentication-agent-1) -ge 1 ] ; then
-    killall polkit-mate-authentication-agent-1 &>/dev/null
-fi
-if [ $(pgrep -lfc mate-power-manager) -ge 1 ] ; then
-    killall mate-power-manager &>/dev/null
-fi
-if [ $(pgrep -lfc cinnamon-screensaver) -ge 1 ] ; then
-    killall cinnamon-screensaver &>/dev/null
-fi
-if [ $(pgrep -lfc mate-screensaver) -ge 1 ] ; then
-    killall mate-screensaver &>/dev/null
-fi
-if [ $(pgrep -lfc i3lock) -ge 1 ] ; then
-    killall i3lock &>/dev/null
-fi
-if [ $(pgrep -lfc compton) -ge 1 ] ; then
-    killall compton &>/dev/null
-fi
-if [ $(pgrep -lfc delayctl) -ge 1 ] ; then
-    killall delayctl &>/dev/null
-fi
-if [ $(pgrep -lfc changer.sh) -ge 1 ] ; then
-    killall changer.sh &>/dev/null
-fi
+
+dunstctl stop
+
+# Stop this session and daemon running processes.
+stop_it "polkit-gnome-authentication-agent-1" "stop"
+stop_it "gnome-keyring-daemon" "stop"
+stop_it "gnome-settings-daemon" "stop"
+stop_it "gnome-screensaver" "stop"
+stop_it "polkit-mate-authentication-agent-1" "stop"
+stop_it "mate-settings-daemon" "stop"
+stop_it "mate-power-manager" "stop"
+stop_it "mate-volume-control-applet" "stop"
+stop_it "mate-screensaver" "stop"
+stop_it "cinnamon-screensaver" "stop"
+stop_it "xscreensaver" "stop"
+stop_it "xautolock" "stop"
+stop_it "redshift-gtk" "stop"
+stop_it "redshift" "stop"
+stop_it "mylightson" "stop"
+stop_it "mywallchng" "stop"
+stop_it "tint2" "stop"
+stop_it "compton" "stop"
+
+openbox --exit;
+
+killall openbox;
+
+# dbus-launch cleanup
+pkill -u $USER -t `tty | cut -d '/' -f 3,4` dbus-launch
+
