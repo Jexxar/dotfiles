@@ -1,0 +1,56 @@
+[global]
+    font = ubuntu 8
+    markup = full
+    format = "%s\n%b"
+    sort = yes
+    indicate_hidden = yes
+    alignment = right
+    bounce_freq = 0
+    show_age_threshold = 30
+    word_wrap = yes
+    ignore_newline = no
+    geometry = "0x0-30+65"
+    title = dunst
+    class = dunst
+    shrink = yes
+    transparency = 0
+    idle_threshold = 120
+    monitor = 0
+    follow = mouse
+    stack_duplicates = true
+    hide_duplicate_count = false
+    sticky_history = yes
+    history_length = 50
+    show_indicators = yes
+    line_height = 1
+    notification_height = 0
+    separator_height = 4
+    padding = 25
+    horizontal_padding = 50
+    separator_color = auto
+    browser = /usr/bin/x-www-browser
+    # dmenu = /usr/bin/dmenu_run -b -fn "ubuntu-8" -nb "#13191e" -nf "#fff" -sb "#ffffff" -sf "#13191e" -h "35"
+    icon_position = off
+    frame_width = 0
+    frame_color = "#000000"
+
+[shortcuts]
+    close = ctrl+space
+    history = ctrl+grave
+    context = ctrl+period
+
+[urgency_low]
+    background = "#ffffff"
+    foreground = "#000000"
+    timeout = 5
+
+[urgency_normal]
+    background = "#ffffff"
+    foreground = "#000000"
+    timeout = 5
+
+[urgency_critical]
+    background = "#000000"
+    foreground = "#ffffff"
+    frame_color = "#ffffff"
+    timeout = 30

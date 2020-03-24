@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#title           : git_jumper
+#description     : A simple dmenu call to navigate your git repos
+#author          : Arne Küderle
+#date            : 201502
+#notes           : Install dmenu to use this script. For the best experience create a hotkey
+
+function main(){
+    declare -A gitdic
+    dirlist=()
+    while IFS= read -d $'\0' -r file ; do
+        dir=$(basename "$(dirname "$file")")
+        gitdic["$dir"]="$(dirname "$file")"
+        dirlist+="$dir\n"
+    done < <(find ~ -type d -name .git -print0)
+    local choice=$(echo -e "$dirlist" | rofi -location 2 -font "Noto Sans 8" -dmenu -l 10 -line-margin 0 -line-padding 1 -i)
+    if [ -n "$choice" ]; then
+        tilix --working-directory="${gitdic["$choice"]}"
+    fi
+    unset gitdic 
+    unset dir 
+    unset dirlist
+}
+
+main "$@"

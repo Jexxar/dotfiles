@@ -26,7 +26,7 @@ export QT_STYLE_OVERRIDE=GTK+
 #===========================================
 # Define script for sudo_askpass
 #===========================================
-export SUDO_ASKPASS="${HOME}/bin/askpw.sh"
+export SUDO_ASKPASS="${HOME}/bin/askpw"
 
 #===========================================
 # Make Python use UTF-8 encoding for output to stdin, stdout, and stderr.

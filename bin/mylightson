@@ -32,10 +32,10 @@ DC_mandatoryApps=('cura' 'wineserver' 'dbgl' 'openscad' 'dgen' 'lutris' 'playonl
 
 # Names of programs which, when running, you wish to delay the screensaver.
 # For example ('ardour2' 'gmpc').
-DC_delayApps=('vlc' 'celluloid' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
+DC_delayMediaApps=('vlc' 'celluloid' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
 
 # Names of programs which, when using sound server, you wish to delay the screensaver.
-DC_delayWebBasedApps=('chrome' 'firefox' 'opera' 'Iceweasel' 'WebKit' 'vivaldi' 'brave' 'chromium' 'epiphany' 'youtube-dl' 'smtube' 'midori' 'min' 'falkon' 'slimjet' 'steam')
+DC_delayWebBasedApps=('chrome' 'firefox' 'opera' 'Iceweasel' 'surf' 'yandex_browser' 'luakit' 'WebKit' 'vivaldi' 'brave' 'chromium' 'epiphany' 'youtube-dl' 'smtube' 'midori' 'min' 'falkon' 'slimjet' 'steam')
 
 # Display outputs to check, display screensaver when they are connected.
 # Run xrandr to show current monitor config.
@@ -53,15 +53,6 @@ DC_DPMSOffTime=600
 DC_X11ScrSvrControl=1
 DC_X11ScrSvrTimeout=600
 
-# clean DC_log file
-function DC_log_clean() {
-    if [ -f "$DC_logFile" ]; then
-        rm -f "$DC_logFile"
-    fi
-    touch "$DC_logFile"
-    return 0
-}
-
 # clean status file
 function DC_state_clean() {
     if [ -f "$DC_stateFile" ]; then
@@ -72,14 +63,12 @@ function DC_state_clean() {
 
 # DC_log feature
 function DC_log() {
-    local d=""
-    d=$(date +%H:%M:%S)
     if [ $DC_DEBUG -eq 2 ]; then
-        echo "[$d] - " "$@"
+        echo "$@"
         log "$@" 
     elif [ $DC_DEBUG -eq 1 ]; then
         if [ "$(echo "$@" | grep -c 'sleeping for')" == "1" ]; then
-            echo "[$d] - " "$@"
+            echo "$@"
             log "$@"
         fi
     fi
@@ -163,36 +152,10 @@ function DC_enableXautolock() {
     DC_XSetOn
 }
 
-# only one instance of this job
-function DC_kill_older() {
-    local v_pid=( $(ps -aux | grep "$DC_scriptName" | egrep -v 'grep --color=auto' | sort -u | awk '{print $1"_"$2"_"$9"_"$12}') )
-    local v_len=${#v_pid[@]}
-    let v_len=v_len-1
-    local aux=""
-    local one_pid="0"
-    local i="0"
-    local mypid=$$
-    local pnm=""
-    DC_log "Mypid = $mypid $DC_scriptName"
-    for i in $(seq 0 $v_len ); do 
-        aux=$(echo "${v_pid[$i]}" | sed -e "s/_/ /g");
-        one_pid=$(echo "$aux" | awk '{print $2}');
-        aux=$(echo "$aux" | awk '{print $4}')
-        pnm="${aux##*/}"
-        DC_log "$i : ${v_pid[$i]}  pid=$one_pid  name=$pnm "
-        if [ "$one_pid" != "$mypid" ] && [ "$pnm" == "$DC_scriptName" ]; then
-            kill "$one_pid" &>/dev/null
-        fi
-    done
-    return 0
-}
-
-# find a mandatory in fullscreen mode
+# Find mandatory apps in fullscreen mode
 function DC_hasMandatoryDelay() {
-    local tmp="0"
     for p1 in "${DC_mandatoryApps[@]}"; do
-        tmp=$(pgrep -lc "${p1}")
-        if [ $tmp -gt 0 ] ; then
+        if [ $(pgrep -lfc "${p1}") -gt 0 ] ; then
             DC_log "DC_hasMandatoryDelay(): mandatory delay program $p1 found..."
             return 0
         fi
@@ -253,7 +216,7 @@ function DC_whichUsingPulseaudio() {
     local arr=( $str )
     for i in "${arr[@]}"; do 
         nm_ps=$(ps -p "$i" -o comm=;)
-        for p1 in "${DC_delayApps[@]}"; do
+        for p1 in "${DC_delayMediaApps[@]}"; do
             if [ "$p1" = "$nm_ps" ] ; then
                 echo "$nm_ps"
                 return 0
@@ -273,7 +236,7 @@ function DC_whichUsingPulseaudio() {
 # find a running online stream
 function DC_detectOnlineMedia() {
     local tmp=""
-    tmp=$(wmctrl -l 2> /dev/null | grep -i "youtube\|vimeo\|anime\|DivX\|flix\|rackle\|odcast\|cecast\|elecine\|Muu\|NetMovies")
+    tmp=$(wmctrl -lx 2> /dev/null | grep -si "youtube\|stream\|mp4\|mpeg\|mpg\|webm\|vimeo\|anime\|divX\|flix\|rackle\|odcast\|cecast\|cine\|muu\|movie")
     if [ $? -eq 0 ] ; then 
         DC_log "DC_detectOnlineMedia(): $tmp"
         return 0
@@ -363,7 +326,7 @@ function DC_hasDelayApp() {
     # Check if user want to detect HTML5 on Chromium.
     if [[ "$activWinTitle" == *hromium* ]]; then
         # Check if Chromium process is running.
-        if [[ $(pgrep -c "chromium") -ge 1 ]]; then
+        if [[ $(pgrep -lfc "chromium") -ge 1 ]]; then
             DC_log "DC_hasDelayApp(): chromium html5 detected"
             return 0
         fi
@@ -372,7 +335,7 @@ function DC_hasDelayApp() {
     # Check if user want to detect HTML5 on Yandex browser.
     if [[ "$activWinTitle" == *andex-browser* ]]; then
         # Check if Yandex browser process is running.
-        if [[ $(pgrep -c "yandex_browser") -ge 1 ]]; then
+        if [[ $(pgrep -lfc "yandex_browser") -ge 1 ]]; then
             DC_log "DC_hasDelayApp(): Yandex browser detected"
             return 0
         fi
@@ -449,7 +412,7 @@ function DC_hasDelayApp() {
     fi
 
     # detect programs that need delay screensaver
-    for prog in "${DC_delayApps[@]}"; do
+    for prog in "${DC_delayMediaApps[@]}"; do
         if DC_runcheck "$activWinTitle" "$prog" ; then
             DC_log "DC_hasDelayApp(): $prog fullscreen detected"
             return 0
@@ -863,10 +826,7 @@ DC_xScrSvrPresent=$(if DC_isPresentAndExec "xscreensaver"; then echo 1; else ech
 DC_displays=$(xvinfo | awk -F'#' '/^screen/ {print $2}' | xargs)
 
 # Kill older instances of this job
-DC_kill_older
-
-# clean DC_log file
-DC_log_clean
+kill_older
 
 # clean DC_state file
 DC_state_clean

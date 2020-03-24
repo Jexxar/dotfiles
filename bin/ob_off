@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+function main() {
+    # Only works if X is running.
+    if ! is_running_X ; then
+        log "X server is not running";
+        return 0;
+    fi
+    if ! $(command -v gxmessage)
+        log "gxmessage not found";
+        return 0;
+    fi
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) doMenu_en ;; # Deutsch
+        da_* ) doMenu_en ;; # Danish
+        es_* ) doMenu_en ;; # Española
+        fr_* ) doMenu_en ;; # Français
+        id_* ) doMenu_en ;; # Bahasa Indonesia
+        it_* ) doMenu_en ;; # Italian
+        lv_* ) doMenu_en ;; # Latvian
+        pl_* ) doMenu_en ;; # Polish
+        pt_* ) doMenu_pt ;; # Português
+        ru_* ) doMenu_en ;; # Russian
+        * ) doMenu_en ;; # Default to English
+    esac
+}
+
+function doMenu_en(){
+    gxmessage   -font "Sans bold 16" "          Are you sure you want to leave?" -nofocus -center  -borderless \
+    -noescape -sticky -ontop -title "Pick a choice" -default "Cancel" \
+    -buttons "_Cancel":1,"_Lock":2,"_Exit":3,"_Reboot":4,"_Poweroff":5 >/dev/null
+    
+    case $? in
+        1)
+            echo "Cancel"
+        ;;
+        2)
+            exec ~/bin/mylock lock
+        ;;
+        3)
+            exec ~bin/myexit
+        ;;
+        4)
+            exec ~bin/myreboot
+        ;;
+        5)
+            exec ~/bin/myshutdown
+        ;;
+    esac
+    return 0
+}
+
+function doMenu_pt(){
+    gxmessage   -font "Sans bold 16" "          Tem certeza que quer sair?" -nofocus -center  -borderless \
+    -noescape -sticky -ontop -title "Escolha uma ação" -default "Cancelar" \
+    -buttons "_Cancelar":1,"_Bloquear":2,"_Sair":3,"_Reiniciar":4,"_Desligar":5 >/dev/null
+    
+    case $? in
+        1)
+            echo "Ação Cancelada"
+        ;;
+        2)
+            exec ~/bin/mylock lock
+        ;;
+        3)
+            exec ~bin/myexit
+        ;;
+        4)
+            exec ~bin/myreboot
+        ;;
+        5)
+            exec ~/bin/myshutdown
+        ;;
+    esac
+    return 0
+}
+
+main

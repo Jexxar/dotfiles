@@ -1,16 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ## $1 = "add" / "remove"
 ## $2 = %k from udev
 
 function usage() {
     echo "Usage: $0 [Options]"
     echo "       "
-    echo "Purpose: enable|disable Touchpad when mouse is plugged"
+    echo "Purpose: enable|disable Touchpad"
     echo "       "
     echo "Options"
     echo "-h: Show this help"
     echo "-d: Disable touchpad"
     echo "-e: Enable touchpad"
+    echo "-a: Auto enable|disable on mouse plug(in/off)"
     echo "--disable: Disable touchpad"
     echo "--enable: Enable touchpad"
     return 0;
@@ -24,8 +25,8 @@ if [ $# -eq 0 ] ; then
 fi
 
 # Option strings
-SHORT=":d::e::h"
-LONG=":disable,enable,help"
+SHORT=":a::d::e::h"
+LONG=":auto,disable,enable,help"
 
 # Read the options
 OPTS=$(getopt --options $SHORT --long $LONG --name "$0" -- "$@")
@@ -59,10 +60,22 @@ for CUR_USER in ${USERLIST}; do
         STATE=$(/usr/bin/xinput list-props $ID | \grep 'Device Enabled' | \awk '{print $4}')
         
         case "$1" in
+            -a | --auto )
+                xinput list | \egrep -Eo '[Mm]ouse\s*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}' &>/dev/null
+                if [ $? -eq 0 ] ; then
+                    /usr/bin/xinput disable $ID
+                    /usr/bin/logger -t Touchpadctl -- "Additional external mice found. Touchpad disabled for $CUR_USER. ($XAUTHORITY - $DISPLAY)"
+                else
+                    /usr/bin/xinput enable $ID
+                    /usr/bin/logger -t Touchpadctl -- "Additional external mice not found. Touchpad enabled for $CUR_USER. ($XAUTHORITY - $DISPLAY)"
+                fi
+            ;;
             -d | --disable )
                 if [ $STATE -eq 1 ]; then
                     /usr/bin/xinput disable $ID
-                    /usr/bin/logger -t Touchpadctl -- "USB mouse plugged. Disabling touchpad for $CUR_USER. ($XAUTHORITY - $DISPLAY)"
+                    /usr/bin/logger -t Touchpadctl -- "Disabling touchpad for $CUR_USER. ($XAUTHORITY - $DISPLAY)"
+                else
+                    /usr/bin/logger -t Touchpadctl -- "Touchpad already disabled for $CUR_USER. ($XAUTHORITY - $DISPLAY)"
                 fi
             ;;
             -e | --enable )

@@ -1,0 +1,96 @@
+! ------------------------------------------------------------------------------
+! URxvt configs
+! ------------------------------------------------------------------------------
+! general settings
+URxvt*saveline:         15000
+URxvt*termName:         rxvt-256color
+URxvt*iso14755:         false
+
+! appearance
+URxvt*depth:            32
+!URxvt*background:      rgba:0000/0000/0000/AAAA
+!URxvt*background:      [100]#2f343f
+URxvt.underlineColor:   #81a1c1
+URxvt.highlightColor:   #81a1c1
+URxvt.throughColor:     Blue
+! URxvt*cursorColor:      #b48ead
+URxvt*cursorColor:      #e5e9f0
+! URxvt*cursorColor2:     Magenta
+URxvt*cursorColor2:     White
+URxvt*scrollBar:        false
+URxvt*scrollBar_right:  false
+URxvt*internalBorder:   0
+URxvt*externalBorder:   0
+URxvt.colorIT:          #a3be8c
+URxvt.colorBD:          #e5e9f0
+URxvt.colorUL:          #81a1c1
+URxvt*geometry:         132x43
+URxvt.internalBorder:   16
+
+! fonts
+URxvt*font: xft:Hack\ Nerd\ Font\ Mono:pixelsize=11:antialias=true:hinting=true
+
+! URxvt*font: xft:Inconsolata\-dz for\ Powerline:pixelsize=11:antialias=true:hinting=true
+! URxvt*imFont:                   xft:Inconsolata\-dz for\ Powerline:regular:size=11
+! URxvt*boldFont:                 xft:Inconsolata\-dz for\ Powerline:bold:size=11
+! URxvt*italicFont:               xft:Inconsolata\-dz for\ Powerline:italic:size=11
+! URxvt*boldItalicFont:           xft:Inconsolata\-dz for\ Powerline:regular:size=11
+
+! URxvt*font: xft:NotoMono\-Regular:pixelsize=12:antialias=true:hinting=true
+! URxvt*font: xft:NotoSans:pixelsize=12:antialias=true:hinting=true
+! URxvt*font: xft:DejaVuSansMono:pixelsize=12:antialias=true:hinting=true
+! URxvt*font: xft:DejaVu\ Sans\ Mono\ Bold\ Oblique\ for\ Powerline:pixelsize=12:antialias=true:hinting=true
+! URxvt*font: xft:Ubuntu\ Mono\ derivative\ Powerline:pixelsize=12:antialias=true:hinting=true
+
+! URxvt*font: xft:Source\ Code\ Pro\ Medium:pixelsize=13:antialias=true:hinting=true
+! URxvt*font:                     xft:M+ 1mn:regular:size=12
+! URxvt*imFont:                   xft:M+ 1mn:regular:size=12
+! URxvt*boldFont:                 xft:M+ 1mn:bold:size=12
+! URxvt*italicFont:               xft:M+ 1mn:italic:size=12
+! URxvt*boldItalicFont:           xft:M+ 1mn:regular:size=12
+
+URxvt*letterSpace:              0
+URxvt.lineSpace:                0
+! Xft.size:                     12
+! run :.!fc-list | grep <font-name>
+
+! perl extensions
+URxvt.perl-ext-common:  default,clipboard,keyboard-select,url-select,resize-font,font-size
+!URxvt.perl-ext-common:  default,clipboard,url-select,keyboard-select,tabbed
+
+! macros for clipboard and selection
+! Keybind
+URxvt.keysym.Control-Alt-C: perl:clipboard:copy
+URxvt.keysym.Control-Alt-V: perl:clipboard:paste
+URxvt.keysym.C-Escape:      perl:keyboard-select:activate
+URxvt.keysym.C-u:           perl:url-select:select_next
+
+URxvt.copyCommand:      xclip -i -selection clipboard
+URxvt.pasteCommand:     xclip -o -selection clipboard
+URxvt.keysym.M-c:       perl:clipboard:copy
+URxvt.keysym.M-v:       perl:clipboard:paste
+URxvt.keysym.M-C-v:     perl:clipboard:paste_escaped
+URxvt.keysym.M-Escape:  perl:keyboard-select:activate
+URxvt.keysym.M-s:       perl:keyboard-select:search
+URxvt.keysym.M-u:       perl:url-select:select_next
+URxvt.urlLauncher:      firefox
+URxvt.underlineURLs:    true
+URxvt.urlButton:        1
+URxvt.resize-font.smaller: C-Down
+URxvt.resize-font.bigger: C-Up
+URxvt.keysym.C-Up:     font-size:increase
+URxvt.keysym.C-Down:   font-size:decrease
+URxvt.keysym.C-S-Up:   font-size:incglobal
+URxvt.keysym.C-S-Down: font-size:decglobal
+URxvt.keysym.C-equal:  font-size:reset
+URxvt.keysym.C-slash:  font-size:show
+
+! tabbed
+URxvt.tabbed.tabbar-fg: 4
+URxvt.tabbed.tabbar-bg: 16
+URxvt.tabbed.tab-fg:    15
+URxvt.tabbed.tab-bg:    4
+URxvt*buffered:         false          
+
+!Disables the insanely annoying Ctrl+Shift shortcut that enters ISO14755 mode
+URxvt.iso14755:         False

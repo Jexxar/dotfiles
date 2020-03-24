@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# A fuzzy file-finder and opener based on dmenu
+# Requires: dmenu, xdg-open
+
+function handle_file() {
+    if [ -d "$1" ]; then
+        cd "$1"
+    elif [ -f "$1" ]; then
+        exec xdg-open "$(pwd)/$1" &
+        exit 0
+    else
+        printf "%s is neither a file nor a directory\n" "$(pwd)/$1" >&2
+    fi
+}
+
+function main() {
+    local old_IFS=$IFS
+    local file=""
+    while : ; do
+        IFS=$'\n'
+        file=$(ls -1a --group-directories-first | rofi -location 2 -font "Noto Sans 8" -dmenu -l 20 -line-margin 0 -line-padding 1 -i -p "Browse $(basename $(pwd)):")
+        IFS=$old_IFS
+        if [ -e "$file" ]; then
+            handle_file "$file"
+        else
+            break
+        fi
+    done
+}
+
+#ls ~/ | sed 's/ /\\ /g' | sort -f | dmenu -i -l 20 -nb '#2e3436' -nf '#9999CC' | xargs xdg-open
+
+main "$@"

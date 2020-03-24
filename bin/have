@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 function doit() {
-    local hv=$(which $1)
+    local hv=$(command -v $1)
     
-    if [[ -z "${hv}" ]]; then
+    if [ -z "$hv" ]; then
         return 1
     fi
     return 0

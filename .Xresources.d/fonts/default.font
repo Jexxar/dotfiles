@@ -1,0 +1,24 @@
+! ------------------------------------------------------------------------------
+! Fonts settings 
+! ------------------------------------------------------------------------------
+Xft.dpi:        96
+Xft.antialias:  true
+Xft.hinting:    true
+Xft.hintsyle:   hintfull
+Xft.rgba:       rgb
+Xft.lcdfilter:  lcddefault
+Xft.letterSpace: -1
+Xft.lineSpace: -1
+Xft.lineHeight: -1
+Xft.linePadding: -1
+
+*renderFont: true
+! *font: xft:Inconsolata:size=12
+*faceName: Inconsolata
+*faceSize1: 12
+*faceSize2: 14
+*faceSize3: 16
+*faceSize4: 18
+*faceSize5: 20
+*faceSize6: 22
+*initialFont: 3

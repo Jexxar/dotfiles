@@ -40,6 +40,89 @@ function log() {
     fi
 }
 
+# direct it all to /dev/null
+function nullify() {
+    "$@" >/dev/null 2>&1
+}
+
+# Rsync copy w/ progress
+function rsyncp_p () {
+    rsync -WavP --human-readable --progress $1 $2
+}
+
+# Check for a git repo in that location
+function is_git_repository() {
+    [ "$(git rev-parse &>/dev/null; printf $?)" -eq 0 ] && return 0 || return 1
+}
+
+# Trim leading and tailing spaces
+# Usage: trim_string "   example   string    "
+function trim_string() {
+    : "${1#"${1%%[![:space:]]*}"}"
+    : "${_%"${_##*[![:space:]]}"}"
+    printf '%s\n' "$_"
+}
+
+# Usage: say text [delayAfterText]
+function say() {
+    fold -s -w 76 <<< "$1" | sed 's/^/  /' # wraps text nicely and adds two leading spaces
+    snore "${2-0}"
+}
+
+# Adapted from Addy
+# 'battery_stt -i' = with icon, 'battery' = text only
+function battery_stt(){
+    local BATTERY=0
+    local BATTERY_INFO=$(acpi -b | grep "Battery ${BATTERY}")
+    local BATTERY_STATE=$(echo "${BATTERY_INFO}" | grep -wo "Full\|Charging\|Discharging")
+    local BATTERY_POWER=$(echo "${BATTERY_INFO}" | grep -o '[0-9]\+%' | tr -d '%')
+    
+    if [[ "${BATTERY_STATE}" = "Charging" ]]; then
+        if  [[ $1 = "-i" ]]; then
+            echo "  ${BATTERY_POWER}%+"
+        else
+            echo "${BATTERY_POWER}%+"
+        fi
+    elif [[ "${BATTERY_STATE}" = "Discharging" ]]; then
+        if  [[ $1 = "-i" ]]; then
+            echo "  ${BATTERY_POWER}%-"
+        else
+            echo "${BATTERY_POWER}%-"
+        fi
+    else
+        if  [[ $1 = "-i" ]]; then
+            echo "  ${BATTERY_POWER}%"
+        else
+            echo "${BATTERY_POWER}%"
+        fi
+    fi
+}
+
+# ps with ISO date format
+function ps_ISO(){
+    if [ -z "$1" ]; then
+        ps -eo etimes,ruser,pid,cmd --sort=start_time | \
+            awk 'BEGIN{now=systime()} {$1=strftime("%Y-%m-%d-%H:%M:%S", now-$1); print $0}' | grep -v "grep" | grep -v "awk"
+    else
+        ps -eo etimes,ruser,pid,cmd --sort=start_time | \
+            awk 'BEGIN{now=systime()} {$1=strftime("%Y-%m-%d-%H:%M:%S", now-$1); print $0}' | grep -v "grep" | grep -v "awk" | grep "$1"
+    fi
+}
+
+# Kill older instances of itself
+function kill_older(){
+    local s_name="${0##*/}"
+    local my_pid=$$
+    snore 0.3
+    for i in $(ps_ISO "$s_name" | grep "$USER" | grep -P "bash" | grep -v "grep" | awk '{print $3}'); do 
+        if [ "$i" != "$my_pid" ]; then
+            log "Older instances found: pid=$i  name=$s_name "
+            kill "$i" &>/dev/null || true
+        fi
+    done
+    return 0
+}
+
 # Return 0 if user in the active session can issue power related commands via policykit
 function auth_user() {
     [ $(loginctl show-session $XDG_SESSION_ID --property=Active | grep "yes") ] && return 0
@@ -162,23 +245,27 @@ function dunstctl() {
 function stop_it() {
     [ -z "$1" ] && return 1
     
-    local pgrep_cmd="\$(pgrep -lfc $1)"
-    local stop_cmd="2>/dev/null killall $1"
-    
     case ${2:-} in
         stop)
             if [ $(pgrep -lfc "$1") -ge 1 ] ; then
-                while 2>/dev/null killall "$1"; do
+                local v_pid=( $(ps -aux | grep "$1" | egrep -v 'grep --color=auto' | sort -u | awk '{print $2}') )
+                local v_len=${#v_pid[@]}
+                let v_len=v_len-1
+                local one_pid="0"
+                for i in $(seq 0 $v_len ); do
+                    one_pid=$(echo "${v_pid[$i]}");
+                    log "killing $1 pid= $one_pid"
+                    kill "$one_pid" &>/dev/null || true
                     sleep 0.1;
                 done
             fi
             return 0
         ;;
         debug)
-            log "$pgrep_cmd"
             if [ $(pgrep -lfc "$1") -ge 1 ] ; then
                 log "$1 need to be terminated"
-                log "$stop_cmd"
+            else
+                log "$1 not found"
             fi
             return 0
         ;;

@@ -14,7 +14,6 @@ fi
 
 echo "`date +%F-%H:%M:%S` $HOSTNAME - autostart init" > "$OB_logfile"
 
-
 [ -z "$XDG_CURRENT_DESKTOP" ] && export XDG_CURRENT_DESKTOP="MATE"
 echo "`date +%F-%H:%M:%S` $HOSTNAME XDG_CURRENT_DESKTOP = $XDG_CURRENT_DESKTOP" >> "$OB_logfile"
 
@@ -84,9 +83,9 @@ echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile
 # Xsettingsd
 # ==================================
 if [ $(pgrep -lfc mate-settings-daemon) -eq 0 ] ; then
-    OB_str="xsettingsd -c $HOME/.Xdefaults"
+    OB_str="xsettingsd -c $HOME/.xsettings"
     OB_stts=""
-    [ -f "$HOME/.Xdefaults" ] && xsettingsd -c "$HOME/.Xdefaults" &
+    [ -f "$HOME/.xsettings" ] && xsettingsd -c "$HOME/.xsettings" &
     OB_rc=$?
     [ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
     echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"
@@ -413,9 +412,9 @@ echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile
 # My settings to prevent screen blanking when demanded
 # ==================================
 sleep 0.3
-OB_str="$HOME/bin/delayctl 50"
+OB_str="$HOME/bin/mylightson 50"
 OB_stts=""
-~/bin/delayctl 50 &
+~/bin/mylightson 50 &
 OB_rc=$?
 [ $OB_rc -eq 0 ] && OB_stts="Ok  " || OB_stts="Erro"
 echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile"

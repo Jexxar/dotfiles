@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Search through open programs and switch to their tag wmctrl needed
+
+function main(){
+    # save IFS format
+    local old_IFS=$IFS
+    IFS=$'\n'
+    local dmoptions=""
+    local wclass=""
+    local ctlist="$(wmctrl -lx | grep -v "[\-]1" | grep -v "plugin-container" | grep -v "applet" | grep -v "indicator" | grep -v "daemon" | awk -F " " '{print $1" "$3}')"
+    [ -z "$ctlist" ] && exit 0
+    # List all running programs
+    for i in $ctlist; do
+        wclass=$(echo "$i" | awk -F "." '{print $2}' )
+        [ -z "$dmoptions" ] && dmoptions=$(echo "$wclass") || dmoptions=$(echo -en "$dmoptions\n$wclass")
+    done
+    # restore IFS format
+    IFS=$old_IFS
+    
+    # Pipe to dmenu ($@ to include font settings from dwm/config.h)
+    local dmchoice=""
+    dmchoice=$(echo "$dmoptions" | sort -u | rofi -location 2 -font "Noto Sans 8" -dmenu -line-margin 0 -line-padding 1 -i -p "Switch to" -l 5 $@ )
+    [ -z "$dmchoice" ] && exit 1
+    
+    local wid=$(echo "$ctlist" | grep "$dmchoice" | awk '{print $1}' )
+    wmctrl -i -a $wid
+    
+}
+
+main "$@"

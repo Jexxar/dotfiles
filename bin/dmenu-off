@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+function main(){
+    local cmd=$(printf "poweroff\nreboot\nsuspend\nlock\nkillX\n" | rofi -location 2 -font "Noto Sans 8" -dmenu -l 10 -line-margin 0 -line-padding 1 -i -p "Execute:" $*)
+    
+    if [ -z "$cmd" ]; then
+        return 0
+    fi
+    
+    case "$cmd" in
+        poweroff)
+            ~/bin/myshutdown ;;
+        reboot)
+            ~/bin/myreboot ;;
+        suspend)
+            ~/bin/mysuspend ;;
+        lock)
+            ~/bin/autolock lock ;;
+        killX)
+            killall X ;;
+        *)
+            printf "Option not recognized: %s\n" "$cmd" >&2
+    esac
+    return 0
+}
+
+main "$@"

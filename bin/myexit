@@ -46,6 +46,7 @@ function do_this_exit() {
     # dbus-launch cleanup
     pkill -u $USER -t `tty | cut -d '/' -f 3,4` dbus-launch
 
+    return 0
 }
 
 function do_test() {
@@ -79,6 +80,8 @@ function do_test() {
     stop_it "cinnamon-screensaver" "debug"
     stop_it "xscreensaver" "debug"
     stop_it "xautolock" "debug"
+    stop_it "caffeine-indicator" "debug"
+    stop_it "caffeine" "debug"
     stop_it "redshift-gtk" "debug"
     stop_it "redshift" "debug"
     stop_it "mylightson" "debug"

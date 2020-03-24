@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#
+#Use dmenu to open and edit a file from a given list.
+function main(){
+    local sdir=${1:-"$PWD"}
+    # Show list of options
+    local choice=""
+    choice=$(cd "$sdir"; find . -maxdepth 1 -type f -print | sort | rofi -location 2 -font "Noto Sans 8" -dmenu -l 10 line-margin 0 -line-padding 1 -i -p "File to edit:")
+    
+    if [ -n "$choice" ]; then
+        myedit "${sdir}"/${choice}
+    fi
+}
+
+main "$@"

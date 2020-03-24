@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#
+# Global variables:
+# Show list of options
+function main(){
+    local choice=$(echo " " | rofi -location 2 -font "Noto Sans 8" -dmenu  -lines 1 -line-margin 0 -line-padding 1 -i -p "Search:")
+    
+    if [ -n "$choice" ]; then
+        grep -sin "$choice" *
+    fi
+
+}
+
+main "$@"
