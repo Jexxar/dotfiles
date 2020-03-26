@@ -2,25 +2,33 @@
 Type=Action
 Name=Open as Root
 Name[pt_BR]=Abrir como Root
-Icon=terminal
 ToolbarLabel=Open as Root
 ToolbarLabel[pt_BR]=Abrir como Root
 Tooltip=Open as root
 Tooltip[pt_BR]=Abrir como root
-Profiles=on_folder;on_file;
-TargetContext=false
+TargetLocation=true
+TargetToolbar=true
+Icon=terminal
+Profiles=root_on_folder;root_on_file;
 
-[X-Action-Profile on_file]
+Name[pt]=Abrir como Root
+Tooltip[pt]=Abrir como root
+Icon[pt_BR]=terminal
+Icon[pt]=terminal
+ToolbarLabel[pt]=Abrir como Root
+
+[X-Action-Profile root_on_file]
 Name=file
-MimeTypes=all/all;
+MimeTypes=all/allfiles;
 SelectionCount=1
 Schemes=file;
 Exec=gksu /usr/bin/xdg-open %f
+Basenames=!trash:///;*;
 
-[X-Action-Profile on_folder]
+[X-Action-Profile root_on_folder]
 Name=folder
 MimeTypes=inode/directory;
 SelectionCount=1
 Schemes=file;
 Exec=gksu /usr/bin/xdg-open %f
-
+Basenames=!trash:///;*;

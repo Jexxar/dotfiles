@@ -1,0 +1,28 @@
+[Desktop Entry]
+Type=Action
+Name=Copy To
+Name[pt_BR]=Copiar Para
+Name[pt]=Copiar Para
+Tooltip[pt_BR]=Copiar Para
+Tooltip[pt]=Copiar Para
+ToolbarLabel=CopyTo
+ToolbarLabel[pt_BR]=Copiar Para
+ToolbarLabel[pt]=Copiar Para
+Icon=gnome-stock-mail-fwd
+TargetLocation=true
+TargetToolbar=true
+Profiles=copy_on_file;copy_on_folder;
+
+[X-Action-Profile copy_on_file]
+Name=file
+MimeTypes=all/allfiles;
+Schemes=file;
+Exec=/home/usuario/bin/copy_to %F
+Basenames=!trash:///;*;
+
+[X-Action-Profile copy_on_folder]
+Name=folder
+MimeTypes=inode/directory;
+Schemes=file;
+Exec=/home/usuario/bin/copy_to %F
+Basenames=!trash:///;*;

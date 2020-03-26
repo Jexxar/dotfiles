@@ -1,0 +1,18 @@
+[Desktop Entry]
+Type=Action
+Name=ACL List
+Name[pt_BR]=Lista de Acesso
+Tooltip=ACL list manager
+Tooltip[pt_BR]=Gerencia lista de acesso
+ToolbarLabel=Eiciel
+ToolbarLabel[pt_BR]=Lista de Acesso
+Icon=config-users
+TargetLocation=true
+TargetToolbar=true
+Profiles=br_acl_list;
+
+[X-Action-Profile br_acl_list]
+MimeTypes=all/all;
+Schemes=file;
+TryExec=/usr/bin/eiciel
+Exec=/usr/bin/eiciel %F

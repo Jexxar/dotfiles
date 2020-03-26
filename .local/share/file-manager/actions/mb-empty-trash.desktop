@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Action
+Profiles=on_trash;
+Name=Empty Trash
+TargetLocation=true
+TargetToolbar=true
+Icon=remove
+
+[X-Action-Profile on_trash]
+MimeTypes=inode/directory;
+Basenames=trash:///;
+Exec=/usr/bin/trash-empty
+Name=Empty Trash

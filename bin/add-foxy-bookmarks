@@ -46,6 +46,11 @@ foxy -a "https://www.lifewire.com/beginners-guide-to-conky-4043352" @Desktop @be
 foxy -a "http://terminal.sexy/" @Desktop @terminal-sexy
 foxy -a "http://dotshare.it/" @Desktop @dotshare-it
 foxy -a "http://www.softpanorama.org/index.shtml" @Desktop @softpanorama
+foxy -a "https://github.com/wizbright/waybox" @Desktop @wizbright @waybox
+foxy -a "https://github.com/galihx11" @Desktop @galihx11
+foxy -a "https://dglava.github.io/en/category/linux.html" @Desktop @dinoglava
+foxy -a "https://github.com/zakariaGatter/Gatter_Linux" @Desktop @zakariaGatter @Gatter-Linux
+
 
 
 #Dev
@@ -82,6 +87,7 @@ foxy -a "https://mywiki.wooledge.org/BashPitfalls" @Dev @BashPitfalls
 foxy -a "http://mywiki.wooledge.org/BashFAQ/098" @Dev @BashFAQ
 foxy -a "https://www.shellhacks.com/" @Dev @shellhacks
 foxy -a "https://stackpointer.io/" @Dev @stackpointer
+foxy -a "https://vitux.com/compiling-your-first-qt-program-in-ubuntu/" @Dev @Qt-Program-compile
 
 
 #Distros
@@ -97,6 +103,7 @@ foxy -a "https://www.bunsenlabs.org/installation.html" @Distros @bunsenlabs
 foxy -a "https://www.linux.com/learn/intro-to-linux/2018/2/namib-linux-makes-arch-linux-dream-new-users" @Distros @namib-linux
 foxy -a "https://erikdubois.be/" @Distros @Arcolinux
 foxy -a "https://forum.archlabslinux.com/" @Distros @Archlabs
+foxy -a "https://voidlinux.org/" @Distros @Voidlinux   
 
 
 #TechLinux
@@ -156,6 +163,15 @@ foxy -a "https://suckless.org/" @TechLinux @suckless
 foxy -a "https://workaround.org/" @TechLinux @workaround
 foxy -a "https://geekprudens.net/tec/" @TechLinux @geekprudens
 foxy -a "http://andrwe.org/" @TechLinux @andrwe
+foxy -a "https://petermolnar.net/avahi-nfs-zfs/" @TechLinux @ZFS-NFS-shares
+foxy -a "https://mycroft-ai.gitbook.io/docs/" @TechLinux @Mycroft-AI   
+foxy -a "https://www.reallinuxuser.com/how-to-setup-your-printer-in-linux-mint/" @TechLinux @Printer-setup
+foxy -a "https://www.linuxbabe.com/" @TechLinux @LinuxBabe @Linux-Sysadmin
+foxy -a "https://checkmk.com/" @TechLinux @checkmk   
+foxy -a "https://lucasfcosta.com/" @TechLinux @Lucas-F-Costa
+foxy -a "https://blog.wizardsoftheweb.pro/rofi-basic-configuration/" @TechLinux @rofi @rofi-Basic
+foxy -a "https://www.mankier.com/1/rofi#Theming" @TechLinux @rofi @ManKier
+foxy -a "https://sysctl-explorer.net/" @TechLinux @Sysctl
 
 
 #Others
@@ -164,18 +180,20 @@ foxy -a "http://www.malware-traffic-analysis.net/" @Others @malware-traffic-anal
 foxy -a "https://ipleak.net/" @Others @ipleak
 foxy -a "https://opencv.org/" @Others @opencv
 foxy -a "https://www.hays.com.br/" @Others @hays
-foxy -a "https://www.amsmeteors.org/" @Others @amsmeteors
+foxy -a "https://www.amsmeteors.org/" @Others @amsmeteors @meteors
 foxy -a "https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Tips_and_Tricks" @Others @penSCAD-Tips-and-Tricks
 foxy -a "https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/The_OpenSCAD_Language#Values_and_Data_Types" @Others @OpenSCAD-Language
 foxy -a "https://filament2print.com/pt/blog/9_duvidas-temperatura-velocidade-pla-abs.html" @Others @temperatura-velocidade-pla-abs
 foxy -a "https://www.youmagine.com/designs/bed-leveling-tramming-paralleling-test" @Others @bed-leveling-tramming
 foxy -a "https://3dlab.com.br/propriedades-dos-materiais-para-impressora-3d/" @Others @materiais-para-impressora-3d
-foxy -a "http://3dprintingninja.blogspot.com/2014/12/how-to-make-3d-model-from-image.html" @Others @3d-model-from-image
+foxy -a "http://3dprintingninja.blogspot.com/2014/12/how-to-make-3d-mode" @TechLinuxmaers @3d-model-from-image
 foxy -a "https://imaginariopuro.wordpress.com/2017/12/28/calculo-tornado-facil-1/" @Others @calculo-tornado-facil-1
+foxy -a "https://www.marinestore.com/corrosionx" @Others  @Anti-Corrosion @Corrosion-X
+foxy -a "https://www.thirtythreeforty.net/posts/2019/12/my-business-card-runs-linux/" @Others @My-Business-Card-Runs-Linux
 
 
 #Social
-foxy -a "http://facebook.com/" @Social @
+foxy -a "http://facebook.com/" @Social @Facebook
 foxy -a "https://fosstodon.org/web/getting-started" @Social @fosstodon
 foxy -a "https://mewe.com/group/57f8f6f0236a6e490f9a0a81" @Social @mewe
 foxy -a "https://www.linkedin.com/" @Social @linkedin
@@ -183,7 +201,11 @@ foxy -a "https://unsplash.com/" @Social @unsplash
 foxy -a "https://wallhaven.cc/" @Social @wallhaven
 foxy -a "http://vidadesuporte.com.br/" @Social @vidadesuporte
 foxy -a "https://naomesmo.com.br/" @Social @naomesmo
-
+foxy -a "https://plus.diolinux.com.br/" @Social @Diolinux @Diolinux-Plus
+foxy -a "https://scholar.google.com.br/schhp?hl=pt-BR&as_sdt=0 5" @Social @Google-Scholar   
+foxy -a "https://www.cancertutor.com/cancer-diet/" @Social @Cancer @Cancer-Diets
+foxy -a "https://www.ouvirmusica.com.br/blues-pills/high-class-woman/#472143" @Social @Music
+ 
 
 #Reddit
 foxy -a "https://reddit.com/r/photoshopbattles" @Reddit @photoshopbattles

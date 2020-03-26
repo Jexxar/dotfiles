@@ -7,48 +7,32 @@ ToolbarLabel=More Info
 ToolbarLabel[pt_BR]=Mais Info
 Tooltip=More info on media file
 Tooltip[pt_BR]=Mais info sobre o arquivo de mídia
+TargetToolbar=true
 TargetLocation=true
 Profiles=on_images;on_video;on_audio;
 
-Name[pt]=Mais Info
-Name[pt_PT]=Mais Info
-Tooltip[pt]=Mais info sobre o arquivo de mídia
-Tooltip[pt_PT]=Mais info sobre o arquivo de mídia
-Icon[pt_BR]=applications-multimedia
-Icon[pt]=applications-multimedia
-Icon[pt_PT]=applications-multimedia
-ToolbarLabel[pt]=Mais Info
-ToolbarLabel[pt_PT]=Mais Info
-
-TargetToolbar=true
-
 [X-Action-Profile on_images]
 Name=image
+Name[pt_BR]=imagem
 Exec=/home/usuario/bin/moreinfo %F
 MimeTypes=image/*;
 SelectionCount=1
-
-Name[pt_BR]=image
-Name[pt]=image
-Name[pt_PT]=image
+Basenames=!trash:///;*;
 
 [X-Action-Profile on_audio]
 Name=audio
+Name[pt_BR]=áudio
 Exec=/home/usuario/bin/moreinfo %F
 Schemes=file;
 MimeTypes=audio/*;
 SelectionCount=1
-
-Name[pt_BR]=audio
-Name[pt]=audio
-Name[pt_PT]=audio
+Basenames=!trash:///;*;
 
 [X-Action-Profile on_video]
 Name=video
+Name[pt_BR]=vídeo
 Exec=/home/usuario/bin/moreinfo %F
 Schemes=file;
 MimeTypes=video/*;
 SelectionCount=1
-Name[pt_BR]=video
-Name[pt]=video
-Name[pt_PT]=video
+Basenames=!trash:///;*;

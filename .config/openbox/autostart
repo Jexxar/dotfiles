@@ -226,7 +226,7 @@ echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile
 # ==================================
 # Sound global volume at VOLUME
 # ==================================
-OB_VOLUME='115%'
+OB_VOLUME='75%'
 OB_stts=""
 for OB_SINK in $(pacmd list-sinks | grep 'index:' | cut -b12-); do
     OB_str="pactl set-sink-volume index: $OB_SINK $OB_VOLUME"

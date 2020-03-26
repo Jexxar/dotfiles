@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=Action
+Name=Trash
+Name[pt_BR]=Lixeira
+Tooltip=Move to Trash 
+Tooltip[pt_BR]=Move para Lixeira
+ToolbarLabel=Trash
+ToolbarLabel[pt_BR]=Lixeira
+Icon=remove
+Profiles=br_trashcan;
+TargetToolbar=true
+
+[X-Action-Profile br_trashcan]
+MimeTypes=all/all;
+Schemes=file;
+Exec=gio trash %F
+Basenames=!trash:///;*;

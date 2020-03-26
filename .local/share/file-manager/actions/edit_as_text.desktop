@@ -6,11 +6,12 @@ Tooltip=Edit file as text
 Tooltip[pt_BR]=Edita o arquivo em modo texto
 ToolbarLabel=As Text
 ToolbarLabel[pt_BR]=Edita
+TargetLocation=true
+TargetToolbar=true
 Icon=application-text
-TargetContext=false
-Profiles=profile-zero;
+Profiles=br_edit_text;
 
-[X-Action-Profile profile-zero]
-MimeTypes=all/all;
+[X-Action-Profile br_edit_text]
+MimeTypes=all/allfiles;
 Schemes=file;
 Exec=myedit %F
