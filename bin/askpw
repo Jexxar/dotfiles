@@ -1,33 +1,184 @@
 #!/usr/bin/env bash
-#zenity --forms --modal --text=" Autenticação Necessária " --title="Entre com a senha"  --add-password="Senha: "
-# Solicita senha sudo e valida a entrada
-function do_ask_pw() {
-    local has_yad=""
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+# l10n support
+function do_caption(){
+    # l10n support
+    local text="Password"
+    case "${LANG:-}" in
+        de_* ) text="Passwort" ;; # Deutsch
+        da_* ) text="Adgangskode" ;; # Danish
+        en_* ) text="Password" ;; # English
+        es_* ) text="Contraseña" ;; # Española
+        fr_* ) text="Mot de passe" ;; # Français
+        id_* ) text="Kata sandi" ;; # Bahasa Indonesia
+        it_* ) text="Password" ;; # Italian
+        lv_* ) text="Paroli" ;; # Latvian
+        pl_* ) text="Hasło" ;; # Polish
+        pt_* ) text="Senha" ;; # Português
+        ru_* ) text="пароль" ;; # Russian
+        * ) text="Password" ;; # Default to English
+    esac
+    echo "$text" | sed -e "s/\b\(.\)/\u\1/g"
+}
+
+# l10n support
+function do_title(){
+    local text="Type password"
+    case "${LANG:-}" in
+        de_* ) text="Bitte Passwort" ;; # Deutsch
+        da_* ) text="Indtast adgangskode" ;; # Danish
+        en_* ) text="Type password" ;; # English
+        es_* ) text="Ingrese su contraseña" ;; # Española
+        fr_* ) text="Entrez votre mot de passe" ;; # Français
+        id_* ) text="Masukkan kata sandi Anda" ;; # Bahasa Indonesia
+        it_* ) text="Inserisci la password" ;; # Italian
+        lv_* ) text="Ievadi paroli" ;; # Latvian
+        pl_* ) text="Podaj hasło" ;; # Polish
+        pt_* ) text="Digite a senha" ;; # Português
+        ru_* ) text="Введите пароль" ;; # Russian
+        * ) text="Type password" ;; # Default to English
+    esac
+    echo "$text" 
+}
+
+# l10n support
+function do_authmsg(){
+    local text="Attempt"
+    case "${LANG:-}" in
+        de_* ) text="Versuch" ;; # Deutsch
+        da_* ) text="Forsøg" ;; # Danish
+        en_* ) text="Attempt" ;; # English
+        es_* ) text="Intento" ;; # Española
+        fr_* ) text="Tentative" ;; # Français
+        id_* ) text="Mencoba" ;; # Bahasa Indonesia
+        it_* ) text="Tentativa" ;; # Italian
+        lv_* ) text="Bandymas" ;; # Latvian
+        pl_* ) text="Próba" ;; # Polish
+        pt_* ) text="Tentativa" ;; # Português
+        ru_* ) text="попытка" ;; # Russian
+        * ) text="Attempt" ;; # Default to English
+    esac
+    echo "$text" | sed -e "s/\b\(.\)/\u\1/g"
+}
+
+# l10n support
+function do_wrongpass(){
+    local text="Wrong password"
+    case "${LANG:-}" in
+        de_* ) text="Falsches Passwort" ;; # Deutsch
+        da_* ) text="Forkert kodeord" ;; # Danish
+        en_* ) text="Wrong password" ;; # English
+        es_* ) text="Contraseña incorrecta" ;; # Española
+        fr_* ) text="Mauvais mot de passe" ;; # Français
+        id_* ) text="Kata sandi salah" ;; # Bahasa Indonesia
+        it_* ) text="Password errata" ;; # Italian
+        lv_* ) text="Neteisingas slaptažodis" ;; # Latvian
+        pl_* ) text="Złe hasło" ;; # Polish
+        pt_* ) text="Senha errada" ;; # Português
+        ru_* ) text="Неправильный пароль" ;; # Russian
+        * ) text="Wrong password" ;; # Default to English
+    esac
+    echo "$text" | sed -e "s/\b\(.\)/\u\1/g"
+}
+
+# l10n support
+function locale_msgs() {
+    if [ -z "$1" ]; then
+        echo ""
+        return 0
+    fi
+
+    local st_type="${1}"
+
+    case "$st_type" in
+        caption)
+            do_caption
+        ;;
+        title)
+            do_title
+        ;;
+        authmsg)
+            do_authmsg
+        ;;
+        wrongpass)
+            do_wrongpass
+        ;;
+        *)
+            echo " "
+        ;;
+    esac
+}
+
+# Ask for sudo password under non X env
+function nonX_ask_pw() {
     local Psw=""
-    local p=0
-    has_yad=`which yad`
+    local title="$(locale_msgs title)"
+    local authm="$(locale_msgs authmsg)"
+    local wrongp="$(locale_msgs wrongpass)"
     for p in $(seq 1 3 ); do
         sudo -K
-        if [ -z "$has_yad" ]; then
-            Psw=`zenity --forms --modal --text="Autenticação Necessária $p / 3" --title="Entre com a senha"  --add-password="Senha:"`
-        else
-            Psw=`yad --entry --entry-text="xxxx" --hide-text --text="Autenticação Necessária $p / 3" --title="Entre com a senha"  --center --on-top --width=260`
+        stty -echo
+        printf "$title - $authm $p / 3: "
+        read Psw
+        stty echo
+        if [ $? -ne 0 ] || [ -z "$Psw" ]; then
+            unset Psw
+            return 1
         fi
-        if [[ ${?} -ne 0 || -z ${Psw} ]]; then
-            Psw=""
+        &> /dev/null sudo -vSp '' <<<${Psw}
+        if [ $? -eq 0 ]; then
+            unset Psw
             echo " "
+            return 0
+        fi
+        echo " "
+    done
+    unset Psw
+    echo "$(basename $0) $wrongp"
+    return 1
+}
+
+# Ask for sudo password under X
+function X_ask_pw() {
+    local Psw=""
+    local title="$(locale_msgs title)"
+    local authm="$(locale_msgs authmsg)"
+    local wrongp="$(locale_msgs wrongpass)"
+    local pwcap="$(locale_msgs caption)"
+    for p in $(seq 1 3 ); do
+        sudo -K
+        stty -echo
+        if [ -z "$(command -v yad)" ]; then
+            Psw=$(zenity --forms --modal --text="$authm $p / 3" --title="$title"  --add-password="$pwcap:")
+        else
+            Psw=$(yad --entry --entry-text="x" --hide-text --text="$authm $p / 3" --title="$title"  --center --on-top --width=260)
+        fi
+        stty echo
+        if [ $? -ne 0 ] || [ -z "$Psw" ]; then
+            unset Psw
             return 1
         fi;
-        sudo -vSp '' <<<${Psw}
-        if [[ ${?} -eq 0 ]]; then
-            echo " "
-            yad  --text="Senha Ok!"
+        &> /dev/null sudo -vSp '' <<<${Psw}
+        if [ $? -eq 0 ]; then
+            unset Psw
             return 0
         fi;
     done
-    Psw=""
-    echo " "
-    yad  --text="Senha Errada"
+    unset Psw
+    notify-send -t 9000 --urgency="critical" --app-name="$(basename $0)" --icon="error" "$(basename $0)" "$wrongp"
     return 1
 }
-do_ask_pw
+
+function main() {
+    if is_running_X ; then
+        X_ask_pw
+    else
+        nonX_ask_pw
+    fi
+}
+
+main "$@"

@@ -19,9 +19,12 @@ fi
 # Loop through the list (from either Nautilus or the command line)
 for ARCHIVE_FULLPATH in $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS; do
     if [ $UID -ne 0 ]; then
-        sudo chmod +x "$ARCHIVE_FULLPATH"
+        sudo chmod -R 777 "$ARCHIVE_FULLPATH"
     else
-        chmod +x "$ARCHIVE_FULLPATH"
+        chmod -R 777 "$ARCHIVE_FULLPATH"
+    fi
+    if [ $? -ne 0 ]; then
+        exit 1
     fi
 done
 IFS=$OLD_IFS

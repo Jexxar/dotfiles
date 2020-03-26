@@ -8,11 +8,11 @@
 SSID_NAME=$(iwgetid -r)
 
 if [[ "${SSID_NAME}" != "" ]]; then
-	if  [[ $1 = "-i" ]]; then
-    echo "  ${SSID_NAME}"
-	else
-    echo "${SSID_NAME}"
-	fi
+    if  [[ $1 = "-i" ]]; then
+        echo "  ${SSID_NAME}"
+    else
+        echo "${SSID_NAME}"
+    fi
 else
-echo "Not Connected"
+    echo "Not Connected"
 fi

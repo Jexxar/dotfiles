@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+[ -z "$1" ] && exit 0
+
+# find out if file has permission or not
+if [ -f "$1" ]; then
+    [ -O "$1" ] && geany $1 && exit 0;
+    if [ -r "$1" ]; then
+        askpw && sudo geany $1 && exit 0 || exit 1
+    fi
+fi
+
+exit 0

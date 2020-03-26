@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+if [ $# -eq 0 ]; then
+    exit 1
+fi
+
+if [ $UID -ne 0 ]; then
+    askpw || exit 1
+fi
+
+# Set IFS so that it won't consider spaces as entry separators.
+# Without this, spaces in file/folder names can make the loop go wacky.
+OLD_IFS=$IFS
+IFS=$'\n'
+
+if [ -z $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS ]; then
+    NAUTILUS_SCRIPT_SELECTED_FILE_PATHS=$*
+fi
+
+# Loop through the list (from either Nautilus or the command line)
+for ARCHIVE_FULLPATH in $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS; do
+    echo "$ARCHIVE_FULLPATH $USER"
+    
+    if [ $UID -ne 0 ]; then
+        sudo chown -R $USER:$USER "$ARCHIVE_FULLPATH"
+    else
+        chown -R $USER:$USER "$ARCHIVE_FULLPATH"
+    fi
+    
+    if [ $? -ne 0 ]; then
+        echo "chown error in $ARCHIVE_FULLPATH"
+        exit 1
+    fi
+    
+    if [ -d "$ARCHIVE_FULLPATH" ]; then
+        if [ $UID -ne 0 ]; then
+            sudo chmod 755 "$ARCHIVE_FULLPATH"
+        else
+            chmod 755 "$ARCHIVE_FULLPATH"
+        fi
+    fi
+    
+    if [ -f "$ARCHIVE_FULLPATH" ]; then
+        if [ $UID -ne 0 ]; then
+            sudo chmod 644 "$ARCHIVE_FULLPATH"
+        else
+            chmod 644 "$ARCHIVE_FULLPATH"
+        fi
+    fi
+    
+    rc=$?
+    if [ $rc -ne 0 ]; then
+        echo "chmod error $rc in $ARCHIVE_FULLPATH"
+        exit 1
+    fi
+done
+IFS=$OLD_IFS

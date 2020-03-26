@@ -46,7 +46,7 @@ function authenticate() {
     local RETRY=0
     while true; do
         header $RETRY
-        checkpassword "${USER}" 
+        checkpassword "${USER}"
         if [ "$?" -eq 0 ]; then
             echo "Welcome back!"
             echo ""

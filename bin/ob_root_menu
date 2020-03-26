@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+function main(){
+    local DISPLAYH=$(xdpyinfo  | sed 's/^ *dimensions: *[0-9]*x\([0-9]*\).*/\1/;t;d')
+    local PANELH=$(sed -e 's/^panel_size = [0-9]* \([0-9]*\).*/\1/;t;d' ~/.config/tint2/tint2rc)
+    local MOUSEX=$(xdotool getmouselocation 2> /dev/null | sed -e 's/x://' | awk '{print $1}')
+    local MOUSEY=$(($DISPLAYH-$PANELH))
+    local RESTORE=$(xdotool getmouselocation 2> /dev/null | sed -e 's/x://' -e 's/y://' -e 's/ screen:.*$//')
+    local POSITION=$(sed -e 's/^panel_position = \([a-z]*\).*/\1/;t;d' ~/.config/tint2/tint2rc)
+    if [ "$POSITION" = "top" ]; then
+        MOUSEY=$PANELH
+    else
+        MOUSEY=$(($DISPLAYH-$PANELH))
+    fi
+    xdotool mousemove $MOUSEX $MOUSEY
+    xdotool key super+Escape
+    xdotool mousemove $RESTORE
+    return 0
+}
+
+main "$@"

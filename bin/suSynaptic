@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+askpw && sudo synaptic && exit 0 || exit 1
+
+

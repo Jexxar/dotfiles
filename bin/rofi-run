@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#
+# rofi with flags for my PC/Laptop.
+
+rofi -show run -font "${font:-Noto Sans 9}" -separator-style none -scrollbar-width 0 -location 2 -lines 10 -width 20 -bw 0 

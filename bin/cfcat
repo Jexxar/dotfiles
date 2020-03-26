@@ -29,12 +29,12 @@ function hhelp {
     echo "  - Empty lines are removed"
 }
 
-if [ $# -eq 0 ] || [ "$1" = "-h" ]; then 
+if [ $# -eq 0 ] || [ "$1" = "-h" ]; then
     hhelp $PN $VER
     exit 1
 fi
 
- awk '{ print $0 }' "$@" | sed -n -e '
+awk '{ print $0 }' "$@" | sed -n -e '
     :loop
     /\\$/{
     h; n; H; x

@@ -5,7 +5,7 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-url=${1:-www.google.com.br}
+url=${1:-google.com}
 
 log "autoping $url ..."
 

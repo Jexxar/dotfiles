@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+function main() {
+    local WS=""
+    WS=$(xprop -root _NET_DESKTOP_NAMES | tr ',=' '\n' | grep '"' | sed 's/"//g' | rofi -location 2 -font "Noto Sans 8" -dmenu -i -format i -p "Escolha uma Área de Trabalho:")
+    if [ -n "${WS}" ]; then
+        wmctrl -s "${WS}"
+    fi
+}
+
+main "$@"

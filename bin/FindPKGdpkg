@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 #########################################################
-#							
-# This are NScripts v3.6				
-#							
-# Licensed under the GNU GENERAL PUBLIC LICENSE 3	
-#							
-# Copyright 2007 - 2009 Christopher Bratusek		
-#							
+#
+# This are NScripts v3.6
+#
+# Licensed under the GNU GENERAL PUBLIC LICENSE 3
+#
+# Copyright 2007 - 2009 Christopher Bratusek
+#
 #########################################################
-if [ $# -eq 0 ]; then 
+if [ $# -eq 0 ]; then
     exit 0
 fi
 
-# Set IFS so that it won't consider spaces as entry separators.  
+# Set IFS so that it won't consider spaces as entry separators.
 # Without this, spaces in file/folder names can make the loop go wacky.
 IFS=$'\n'
 
@@ -28,7 +28,7 @@ for i in $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS; do echo $i >> /tmp/temp_whichpkg_
 #for i in $NAUTILUS_SCRIPT_SELECTED_URIS; do echo $i >> /tmp/temp_whichpkg_list; done
 
 for file in $(cat /tmp/temp_whichpkg_list); do
-    realfile="$(realpath $(which $file) 2>/dev/null)"
+    realfile="$(realpath $(command -v $file) 2>/dev/null)"
     [ -z "$realfile" ] && realfile=$(echo $file | sed -e 's/file:\/\///g' -e 's/\%20/\ /g')
     pkg="$(apt-file search $realfile | grep -E ":.*[^-.a-zA-Z0-9]${realfile}$")"
     [ -z "$pkg" ] && pkg=$(grep -w $realfile /var/lib/dpkg/info/*.list | sed -e 's/\.list.*//g' -e 's/.*\/info\///g')
@@ -40,7 +40,7 @@ for file in $(cat /tmp/temp_whichpkg_list); do
     fi
 done
 
-outdsp=$(which gxmessage)
+outdsp=$(command -v gxmessage)
 
 if [ -z "$outdsp" ]; then
     zenity --text-info --title "Result" --filename=/tmp/whichpkg.txt
