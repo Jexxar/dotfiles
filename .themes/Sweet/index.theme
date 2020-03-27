@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=Sweet
+Comment=Light and dark colorful Gtk3.20+ theme
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+Name=Sweet
+GtkTheme=Sweet
+MetacityTheme=Sweet
+IconTheme=gnome
+CursorTheme=
+ButtonLayout=:minimize,maximize,close

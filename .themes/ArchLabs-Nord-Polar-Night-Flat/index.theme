@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=ArchLabs-Nord-Polar-Night-Flat
+Comment=A Material Design theme for ArchLabs Linux
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=ArchLabs-Nord-Polar-Night-Flat
+MetacityTheme=ArchLabs-Nord-Polar-Night-Flat
+IconTheme=Adwaita
+CursorTheme=Adwaita
+CursorSize=24

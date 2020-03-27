@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=ArchLabs-Google-Dark
+Comment=A Dark and Light Google Themed theme for ArchLabs
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+Name=ArchLabs-Google-Dark
+GtkTheme=ArchLabs-Google-Dark
+IconTheme=ArchLabs-Google-Dark
+MetacityTheme=ArchLabs-Google-Dark

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=ArchLabs-Nord-Polar-Night
+Comment=A Nord colour scheme for ArchLabs Linux
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+Name=ArchLabs-Nord-Polar-Night
+GtkTheme=ArchLabs-Nord-Polar-Night
+IconTheme=ArchLabs-Light
+MetacityTheme=ArchLabs-Nord-Polar-Night

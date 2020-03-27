@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=ArchLabs-Nord-SnowStorm-Flat
+Comment=A theme for ArchLabs Linux
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=ArchLabs-Nord-SnowStorm-Flat
+MetacityTheme=ArchLabs-Nord-SnowStorm-Flat
+IconTheme=Adwaita
+CursorTheme=Adwaita
+CursorSize=24

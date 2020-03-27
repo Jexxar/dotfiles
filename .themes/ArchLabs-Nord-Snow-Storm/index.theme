@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=ArchLabs-Nord-Snow-Storm
+Comment=Nord Snow Storm Theme for ArchLabs Linux
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+Name=ArchLabs-Nord-Snow-Storm
+GtkTheme=ArchLabs-Nord-Snow-Storm
+IconTheme=ArchLabs-Nord-Snow-Storm
+MetacityTheme=ArchLabs-Nord-Snow-Storm
