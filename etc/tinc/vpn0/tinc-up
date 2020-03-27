@@ -1,5 +1,0 @@
-#!/bin/sh
-#
-# Must use IP 172.1.1.100, which is setup in /etc/tinc/vpn0/hosts/mint-RV411
-#
-/sbin/ifconfig $INTERFACE 172.1.1.100 netmask 255.255.255.0
