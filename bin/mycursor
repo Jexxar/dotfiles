@@ -45,10 +45,10 @@ cmd=${1:-empty}
 case "$cmd" in
     default)
         do_default_theme $2
-        ;;  
+    ;;
     install)
         do_install_theme $2
-        ;;
+    ;;
     *)
         log "Unrecognized option: $1"
 esac

@@ -175,6 +175,7 @@ function X_ask_pw() {
 
 function main() {
     if is_running_X ; then
+        precheck "zenity" || precheck "yad"
         X_ask_pw
     else
         nonX_ask_pw

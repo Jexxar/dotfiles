@@ -1,0 +1,211 @@
+#!/usr/bin/env bash
+#
+# [wp] - simple X wallpaper setter with optional
+# interactive mode and save/restore functionality.
+#
+# Copyright 2016-2018 Armin Jenewein (@netzverweigerer on GitHub)
+#
+# wp is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# wp is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with wp. If not, see <http://www.gnu.org/licenses/>.
+#
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+# This displays the "[wp] " prefix (coloured, if possible)
+function banner() {
+    tput setaf 12
+    echo -n "["
+    tput setaf 7
+    echo -n "wpctl"
+    tput setaf 12
+    echo -n "]"
+    tput sgr0
+    echo -n " "
+}
+
+function usage() {
+    echo -n "USAGE: "
+    echo "wp [OPTIONS]"
+    echo ""
+    echo "OPTIONS: "
+    echo "--set|-s <file>           Sets <file> as wallpaper image"
+    echo "--get|-g                  Gets the currently saved wallpaper file"
+    echo "--random|-z               Sets a random wallpaper"
+    echo "--recursive|-e            Sets a random wallpaper (recursive mode)"
+    echo "--restore|-t              Restores (sets) saved wallpaper"
+    echo "--save|-x                 Saves (permanently) current wallpaper"
+    echo "--interactive|-i          Start interactive mode"
+    echo "--help|-h                 This help information"
+    echo
+}
+
+# Sets a wallpaper
+function set() {
+    if [ -z "$1" ]; then
+        echo "Specify filename to set"
+        return 1
+    fi
+    file="$1"
+    f="$(readlink -f $file)"
+    mkdir -p $HOME/.cache/wp
+    echo "Setting wallpaper: ${f##*/}"
+    if [ $(command -v nitrogen) ]; then
+        nitrogen --set-scaled --save "$file" && banner
+    else
+        feh --no-fehbg --bg-fill "$file" && banner
+    fi
+    ts="/tmp/.wp.selection.${USER}"
+    echo "Temporarily storing wallpaper selection: $ts"
+    banner
+    echo "Use --save to store it permanently."
+    echo "$file" > "$ts"
+}
+
+# Saves the currently selected (temporary) wallpaper. This just writes the
+# filename to ~/.wp/current (wp will exit with return code 200 if no
+# wallpaper has been temporarily set prior).
+function save() {
+    if [[ ! -f /tmp/.wp.selection.${USER} ]]; then
+        banner
+        echo "No temporarily stored wallpaper selection found."
+        exit 200
+    else
+        f="$(tail -n 1 /tmp/.wp.selection.${USER})"
+        echo "Storing wallpaper selection to ~/.cache/wp/current ..."
+        echo "$f" > $HOME/.cache/wp/current
+    fi
+}
+
+# This gets the currently *saved* wallpaper selection (which can be
+# different from a wallpaper that has just been set, but not saved, yet).
+function get() {
+    cat $HOME/.cache/wp/current
+}
+
+# Restores the last saved wallpaper
+function restore() {
+    banner
+    set "$(tail -n 1 $HOME/.cache/wp/current)"
+}
+
+# Sets a random wallpaper
+function random() {
+    local ldir="$1"
+    local recur="$2"
+    echo "Using wallpaper directory: $ldir"
+    banner
+    if [[ "$recur" -gt 0 ]]; then
+        echo "Recursive mode... $recur"
+        shopt -s globstar
+        local array=($ldir/**)
+        local totalcount="${#array[@]}"
+    else
+        local array=($ldir/*)
+        local totalcount="${#array[@]}"
+        echo "Non-recursive mode..."
+    fi
+    if [[ "$(uname)" == FreeBSD ]]; then
+        local randomindex="$(shuffle -p 1 $(seq 1 ${totalcount}))"
+        randomindex=$((randomindex-1))
+        banner
+        echo "Using random index: $randomindex/$totalcount"
+    else
+        local randomindex="$(shuf -i 1-${totalcount} -n 1)"
+        randomindex=$((randomindex-1))
+        banner
+        echo "Using random index: $randomindex/$totalcount"
+    fi
+    banner
+    local file=${array[$randomindex]}
+    set "$file"
+}
+
+# Used for interactive selection mode
+function handler() {
+    read -s -n 1 reply
+    case "$reply" in
+        n)
+            random "$1" "$2"
+        ;;
+        q)
+            echo "Bye..."
+            exit 0
+        ;;
+    esac
+}
+
+# Interactive mode
+function interactive() {
+    echo "Interactive Mode. Keys: [n]ext [q]uit"
+    while true; do
+        banner
+        handler "$1" "$2"
+    done
+}
+
+function main() {
+    # Path to wallpaper directory (this is likely the only thing you need to change...)
+    local dir="$XDG_PICTURES_DIR/Wallpaper"
+    
+    # We use non-recursive mode, unless specified otherwise (-r|--recursive)
+    local recursive=0
+    
+    precheck "feh"
+    precheck "tail"
+    
+    banner
+    
+    # Parse arguments
+    case "$1" in
+        --set|-s)
+            shift
+            set "$1"
+        ;;
+        --get|-g)
+            get
+        ;;
+        --random|-z)
+            random "$dir" "$recursive"
+        ;;
+        --recursive|-e)
+            recursive=1
+            random "$dir" "$recursive"
+        ;;
+        --restore|-t)
+            restore
+        ;;
+        --save|-x)
+            save
+        ;;
+        --interactive|-i)
+            interactive "$dir" "$recursive"
+        ;;
+        --help|--usage|-h|--)
+            usage
+        ;;
+        '')
+            echo "No option specified. Setting a random wallpaper."
+            banner
+            echo "Use --help for usage help."
+            banner
+            random "$dir" "$recursive"
+        ;;
+        *)
+            usage
+        ;;
+    esac
+}
+
+main "$@"

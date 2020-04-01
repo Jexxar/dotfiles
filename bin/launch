@@ -7,7 +7,7 @@ fi
 
 # if the program is not running (being managed by wmctrl), then start it
 if [ -z "$(wmctrl -lx | tr -s ' ' | cut -d' ' -f1-3 | grep -i $1)" ]; then
-    $* </dev/null &>/dev/null & 
+    $* </dev/null &>/dev/null &
     disown $1
     sleep 0.5
 fi

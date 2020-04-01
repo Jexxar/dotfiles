@@ -1,26 +1,19 @@
 #!/usr/bin/env bash
-set -eu
+# This script is intended to be run as an editor helper.
 
 if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-# This script is intended to be run as an editor helper.
+XedtApps=('subl' 'subl3' 'sublime-text' 'geany' 'xed' 'gedit' 'pluma' 'leafpad' 'atom' 'vscode')
 
 function has_editor(){
-    [ -z "$1" ] && return 1;
-    local tmp=""
-    tmp=$(command -v $1)
-    if [ -z "$tmp" ]; then
-        echo ""
-        return 1
-    fi
+    local tmp="$(command -v $1)"
     echo "$tmp"
-    return 0
+    [ -z "$tmp" ] && return 1 || return 0
 }
 
 function do_edit() {
-    local XedtApps=('subl' 'subl3' 'sublime-text' 'geany' 'xed' 'gedit' 'pluma' 'leafpad' 'atom' 'vim')
     local edt=""
     
     if is_running_X ; then
@@ -47,23 +40,7 @@ function do_edit() {
 }
 
 function do_test() {
-    local subl_present=""
-    local geany_present=""
-    local xed_present=""
-    local gedit_present=""
-    local pluma_present=""
-    local atom_present=""
-    local leaf_present=""
-    local nano_present=""
-
-    subl_present=$(has_editor "subl" || has_editor "subl3")
-    geany_present=$(has_editor "geany")
-    xed_present=$(has_editor "xed")
-    gedit_present=$(has_editor "gedit")
-    pluma_present=$(has_editor "pluma")
-    atom_present=$(has_editor "atom")
-    leaf_present=$(has_editor "leafpad")
-    nano_present=$(has_editor "nano")
+    local edt=""
     
     if [ ! -z "$1" ]; then
         log "target is $1"
@@ -77,50 +54,19 @@ function do_test() {
         log "X server down"
     fi
     
-    if [ ! -z "$subl_present" ]; then
-        log "sublime present @ $subl_present"
-    else
-        log "sublime not found"
-    fi
+    for i in "${XedtApps[@]}"; do
+        edt=$(has_editor "$i")
+        if [ -n "$edt" ]; then
+            log "$i present @ $edt"
+        else
+            log "$i not found"
+        fi
+    done
     
-    if [ ! -z "$geany_present" ]; then
-        log "geany present @ $geany_present"
-    else
-        log "geany not found"
-    fi
-    
-    if [ ! -z "$xed_present" ]; then
-        log "xed present @ $xed_present"
-    else
-        log "xed not found"
-    fi
-    
-    if [ ! -z "$gedit_present" ]; then
-        log "gedit present @ $gedit_present"
-    else
-        log "gedit not found"
-    fi
-    
-    if [ ! -z "$pluma_present" ]; then
-        log "pluma present @ $pluma_present"
-    else
-        log "pluma not found"
-    fi
-    
-    if [ ! -z "$atom_present" ]; then
-        log "atom present @ $atom_present"
-    else
-        log "atom not found"
-    fi
-    
-    if [ ! -z "$leaf_present" ]; then
-        log "leafpad present @ $leaf_present"
-    else
-        log "leafpad not found"
-    fi
-
-    if [ ! -z "$nano_present" ]; then
-        log "nano present @ $nano_present"
+    edt=$(has_editor "nano")
+   
+    if [ -n "$edt" ]; then
+        log "nano present @ $edt"
     else
         log "nano not found"
     fi
@@ -140,3 +86,5 @@ case "$cmd" in
     *)
         log "Unrecognized option: $2"
 esac
+
+unset XedtApps

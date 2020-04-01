@@ -50,23 +50,9 @@ function do_this_exit() {
 }
 
 function do_test() {
-    if is_running_X ; then
-        log "X is running"
-    else
-        log "X server down"
-    fi
-    
-    if [ `locked "debug"` ]; then
-        log "Screen already locked"
-    else
-        log "Screen not locked"
-    fi
-    
-    if [ `pkill -0 --exact dunst` ]; then
-        log "dunst found"
-    else
-        log "dunst not found"
-    fi
+    is_running_X && log "X is running" || log "X server down"
+    locked "debug" && log "Screen already locked" || log "Screen not locked";
+    pgrep -f dunst && log "dunst found" || log "dunst not found"
 
     stop_it "polkit-gnome-authentication-agent-1" "debug"
     stop_it "gnome-keyring-daemon" "debug"

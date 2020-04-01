@@ -415,7 +415,9 @@ _help-aliases()
                 alias_path="available/$1.aliases.bash"
             ;;
         esac
-        cat "${BASH_IT}/aliases/$alias_path" | metafor alias | sed "s/$/'/"
+        if [ -e "${BASH_IT}/aliases/$alias_path" ]; then
+            cat "${BASH_IT}/aliases/$alias_path" | metafor alias | sed "s/$/'/"
+        fi
     else
         typeset f
         for f in "${BASH_IT}/aliases/enabled/"*
@@ -431,7 +433,9 @@ _help-list-aliases ()
     typeset file=$(basename $1)
     printf '\n\n%s:\n' "${file%%.*}"
     # metafor() strips trailing quotes, restore them with sed..
-    cat $1 | metafor alias | sed "s/$/'/"
+    if [ -e "$1" ]; then
+        cat $1 | metafor alias | sed "s/$/'/"
+    fi
 }
 
 _help-plugins()

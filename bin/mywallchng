@@ -11,38 +11,36 @@ function change_wallpaper(){
     local WallList=( `find "$WallDir" -type f -iregex ".*/.*[.]\(jpe?g\|png\|gif\|bmp\)"` )
     IFS=$old_IFS
     local MaxFiles=${#WallList[@]}
-    local LastFile="$WallDir/.last"
-    if [ -f "$LastFile" ]; then 
-        let CurrIndex="`cat "$LastFile"` + 1"
-        if [ $CurrIndex -ge $MaxFiles ]; then
-            let CurrIndex=1
-        fi
-    else
+    if [ $MaxFiles -eq 0 ]; then
+        log "No Wallpaper files found in $WallDir"
+        exit 1
+    fi
+    local CurrIndex=1
+    [ -f "$WallDir/.last" ] && let CurrIndex="`cat "$WallDir/.last"` + 1" || let CurrIndex=1
+    if [ $CurrIndex -ge $MaxFiles ]; then
         let CurrIndex=1
     fi
-    local number
-    let number=$CurrIndex
-    echo $number > "$WallDir"/.last
-    nitrogen --set-scaled --save "${WallList[$number]}"
-    log "Wallpaper changed to: ${WallList[$number]}"
+    echo $CurrIndex > "$WallDir"/.last
+    wpctl --set "${WallList[$CurrIndex]}" && wpctl --save
+    ## nitrogen --set-scaled --save "${WallList[$number]}"
+    log "Wallpaper changed to: ${WallList[$CurrIndex]}"
 }
 
 function main(){
     log "=====[ mywallchng started current PID=$$ ]====="
     if ! is_running_X ; then
         log "No X server at \$DISPLAY [$DISPLAY]" >&2
-        exit 0
+        exit 1
     fi
     kill_older
-    nitrogen --restore
+    ## nitrogen --restore
+    wpctl --restore
     snore 0.2
-    while is_running_X ; do 
-        if [ -z "$DISPLAY" ]; then
-            DISPLAY=:0.0
-        fi
-        snore 420;
+    while is_running_X ; do
+        [ -z "$DISPLAY" ] && DISPLAY=:0.0
+        [ -n "$1" ] && snore $1 || snore 420
         change_wallpaper;
-    done;   
+    done;
 }
 
-main
+main "$@"

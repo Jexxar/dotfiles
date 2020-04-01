@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#vol="$(amixer get Master | tail -n1 | sed -r 's/.*\[(.*)%\].*/\1/')"
+#echo "${vol}% "
+
 case $1 in
     up)
         amixer set Master unmute > /dev/null

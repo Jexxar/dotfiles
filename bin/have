@@ -1,15 +1,4 @@
 #!/usr/bin/env bash
-function doit() {
-    local hv=$(command -v $1)
-    
-    if [ -z "$hv" ]; then
-        return 1
-    fi
-    return 0
-}
-
-if [[ -z "$1" ]]; then
-    exit 1
-fi
-
-doit "$1"
+# Check required software
+hash "$1" >/dev/null 2>&1 && exit 0
+exit 1

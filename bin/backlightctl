@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+#
+# [backlight] - increases or decreases the backlight of your laptop.
+# Uses a quadratic function to determine the size of steps
+# for adjustments.
+#
+# backlight was Written by Armin (@netzverweigerer@GitHub).
+#
+# backlight is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# backlight is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with backlight.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+# Usage information
+usage () {
+    echo "Usage: ${0##*/} [OPTION]"
+    echo
+    echo
+    echo "Options:"
+    echo
+    echo "--increase"
+    echo "  increases backlight brightness"
+    echo
+    echo "--decrease"
+    echo "  decreases backlight brightness"
+    echo
+    echo "--get"
+    echo "  gets current backlight brightness value (float)"
+    echo
+}
+
+
+function main(){
+    precheck xbacklight
+    precheck bc
+    
+    # Get current value
+    local current="$(xbacklight -get)"
+    local value="${current%%.*}"
+    
+    # Calculate step size via squareroot of $value
+    local stepsize="$(echo "sqrt ( $value )" | bc -l | cut -d"." -f 1)"
+    
+    # Force minimum step size of "1" if determined stepsize would equal 0
+    if [ "$stepsize" -eq 0 ]; then stepsize=1; fi
+    
+    # Force small steps in low light environments to allow fine adjustments
+    if [ "$stepsize" -eq 2 ]; then stepsize=1; fi
+    
+    # Parse arguments
+    case "$1" in
+        --increase)
+            echo "Current level: ${current%%.*}, increasing by $stepsize"
+            xbacklight -inc "$stepsize"
+        ;;
+        --decrease)
+            echo "Current level: ${current%%.*}, decreasing by $stepsize"
+            xbacklight -dec "$stepsize"
+        ;;
+        --get)
+            echo "${current%%.*}"
+        ;;
+        ''|*)
+            echo "Usage error."
+            echo
+            usage
+        ;;
+    esac
+    
+}
+
+main "$@"
+
+

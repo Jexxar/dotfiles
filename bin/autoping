@@ -5,12 +5,13 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-url=${1:-google.com}
+function main(){
+    local url=${1:-google.com}
+    log "autoping $url ..."
+    while 2>/dev/null ping -c3 "$url"; do
+        snore 30
+    done
+    exit 0
+}
 
-log "autoping $url ..."
-
-while 2>/dev/null ping -c3 "$url"; do
-    snore 30
-done
-
-exit 0
+main "$@"

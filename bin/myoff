@@ -10,48 +10,31 @@ cmd=${1:-off}
 
 # Return 0 if xset is found.
 function xset_ok() {
-    [ $(command -v xset) ] && return 0
-    return 1
+    [ $(command -v xset) ] && return 0 || return 1
 }
 
 #off the screen if possible.
 function do_off() {
     # Only works if X is running.
-    is_running_X
-    if [ $? -ne 0 ]; then
+    
+    if is_running_X; then
         log "X server is not running";
         return 0;
     fi
-    xset_ok
-    if [ $? -eq 0 ]; then
+    
+    if xset_ok; then
         # if "off" is given as parameter, then spawn a new thread to turn off the screen
-        sleep 1 && xset dpms force off &
+        snore 1
+        xset dpms force off &
     else
         log "xset command not found";
     fi
  }
 
 function do_test() {
-    is_running_X
-    if [ $? -eq 0 ]; then
-        log "X is running"
-    else
-        log "X server down"
-    fi
-    
-    xset_ok
-    if [ $? -eq 0 ]; then
-        log "xset command can be used";
-    else
-        log "xset command not found";
-    fi
-
-    locked "debug"
-    if [ $? -eq 0 ]; then
-        log "Screen already locked"
-    else
-        log "Screen not locked"
-    fi
+    is_running_X && log "X is running" || log "X server down";
+    xset_ok && log "xset command can be used" || log "xset command not found";
+    locked "debug" && log "Screen already locked" || log "Screen not locked";
 }
 
 case "$cmd" in

@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# Kill zombies by attaching to their parents.
+# Original scripot by Mitch Milner at http://stackoverflow.com/questions/13669597/killing-zombie-process-knowing-pid-in-linux-c
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+function gdb_cmd() {
+    local cmd="$1"
+    local slayfile="$2"
+    [ -f "$slayfile" ] && echo "$cmd" >> "$slayfile"
+}
+
+function main(){
+    precheck "gdb"
+    local slaylist=$(mktemp -t "${0##*/}.slay.XXX")
+    local lastparentid=0
+    local me="$(whoami)"
+    local OLD_IFS=$IFS
+    local ppid=""
+    local zbid=""
+    local stat=""
+    local cmdl=""
+    local ownr=""
+    IFS=$'\n'
+    for i in $(ps axo ppid=,pid=,stat=,comm=,user= | awk '$3~/^Z/ { print }' | sort); do
+        ppid=$(echo $i | awk '{print $1}')
+        zbid=$(echo $i | awk '{print $2}')
+        stat=$(echo $i | awk '{print $3}')
+        cmdl=$(echo $i | awk '{print $4}')
+        ownr=$(echo $i | awk '{print $5}')
+        # Make sure this is a zombie file and we are not getting a Z from the command field.
+        if [[ "$stat" =~ "Zl" ]] || [[ "$stat" =~ "Zs" ]]; then
+            echo "Slay zombie ppid= ${ppid} pid=${zbid}, cmd=\"${cmdl}\""
+            echo -n "[Y/n]: "
+            read ok </dev/tty
+            ok=$(echo "$ok" | tr '[:upper:]' '[:lower:]')
+            if [ "$ok" == "y" ]; then
+                if [ "$ppid" != "$lastparentid" ]; then
+                    if [ "$lastparentid" != "0" ]; then
+                        gdb_cmd "detach" "$slaylist"
+                    fi
+                    gdb_cmd "attach $ppid" "$slaylist"
+                fi
+                gdb_cmd "call waitpid ($zbid,0,0)" "$slaylist"
+                echo "Logging: Parent: $ppid  Zombie: $zbid  Stat: $stat Cmdl: $cmdl Owner: $ownr"
+                lastparentid="$ppid"
+            fi
+        fi
+        echo "========================================================"
+        echo "$i"
+        echo "========================================================"
+    done
+    IFS=$OLD_IFS
+    
+    if [ $(wc -l < "$slaylist") -gt 0 ]; then
+        if [ $lastparentid -ne 0 ]; then
+            gdb_cmd "detach" "$slaylist"
+        fi
+        echo -e "\n\n"
+        echo "Slaying zombie processes..."
+        echo "========================================================"
+        echo "gdb -batch -x \$slaylist"
+        cat "$slaylist"
+        echo "========================================================"
+        sudo -v
+        sudo gdb -batch -x "$slaylist"
+    fi
+    rm "$slaylist"
+}
+
+main "$@"

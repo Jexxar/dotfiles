@@ -1,17 +1,10 @@
 #!/usr/bin/env bash
-PN=`basename "$0"`          # Program name
 
-function hhelp {
-    echo "usage: $1 "
-    echo "   Add URLs in the foxy bookmark engine."
-    echo "   Use foxy for further retrieve and manage bookmarks."
-    echo " "
-}
-
-if [ ! $(command -v foxy) ]; then
-    hhelp $PN
-    exit 0
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
 fi
+
+precheck "foxy"
 
 #Games
 foxy -a "https://www.friv.com/" @Games @friv
@@ -88,6 +81,8 @@ foxy -a "http://mywiki.wooledge.org/BashFAQ/098" @Dev @BashFAQ
 foxy -a "https://www.shellhacks.com/" @Dev @shellhacks
 foxy -a "https://stackpointer.io/" @Dev @stackpointer
 foxy -a "https://vitux.com/compiling-your-first-qt-program-in-ubuntu/" @Dev @Qt-Program-compile
+foxy -a "http://mywiki.wooledge.org/EnglishFrontPage" @Dev @wooledge @mywiki
+
 
 
 #Distros

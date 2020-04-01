@@ -1701,7 +1701,7 @@ function color_bar() {
 #==============================================
 function greetings() {
     local USR="$(whoami)"
-    local DIST="$(~/bin/distro_info -1 | ~/bin/capitalize.sh)"
+    local DIST="$(~/bin/distro-info -1 | ~/bin/capitalize)"
     local KERNEL="$(uname -rmo)"
     local TIMEU="$(uptime_active)"
     local TIMEDe="$(uptime_since)"
@@ -1822,7 +1822,7 @@ function greetings() {
     fi
     printf "\e[1;33m\n"
 
-    ~/bin/my_motd
+    ~/bin/my-motd
 
     echo -e "\n"
 

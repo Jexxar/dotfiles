@@ -8,11 +8,16 @@
 #             `-'
 # Openbox Theme Generator
 
-file=$HOME/.Xresources
+file="$HOME/.Xresources"
+
+[ ! $(grep "foregr" $file) ] && file=$(grep "^#include \"\.Xresources\.d\/xcolors" $file | tr -d '"' | cut -d" " -f2)
+[ -d ~/.cache/myobtheme/openbox-3 ] || mkdir -p ~/.cache/myobtheme/openbox-3
+[ -f ~/.cache/myobtheme/openbox-3/themerc ] && rm -f ~/.cache/myobtheme/openbox-3/themerc
+
 wb(){
-{
-	fill_color
-	cat <<EOF
+    {
+        fill_color
+cat <<EOF
 
 # Menu
 menu.border.width: 10
@@ -41,8 +46,10 @@ menu.items.active.text.color:   #$(get_colors 4)
 window.active.border.color:                           #$(get_colors 4)
 
 window.active.title.bg:                               solid flat
-window.active.title.bg.color:                         #$(get_colors 4)
-window.active.title.separator.color:                  #$(get_colors 4)
+# window.active.title.bg.color:                         #$(get_colors 4)
+# window.active.title.separator.color:                  #$(get_colors 4)
+window.active.title.bg.color:                         #${get_colors_bg}
+window.active.title.separator.color:                  #${get_colors_bg}
 window.active.text.justify:                           center
 
 window.active.label.bg:                               parentrelative
@@ -94,8 +101,10 @@ window.active.button.toggled.pressed.image.color:     #$(get_colors 7)
 window.inactive.border.color:                         #$(get_colors 5)
 
 window.inactive.title.bg:                             flat solid
-window.inactive.title.bg.color:                       #$(get_colors 5)
-window.inactive.title.separator.color:                #$(get_colors 5)
+# window.inactive.title.bg.color:                       #$(get_colors 5)
+# window.inactive.title.separator.color:                #$(get_colors 5)
+window.inactive.title.bg.color:                       #${get_colors_fg}
+window.inactive.title.separator.color:                #${get_colors_fg}
 window.inactive.text.justify:                         center
 
 window.inactive.label.bg:                             parentrelative
@@ -188,15 +197,16 @@ window.client.padding.width: 0
 window.label.text.justify:   center
 
 EOF
-} > ~/.local/bin/my-obtgen/openbox-3/themerc
-cp ~/.local/bin/my-obtgen/openbox-3/* ~/.themes/myobtheme/openbox-3/
-check_theme
+    } > ~/.cache/myobtheme/openbox-3/themerc
+    cp -r ~/.cache/myobtheme/openbox-3/* ~/.themes/myobtheme/openbox-3/
+    check_theme
 }
 
+
 nrml(){
-	{
-	fill_color
-	cat <<EOF
+    {
+        fill_color
+cat <<EOF
 
 # Menu
 menu.border.width: 10
@@ -372,31 +382,34 @@ window.client.padding.width: 0
 window.label.text.justify:   center
 
 EOF
-} > ~/.local/bin/myobtheme/openbox-3/themerc
-cp -r ~/.local/bin/myobtheme/ ~/.themes/
-check_theme
+    } > ~/.cache/myobtheme/openbox-3/themerc
+    cp -r ~/.cache/myobtheme/ ~/.themes/
+    check_theme
 }
 
 fill_color(){
-	get_colors(){
-		grep "color$1 *:" $file | awk -F\# '{print $2}' | head -1
-	}
-	get_colors_bg=`grep "background *:" $file | awk -F\# '{print $2}' | head -1`
+    get_colors(){
+        grep "color$1 *:" $file | awk -F\# '{print $2}' | head -1
+    }
+    get_colors_bg=`grep "background *:" $file | awk -F\# '{print $2}' | head -1`
+    get_colors_fg=`grep "foreground *:" $file | awk -F\# '{print $2}' | head -1`
 }
 
 check_theme(){
-	if [[ $(cat $HOME/.config/openbox/rc.xml | grep "myobtheme") ]]; then
-		notify-send "Done. now you can try your theme :)"
-		openbox --reconfigure
-	elif [[ $(find /usr/lib -type d -name lxappearance | xargs ls -R | grep ob) ]]; then
-		lxappearance >/dev/null 2>&1
-	elif [[ $(which obconf) ]]; then
-		obconf >/dev/null 2>&1
-	fi
+    if [[ $(cat $HOME/.config/openbox/rc.xml | grep "myobtheme") ]]; then
+        notify-send "Done. now you can try your theme :)"
+        openbox --reconfigure & disown
+    elif [[ $(command -v lxappearance) ]]; then
+        lxappearance >/dev/null 2>&1 & disown
+    elif [[ $(command -v obconf) ]]; then
+        obconf >/dev/null 2>&1 & disown
+    fi
 }
 
-help(){
-	cat <<-EOF
+
+banner(){
+    clear
+cat <<-EOF
 
               888     888
               888     888
@@ -410,28 +423,39 @@ help(){
                             Y8b d88P
                              "Y88P"
 
-	Openbox Theme Generator
+    Openbox Theme Generator
+    Using $file as template
+EOF
+}
 
-	Usage : obtgen [options #optional]
+help(){
+    banner
+cat <<-EOF
 
-	Avaible options
-	--wal        Generate color from pywal cache
-	--wb         Generate borderless theme
-	--help       Show help
+    Usage : obtgen [options #optional]
 
-	EOF
+    Avaible options
+    --wal        Generate color from pywal cache
+    --wb         Generate borderless theme
+    --help       Show help
+
+EOF
 }
 
 if [[ "$(echo "$@" | grep '\--wal')" && "$(echo "$@" | grep '\--wb')" ]]; then
-	file=$HOME/.cache/wal/colors.Xresources
-	wb
+    file="$HOME/.cache/wal/colors.Xresources"
+    banner
+    wb
 elif [[ "$(echo "$@" | grep '\--wb')" ]]; then
-	wb
+    banner
+    wb
 elif [[ "$(echo "$@" | grep '\--wal')" ]]; then
-	file=$HOME/.cache/wal/colors.Xresources
-	nrml
+    file="$HOME/.cache/wal/colors.Xresources"
+    banner
+    nrml
 elif [[ "$(echo "$@" | grep '\--help')" ]]; then
-	help
+    help
 else
-	nrml
+    banner
+    nrml
 fi

@@ -40,6 +40,16 @@ function log() {
     fi
 }
 
+function bailout () {
+    echo "Error: $@"
+    exit 1
+}
+
+# Check required software
+function precheck () {
+    hash "$1" >/dev/null 2>&1 || bailout "Please install $1"
+}
+
 # direct it all to /dev/null
 function nullify() {
     "$@" >/dev/null 2>&1
