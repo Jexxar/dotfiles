@@ -1,37 +1,34 @@
 #!/usr/bin/env bash
+# This script is intended to be run as the main wallpaper changer for this installation.
+#set -eu
 
 if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
 function change_wallpaper(){
+    locked && return 0
     local old_IFS=$IFS
     IFS=$'\n'
-    local WallDir="${XDG_PICTURES_DIR:-$HOME/Imagens}/Wallpaper"
-    local WallList=( `find "$WallDir" -type f -iregex ".*/.*[.]\(jpe?g\|png\|gif\|bmp\)"` )
+    local wpDir="${XDG_PICTURES_DIR:-$HOME/Imagens}/Wallpaper"
+    local wpList=( $(find "$wpDir" -type f -iregex ".*/.*[.]\(jpe?g\|png\|gif\|bmp\)") )
     IFS=$old_IFS
-    local MaxFiles=${#WallList[@]}
-    if [ $MaxFiles -eq 0 ]; then
-        log "No Wallpaper files found in $WallDir"
-        exit 1
-    fi
-    local CurrIndex=1
-    [ -f "$WallDir/.last" ] && let CurrIndex="`cat "$WallDir/.last"` + 1" || let CurrIndex=1
-    if [ $CurrIndex -ge $MaxFiles ]; then
-        let CurrIndex=1
-    fi
-    echo $CurrIndex > "$WallDir"/.last
-    wpctl --set "${WallList[$CurrIndex]}" && wpctl --save
-    ## nitrogen --set-scaled --save "${WallList[$number]}"
-    log "Wallpaper changed to: ${WallList[$CurrIndex]}"
+    local qty=${#wpList[@]}
+    [ $qty -eq 0 ] && log "No Wallpaper files found in $wpDir" && log "Ending process..." && exit 1
+    local curr=1
+    [ -f "$wpDir/.last" ] && let curr="`cat "$wpDir/.last"` + 1" || let curr=1
+    [ $curr -ge $qty ] && let curr=1
+    echo $curr > "$wpDir"/.last
+    wpctl --set "${wpList[$curr]}" && wpctl --save
+    log "Wallpaper changed to: ${wpList[$curr]}"
 }
 
 function main(){
-    log "=====[ mywallchng started current PID=$$ ]====="
-    if ! is_running_X ; then
-        log "No X server at \$DISPLAY [$DISPLAY]" >&2
-        exit 1
-    fi
+    precheck "xset"
+    precheck "xdg-open"
+    
+    log "=====[ mywallchng started currrent PID=$$ ]====="
+    ! is_running_X && log "No X server at \$DISPLAY [$DISPLAY]" >&2 && exit 1
     kill_older
     ## nitrogen --restore
     wpctl --restore

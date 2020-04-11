@@ -38,17 +38,25 @@ function do_default_theme(){
     fi
 }
 
-cmd=${1:-empty}
+function main(){
+    precheck "gsettings" 
+    precheck "update-alternatives"
+    precheck "sudo"
 
-[ -z "$2" ] && exit 1;
+    local cmd=${1:-empty}
+    
+    [ -z "$2" ] && exit 1;
+    
+    case "$cmd" in
+        default)
+            do_default_theme $2
+        ;;
+        install)
+            do_install_theme $2
+        ;;
+        *)
+            log "Unrecognized option: $1"
+    esac
+}
 
-case "$cmd" in
-    default)
-        do_default_theme $2
-    ;;
-    install)
-        do_install_theme $2
-    ;;
-    *)
-        log "Unrecognized option: $1"
-esac
+main "$@"

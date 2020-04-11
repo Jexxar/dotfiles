@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# [wp] - simple X wallpaper setter with optional
+# [wpctl] - simple X wallpaper setter with optional
 # interactive mode and save/restore functionality.
 #
 # Copyright 2016-2018 Armin Jenewein (@netzverweigerer on GitHub)
@@ -23,8 +23,8 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-# This displays the "[wp] " prefix (coloured, if possible)
-function banner() {
+# This displays the "[wpctl] " prefix (coloured, if possible)
+function banner(){
     tput setaf 12
     echo -n "["
     tput setaf 7
@@ -35,9 +35,9 @@ function banner() {
     echo -n " "
 }
 
-function usage() {
+function usage(){
     echo -n "USAGE: "
-    echo "wp [OPTIONS]"
+    echo "wpctl [OPTIONS]"
     echo ""
     echo "OPTIONS: "
     echo "--set|-s <file>           Sets <file> as wallpaper image"
@@ -52,21 +52,15 @@ function usage() {
 }
 
 # Sets a wallpaper
-function set() {
-    if [ -z "$1" ]; then
-        echo "Specify filename to set"
-        return 1
-    fi
-    file="$1"
-    f="$(readlink -f $file)"
+function set(){
+    [ -z "$1" ] && echo "Specify filename to set" && return 1
+    local file="$1"
+    local f="$(readlink -f $file)"
     mkdir -p $HOME/.cache/wp
     echo "Setting wallpaper: ${f##*/}"
-    if [ $(command -v nitrogen) ]; then
-        nitrogen --set-scaled --save "$file" && banner
-    else
-        feh --no-fehbg --bg-fill "$file" && banner
-    fi
-    ts="/tmp/.wp.selection.${USER}"
+    checkfor "nitrogen" && nitrogen --set-scaled --save "$file" || feh --no-fehbg --bg-fill "$file"
+    banner
+    local ts="/tmp/.wp.selection.${USER}"
     echo "Temporarily storing wallpaper selection: $ts"
     banner
     echo "Use --save to store it permanently."
@@ -76,13 +70,15 @@ function set() {
 # Saves the currently selected (temporary) wallpaper. This just writes the
 # filename to ~/.wp/current (wp will exit with return code 200 if no
 # wallpaper has been temporarily set prior).
-function save() {
+function save(){
     if [[ ! -f /tmp/.wp.selection.${USER} ]]; then
+        checkfor "nitrogen" && return 0
         banner
         echo "No temporarily stored wallpaper selection found."
         exit 200
     else
-        f="$(tail -n 1 /tmp/.wp.selection.${USER})"
+        local f="$(tail -n 1 /tmp/.wp.selection.${USER})"
+        banner
         echo "Storing wallpaper selection to ~/.cache/wp/current ..."
         echo "$f" > $HOME/.cache/wp/current
     fi
@@ -90,18 +86,17 @@ function save() {
 
 # This gets the currently *saved* wallpaper selection (which can be
 # different from a wallpaper that has just been set, but not saved, yet).
-function get() {
+function get(){
     cat $HOME/.cache/wp/current
 }
 
 # Restores the last saved wallpaper
-function restore() {
-    banner
-    set "$(tail -n 1 $HOME/.cache/wp/current)"
+function restore(){
+    checkfor "nitrogen" && nitrogen --restore || banner && set "$(tail -n 1 $HOME/.cache/wp/current)"
 }
 
 # Sets a random wallpaper
-function random() {
+function random(){
     local ldir="$1"
     local recur="$2"
     echo "Using wallpaper directory: $ldir"
@@ -133,7 +128,7 @@ function random() {
 }
 
 # Used for interactive selection mode
-function handler() {
+function handler(){
     read -s -n 1 reply
     case "$reply" in
         n)
@@ -147,7 +142,7 @@ function handler() {
 }
 
 # Interactive mode
-function interactive() {
+function interactive(){
     echo "Interactive Mode. Keys: [n]ext [q]uit"
     while true; do
         banner
@@ -155,47 +150,53 @@ function interactive() {
     done
 }
 
-function main() {
+function main(){
+    precheck "feh"
+    precheck "tail"
+    
     # Path to wallpaper directory (this is likely the only thing you need to change...)
     local dir="$XDG_PICTURES_DIR/Wallpaper"
     
     # We use non-recursive mode, unless specified otherwise (-r|--recursive)
     local recursive=0
     
-    precheck "feh"
-    precheck "tail"
-    
-    banner
-    
     # Parse arguments
     case "$1" in
         --set|-s)
             shift
+            banner
             set "$1"
         ;;
         --get|-g)
+            banner
             get
         ;;
         --random|-z)
+            banner
             random "$dir" "$recursive"
         ;;
         --recursive|-e)
             recursive=1
+            banner
             random "$dir" "$recursive"
         ;;
         --restore|-t)
+            banner
             restore
         ;;
         --save|-x)
+            banner
             save
         ;;
         --interactive|-i)
+            banner
             interactive "$dir" "$recursive"
         ;;
         --help|--usage|-h|--)
             usage
         ;;
         '')
+            banner
             echo "No option specified. Setting a random wallpaper."
             banner
             echo "Use --help for usage help."
@@ -206,6 +207,7 @@ function main() {
             usage
         ;;
     esac
+    exit 0
 }
 
 main "$@"

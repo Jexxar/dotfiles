@@ -1,36 +1,27 @@
 #!/usr/bin/env bash
+# This script is intended to be run as the main notifier script for this installation.
 set -eu
 
 if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-# This script is intended to be run as the main notifier script for this installation.
-
 # Notify desired message.
 function do_notify() {
     # Only works if X is running.
-    if ! is_running_X; then
-        log "X server is not running";
-        return 0;
-    fi
-
+   !is_running_X && log "X server is not running" && return 0
+    
     # Notification should not be issued while locked.
     locked && return 0;
-    log "Sending notification.";
     
-    local secs="";
-
     # grep finds either Xautolock.notify or Xautolock*notify
-    secs="$(xrdb -query | grep -m1 '^Xautolock.notify' | cut -f2)";
+    local secs="$(xrdb -query | grep -m1 '^Xautolock.notify' | cut -f2)"
+    [ -n "$secs" ] || secs="30"
     
-    test -n "$secs" || secs="30"
-
-    log "Locking in $secs seconds";
-
-    notify-send --urgency="normal" --app-name="mynotify" \
-        --icon="$(iconPath system-lock-screen)" \
-        -- "Screen Lock in " "$secs seconds";
+    log "Locking in $secs seconds"
+    log "Sending notification."
+    
+    notify-send --urgency="normal" --app-name="mynotify" --icon="$(iconPath system-lock-screen)" -- "Screen Lock in " "$secs seconds"
     return 0
 }
 
@@ -38,23 +29,25 @@ function do_test() {
     is_running_X && log "X is running" || log "X server down"
     locked "debug" && log "Screen already locked" || log "Screen not locked";
     local secs="$(xrdb -query | grep -m1 '^Xautolock.notify' | cut -f2)"
-    
-    if [ -n "$secs" ]; then
-        log "Locking in $secs seconds"
-    else
-        log "secs not defined"
-    fi
+    [ -n "$secs" ] && log "Locking in $secs seconds" || log "secs not defined"
 }
 
-cmd=${1:-notify}
+function main(){
+    precheck "xset"
+    precheck "xrdb"
+    
+    cmd=${1:-notify}
+    
+    case "$cmd" in
+        notify)
+            do_notify
+        ;;
+        debug)
+            do_test
+        ;;
+        *)
+            log "Unrecognized option: $1"
+    esac
+}
 
-case "$cmd" in
-    notify)
-        do_notify
-        ;;
-    debug)
-        do_test
-        ;;
-    *)
-        log "Unrecognized option: $1"
-esac
+main "$@"

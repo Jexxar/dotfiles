@@ -67,7 +67,13 @@ function authenticate() {
     done
 }
 
-trap onexit 1 2 3 15 18 20 ERR
-authenticate
-unset MAXRETRIES
-unset RETRYSLEEP
+function main(){
+    trap onexit 1 2 3 15 18 20 ERR
+    authenticate
+    unset MAXRETRIES
+    unset RETRYSLEEP
+    exit 0
+}
+
+main "$@"
+

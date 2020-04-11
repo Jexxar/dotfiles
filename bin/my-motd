@@ -1,22 +1,21 @@
 #!/usr/bin/env bash
+# Show a message of the day quotation(via fortune)
 
 if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-# Show a message of the day quotation(via fortune)
 function main() {
-    local fortcmd=""
-    fortcmd="$(command -v fortune 2> /dev/null)"
+    local fortcmd="$(command -v fortune 2> /dev/null)"
     [ -z "$fortcmd" ] && exit 0
     [ -f ~/.plan ] && rm -f ~/.plan &>/dev/null
     ${fortcmd} -a > ~/.plan
     while [ $(wc -l < ~/.plan) -ge 3 ]; do
-      rm -f ~/.plan &>/dev/null
-      ${fortcmd} -a > ~/.plan
+        rm -f ~/.plan &>/dev/null
+        ${fortcmd} -a > ~/.plan
     done
     # awk '{ print $0 }' ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1' | cowsay -f $(random_cow_file)
     awk '{ print $0 }' ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1'
 }
 
-main
+main "$@"

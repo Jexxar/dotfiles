@@ -1,49 +1,43 @@
 #!/usr/bin/env bash
+# This script is intended to be run as the main dpms off script for this installation.
 #set -eu
 
 if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-# This script is intended to be run as the main dpms off script for this installation.
-cmd=${1:-off}
-
-# Return 0 if xset is found.
-function xset_ok() {
-    [ $(command -v xset) ] && return 0 || return 1
-}
-
 #off the screen if possible.
 function do_off() {
     # Only works if X is running.
-    
-    if is_running_X; then
-        log "X server is not running";
-        return 0;
-    fi
-    
-    if xset_ok; then
-        # if "off" is given as parameter, then spawn a new thread to turn off the screen
-        snore 1
-        xset dpms force off &
-    else
-        log "xset command not found";
-    fi
- }
-
-function do_test() {
-    is_running_X && log "X is running" || log "X server down";
-    xset_ok && log "xset command can be used" || log "xset command not found";
-    locked "debug" && log "Screen already locked" || log "Screen not locked";
+    ! is_running_X && log "X server is not running" && return 0
+    # if "off" is given as parameter, then spawn a new thread to turn off the screen
+    xset dpms force off & 
+    disown
+    return 0
 }
 
-case "$cmd" in
-    off)
-        do_off
-        ;;  
-    debug)
-        do_test
+function do_test() {
+    is_running_X && log "X is running" || log "X server down"
+    checkfor "xset" && log "xset command can be used" || log "xset command not found"
+    locked "debug" && log "Screen already locked" || log "Screen not locked"
+    return 0
+}
+
+function main(){
+    precheck "xset"
+
+    local cmd=${1:-off}
+    
+    case "$cmd" in
+        off)
+            do_off
         ;;
-    *)
-        log "Unrecognized option: $1"
-esac
+        debug)
+            do_test
+        ;;
+        *)
+            log "Unrecognized option: $1"
+    esac
+}
+
+main "$@"

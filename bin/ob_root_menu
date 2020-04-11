@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
 function main(){
+    if ! is_running_X ; then
+        return 0;
+    fi
     local DISPLAYH=$(xdpyinfo  | sed 's/^ *dimensions: *[0-9]*x\([0-9]*\).*/\1/;t;d')
     local PANELH=$(sed -e 's/^panel_size = [0-9]* \([0-9]*\).*/\1/;t;d' ~/.config/tint2/tint2rc)
     local MOUSEX=$(xdotool getmouselocation 2> /dev/null | sed -e 's/x://' | awk '{print $1}')

@@ -4,15 +4,10 @@ test -f ${XDG_CONFIG_HOME:-~/.config}/user-dirs.dirs && source ${XDG_CONFIG_HOME
 
 # Find and/or create path for logging
 function doLogPath() {
-    local fpPath="/var/log"
-    [ ! -w "$fpPath" ] && fpPath="$HOME/.local/var/log" ;
-    [ ! -d "$fpPath" ] && mkdir -p $fpPath ;
-    if [ ! -d "$fpPath" ]; then
-        echo ""
-        return 1
-    fi
-    echo "$fpPath"
-    return 0
+    local lpath="/var/log"
+    [ -w "$lpath" ] && echo "$lpath" && return 0  || lpath="$HOME/.local/var/log"
+    [ ! -d "$lpath" ] && mkdir -p $lpath 
+    [ -d "$lpath" ] && echo "$lpath" && return 0 || echo "" &&  return 1
 }
 
 # Script name that is sourcing this
@@ -42,12 +37,18 @@ function log() {
 
 function bailout () {
     echo "Error: $@"
+    [ -f "$myLogFile" ] && log "Error: $@"
     exit 1
 }
 
-# Check required software
+# Check for required software
 function precheck () {
     hash "$1" >/dev/null 2>&1 || bailout "Please install $1"
+}
+
+# Check for software existence 
+function checkfor () {
+    hash "$1" >/dev/null 2>&1 && return 0 || return 1
 }
 
 # direct it all to /dev/null
@@ -65,12 +66,46 @@ function is_git_repository() {
     [ "$(git rev-parse &>/dev/null; printf $?)" -eq 0 ] && return 0 || return 1
 }
 
-# Trim leading and tailing spaces
+# Trim all spaces
 # Usage: trim_string "   example   string    "
-function trim_string() {
+function trim_spaces() {
     : "${1#"${1%%[![:space:]]*}"}"
     : "${_%"${_##*[![:space:]]}"}"
     printf '%s\n' "$_"
+}
+
+# remove trailing slash (substitute for realpath -s)
+# warning: returns empty if $1 is just /
+function trim_slash() {
+    printf "%s" "${1%/}"
+}
+
+# Trim leading spaces
+# Usage: ltrim "   example   string    "
+function ltrim() {
+    : "${1#"${1%%[![:space:]]*}"}"
+    printf '%s\n' "$_"
+}
+
+# Trim tailing spaces
+# Usage: rtrim "  example   string    "
+function rtrim() {
+    : "${1%"${1##*[![:space:]]}"}"
+    printf '%s\n' "$_"
+}
+
+# Ask for a simple yes/no confirmation
+# Usage: ask_confirmation "Are you ready?"
+function ask_confirmation() {
+    printf "\n${_cl_bold}$@${_cl_reset}"
+    read -p " (y/n) " -n 1
+    printf "\n"
+}
+
+# Test whether the result of an 'ask' is a confirmation
+# Usage: is_confirmed 
+function is_confirmed() {
+    [[ "$REPLY" =~ ^[Yy]$ ]] && return 0 || return 1
 }
 
 # Usage: say text [delayAfterText]
@@ -79,58 +114,71 @@ function say() {
     snore "${2-0}"
 }
 
-# Adapted from Addy
-# 'battery_stt -i' = with icon, 'battery' = text only
-function battery_stt(){
-    local BATTERY=0
-    local BATTERY_INFO=$(acpi -b | grep "Battery ${BATTERY}")
-    local BATTERY_STATE=$(echo "${BATTERY_INFO}" | grep -wo "Full\|Charging\|Discharging")
-    local BATTERY_POWER=$(echo "${BATTERY_INFO}" | grep -o '[0-9]\+%' | tr -d '%')
-    
-    if [[ "${BATTERY_STATE}" = "Charging" ]]; then
-        if  [[ $1 = "-i" ]]; then
-            echo "  ${BATTERY_POWER}%+"
-        else
-            echo "${BATTERY_POWER}%+"
-        fi
-    elif [[ "${BATTERY_STATE}" = "Discharging" ]]; then
-        if  [[ $1 = "-i" ]]; then
-            echo "  ${BATTERY_POWER}%-"
-        else
-            echo "${BATTERY_POWER}%-"
-        fi
-    else
-        if  [[ $1 = "-i" ]]; then
-            echo "  ${BATTERY_POWER}%"
-        else
-            echo "${BATTERY_POWER}%"
-        fi
-    fi
-}
-
 # ps with ISO date format
 function ps_ISO(){
     if [ -z "$1" ]; then
-        ps -eo etimes,ruser,pid,cmd --sort=start_time | \
-            awk 'BEGIN{now=systime()} {$1=strftime("%Y-%m-%d-%H:%M:%S", now-$1); print $0}' | grep -v "grep" | grep -v "awk"
+        ps -eo etimes,ruser,pid,ppid,cmd --sort=start_time | awk 'BEGIN{now=systime()} {$1=strftime("%Y-%m-%d-%H:%M:%S", now-$1); print $0}' | grep -v "grep" | grep -v "awk"
     else
-        ps -eo etimes,ruser,pid,cmd --sort=start_time | \
-            awk 'BEGIN{now=systime()} {$1=strftime("%Y-%m-%d-%H:%M:%S", now-$1); print $0}' | grep -v "grep" | grep -v "awk" | grep "$1"
+        ps -eo etimes,ruser,pid,ppid,cmd --sort=start_time | awk 'BEGIN{now=systime()} {$1=strftime("%Y-%m-%d-%H:%M:%S", now-$1); print $0}' | grep -v "grep" | grep -v "awk" | grep "$1"
     fi
 }
 
-# Kill older instances of itself
+# Kill older instances of itself (bash based scripts)
 function kill_older(){
     local s_name="${0##*/}"
     local my_pid=$$
     snore 0.3
     for i in $(ps_ISO "$s_name" | grep "$USER" | grep -P "bash" | grep -v "grep" | awk '{print $3}'); do 
         if [ "$i" != "$my_pid" ]; then
-            log "Older instances found: pid=$i  name=$s_name "
-            kill "$i" &>/dev/null || true
+            kill "$i" &>/dev/null && log "Older instances found: pid=$i  name=$s_name"
+            [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && log "Older instances found: pid=$i name=$s_name" || true
         fi
     done
     return 0
+}
+
+# Kill all process by pattern (but not me)
+function kill_it(){
+    local s_name="$1"
+    snore 0.3
+    for i in $(ps_ISO "$s_name" | grep "$USER" | grep -v "grep" | awk '{print $3}'); do 
+        if [ "$i" != "$$" ]; then
+            kill "$i" &>/dev/null && log "Stopping instance(kill): pid=$i name=$s_name"
+            [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && log "Stopping instance(kill): pid=$i name=$s_name" || true
+            snore 0.1
+        fi
+    done
+    return 0
+}
+
+# Cleanup running processes.
+function stop_it() {
+    [ -z "$1" ] && return 1
+    local s_name="$1"
+    case ${2:-stop} in
+        stop)
+            for i in $(ps_ISO "$s_name" | grep -v "grep" | awk '{print $3}'); do 
+                kill "$i" &>/dev/null && log "Stopping instance(kill): pid=$i name=$s_name"
+                [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && log "Stopping instance(kill): pid=$i name=$s_name"
+                [ $? -ne 0 ] && pkill -USR1 --euid "$(id -u)" --exact "$s_name" && log "Stopping instances(pkill): name=$s_name " 
+                [ $? -ne 0 ] && killall "$1" > /dev/null && log "Stopping instances(killall): name=$s_name " || true
+                snore 0.1
+            done
+            return 0
+        ;;
+        debug)
+            if [ $(pgrep -lfc "$1") -ge 1 ] ; then
+                log "$1 need to be terminated"
+            else
+                log "$1 not found"
+            fi
+            return 0
+        ;;
+        *)
+            log "2nd argument must be: stop or debug";
+            return 1
+        ;;
+    esac
 }
 
 # Return 0 if user in the active session can issue power related commands via policykit
@@ -139,21 +187,25 @@ function auth_user() {
     return 1
 }
 
+# Check if can hibernate using dbus
 function can_hibernate() {
     [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanHibernate | grep "yes") ] && return 0
     return 1
 }
 
+# Check if can poweroff using dbus
 function can_poweroff() {
     [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanPowerOff | grep "yes") ] && return 0
     return 1
 }
 
+# Check if can reboot using dbus
 function can_reboot() {
     [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanReboot | grep "yes") ] && return 0
     return 1
 }
 
+# Check if can suspend using dbus
 function can_suspend() {
     [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanSuspend | grep "yes") ] && return 0
     return 1
@@ -191,44 +243,9 @@ function dbus_suspend() {
     /org/freedesktop/login1 "org.freedesktop.login1.Manager.Suspend" boolean:true
 }
 
-# Return 0 if systemctl is found.
-function systemctl_ok() {
-    [ $(command -v systemctl) ] && return 0
-    return 1
-}
-
-# Return 0 if shutdown is found.
-function shutdown_ok() {
-    [ $(command -v shutdown) ] && return 0
-    return 1
-}
-
-# Return 0 if init is found.
-function init_ok() {
-    [ $(command -v init) ] && return 0
-    return 1
-}
-
-# Is the screen already locked?
-function locked() {
-    local DebugMode=${1:-no}
-    local scrsvApps=('i3lock' 'mate-screensaver-dialog' 'cinnamon-screensaver-pam-helper' 'slimlock' 'gnome-screensaver-dialog' 'xscreensaver')
-    local c=0
-    for p1 in "${scrsvApps[@]}"; do
-        c=$(pgrep -lfc "${p1}")
-        if [ $c -gt 0 ] ; then
-            if [ "$DebugMode" = "debug" ]; then
-                log "${p1} found and active";
-                return 0;
-            fi
-        fi
-    done
-    return 1;
-}
-
 # Control the dunst daemon, if it is running.
 function dunstctl() {
-    pkill -0 --exact dunst || return 0
+    [ $(pgrep -lfc dunst) -ge 1 ] || return 0
     
     case ${1:-} in
         stop)
@@ -238,10 +255,12 @@ function dunstctl() {
         resume)
             log "...Resuming notifications."
             pkill -USR2 --euid "$(id -u)" --exact dunst
+            dunst &
+            disown
         ;;
         check)
             log "Checking for dunst."
-            [ $(command -v dunst) ] && return 0 || return 1
+            checkfor "dunst" && return 0 || return 1
         ;;
         *)
             echo "dunstctl argument required: stop, resume or check"
@@ -251,196 +270,129 @@ function dunstctl() {
     return 0
 }
 
-# Cleanup running processes.
-function stop_it() {
-    [ -z "$1" ] && return 1
-    
-    case ${2:-} in
-        stop)
-            if [ $(pgrep -lfc "$1") -ge 1 ] ; then
-                local v_pid=( $(ps -aux | grep "$1" | egrep -v 'grep --color=auto' | sort -u | awk '{print $2}') )
-                local v_len=${#v_pid[@]}
-                let v_len=v_len-1
-                local one_pid="0"
-                for i in $(seq 0 $v_len ); do
-                    one_pid=$(echo "${v_pid[$i]}");
-                    log "killing $1 pid= $one_pid"
-                    kill "$one_pid" &>/dev/null || true
-                    sleep 0.1;
-                done
-            fi
-            return 0
-        ;;
-        debug)
-            if [ $(pgrep -lfc "$1") -ge 1 ] ; then
-                log "$1 need to be terminated"
-            else
-                log "$1 not found"
-            fi
-            return 0
-        ;;
-        *)
-            log "2nd argument must be: stop or debug";
-            return 1
-        ;;
-    esac
-}
-
 # xset required
 # check for a running X server
 function is_running_X(){
-    if ! xset q &>/dev/null; then
-        return 1
-    fi
-    return 0
+    xset q &>/dev/null && return 0 || return 1
 }
 
-# builtin sleep in bash
+# Is the screen already locked?
+function locked() {
+    local sclist=('i3lock' 'mate-screensaver-dialog' 'cinnamon-screensaver-pam-helper' 'slimlock' 'gnome-screensaver-dialog' 'xscreensaver')
+    for p in "${sclist[@]}"; do
+        [ $(pgrep -lfc "${p}") -gt 0 ] && return 0;
+    done
+    return 1;
+}
+
+# builtin sleep version in bash
 function snore(){
     local IFS
     [[ -n "${_snore_fd:-}" ]] || exec {_snore_fd}<> <(:)
     read ${1:+-t "$1"} -u $_snore_fd || :
 }
 
-# required awk, bc
+# helper find normal icon fullname file path
+function findNrmIconHelper(){
+    [ -z "$1" ] && echo "" && return 1
+    [ -z "$2" ] && echo "" && return 1
+    cd "${1}"
+    find . -name "${2}" | grep "svg\|png\|jpg" | cut -c 2- | head -n 1
+    return 0
+}
+
+# helper find status icon fullname file path
+function findStatIconHelper(){
+    [ -z "$1" ] && echo "" && return 1
+    [ -z "$2" ] && echo "" && return 1
+    cd "${1}"
+    find . -name "${2}" | grep "svg\|png\|jpg" | grep -i "status" | cut -c 2- | tail -n 1
+    return 0
+}
+
+# find jpg icon fullname file path
 function findJPGPath(){
-    if [ -z "$1" ] || [ -z "$2" ]; then
-        echo ""
-        return 1
-    fi
-    local iconJPG="${2}.jpg"
-    cd "${1}"
-    find . -name "${iconJPG}" | grep "16" | cut -c 2- | tail -n 1
+    findNrmIconHelper "$1" "${2}.jpg" | grep "16"
     return 0
 }
 
+# find png icon fullname file path
 function findPNGPath(){
-    if [ -z "$1" ] || [ -z "$2" ]; then
-        echo ""
-        return 1
-    fi
-    local iconPNG="${2}.png"
-    cd "${1}"
-    find . -name "${iconPNG}" | grep "16" | cut -c 2- | tail -n 1
+    findNrmIconHelper "$1" "${2}.png" | grep "16"
     return 0
 }
 
+# find svg icon fullname file path
 function findSVGPath(){
-    if [ -z "$1" ] || [ -z "$2" ]; then
-        echo ""
-        return 1
-    fi
-    local iconSVG="${2}.svg"
-    cd "${1}"
-    find . -name "${iconSVG}" | cut -c 2- | tail -n 1
+    findNrmIconHelper "$1" "${2}.svg"
     return 0
 }
 
+# find current icon theme name
 function findIconThemeName(){
     local tn=""
-    tn=$(gsettings get org.mate.interface icon-theme | tr -d "'")
-    [ -z "$tn" ] && tn=$(gsettings get org.gnome.desktop.interface icon-theme | tr -d "'")
+    hash dump_xsettings && tn="$(dump_xsettings | grep "Net\/IconThemeName" | awk '{print $2}' | tr -d '"')"
+    [ -z "$tn" ] && tn="$(gsettings get org.mate.interface icon-theme | tr -d "'")"
+    [ -z "$tn" ] && tn="$(gsettings get org.gnome.desktop.interface icon-theme | tr -d "'")"
     echo "$tn"
     return 0
 }
 
+# find current icon theme path for search
 function findIconThemePath(){
-    if [ -z "$1" ]; then
-        echo ""
-        return 1
-    fi
+    [ -z "$1" ] && echo "" && return 1
     local tn="$1"
-    local tp=""
-    tp="/usr/share/icons/$tn"
-    
-    if [ -d "$tp" ]; then
-        echo "$tp"
-        return 0
-    else
-        tp="$HOME/.icons/$tn"
-        if [ -d "$tp" ]; then
-            echo "$tp"
-            return 0
-        fi
-    fi
+    local tp="/usr/share/icons/$tn"
+    [ -d "$tp" ] && echo "$tp" && return 0
+    tp="$HOME/.icons/$tn"
+    [ -d "$tp" ] && echo "$tp" && return 0
     echo ""
     return 1
 }
 
+# find icon path inside current icon theme
 function FindIconPath(){
     if [ -z "$1" ] || [ -z "$2" ]; then
         echo ""
         return 1
     fi
-    
     local tp="$2"
-    local nip=""
-    
-    nip=$(findSVGPath "$tp" "${1}")
-    [ -z "$nip" ] && nip=$(findPNGPath "$tp" "${1}")
-    [ -z "$nip" ] && nip=$(findJPGPath "$tp" "${1}")
-    if [ -z "$nip" ]; then
-        echo ""
-        return 1
-    fi
-    
+    local nip=$(findNrmIconHelper "$tp" "${1}.svg" )
+    [ -z "$nip" ] && nip=$(findNrmIconHelper "$tp" "${1}.png" | grep "16")
+    [ -z "$nip" ] && nip=$(findNrmIconHelper "$tp" "${1}.jpg" | grep "16")
+    [ -z "$nip" ] && echo "" && return 1
     echo "$tp$nip"
     return 0
 }
 
+# find icon path on fallback conditions
 function FallbackiconPath(){
     if [ -z "$1" ] || [ -z "$2" ]; then
         echo ""
         return 1
     fi
     
-    local tp="$2"
-    local seaDirs=( $(grep "nherit" "$tp/index.theme" | cut -d"=" -f2 | xargs -d ",") )
+    local sdirs=( $(grep "nherit" "$2/index.theme" | cut -d"=" -f2 | xargs -d ",") )
     local tp=""
-    local iconPath=""
+    local nip=""
     
-    for i in "${seaDirs[@]}"; do
+    for i in "${sdirs[@]}"; do
         tp=$(findIconThemePath "$i");
-        iconPath=$(FindIconPath "$1" "$tp");
+        nip=$(FindIconPath "$1" "$tp");
         #echo "o i = $i e o tp = $tp e o iconName=$1  e o iconPath = $iconPath"
-        if [ ! -z "$iconPath" ]; then
-            echo "$iconPath"
-            return 0
-        fi
+        [ ! -z "$nip" ] && echo "$nip" && return 0
     done
     echo ""
     return 1
 }
 
+# find icon path 
 function iconPath(){
-    if [ -z "$1" ]; then
-        echo ""
-        return 1
-    fi
-    
-    local themePath=""
-    local iconPath=""
-    local themeName=""
-    
-    themeName=$(findIconThemeName)
-    themePath=$(findIconThemePath "$themeName")
-    
-    if [ -z "$themePath" ]; then
-        echo ""
-        return 1
-    fi
-    
-    iconPath=$(FindIconPath "$1" "$themePath");
-    
-    if [ -z "$iconPath" ]; then
-        iconPath=$(FallbackiconPath "$1" "$themePath")
-        if [ -z "$iconPath" ]; then
-            echo ""
-            return 1
-        fi
-    fi
-    
+    [ -z "$1" ] && echo "" && return 1
+    local themePath="$(findIconThemePath "$(findIconThemeName)")"
+    [ -z "$themePath" ] && echo "" && return 1
+    local iconPath="$(FindIconPath "$1" "$themePath")"
+    [ -z "$iconPath" ] && iconPath=$(FallbackiconPath "$1" "$themePath")
     echo "$iconPath"
     return 0
 }
-

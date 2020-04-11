@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-if [[ "$1" == "-h" || "$1" == "--help" ]]; then cat <<HELP
+function usage(){
+cat <<HELP
 Manpage-as-PDF Viewer
 http://benalman.com/
 
@@ -13,24 +14,40 @@ Copyright (c) 2012 "Cowboy" Ben Alman
 Licensed under the MIT license.
 http://benalman.com/about/license/
 HELP
-exit; 
-fi
+}
 
-if [ ! "$1" ]; then
-  echo 'What manual page do you want?!'
-  exit
-fi
+function main(){
+    if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+        usage
+        exit 0;
+    fi
+    
+    if [ -z "$1" ]; then
+        echo 'What manual page do you want?!'
+        exit
+    fi
+    
+    # Set cache dir name..
+    local cache_dir=$HOME/.cache/manpdf
+    
+    # Figure out what the filename should be.
+    local file="$cache_dir/${2:+$2.}$1.pdf"
+    
+    # Open PDF (if it does exist).
+    [[ -e "$file" ]] && xdg-open "$file" && exit 0
+    
+    # Create directory if it doesn't exist.
+    [[ -e "$cache_dir" ]] || mkdir -p "$cache_dir"
+    
+    # Create PDF because it doesn't exist.
+    local psbuff="$(man -t "$@")"
+    
+    if [ $? -eq 0 ]; then
+        echo "${psbuff}" | ps2pdf - "$file" >/dev/null 2>&1
+        xdg-open "$file"
+    fi
+    
+    exit 0
+}
 
-cache_dir=$HOME/.cache/manpdf
-
-# Figure out what the filename should be.
-file="$cache_dir/${2:+$2.}$1.pdf"
-
-# Create directory if it doesn't exist.
-[[ -e "$cache_dir" ]] || mkdir -p "$cache_dir"
-
-# Create PDF if it doesn't exist.
-[[ -e "$file" ]] || man -t "$@" | ps2pdf - "$file" >/dev/null 2>&1
-
-# Open PDF (if it does exist).
-[[ -e "$file" ]] && xdg-open "$file"
+main "$@"

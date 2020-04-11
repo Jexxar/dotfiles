@@ -5,86 +5,58 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-XedtApps=('subl' 'subl3' 'sublime-text' 'geany' 'xed' 'gedit' 'pluma' 'leafpad' 'atom' 'vscode')
-
-function has_editor(){
-    local tmp="$(command -v $1)"
-    echo "$tmp"
-    [ -z "$tmp" ] && return 1 || return 0
+function _fX(){
+    # list by priority from the left to the right
+    local Xl=('subl' 'subl3' 'sublime-text' 'geany' 'xed' 'gedit' 'pluma' 'kate' 'kwrite' 'medit' 'leafpad' 'atom' 'vscode' 'eclipse' 'brackets' 'gvim')
+    local r=""
+    for i in "${Xl[@]}"; do
+        r=$(command -v "${i}")
+        [ -n "$r" ] && echo "$r" && return 0
+    done
+    [ $(hash xdg-open) ] && echo "$(command -v xdg-open)" && return 0
+    echo ""
+    return 1
 }
 
-function do_edit() {
+function _fnoX(){
+    # list by priority from the left to the right
+    local noXl=('nano' 'pico' 'jed' 'joe' 'mcedit' 'micro' 'vim' 'neovim' 'vi' 'kakoune' 'emacs')
+    local r=""
+    for i in "${noXl[@]}"; do
+        r=$(command -v "${i}")
+        [ -n "$r" ] && echo "$r" && return 0
+    done
+    echo ""
+    return 1
+}
+
+function main() {
+    [ -z "$1" ] && log "No target informed" && return 1
     local edt=""
-    
     if is_running_X ; then
-        for i in "${XedtApps[@]}"; do
-            edt=$(has_editor "${i}")
+        if [ "$2" = "cli" ]; then
+            edt="$(_fnoX)"
             if [ -n "$edt" ]; then
-                $edt "$1"
+                x-terminal-emulator -e $edt "$1" &
+                disown
                 return 0
             fi
-        done
+        fi
+        edt="$(_fX)"
+        if [ -n "$edt" ]; then
+            $edt "$1" &
+            disown
+            return 0
+        fi
     else
-        edt=$(has_editor "nano")
+        edt=$(_fnoX)
         if [ -n "$edt" ]; then
             $edt "$1"
             return 0
         fi
     fi
-    
-    if [ -z "$edt" ]; then
-        log "no editors found"
-    fi
-    
+    [ -z "$edt" ] && log "no editors found"
     return 0
 }
 
-function do_test() {
-    local edt=""
-    
-    if [ ! -z "$1" ]; then
-        log "target is $1"
-    else
-        log "no target found"
-    fi
-    
-    if is_running_X ; then
-        log "X is running"
-    else
-        log "X server down"
-    fi
-    
-    for i in "${XedtApps[@]}"; do
-        edt=$(has_editor "$i")
-        if [ -n "$edt" ]; then
-            log "$i present @ $edt"
-        else
-            log "$i not found"
-        fi
-    done
-    
-    edt=$(has_editor "nano")
-   
-    if [ -n "$edt" ]; then
-        log "nano present @ $edt"
-    else
-        log "nano not found"
-    fi
-    
-    return 0
-}
-
-cmd=${2:-edit}
-
-case "$cmd" in
-    edit)
-        do_edit "$1"
-    ;;
-    debug)
-        do_test "$1"
-    ;;
-    *)
-        log "Unrecognized option: $2"
-esac
-
-unset XedtApps
+main "$@"

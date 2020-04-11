@@ -1,8 +1,17 @@
 #!/usr/bin/env bash
+#set -eu
 
-if [[ -n $(find . -name ${1} -print0) ]]; then
-    find . -name ${1} -ls ;
-else
-	echo "Arquivo nao encontrado";
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
 fi
 
+function main(){
+    [ -z "$1" ] && exit 0
+    if [[ -n $(find . -name "${1}" -print0) ]]; then
+        find . -name "${1}" -ls ;
+    else
+        echo "Arquivo nao encontrado";
+    fi
+}
+
+main "$@"

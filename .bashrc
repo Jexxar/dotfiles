@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Source goto 
-[[ -s "/usr/local/share/goto.sh" ]] && source /usr/local/share/goto.sh
+[[ -s "$HOME/bin/goto.sh" ]] && source ~/bin/goto.sh
 
 # Set Xterm/screen/Tmux title with only a short hostname.
 # Uncomment this (or set SHORT_HOSTNAME to something else),
@@ -28,7 +28,7 @@ export VCPROMPT_EXECUTABLE=~/bin/vcprompt
 export SCM_CHECK=true
 
 # Path to the bash it configuration
-export BASH_IT="/home/usuario/.bash_it"
+export BASH_IT="$HOME/.bash_it"
 
 # Lock and Load a custom theme file
 # location /.bash_it/themes/

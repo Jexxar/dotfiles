@@ -1,97 +1,108 @@
 #!/usr/bin/env bash
 ## $1 = "add" / "remove"
 ## $2 = %k from udev
+set -eu
 
 function usage() {
-    echo "Usage: $0 [Options]"
+    echo "Usage: $(basename $0) [Options]"
     echo "       "
-    echo "Purpose: enable|disable Touchpad"
+    echo "Purpose: To enable or disable Touchpad"
     echo "       "
     echo "Options"
-    echo "-h: Show this help"
-    echo "-d: Disable touchpad"
-    echo "-e: Enable touchpad"
-    echo "-a: Auto enable|disable on mouse plug(in/off)"
-    echo "--disable: Disable touchpad"
-    echo "--enable: Enable touchpad"
+    echo "-h | --help : Show this help"
+    echo "-d | --disable: Disable touchpad"
+    echo "-e | --enable: Enable touchpad"
     return 0;
 }
 
-# Main
-if [ $# -eq 0 ] ; then
-    usage ;
-    /usr/bin/logger -t Touchpadctl -- "No parameters."
-    exit 0
-fi
+function touch_hnd_noX(){
+    case "$1" in
+        -d | --disable)
+            echo -n manual > $base_dir/bind_mode && /usr/bin/logger -t Touchpadctl -- "Disabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot disable touchpad"
+            echo -n $device_id > $base_dir/unbind 2>/dev/null || true
+        ;;
+        -e | --enable)
+            echo -n auto > $base_dir/bind_mode && /usr/bin/logger -t Touchpadctl -- "Enabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot enable touchpad"
+        ;;
+        *)  usage
+            exit 0
+        ;;
+    esac
+}
 
-# Option strings
-SHORT=":a::d::e::h"
-LONG=":auto,disable,enable,help"
-
-# Read the options
-OPTS=$(getopt --options $SHORT --long $LONG --name "$0" -- "$@")
-if [ $? -ne 0 ] ; then
-    usage ;
-    /usr/bin/logger -t Touchpadctl -- "Wrong parameters.[ $* ]"
-    exit 0
-fi
-
-# Obtain user list
-USERLIST=$(w -h | cut -d' ' -f1 | sort | uniq)
-for CUR_USER in ${USERLIST}; do
-    CUR_USER_XAUTH="$(sudo -Hiu "${CUR_USER}" env | grep -e "^HOME=" | cut -d'=' -f2)/.Xauthority"
-    ## Can't find a way to get another users DISPLAY variable from an isolated root environment. Have to set it manually.
-    CUR_USER_DISPL="$(sudo -Hiu "${CUR_USER}" env | grep -e "^DISPLAY=" | cut -d'=' -f2)"
-    [ -z "$CUR_USER_DISPL" ] && CUR_USER_DISPL=":0"
+function touch_hnd_X(){
+    local usr="$2"
+    local touch_id=$(/usr/bin/xinput list | \egrep -Eo 'Touchpad\s*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}')
+    local touch_stt=$(/usr/bin/xinput list-props $touch_id | \grep 'Device Enabled' | \awk '{print $4}')
+    [ $touch_id -eq 0 ] && /usr/bin/logger -t Touchpadctl -- "Touchpad device not found. $usr. ($XAUTHORITY - $DISPLAY)"
     
-    export XAUTHORITY="${CUR_USER_XAUTH}"
-    export DISPLAY="${CUR_USER_DISPL}"
-    
-    # Check running X
-    if ! xset q &>/dev/null; then
-        /usr/bin/logger -t Touchpadctl -- "Xserver is not running."
-        exit 0
+    case "$1" in
+        -a | --auto )
+            local mouse_id="$(xinput list | \egrep -Eo '[Mm]ouse\s*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}')"
+            local mouse_stt=$(/usr/bin/xinput list-props $mouse_id | \grep 'Device Enabled' | \awk '{print $4}')
+            if [ $mouse_id -ne 0 ] && [ $mouse_stt -eq 1 ]; then
+                /usr/bin/xinput disable $touch_id
+                /usr/bin/logger -t Touchpadctl -- "Additional external mice found. Touchpad disabled for $usr. ($XAUTHORITY - $DISPLAY)"
+            else
+                /usr/bin/xinput enable $touch_id
+                /usr/bin/logger -t Touchpadctl -- "Additional external mice not found. Touchpad enabled for $usr. ($XAUTHORITY - $DISPLAY)"
+            fi
+        ;;
+        -d | --disable )
+            if [ $touch_stt -eq 1 ]; then
+                /usr/bin/xinput disable $touch_id
+                /usr/bin/logger -t Touchpadctl -- "Disabling touchpad for $usr. ($XAUTHORITY - $DISPLAY)"
+            else
+                /usr/bin/logger -t Touchpadctl -- "Touchpad already disabled for $usr. ($XAUTHORITY - $DISPLAY)"
+            fi
+        ;;
+        -e | --enable )
+            if [ $touch_stt -eq 0 ]; then
+                /usr/bin/xinput enable $touch_id
+                /usr/bin/logger -t Touchpadctl -- "Enabling touchpad for $usr. ($XAUTHORITY - $DISPLAY)"
+            else
+                /usr/bin/logger -t Touchpadctl -- "Touchpad already enabled for $usr. ($XAUTHORITY - $DISPLAY)"
+            fi
+        ;;
+        *)  usage
+            exit 0
+        ;;
+    esac
+}
+
+user_list="$(w -h | cut -d' ' -f1 | sort | uniq)"
+user_id="$(id -u)"
+base_dir=/sys/bus/serio/drivers/psmouse
+device_id=serio1
+
+function main(){
+    if [ $# -eq 0 ]; then
+        usage
+        exit 1
     fi
     
-    if [ -f "${CUR_USER_XAUTH}" ]; then
-        declare -i ID
-        ID=$(/usr/bin/xinput list | \egrep -Eo 'Touchpad\s*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}')''
-        declare -i STATE
-        STATE=$(/usr/bin/xinput list-props $ID | \grep 'Device Enabled' | \awk '{print $4}')
-        
-        case "$1" in
-            -a | --auto )
-                xinput list | \egrep -Eo '[Mm]ouse\s*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}' &>/dev/null
-                if [ $? -eq 0 ] ; then
-                    /usr/bin/xinput disable $ID
-                    /usr/bin/logger -t Touchpadctl -- "Additional external mice found. Touchpad disabled for $CUR_USER. ($XAUTHORITY - $DISPLAY)"
-                else
-                    /usr/bin/xinput enable $ID
-                    /usr/bin/logger -t Touchpadctl -- "Additional external mice not found. Touchpad enabled for $CUR_USER. ($XAUTHORITY - $DISPLAY)"
-                fi
-            ;;
-            -d | --disable )
-                if [ $STATE -eq 1 ]; then
-                    /usr/bin/xinput disable $ID
-                    /usr/bin/logger -t Touchpadctl -- "Disabling touchpad for $CUR_USER. ($XAUTHORITY - $DISPLAY)"
-                else
-                    /usr/bin/logger -t Touchpadctl -- "Touchpad already disabled for $CUR_USER. ($XAUTHORITY - $DISPLAY)"
-                fi
-            ;;
-            -e | --enable )
-                xinput list | \egrep -Eo '[Mm]ouse\s*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}' &>/dev/null
-                if [ $? -eq 0 ] ; then
-                    /usr/bin/logger -t Touchpadctl -- "Additional external mice found. Touchpad not enabled for $CUR_USER. ($XAUTHORITY - $DISPLAY)"
-                    exit 0
-                fi
-                if [ $STATE -eq 0 ]; then
-                    /usr/bin/xinput enable $ID
-                    /usr/bin/logger -t Touchpadctl -- "No additional external mice found. Enabling touchpad for $CUR_USER. ($XAUTHORITY - $DISPLAY)"
-                else
-                    /usr/bin/logger -t Touchpadctl -- "Touchpad already enabled for $CUR_USER. ($XAUTHORITY - $DISPLAY)"
-                fi
-            ;;
-            *)  usage; exit;;
-        esac
-    fi
-done
+    for u in ${user_list}; do
+        ## Can't find a way to get another users DISPLAY variable from an isolated root environment. Have to set it manually.
+        displ="$(sudo -Hiu "${u}" env | grep -e "^DISPLAY=" | cut -d'=' -f2)"
+        [ -z "$displ" ] && displ=":0"
+        export XAUTHORITY="$(sudo -Hiu "${u}" env | grep -e "^HOME=" | cut -d'=' -f2)/.Xauthority"
+        export DISPLAY="${displ}"
+        if [ -f "${XAUTHORITY}" ]; then
+            # Check running X
+            if ! xset q &>/dev/null; then
+                /usr/bin/logger -t Touchpadctl -- "Xserver is not running."
+                touch_hnd_noX "$1" "$u"
+            else
+                /usr/bin/logger -t Touchpadctl -- "Xserver is running."
+                touch_hnd_X "$1" "$u"
+            fi
+        fi
+    done
+}
+
+main "$@"
+
+unset user_list
+unset user_id
+unset base_dir
+unset device_id

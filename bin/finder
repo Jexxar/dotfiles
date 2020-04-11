@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+
+#PUT THIS FILE IN ~/.local/share/rofi/finder.sh
+#USE: rofi  -show find -modi find:~/.local/share/rofi/finder.sh
+
+function open_it(){
+    coproc ( xdg-open "$@"  > /dev/null 2>&1 )
+    exec 1>&-
+    exit;
+}
+
+function open_qry(){
+    local QUERY="$@"
+    coproc ( xdg-open "${QUERY%\/* \?\?}"  > /dev/null 2>&1 )
+    exec 1>&-
+    exit;
+}
+
+function mainmenu(){
+    echo " Type your search query to find files"
+    echo " Search again type !<search_query>"
+    echo " Search parent directories type ?<search_query>"
+    echo " You can print this help by typing !!"
+}
+
+function subm1(){
+    echo " Type your search query to find files"
+    echo " Search again type !<search_query>"
+    echo " Search parent directories type ?<search_query>"
+    echo " You can print this help by typing !!"
+}
+
+function do_lsearch(){
+    local optt="$1"
+    shift
+    local qr="$@"
+    realopt=""
+    case ${optt} in
+        )
+            echo "opt=$optt qr=$qr"
+        ;;
+        )
+            echo "opt=$optt qr=$qr"
+        ;;
+        )
+            echo "opt=$optt qr=$qr"
+            # LC_ALL=C find / -iname *"${qr#!}"* 2>&1 | grep -v 'Permission denied\|Input/output error'
+        ;;
+        )
+            echo "opt=$optt qr=$qr"
+        ;;
+    esac
+    return 0
+}
+
+function opthnd(){
+    local tmp="0"
+    [ -f "$2" ] && tmp=$(cat "$2" | wc -l)
+    if [ $tmp -ne 0 ]; then
+        cat "$2"
+        return 0
+    fi
+    echo "$1" | awk '{print $1}'
+}
+
+function main(){
+    local lockfile="/tmp/finder.$USER"
+    local QUERY="$@"
+    local opt=""
+    trap '[ -f "$lockfile" ] && rm -f "$lockfile"; exit' INT TERM EXIT ERR
+    if [ ! -z "$QUERY" ]; then
+        opt=$(opthnd "$QUERY" "$lockfile")
+        case ${opt} in
+            )
+                echo "$opt"
+                [ ! -f "$lockfile" ] && touch "$lockfile" && echo "$opt" >> "$lockfile"
+                if [ "$(echo "$QUERY" | awk '{print $1}')" != "$opt" ]; then
+                    LC_ALL=C find . -iname *"${QUERY#!}"* 2>&1 | grep -v 'Permission denied\|Input/output error'
+                fi
+            ;;
+            )
+                echo "$opt"
+                [ ! -f "$lockfile" ] && touch "$lockfile" && echo "$opt" >> "$lockfile"
+                if [ "$(echo "$QUERY" | awk '{print $1}')" != "$opt" ]; then
+                    LC_ALL=C find . -iname *"${QUERY#!}"* 2>&1 | grep -v 'Permission denied\|Input/output error'
+                fi
+            ;;
+            )
+                echo "$opt"
+                [ ! -f "$lockfile" ] && touch "$lockfile" && echo "$opt" >> "$lockfile"
+                if [ "$(echo "$QUERY" | awk '{print $1}')" != "$opt" ]; then
+                    LC_ALL=C find . -iname *"${QUERY#!}"* 2>&1 | grep -v 'Permission denied\|Input/output error'
+                fi
+            ;;
+            )
+                echo "$opt"
+                [ ! -f "$lockfile" ] && touch "$lockfile" && echo "$opt" >> "$lockfile"
+                if [ "$(echo "$QUERY" | awk '{print $1}')" != "$opt" ]; then
+                    LC_ALL=C find . -iname *"${QUERY#!}"* 2>&1 | grep -v 'Permission denied\|Input/output error'
+                fi
+            ;;
+        esac
+        mainmenu
+        #    if [[ "$QUERY" == /* ]]; then
+        #        if [[ "$QUERY" == *\?\? ]]; then
+        #            open_qry "$QUERY"
+        #        else
+        #            open_it "$QUERY"
+        #        fi
+        #    elif [[ "$QUERY" == \!\!* ]]; then
+        #        mainmenu
+        #    elif [[ "$QUERY" == \?* ]]; then
+        #        while read -r line; do
+        #            echo "$line" \?\?
+        #        done <<< $(LC_ALL=C find / -iname *"${QUERY#\?}"* 2>&1 | grep -v 'Permission denied\|Input/output error')
+        #    else
+        #        LC_ALL=C find / -iname *"${QUERY#!}"* 2>&1 | grep -v 'Permission denied\|Input/output error'
+        #    fi
+    else
+        mainmenu
+        #[ -f "$lockfile" ] && rm -f "$lockfile"
+    fi
+}
+
+main "$@"

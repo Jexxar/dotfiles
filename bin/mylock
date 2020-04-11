@@ -1,37 +1,31 @@
 #!/usr/bin/env bash
+# This script is intended to be run as the xautolock locker and notifier.
+# It requires i3lock, and dunst is optional.
 #set -eu
 
 if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-# This script is intended to be run as the xautolock locker and notifier.
-# It requires i3lock, and dunst is optional.
-
 # Lock screen if possible.
 function do_lock() {
     # Only works if X is running.
-    if ! is_running_X ; then
-        log "X server is not running";
-        return 0;
-    fi
+    ! is_running_X && log "X server is not running" && return 0
     
     # Already locked
     locked && return 0;
     
     log "Locking screen now..."
     dunstctl stop
-    
     # Fork both i3lock and its monitor to avoid blocking xautolock.
     # this must be the last command, and it must be 'non forking', as expected by 'xautolock'
-    "$HOME"/bin/lock -gpf Comic-Sans-MS -- scrot -z &
-        
+    ~/bin/lock -gpf Comic-Sans-MS -- scrot -z &
     pid="$!"
-    log "Waiting for PID $pid to end..."
+    log "Locked and Waiting until (screen lock) PID $pid ends up..."
     while 2>/dev/null kill -0 "$pid"; do
-        sleep 1
+        snore 1.2
     done
-    
+    log "Unlocked and resumed..."
     dunstctl resume
 }
 
@@ -41,15 +35,23 @@ function do_test() {
     pgrep -f dunst && log "dunst found" || log "dunst not found"
 }
 
-cmd=${1:-lock}
+function main(){
+    precheck "xset"
+    precheck "i3lock"
 
-case "$cmd" in
-    lock)
-        do_lock
-    ;;
-    debug)
-        do_test
-    ;;
-    *)
-        log "Unrecognized option: $1"
-esac
+    local cmd=${1:-lock}
+    
+    case "$cmd" in
+        lock)
+            do_lock
+        ;;
+        debug)
+            do_test
+        ;;
+        *)
+            log "Unrecognized option: $1"
+    esac
+}
+
+main "$@"
+

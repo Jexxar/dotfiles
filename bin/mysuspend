@@ -1,33 +1,28 @@
 #!/usr/bin/env bash
+# This script is intended to be run as the main suspend script for this installation.
 set -eu
 
 if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-# This script is intended to be run as the main suspend script for this installation.
-
 function do_suspend() {
+    auth_user && continue || return 0
+    
     if is_running_X ; then
-        if locked ; then
-            return 0
+        # locked && return 0
+        if checkfor "systemctl"; then
+            systemctl suspend &
+            exit 0
         fi
-        if auth_user; then
-            if systemctl_ok; then
-                systemctl suspend &
-                exit 0
-            fi
-            if can_suspend; then
-                dbus_suspend
-                exit 0
-            fi
+        if can_suspend; then
+            dbus_suspend &
+            exit 0
         fi
     else
-        if auth_user; then
-            if systemctl_ok; then
-                systemctl suspend &
-                exit 0
-            fi
+        if checkfor "systemctl"; then
+            systemctl suspend &
+            exit 0
         fi
     fi
 }
@@ -35,45 +30,43 @@ function do_suspend() {
 function do_test() {
     if is_running_X ; then
         log "X is running"
-        if locked "debug" ; then
-            log "Screen locked"
-        else
-            log "Screen not locked"
-        fi
+        locked && log "Screen locked" || log "Screen not locked"
         if auth_user; then
             log "user $USER has polkit binding to suspend"
-            if systemctl_ok; then
-                log "using: systemctl suspend"
-                return 0
-            fi
-            if can_suspend; then
-                log "using: dbus logind to suspend"
-                return 0
-            fi
+            checkfor "systemctl" && log "using: systemctl suspend"
+            can_suspend && log "using: dbus logind to suspend"
+        else
+            log "user $USER has not polkit binding to suspend"
         fi
     else
         log "X is not running"
         if auth_user; then
             log "user $USER has polkit binding to suspend"
-            if systemctl_ok; then
-                log "using: systemctl suspend"
-                return 0
-            fi
+            checkfor "systemctl" && log "using: systemctl suspend"
+        else
+            log "user $USER has not polkit binding to suspend"
         fi
     fi
     return 0
 }
 
-cmd=${1:-suspend}
+function main(){
+    precheck "xset"
+    precheck "loginctl"
 
-case "$cmd" in
-    suspend)
-        log "suspend now..."
-        do_suspend
-    ;;
-    debug)
-        do_test
-    ;;
-    *)
-        log "Unrecognized option: $1"
-esac
+    local cmd=${1:-suspend}
+    
+    case "$cmd" in
+        suspend)
+            log "suspend now..."
+            do_suspend
+        ;;
+        debug)
+            do_test
+        ;;
+        *)
+            log "Unrecognized option: $1"
+    esac
+}
+
+main "$@"

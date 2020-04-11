@@ -6,54 +6,51 @@ if [ -f "$HOME/bin/mycommon" ]; then
 fi
 
 # Exit wm if possible.
-function do_this_exit() {
+function do_exit(){
     # Only works if X is running.
-    if ! is_running_X ; then
-        log "X server is not running";
-        return 0;
-    fi
-
+    ! is_running_X && log "X server is not running" && return 0
+    
     # Screen must be unlocked first.
     locked && return 0;
     
     dunstctl stop
-
+    
     # Stop this session and daemon running processes.
-    stop_it "polkit-gnome-authentication-agent-1" "stop"
-    stop_it "gnome-keyring-daemon" "stop"
-    stop_it "gnome-settings-daemon" "stop"
-    stop_it "gnome-screensaver" "stop"
-    stop_it "polkit-mate-authentication-agent-1" "stop"
-    stop_it "mate-settings-daemon" "stop"
-    stop_it "mate-power-manager" "stop"
-    stop_it "mate-volume-control-applet" "stop"
-    stop_it "mate-screensaver" "stop"
-    stop_it "cinnamon-screensaver" "stop"
-    stop_it "xscreensaver" "stop"
-    stop_it "xautolock" "stop"
-    stop_it "redshift-gtk" "stop"
-    stop_it "redshift" "stop"
-    stop_it "mylightson" "stop"
-    stop_it "mywallchng" "stop"
-    stop_it "tint2" "stop"
-    stop_it "compton" "stop"
-
+    stop_it "polkit-gnome-authentication-agent-1"
+    stop_it "gnome-keyring-daemon"
+    stop_it "gnome-settings-daemon"
+    stop_it "gnome-screensaver"
+    stop_it "polkit-mate-authentication-agent-1"
+    stop_it "mate-settings-daemon"
+    stop_it "mate-power-manager"
+    stop_it "mate-volume-control-applet"
+    stop_it "mate-screensaver"
+    stop_it "cinnamon-screensaver"
+    stop_it "xscreensaver"
+    stop_it "xautolock"
+    stop_it "redshift-gtk"
+    stop_it "redshift"
+    stop_it "mylightson"
+    stop_it "mywallchng"
+    stop_it "tint2"
+    stop_it "compton"
+    
     log "Exiting now..."
     openbox --exit;
-
+    
     killall openbox;
-
+    
     # dbus-launch cleanup
     pkill -u $USER -t `tty | cut -d '/' -f 3,4` dbus-launch
-
+    
     return 0
 }
 
-function do_test() {
+function do_test(){
     is_running_X && log "X is running" || log "X server down"
     locked "debug" && log "Screen already locked" || log "Screen not locked";
     pgrep -f dunst && log "dunst found" || log "dunst not found"
-
+    
     stop_it "polkit-gnome-authentication-agent-1" "debug"
     stop_it "gnome-keyring-daemon" "debug"
     stop_it "gnome-settings-daemon" "debug"
@@ -74,7 +71,7 @@ function do_test() {
     stop_it "mywallchng" "debug"
     stop_it "tint2" "debug"
     stop_it "compton" "debug"
-
+    
     log "Exiting now..."
     log "openbox --exit;"
     log "kilall openbox;"
@@ -83,16 +80,22 @@ function do_test() {
     return 0
 }
 
-
-cmd=${1:-exit}
-
-case "$cmd" in
-    exit)
-        do_this_exit
-        ;;  
-    debug)
-        do_test
+function main(){
+    precheck "xset"
+    precheck "pkill"
+    
+    local cmd=${1:-exit}
+    
+    case "$cmd" in
+        exit)
+            do_exit
         ;;
-    *)
-        log "Unrecognized option: $1"
-esac
+        debug)
+            do_test
+        ;;
+        *)
+            log "Unrecognized option: $1"
+    esac
+}
+
+main "$@"

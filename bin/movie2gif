@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# A small script to convert movies (tested with mpg files) into gifs.
+# Usage: ./movie2gif input.mpeg [output.gif]
+#set -eu
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+function usage(){
+cat <<EOF
+Usage: $(basename "$0") input.mpeg [output.gif]
+
+A small script to convert movies (tested with mpg files) into gifs.
+EOF
+}
+
+function main(){
+    [ -z "$1" ] && usage && exit 1
+    precheck "ffmpeg"
+    precheck "imgemagick"
+    
+    local INPUT="$1"
+    local OUTPUT="$2"
+    
+    if [ -z ${2+x} ]; then
+        OUTPUT="$1.gif"
+    fi
+    
+    [ ! -d /tmp/gif ] && mkdir -p /tmp/gif
+    trap 'rm -rf /tmp/gif; exit' INT TERM EXIT ERR
+    
+    echo "Converting..."
+    ffmpeg -loglevel panic -i $INPUT -vf scale=320:-1:flags=lanczos,fps=10 /tmp/gif/ffout%04d.png
+    
+    echo "Generating gif..."
+    convert -loop 0 -delay 10 /tmp/gif/*.png $OUTPUT
+    
+    echo "Cleaning up..."
+    rm -rf /tmp/gif
+    
+    echo "Converted the movie into $OUTPUT"
+}
+
+main "$@"
