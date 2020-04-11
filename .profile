@@ -85,7 +85,7 @@ export IRC_CLIENT='irssi'
 # Default console editor
 #===========================================
 export EDITOR="/bin/nano"
-export VISUAL="/bin/nano"
+#export VISUAL="/bin/nano"
 
 #===========================================
 # git author data comes from .gitconfig and is saved as environment variables

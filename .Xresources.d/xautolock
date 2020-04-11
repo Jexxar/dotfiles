@@ -6,8 +6,22 @@
 ! http://www.posquit0.com/
 !
 
+! Xautolock executes the 'Xautolock.notifier' command, 'Xautolock.notify'
+! seconds before executing the 'Xautolock.locker' command. Then,
+! the 'Xautolock.killer' command is executed, 'Xautolock.killtime' minutes
+! (minimum of 10) after executing the 'Xautolock.locker' command is run
+
+! We're using xautolock's notifier to lock the screen, then the locker turns the
+! screens off, and finally the killer suspends the computer
+
+! Specifies the number of seconds to notify
+Xautolock.notify: 30
+
 ! Specifies the primary timeout interval
 Xautolock.time: 5
+
+! Specifies the killtime in minutes
+Xautolock.killtime: 10
 
 ! Specifies the locker to be used
 ! Xautolock.locker: i3lock-extra --mode blur "${HOME}/.config/i3lock/lock-photo.png"
