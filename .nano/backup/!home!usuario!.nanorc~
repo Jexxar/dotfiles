@@ -1,0 +1,282 @@
+#
+# dotphiles : https://github.com/dotphiles/dotphiles
+#
+# Basic nano configuration
+#
+# Authors:
+#   Ben O'Hara <bohara@gmail.com>
+#
+
+# Use auto-indentation.
+set autoindent
+
+# Create backup files in "filename~"
+set backup
+
+# Set the directory where nano puts unique backup files if file backups
+# are enabled.
+set backupdir "~/.nano/backup"
+
+# Enable line numbering.
+set linenumbers
+
+# Do backwards searches by default.
+unset backwards
+
+# Use bold text instead of reverse video text.
+set boldtext
+
+# Automatically indent a newly created line to the same number of tabs and/or spaces 
+# as the previous line (or as the next line if the previous line is the beginning of 
+# a paragraph).
+set autoindent
+
+# Set the characters treated as closing brackets when justifying paragraphs.
+# They cannot contain blank characters. Only closing punctuation, optionally
+# followed by closing brackets, can end sentences. The default value
+# is ""')>]}".
+set brackets string ""')>]}"
+
+# Do case sensitive searches by default.
+set casesensitive
+
+# Constantly display the cursor position in the status bar.
+set constantshow
+
+# Use cut to end of line by default.
+unset cut
+
+# Wrap lines at column number n. If n is 0 or less, the maximum line length
+# will be the screen width less n columns. The default value is -8.
+set fill "-8"
+
+# Enable ~/.nano_history for saving and reading search/replace strings.
+set historylog
+
+# Set the opening and closing brackets that can be found by bracket searches.
+# They cannot contain blank characters. The former set must come before the
+# latter set, and both must be in the same order. The default value
+# is "(<[{)>]}".
+set matchbrackets string "(<[{)>]}"
+
+# Use of the blank line below the titlebar as extra editing space.
+unset morespace
+
+# Enable mouse support, so that mouse clicks can be used to place the cursor,
+# set the mark (with a double click), or execute shortcuts.
+unset mouse
+
+# Allow inserting files into their own buffers.
+set multibuffer
+
+# Don't convert files from DOS/Mac format.
+set noconvert
+
+# Don't follow symlinks when writing files.
+#unset nofollow
+
+# Don't display the help lists at the bottom of the screen.
+set nohelp
+
+# Don't add newlines to the ends of files.
+set nonewlines
+
+# Don't wrap text at all.
+set nowrap
+
+# nano will only read and write files inside directory and its subdirectories.
+# Also, the current directory is changed to here, so files are inserted from
+# this diractory. By default, the operating directory feature is turned off.
+# set operatingdir "directory"
+
+# Preserve the XON and XOFF keys (^Q and ^S).
+unset preserve
+
+# Make Ctrl+Right stop at word ends instead of beginnings.
+set afterends
+
+# Set the characters treated as closing punctuation when justifying paragraphs.
+# They cannot contain blank characters. Only closing punctuation, optionally
+# followed by closing brackets, can end sentences. The default value is "!.?".
+set punct "!.?"
+
+# Do quick statusbar blanking. Statusbar messages will disappear after 1
+# keystroke instead of 25.
+unset quickblank
+
+# The email-quote string, used to justify email-quoted paragraphs. This is an
+# extended regular expression if your system supports them, otherwise a
+# literal string. The default value is "^([ \t]*[#:>\|}])+" if you have
+# extended regular expression support, or "> " otherwise. Note that '\t'
+# stands for a literal Tab character.
+set quotestr "^([ \\t]*[#:>\\|}])+"
+
+# Interpret the Delete key differently so that both Backspace and Delete work
+# properly. You should only need to use this option if Backspace acts like
+# Delete on your system.
+unset rebinddelete
+
+# Interpret the numeric keypad keys so that they all work properly. You should
+# only need to use this option if they don't, as mouse support won't work
+# properly with this option enabled.
+unset rebindkeypad
+
+# Do extended regular expression searches by default.
+set regexp
+
+# Make the Home key smarter. When Home is pressed anywhere but at the very
+# beginning of non-whitespace characters on a line, the cursor will jump to that
+# beginning (either forwards or backwards). If the cursor is already at that
+# position, it will jump to the true beginning of the line.
+set smarthome
+
+# Use smooth scrolling by default.
+set smooth
+
+# Use spelling checker spellprog instead of the built-in one, which calls
+# "spell".
+#set speller "aspell"
+
+# Allow nano to be suspended.
+set suspend
+
+# Use a tab size of "n" columns. The value of n must be greater than 0. The
+# default value is 8.
+set tabsize "4"
+
+# Convert typed tabs to spaces
+set tabstospaces
+
+# Save automatically on exit, don't prompt.
+unset tempfile
+
+# Disallow file modification.
+unset view
+
+# Set the two characters used to display the first characters of tabs and
+# spaces. They must be single-column characters.
+# set whitespace "string"
+
+# Detect word boundaries more accurately by treating punctuation characters
+# as part of a word.
+unset wordbounds
+
+## Enable the new (EXPERIMENTAL) generic undo code, not just for line cuts
+# set undo
+
+## Enable soft line wrapping (AKA full line display)
+set softwrap
+
+## Key bindings
+## Please see nanorc(5) for more details on this
+##
+## Here are some samples to get you going
+##
+# bind M-W nowrap main
+# bind M-A casesens search
+# bind ^S research main
+
+## Set this if your backspace key sends delete most of the time (2.1.3+)
+# bind kdel backspace all
+
+bind ^c copytext main
+bind ^x cut main
+bind ^v uncut main
+bind ^z undo main
+bind ^y redo main
+bind ^f whereis main
+bind ^h replace main
+
+## Nanorc files
+include "/usr/share/nano/nanorc.nanorc"
+include "~/.nano/syntax/apacheconf.nanorc"
+include "~/.nano/syntax/arduino.nanorc"
+include "~/.nano/syntax/asciidoc.nanorc"
+include "~/.nano/syntax/asm.nanorc"
+include "~/.nano/syntax/awk.nanorc"
+include "~/.nano/syntax/c.nanorc"
+include "~/.nano/syntax/clojure.nanorc"
+include "~/.nano/syntax/cmake.nanorc"
+include "~/.nano/syntax/coffeescript.nanorc"
+include "~/.nano/syntax/colortest.nanorc"
+include "~/.nano/syntax/conf.nanorc"
+include "~/.nano/syntax/csharp.nanorc"
+include "~/.nano/syntax/css.nanorc"
+include "~/.nano/syntax/cython.nanorc"
+include "~/.nano/syntax/dot.nanorc"
+include "~/.nano/syntax/dotenv.nanorc"
+include "~/.nano/syntax/email.nanorc"
+include "~/.nano/syntax/Dockerfile.nanorc"
+include "~/.nano/syntax/etc-hosts.nanorc"
+include "~/.nano/syntax/fish.nanorc"
+include "~/.nano/syntax/fortran.nanorc"
+include "~/.nano/syntax/gentoo.nanorc"
+include "~/.nano/syntax/git.nanorc"
+include "~/.nano/syntax/gitcommit.nanorc"
+include "~/.nano/syntax/glsl.nanorc"
+include "~/.nano/syntax/go.nanorc"
+include "~/.nano/syntax/gradle.nanorc"
+include "~/.nano/syntax/groff.nanorc"
+include "~/.nano/syntax/haml.nanorc"
+include "~/.nano/syntax/haskell.nanorc"
+include "~/.nano/syntax/html.nanorc"
+include "~/.nano/syntax/html.j2.nanorc"
+include "~/.nano/syntax/ical.nanorc"
+include "~/.nano/syntax/ini.nanorc"
+include "~/.nano/syntax/inputrc.nanorc"
+include "~/.nano/syntax/jade.nanorc"
+include "~/.nano/syntax/java.nanorc"
+include "~/.nano/syntax/javascript.nanorc"
+include "~/.nano/syntax/js.nanorc"
+include "~/.nano/syntax/json.nanorc"
+include "~/.nano/syntax/keymap.nanorc"
+include "~/.nano/syntax/kickstart.nanorc"
+include "~/.nano/syntax/kotlin.nanorc"
+include "~/.nano/syntax/ledger.nanorc"
+include "~/.nano/syntax/lisp.nanorc"
+include "~/.nano/syntax/lua.nanorc"
+include "~/.nano/syntax/makefile.nanorc"
+include "~/.nano/syntax/man.nanorc"
+include "~/.nano/syntax/markdown.nanorc"
+include "~/.nano/syntax/mpdconf.nanorc"
+include "~/.nano/syntax/mutt.nanorc"
+include "~/.nano/syntax/nanorc.nanorc"
+include "~/.nano/syntax/nginx.nanorc"
+include "~/.nano/syntax/nmap.nanorc"
+include "~/.nano/syntax/ocaml.nanorc"
+include "~/.nano/syntax/patch.nanorc"
+include "~/.nano/syntax/peg.nanorc"
+include "~/.nano/syntax/perl.nanorc"
+include "~/.nano/syntax/perl6.nanorc"
+include "~/.nano/syntax/php.nanorc"
+include "~/.nano/syntax/pkg-config.nanorc"
+include "~/.nano/syntax/pkgbuild.nanorc"
+include "~/.nano/syntax/po.nanorc"
+include "~/.nano/syntax/pov.nanorc"
+include "~/.nano/syntax/privoxy.nanorc"
+include "~/.nano/syntax/puppet.nanorc"
+include "~/.nano/syntax/pug.nanorc"
+include "~/.nano/syntax/python.nanorc"
+include "~/.nano/syntax/reST.nanorc"
+include "~/.nano/syntax/rpmspec.nanorc"
+include "~/.nano/syntax/ruby.nanorc"
+include "~/.nano/syntax/rust.nanorc"
+include "~/.nano/syntax/scala.nanorc"
+include "~/.nano/syntax/sed.nanorc"
+include "~/.nano/syntax/sh.nanorc"
+include "~/.nano/syntax/sls.nanorc"
+include "~/.nano/syntax/sql.nanorc"
+include "~/.nano/syntax/svn.nanorc"
+include "~/.nano/syntax/swift.nanorc"
+include "~/.nano/syntax/systemd.nanorc"
+include "~/.nano/syntax/tcl.nanorc"
+include "~/.nano/syntax/tex.nanorc"
+include "~/.nano/syntax/vala.nanorc"
+include "~/.nano/syntax/verilog.nanorc"
+include "~/.nano/syntax/vi.nanorc"
+include "~/.nano/syntax/xml.nanorc"
+include "~/.nano/syntax/xresources.nanorc"
+include "~/.nano/syntax/yaml.nanorc"
+include "~/.nano/syntax/yum.nanorc"
+include "~/.nano/syntax/zsh.nanorc"
+

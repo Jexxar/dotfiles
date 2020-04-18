@@ -8,27 +8,17 @@ fi
 function main(){
     precheck "pgrep"
     precheck "pkill"
-
-    if [ $# -eq 0 ]; then
-        echo "Usage: `basename $0` {executable_name parameters}"
-        exit 0
-    fi
+    [ $# -eq 0 ] && echo "Usage: $(basename $0) <executable name> <parameters>" && return 1
     local orig_cmd="$1"
+    local validcmd="$(LC_ALL=C type -a $orig_cmd 2> /dev/null | grep -v "alias" | grep -v "keyword" | grep " is " | awk 'NR == 1 {print $1}')"
+    [ -z "$validcmd" ] && echo -e "Invalid command $orig_cmd\nUsage: $(basename $0) <executable name> <parameters>" && return 1
     local cmd="$(command -v "$orig_cmd")"
-    local chkcmd="$(echo "$cmd" | grep "$orig_cmd")"
     shift
-    kill_it "$orig_cmd"
-    if [ -z "$chkcmd" ]; then
-        echo "Starting $orig_cmd $@"
-        log "Starting $orig_cmd $@"
-        $orig_cmd "$@" &
-        disown
-    else
-        echo "Starting $cmd $@"
-        log "Starting $cmd $@"
-        $cmd "$@" &
-        disown
-    fi
+    kill_them "but-me" "$orig_cmd"
+    echo "Starting $cmd $@"
+    log "Starting $cmd $@"
+    $cmd "$@" &
+    disown
     exit 0
 }
 

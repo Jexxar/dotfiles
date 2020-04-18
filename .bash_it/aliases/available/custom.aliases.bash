@@ -18,33 +18,29 @@ alias dir='dir -lah1FX --group-directories-first --time-style=+"%d.%m.%Y %H:%M" 
 alias ducks='du -cks * | sort -rn | head'
 
 alias egrep='egrep --color=auto'
-alias ela='els -laH '
 alias fgrep='fgrep --color=auto'
-alias free='free -m'                      # show sizes in MB
 alias grep='grep --color=auto'
-alias lc="colorls -sf"
 alias lf='ls -lah1FX --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
-alias aptclean="$HOME/bin/limp"
-alias listeners="lsof -iTCP -sTCP:LISTEN"
 alias ll='ls -lahXF --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
+alias ls='ls -ahXF --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
+alias listeners='LC_ALL=C lsof -iTCP -sTCP:LISTEN || echo "No listeners found"'
 alias local-ip="LC_ALL=C ifconfig | grep 'inet addr' | grep -v '127.0.0.1' | cut -d: -f2 | cut -d' ' -f1"
 alias logs="find /var/log -type f -exec file {} \; | grep 'text' | cut -d' ' -f1 | sed -e's/:$//g' | grep -v '[0-9]$' | xargs tail -f"
-alias ls='ls -ahXF --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
 alias mem="watch -n 1 free -h"
-alias my_distro="$HOME/bin/distro_info -3"
-alias ns='LC_ALL=C netstat -alnp --protocol=inet | grep -v "CLOSE_WAIT" | cut -c-6,21-94'
-alias now='date +"%T"'
-alias nowtime=now
+alias my_distro="$HOME/bin/distro-info -2"
+alias nowtime='date +"%T"'
 alias nowdate='date +"%d-%m-%Y"'
-alias openports='netstat -nape --inet'
-alias ports='netstat -tulanp'
+if command -v netstat > /dev/null; then
+    alias ns='LC_ALL=C netstat -alnp --protocol=inet | grep -v "CLOSE_WAIT" | cut -c-6,21-94'
+    alias openports='LC_ALL=C netstat -nape --inet'
+    alias ports='LC_ALL=C netstat -tulanp'
+fi
 alias psa='ps -axf -o pid,%cpu,%mem,bsdtime,user,command'
 alias psname='process_name'
 alias pyg='pygmentize -f 256 -O style=monokai'
 alias reswap='sudo swapoff -a && sudo swapon -a'
 alias rm='rm -i'
 alias sha1='openssl sha1'
-alias aptupd="$HOME/bin/upd"
 alias wttr="curl -4 http://wttr.in/~Curitiba"
 
 # shortcut for iptables and pass it via sudo
@@ -56,28 +52,36 @@ alias iptlistout='sudo /sbin/iptables -L OUTPUT -n -v --line-numbers'
 alias iptlistfw='sudo /sbin/iptables -L FORWARD -n -v --line-numbers'
 
 ## this one saved by butt so many times ##
-alias wget='wget -c'
+if command -v wget > /dev/null; then
+    alias wget='wget -c'
+fi
 
 #█▓▒░ dumb tmux trix
 alias tsad="printf '\033k┐(T_T)┌\033\\'"
 alias tshrug="printf '\033k┐(\`-\`)┌\033\\'"
 alias tlol="printf '\033k┐(^0^)┌\033\\'"
 
-# Testar conexão com ping
-alias pggl='ping -c3 www.google.com.br' # Ping ao google a cada 3 segundos
-alias puol='ping -c5 www.uol.com.br' # Ping ao UOL a cada 3 segundos
+# Connection testing using Ping
+alias pggl='ping -c3 google.com'
+alias pcdf='ping -c5 cloudflare.com'
 
 # View HTTP traffic
-alias sniff="sudo ngrep -d 'wlp2s0' -t '^(GET|POST) ' 'tcp and port 80'"
-alias httpdump="sudo tcpdump -i wlp2s0 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
+if command -v ngrep > /dev/null; then
+    alias sniff="sudo ngrep -d 'wlp2s0' -t '^(GET|POST) ' 'tcp and port 80'"
+fi
+if command -v tcpdump > /dev/null; then
+    alias httpdump="sudo tcpdump -i wlp2s0 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
+fi
 
 # One of @janmoesen’s ProTip™s
 for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do
     alias "$method"="lwp-request -m '$method'"
 done
 
-alias java.debug.enable='export JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,address=5009,suspend=y"'
-alias java.debug.disable='export JAVA_OPTS=""'
+if command -v java > /dev/null; then
+    alias java.debug.enable='export JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,address=5009,suspend=y"'
+    alias java.debug.disable='export JAVA_OPTS=""'
+fi
 
 alias ctags='ctags --exclude={docs,cache,tiny_mce,layout} --recurse';
 
@@ -92,14 +96,9 @@ fi
 # colored grep
 # Need to check an existing file for a pattern that will be found to ensure
 # that the check works when on an OS that supports the color option
-if grep --color=auto "a" "${BASH_IT}/"*.md &> /dev/null
-then
+if grep --color=auto "shell " "${BASH_IT}/"*.md &> /dev/null; then
     alias grep='grep --color=auto'
     export GREP_COLOR='1;33'
-fi
-
-if [ -n "$(command -v gshuf)" ]; then
-    alias shuf=gshuf
 fi
 
 # Common misspellings of bash-it
@@ -109,15 +108,3 @@ alias batbsh='bash-it'
 alias babsh='bash-it'
 alias bash_it='bash-it'
 alias bash_ti='bash-it'
-
-# Additional bash-it aliases for help/show
-alias bshsa='bash-it show aliases'
-alias bshsc='bash-it show completions'
-alias bshsp='bash-it show plugins'
-alias bshha='bash-it help aliases'
-alias bshhc='bash-it help completions'
-alias bshhp='bash-it help plugins'
-alias bshsch="bash-it search"
-alias bshenp="bash-it enable plugin"
-alias bshena="bash-it enable alias"
-alias bshenc="bash-it enable completion"

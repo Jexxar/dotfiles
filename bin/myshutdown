@@ -1,37 +1,22 @@
 #!/usr/bin/env bash
 # This script is intended to be run as the main shutdown script for this installation.
-set -eu
+#set -eu
 
 if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
 function do_shutdown() {
-    auth_user && continue || return 0
+    ! auth_user && log "user $USER has not polkit binding to poweroff" && return 0
     
     if is_running_X ; then
         locked && return 0
-        if checkfor "systemctl"; then
-            systemctl poweroff &
-            exit 0
-        fi
-        if can_poweroff; then
-            dbus_poweroff &
-            exit 0
-        fi
+        checkfor "systemctl" && systemctl poweroff && return 0
+        can_poweroff && dbus_poweroff && return 0
     else
-        if checkfor "systemctl"; then
-            systemctl poweroff &
-            exit 0
-        fi
-        if checkfor "shutdown"; then
-            shutdown -h now &
-            exit 0
-        fi
-        if checkfor "init"; then
-            init 0 &
-            exit 0
-        fi
+        checkfor "systemctl" && systemctl poweroff && return 0
+        checkfor "shutdown" && shutdown -h now && return 0
+        checkfor "init" && init 0 && return 0
     fi
 }
 
@@ -65,7 +50,7 @@ function do_test() {
 function main(){
     precheck "xset"
     precheck "loginctl"
-
+    
     local cmd=${1:-down}
     
     case "$cmd" in
@@ -79,6 +64,7 @@ function main(){
         *)
             log "Unrecognized option: $1"
     esac
+    return 0
 }
 
 main "$@"

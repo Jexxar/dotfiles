@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # This script is intended to be run as the main notifier script for this installation.
-set -eu
+#set -eu
 
 if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
@@ -9,7 +9,7 @@ fi
 # Notify desired message.
 function do_notify() {
     # Only works if X is running.
-   !is_running_X && log "X server is not running" && return 0
+    ! is_running_X && log "X server is not running" && return 0
     
     # Notification should not be issued while locked.
     locked && return 0;
@@ -48,6 +48,7 @@ function main(){
         *)
             log "Unrecognized option: $1"
     esac
+    return 0
 }
 
 main "$@"

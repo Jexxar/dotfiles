@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+#set -eu
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+#==============================================
+# matches - Find files in the current directory containing the most occurrences of a pattern
+#           (Results are output in ascending order by occurrence count)
+#
+# @option -c Include occurrence counts in output
+# @option -r Reverse sort order (default ascending)
+# @option -m COUNT Minimum number of matches required to include file in results
+# @option -h Display this help screen
+#
+# Examples:
+#   matches -c -m 3 "jekyll"
+#   matches -c -r "bash"
+#
+# @Params {String} $1: text for search
+#==============================================
+function usage(){
+cat <<EOF
+Usage: $(basename $0) [Options] <pattern>
+
+    Find files in the current directory containing the most occurrences of a pattern
+        -c         Include occurrence counts in output
+        -r         Reverse sort order (default ascending)
+        -m COUNT   Minimum number of matches required
+        -h         Display this help screen
+
+    Example:
+        # search for files containing at least 3 occurrences of the word "jekyll", display filenames with counts
+        matches -c -m 3 jekyll
+EOF
+}
+
+function doMatch(){
+    local OLDIFS=$IFS
+    local str=""
+    local occ=""
+    IFS=$'\n'
+    for f in $(grep -lIi -E "$1" * 2> /dev/null | sort -t: -n ); do
+        str="$(grep -Hi -c -E "$1" "$f")"
+        if [ ${str##*:} -ge $3 ]; then
+            if $2; then
+                occ=$(echo "00000${str##*:}" | tail -c 6)
+                echo "${occ}: ${str%:*}"
+            else
+                echo "${str%:*}"
+            fi
+        fi
+    done
+    IFS=$OLDIFS
+}
+
+function main(){
+    local counts=false
+    local minmatches=1
+    local patt
+    local width=1
+    local reverse=""
+    OPTIND=1
+    while getopts "crm:h" opt; do
+        case $opt in
+            c) counts=true ;;
+            r) reverse="r" ;;
+            m) minmatches=$OPTARG ;;
+            h) usage; return 0;;
+            *) usage; return 1;;
+        esac
+    done
+    shift $((OPTIND-1))
+    [ $# -ne 1 ] && usage && return 0
+    local patt="$1"
+    shift
+    
+    doMatch "$patt" "$counts" "$minmatches" | sort -t: -${reverse}n -k 2  | sed 's/^00000/     /' | sed 's/^0000/    /' | sed 's/^000/   /' | sed 's/^00/  /' | sed 's/^0/ /'
+    exit 0
+}
+
+main "$@"

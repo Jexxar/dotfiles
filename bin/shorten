@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+#set -eu
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+#==============================================
+# shorten - Truncate each line of the input to X characters (used on pipes)
+#
+# @option -h:   Help
+# @option -l:   Truncate from left instead of right (optional)
+# @option -s:   Add STRING when truncated (optional)
+#
+# Examples:
+#   ls | shorten -s ... 15
+#   echo "012345678901234567890" | shorten -s "..." 11
+#   echo "012345678901234567890" | shorten -ls "<eol>" 12
+#
+# @Params {String} $1: length to truncate to (optional, default 70)
+#==============================================
+function usage(){
+cat <<EOF
+Truncate each line of the input to X characters
+    -h              Shows this help
+    -l              Shorten from left side
+    -s STRING       replace truncated characters with STRING
+
+    Example: ls | shorten -s ... 15"
+EOF
+}
+
+function main(){
+    local ellip=""
+    local left=false
+    OPTIND=1
+    while getopts "hls:" opt; do
+        case $opt in
+            l) left=true 
+            ;;
+            s) ellip=$OPTARG 
+            ;;
+            h) usage ; return 0
+            ;;
+            *) usage ; return 1
+            ;;
+        esac
+    done
+    shift $((OPTIND-1))
+    
+    if $left; then
+        cat | sed -E "s/.*(.{${1-70}})$/${ellip}\1/"
+    else
+        cat | sed -E "s/(.{${1-70}}).*$/\1${ellip}/"
+    fi
+}
+
+main "$@"

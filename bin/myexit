@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -eu
+#set -eu
 
 if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
@@ -28,12 +28,11 @@ function do_exit(){
     stop_it "cinnamon-screensaver"
     stop_it "xscreensaver"
     stop_it "xautolock"
-    stop_it "redshift-gtk"
-    stop_it "redshift"
     stop_it "mylightson"
     stop_it "mywallchng"
     stop_it "tint2"
     stop_it "compton"
+    stop_it "picom"
     
     log "Exiting now..."
     openbox --exit;
@@ -63,15 +62,12 @@ function do_test(){
     stop_it "cinnamon-screensaver" "debug"
     stop_it "xscreensaver" "debug"
     stop_it "xautolock" "debug"
-    stop_it "caffeine-indicator" "debug"
-    stop_it "caffeine" "debug"
-    stop_it "redshift-gtk" "debug"
-    stop_it "redshift" "debug"
     stop_it "mylightson" "debug"
     stop_it "mywallchng" "debug"
     stop_it "tint2" "debug"
     stop_it "compton" "debug"
-    
+    stop_it "picom" "debug"
+
     log "Exiting now..."
     log "openbox --exit;"
     log "kilall openbox;"

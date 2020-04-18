@@ -6,16 +6,17 @@ if [ -f "$HOME/bin/mycommon" ]; then
 fi
 
 function main() {
-    local fortcmd="$(command -v fortune 2> /dev/null)"
-    [ -z "$fortcmd" ] && exit 0
+    local fcmd="$(findutil fortune)"
+    [ -z "$fcmd" ] && return 0
     [ -f ~/.plan ] && rm -f ~/.plan &>/dev/null
-    ${fortcmd} -a > ~/.plan
+    ${fcmd} -a > ~/.plan
     while [ $(wc -l < ~/.plan) -ge 3 ]; do
         rm -f ~/.plan &>/dev/null
-        ${fortcmd} -a > ~/.plan
+        ${fcmd} -a > ~/.plan
     done
     # awk '{ print $0 }' ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1' | cowsay -f $(random_cow_file)
     awk '{ print $0 }' ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1'
+    return 0
 }
 
 main "$@"

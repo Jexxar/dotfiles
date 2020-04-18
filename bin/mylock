@@ -7,6 +7,12 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
+# config vars
+ML_scriptName="${0##*/}"
+ML_scriptBaseName="${ML_scriptName%%.*}"
+ML_scriptFPath="$(dirname "$(readlink -f $0)")/${ML_scriptName}"
+ML_lockFile="/tmp/${ML_scriptBaseName}_${USER}_$(timestamp).txt"
+
 # Lock screen if possible.
 function do_lock() {
     # Only works if X is running.
@@ -14,7 +20,7 @@ function do_lock() {
     
     # Already locked
     locked && return 0;
-    
+
     log "Locking screen now..."
     dunstctl stop
     # Fork both i3lock and its monitor to avoid blocking xautolock.
@@ -22,9 +28,12 @@ function do_lock() {
     ~/bin/lock -gpf Comic-Sans-MS -- scrot -z &
     pid="$!"
     log "Locked and Waiting until (screen lock) PID $pid ends up..."
+    touch "$ML_lockFile"
+    echo "LockPID=$pid" > "$ML_lockFile"
     while 2>/dev/null kill -0 "$pid"; do
         snore 1.2
     done
+    [ -f "$ML_lockFile" ] && rm -f "$ML_lockFile"
     log "Unlocked and resumed..."
     dunstctl resume
 }
@@ -43,6 +52,7 @@ function main(){
     
     case "$cmd" in
         lock)
+            trap 'rm -f "$ML_lockFile"; exit' INT TERM EXIT ERR
             do_lock
         ;;
         debug)
@@ -51,7 +61,8 @@ function main(){
         *)
             log "Unrecognized option: $1"
     esac
+    trap - INT TERM EXIT ERR
+    return 0
 }
 
 main "$@"
-

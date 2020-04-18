@@ -3,10 +3,10 @@
 test -f ${XDG_CONFIG_HOME:-~/.config}/user-dirs.dirs && source ${XDG_CONFIG_HOME:-~/.config}/user-dirs.dirs
 
 # Find and/or create path for logging
-function doLogPath() {
+function findLogPath(){
     local lpath="/var/log"
     [ -w "$lpath" ] && echo "$lpath" && return 0  || lpath="$HOME/.local/var/log"
-    [ ! -d "$lpath" ] && mkdir -p $lpath 
+    [ ! -d "$lpath" ] && mkdir -p $lpath
     [ -d "$lpath" ] && echo "$lpath" && return 0 || echo "" &&  return 1
 }
 
@@ -15,103 +15,151 @@ myLogScriptName="${0##*/}"
 myLogSctiptBase="${myLogScriptName%%.*}"
 
 # Find a path to Log file
-myLogPath=$(doLogPath)
+myLogPath=$(findLogPath)
 myLogFile="$myLogPath/$myLogSctiptBase.log"
 
 # Print the given message with a timestamp.
-function info() { printf '%s %s\n' "$(date +%F_%H:%M:%S | tr '_' ' ') $HOSTNAME" "$*"; }
+function info(){
+    printf '%s %s\n' "$(date +%F_%H:%M:%S | tr '_' ' ') $HOSTNAME" "$*"
+}
 
 # Standard log file
-function log() {
+function log(){
     local LOCK_rc=0
     if [ ! -f "$myLogFile" ]; then
         touch "$myLogFile"
         LOCK_rc=$?
     fi
     if [[ $LOCK_rc -eq 0 && -f "$myLogFile" ]]; then
-        info >>"$myLogFile" "$@"
+        info "$@" | tee -a "$myLogFile" > /dev/null
+        #info >>"$myLogFile" "$@"
     else
         info "$@"
     fi
 }
 
-function bailout () {
+function bailout(){
     echo "Error: $@"
     [ -f "$myLogFile" ] && log "Error: $@"
     exit 1
 }
 
 # Check for required software
-function precheck () {
-    hash "$1" >/dev/null 2>&1 || bailout "Please install $1"
+function precheck(){
+    #hash "$1" >/dev/null 2>&1
+    #type -p "$1" >/dev/null 2>&1
+    command -v "$1" >/dev/null 2>&1
+    [ $? -eq 0 ] || bailout "Please install $1"
 }
 
-# Check for software existence 
-function checkfor () {
-    hash "$1" >/dev/null 2>&1 && return 0 || return 1
+# Check for software existence
+function checkfor(){
+    #hash "$1" >/dev/null 2>&1
+    #type -p "$1" >/dev/null 2>&1
+    command -v "$1" >/dev/null 2>&1
+    [ $? -eq 0 ] && return 0 || return 1
+}
+
+# Find full path for an utility program
+function findutil(){
+    local p=""
+    for u in "$@"; do
+        p="$(command -v "$u" 2> /dev/null)" && echo "$p" && return 0
+        p="$(type -p "$u" 2> /dev/null)" && echo "$p" && return 0
+        which --skip-alias which > /dev/null 2>&1
+        if [ $? -eq 0 ]; then
+            local WHICH="$(which --skip-alias which)"
+        else
+            local WHICH="$(which which)"
+        fi
+        p="$(${WHICH} "$u" 2> /dev/null)" && echo "$p" && return 0
+    done
+    echo ""
+    return 1
 }
 
 # direct it all to /dev/null
-function nullify() {
+function nullify(){
     "$@" >/dev/null 2>&1
 }
 
 # Rsync copy w/ progress
-function rsyncp_p () {
+function rsyncp_p(){
     rsync -WavP --human-readable --progress $1 $2
 }
 
 # Check for a git repo in that location
-function is_git_repository() {
+function is_git_repository(){
     [ "$(git rev-parse &>/dev/null; printf $?)" -eq 0 ] && return 0 || return 1
+}
+
+# Trim spaces from a string
+# Usage: trim "The Quick Brown Fox "
+function trim(){
+    set -f
+    set -- $*
+    printf "%s\\n" "$*"
+    set +f
+}
+
+# Trim quotes from a string.
+# Usage: trim_quotes "string"
+function trim_quotes(){
+    trim="${1//\'}"
+printf "%s\\n" "${trim//\"}"
 }
 
 # Trim all spaces
 # Usage: trim_string "   example   string    "
-function trim_spaces() {
-    : "${1#"${1%%[![:space:]]*}"}"
-    : "${_%"${_##*[![:space:]]}"}"
-    printf '%s\n' "$_"
+function trim_spaces(){
+: "${1#"${1%%[![:space:]]*}"}"
+: "${_%"${_##*[![:space:]]}"}"
+printf '%s\n' "$_"
 }
 
 # remove trailing slash (substitute for realpath -s)
 # warning: returns empty if $1 is just /
-function trim_slash() {
-    printf "%s" "${1%/}"
+function trim_slash(){
+printf "%s" "${1%/}"
 }
 
 # Trim leading spaces
 # Usage: ltrim "   example   string    "
-function ltrim() {
-    : "${1#"${1%%[![:space:]]*}"}"
-    printf '%s\n' "$_"
+function ltrim(){
+: "${1#"${1%%[![:space:]]*}"}"
+printf '%s\n' "$_"
 }
 
 # Trim tailing spaces
 # Usage: rtrim "  example   string    "
-function rtrim() {
-    : "${1%"${1##*[![:space:]]}"}"
-    printf '%s\n' "$_"
+function rtrim(){
+: "${1%"${1##*[![:space:]]}"}"
+printf '%s\n' "$_"
 }
 
 # Ask for a simple yes/no confirmation
 # Usage: ask_confirmation "Are you ready?"
-function ask_confirmation() {
-    printf "\n${_cl_bold}$@${_cl_reset}"
-    read -p " (y/n) " -n 1
-    printf "\n"
+function ask_confirmation(){
+printf "\n${_cl_bold}$@${_cl_reset}"
+read -p " (y/n) " -n 1
+printf "\n"
 }
 
 # Test whether the result of an 'ask' is a confirmation
-# Usage: is_confirmed 
-function is_confirmed() {
-    [[ "$REPLY" =~ ^[Yy]$ ]] && return 0 || return 1
+# Usage: is_confirmed
+function is_confirmed(){
+[[ "$REPLY" =~ ^[Yy]$ ]] && return 0 || return 1
 }
 
 # Usage: say text [delayAfterText]
 function say() {
     fold -s -w 76 <<< "$1" | sed 's/^/  /' # wraps text nicely and adds two leading spaces
     snore "${2-0}"
+}
+
+# ISO timestamp format
+function timestamp(){
+    date -Ins | cut -b 1-29 | sed -e 's/,/_/g; s/\./_/g; s/:/-/g; s/T/_/g'
 }
 
 # ps with ISO date format
@@ -123,55 +171,110 @@ function ps_ISO(){
     fi
 }
 
+# Killing processes helper
+function kill_them(){
+    kt_usage(){
+        echo "kill_them Usage:"
+        echo "    Kill_them {option} {target name}"
+        echo " "
+        echo "    Options:"
+        echo "      - all: Kill all possible processes matching target name"
+        echo "      - but-me: Kill processes matching target name except my own pid"
+        echo "      - strict: Kill only non bash processes matching target name"
+        echo "      - but-me-bash: Kill only bash processes matching target name except my own pid"
+        echo "      - sh-c: Kill only sh -c processes attached to the target name"
+        echo "      - check: Check if such a process is running. Dont kill."
+    }
+    [ -z "$2" ] && kt_usage && log "kill_them: Argument error. You must provide an option and a target" && return 1
+    local s_name="$2"
+    local has="n"
+    [ $# -gt 2 ] && local shw="y" || local shw="n"
+    case ${1-check} in
+        all)
+            pkill -USR1 --euid "$(id -u)" --exact "$s_name" &>/dev/null && has="y" && log "Stopping instances(pkill): name=$s_name" || true
+            for i in $(ps_ISO "$s_name" | grep -v "grep" | awk '{print $3}'); do
+                kill "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name"
+                [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name"
+                [ $? -ne 0 ] && killall "$1" &> /dev/null && has="y" && log "Stopping instances(killall): name=$s_name" || true
+                snore 0.1
+            done
+            [ "$has" == "n" ] && [ "$shw" == "y" ] && log "kill_them all: No process $s_name found"
+            return 0
+        ;;
+        but-me)
+            for i in $(ps_ISO "$s_name" | grep -v "grep" | awk '{print $3}'); do
+                if [ "$i" != "$$" ]; then
+                    kill "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name"
+                    [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name" || true
+                    snore 0.1
+                fi
+            done
+            [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "kill_them but-me: No process $s_name found"
+            return 0
+        ;;
+        strict)
+            for i in $(ps_ISO "$s_name" | grep -v "bash" | grep -v "sh -c" | grep -v "grep" | awk '{print $3}'); do
+                kill "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name"
+                [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name" || true
+                snore 0.1
+            done
+            [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "kill_them strict: No process $s_name found"
+            return 0
+        ;;
+        but-me-bash)
+            for i in $(ps_ISO "$s_name" | grep -P "bash" | grep -v "grep" | awk '{print $3}'); do
+                if [ "$i" != "$$" ]; then
+                    kill "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name"
+                    [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name" || true
+                    snore 0.1
+                fi
+            done
+            [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "kill_them but-me-bash: No process bash + $s_name found"
+            return 0
+        ;;
+        sh-c)
+            for i in $(ps_ISO "$s_name" | grep -P "sh -c" | grep -v "grep" | awk '{print $3}'); do
+                kill "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name"
+                [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name" || true
+                snore 0.1
+            done
+            [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "kill_them sh-c: No process sh -c + $s_name found"
+            return 0
+        ;;
+        check)
+            for i in $(ps_ISO "$s_name" | grep -v "grep" | awk '{print $3}'); do
+                log "check: Process $s_name pid=$i is running and can be terminated" && has="y"
+            done
+            [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "check: Process $s_name not found"
+            return 0
+        ;;
+    esac
+    return 0
+}
+
 # Kill older instances of itself (bash based scripts)
 function kill_older(){
-    local s_name="${0##*/}"
-    local my_pid=$$
     snore 0.3
-    for i in $(ps_ISO "$s_name" | grep "$USER" | grep -P "bash" | grep -v "grep" | awk '{print $3}'); do 
-        if [ "$i" != "$my_pid" ]; then
-            kill "$i" &>/dev/null && log "Older instances found: pid=$i  name=$s_name"
-            [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && log "Older instances found: pid=$i name=$s_name" || true
-        fi
-    done
+    kill_them "but-me-bash" "${0##*/}"
     return 0
 }
 
 # Kill all process by pattern (but not me)
 function kill_it(){
-    local s_name="$1"
-    snore 0.3
-    for i in $(ps_ISO "$s_name" | grep "$USER" | grep -v "grep" | awk '{print $3}'); do 
-        if [ "$i" != "$$" ]; then
-            kill "$i" &>/dev/null && log "Stopping instance(kill): pid=$i name=$s_name"
-            [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && log "Stopping instance(kill): pid=$i name=$s_name" || true
-            snore 0.1
-        fi
-    done
+    kill_them "but-me" "$1"
     return 0
 }
 
 # Cleanup running processes.
-function stop_it() {
+function stop_it(){
     [ -z "$1" ] && return 1
-    local s_name="$1"
     case ${2:-stop} in
         stop)
-            for i in $(ps_ISO "$s_name" | grep -v "grep" | awk '{print $3}'); do 
-                kill "$i" &>/dev/null && log "Stopping instance(kill): pid=$i name=$s_name"
-                [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && log "Stopping instance(kill): pid=$i name=$s_name"
-                [ $? -ne 0 ] && pkill -USR1 --euid "$(id -u)" --exact "$s_name" && log "Stopping instances(pkill): name=$s_name " 
-                [ $? -ne 0 ] && killall "$1" > /dev/null && log "Stopping instances(killall): name=$s_name " || true
-                snore 0.1
-            done
+            kill_them "all" "$1"
             return 0
         ;;
         debug)
-            if [ $(pgrep -lfc "$1") -ge 1 ] ; then
-                log "$1 need to be terminated"
-            else
-                log "$1 not found"
-            fi
+            kill_them "check" "$1"
             return 0
         ;;
         *)
@@ -182,37 +285,37 @@ function stop_it() {
 }
 
 # Return 0 if user in the active session can issue power related commands via policykit
-function auth_user() {
+function auth_user(){
     [ $(loginctl show-session $XDG_SESSION_ID --property=Active | grep "yes") ] && return 0
     return 1
 }
 
 # Check if can hibernate using dbus
-function can_hibernate() {
+function can_hibernate(){
     [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanHibernate | grep "yes") ] && return 0
     return 1
 }
 
 # Check if can poweroff using dbus
-function can_poweroff() {
+function can_poweroff(){
     [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanPowerOff | grep "yes") ] && return 0
     return 1
 }
 
 # Check if can reboot using dbus
-function can_reboot() {
+function can_reboot(){
     [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanReboot | grep "yes") ] && return 0
     return 1
 }
 
 # Check if can suspend using dbus
-function can_suspend() {
+function can_suspend(){
     [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanSuspend | grep "yes") ] && return 0
     return 1
 }
 
 # Hibernate using dbus logind (only if user is authorized)
-function dbus_suspend() {
+function dbus_suspend(){
     dbus-send --system \
     --print-reply=literal \
     --dest=org.freedesktop.login1 \
@@ -220,7 +323,7 @@ function dbus_suspend() {
 }
 
 # Poweroff using dbus logind  (only if user is authorized)
-function dbus_poweroff() {
+function dbus_poweroff(){
     dbus-send --system \
     --print-reply=literal \
     --dest=org.freedesktop.login1 \
@@ -228,7 +331,7 @@ function dbus_poweroff() {
 }
 
 # Reboot using dbus logind  (only if user is authorized)
-function dbus_reboot() {
+function dbus_reboot(){
     dbus-send --system \
     --print-reply=literal \
     --dest=org.freedesktop.login1 \
@@ -236,7 +339,7 @@ function dbus_reboot() {
 }
 
 # Suspend using dbus logind (only if user is authorized)
-function dbus_suspend() {
+function dbus_suspend(){
     dbus-send --system \
     --print-reply=literal \
     --dest=org.freedesktop.login1 \
@@ -244,9 +347,9 @@ function dbus_suspend() {
 }
 
 # Control the dunst daemon, if it is running.
-function dunstctl() {
+function dunstctl(){
     [ $(pgrep -lfc dunst) -ge 1 ] || return 0
-    
+
     case ${1:-} in
         stop)
             log "Stopping notifications and locking screen."
@@ -277,7 +380,7 @@ function is_running_X(){
 }
 
 # Is the screen already locked?
-function locked() {
+function locked(){
     local sclist=('i3lock' 'mate-screensaver-dialog' 'cinnamon-screensaver-pam-helper' 'slimlock' 'gnome-screensaver-dialog' 'xscreensaver')
     for p in "${sclist[@]}"; do
         [ $(pgrep -lfc "${p}") -gt 0 ] && return 0;
@@ -296,8 +399,7 @@ function snore(){
 function findNrmIconHelper(){
     [ -z "$1" ] && echo "" && return 1
     [ -z "$2" ] && echo "" && return 1
-    cd "${1}"
-    find . -name "${2}" | grep "svg\|png\|jpg" | cut -c 2- | head -n 1
+    [ -d "$1" ] && cd "${1}" && find . -name "${2}" | grep "svg\|png\|jpg" | cut -c 2- | head -n 1
     return 0
 }
 
@@ -305,8 +407,7 @@ function findNrmIconHelper(){
 function findStatIconHelper(){
     [ -z "$1" ] && echo "" && return 1
     [ -z "$2" ] && echo "" && return 1
-    cd "${1}"
-    find . -name "${2}" | grep "svg\|png\|jpg" | grep -i "status" | cut -c 2- | tail -n 1
+    [ -d "$1" ] && cd "${1}" && find . -name "${2}" | grep "svg\|png\|jpg" | grep -i "status" | cut -c 2- | tail -n 1
     return 0
 }
 
@@ -371,11 +472,11 @@ function FallbackiconPath(){
         echo ""
         return 1
     fi
-    
+
     local sdirs=( $(grep "nherit" "$2/index.theme" | cut -d"=" -f2 | xargs -d ",") )
     local tp=""
     local nip=""
-    
+
     for i in "${sdirs[@]}"; do
         tp=$(findIconThemePath "$i");
         nip=$(FindIconPath "$1" "$tp");
@@ -386,7 +487,7 @@ function FallbackiconPath(){
     return 1
 }
 
-# find icon path 
+# find icon path
 function iconPath(){
     [ -z "$1" ] && echo "" && return 1
     local themePath="$(findIconThemePath "$(findIconThemeName)")"

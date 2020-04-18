@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+# DWMBAR Configuration
+# Written by: Jan Geldmacher
+# Email: geldmacher@protonmail.com
+#set -eu
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+function dwm_battery() {
+    local STATUS=$(cat /sys/class/power_supply/BAT0/status)
+    local CHARGE=$(cat /sys/class/power_supply/BAT0/capacity)
+    if [ "$STATUS" = "Charging" ] || [ $STATUS = "Unknown" ]; then
+        printf "^c#657B83^^d^%s%%" "$CHARGE"
+    else
+        printf "^c#657B83^^d^%s%%" "$CHARGE"
+    fi
+}
+
+function dwm_date() {
+    local DATE=$(date '+%d.%m.%Y')
+    printf "^c#657B83^^d^%s" "$DATE"
+}
+
+function dwm_time() {
+    local TIME=$(date '+%R Uhr')
+    printf "^c#657B83^^d^%s" "$TIME"
+}
+
+function dwm_updates() {
+    local UPD=$(pacman -Qu | wc -l)
+    printf "^c#657B83^^d^%s" "$UPD"
+}
+
+function dwm_volume() {
+    local VOLUME="$(amixer get Master | grep -o '[0-9]*%')"
+    printf "^c#657B83^^d^%s" "$VOLUME"
+}
+
+function dwm_wifi() {
+    local WIFI="$(grep '^\s*w' /proc/net/wireless | awk '{ print int($3 * 100 / 70) }')"
+    if [[ $WIFI -gt 80 ]]; then
+        printf "^c#657B83^^d^%s%%" "$WIFI"
+    elif [[ $WIFI -gt 60 ]]; then
+        printf "^c#657B83^^d^%s%%" "$WIFI"
+    else
+        printf "^c#657B83^^d^%s%%" "$WIFI"
+    fi
+}
+
+if [ -z "$DBUS_SESSION_BUS_ADDRESS" ] && type dbus-launch >/dev/null; then
+    dstart "dbus-launch" "--sh-syntax --exit-with-session" &
+fi
+
+# Daemon status
+if [ $(pgrep -lfc pulseaudio) -eq 0 ] ; then
+    dstart "pulseaudio" "--start" &
+fi
+if [ $(pgrep -lfc mate-settings-daemon) -eq 0 ]; then
+    [ -f "$HOME/.xsettings" ] && dstart xsettingsd -c "$HOME/.xsettings" &
+fi
+if [ $(pgrep -lfc volumeicon) -eq 0 ]; then
+    dstart "volumeicon" &
+fi
+if [ $(pgrep -lfc nm-applet) -eq 0 ]; then
+    dstart "nm-applet" &
+fi
+
+# XDG Update user dirs
+sleep 1 && xdg-user-dirs-gtk-update &
+
+# ==================================
+# Xsettingsd
+# ==================================
+
+# if [ $(command -v picom) ]; then
+#     dstart picom -b --config "$HOME/.config/picom/picom.conf" &
+# else
+#     dstart compton -b --config "$HOME/.config/compton.conf" &
+# fi
+
+sleep 0.3 && dstart "gnome-keyring-daemon" "--start --components=pkcs11,secrets,ssh" &
+
+sleep 0.5 && dstart tint2 &
+
+sleep 0.3 && dstart mylightson 50 &
+
+sleep 0.3 && dstart mywallchng &
+
+sleep 0.3 && dstart touchpadctl -a &
+
+while true; do
+    # Update the dwmbar every minute with system status.
+    xsetroot -name "$(dwm_date) $(dwm_time) $(dwm_wifi) $(dwm_volume) $(dwm_battery)"
+    sleep 1m
+done &
+exec dwm

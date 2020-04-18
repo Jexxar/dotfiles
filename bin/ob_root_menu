@@ -1,27 +1,34 @@
 #!/usr/bin/env bash
+# Emulates Openbox root menu super+Escape/right-click behaviour
+#set -eu
 
 if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
 function main(){
-    if ! is_running_X ; then
-        return 0;
-    fi
-    local DISPLAYH=$(xdpyinfo  | sed 's/^ *dimensions: *[0-9]*x\([0-9]*\).*/\1/;t;d')
-    local PANELH=$(sed -e 's/^panel_size = [0-9]* \([0-9]*\).*/\1/;t;d' ~/.config/tint2/tint2rc)
-    local MOUSEX=$(xdotool getmouselocation 2> /dev/null | sed -e 's/x://' | awk '{print $1}')
-    local MOUSEY=$(($DISPLAYH-$PANELH))
-    local RESTORE=$(xdotool getmouselocation 2> /dev/null | sed -e 's/x://' -e 's/y://' -e 's/ screen:.*$//')
-    local POSITION=$(sed -e 's/^panel_position = \([a-z]*\).*/\1/;t;d' ~/.config/tint2/tint2rc)
-    if [ "$POSITION" = "top" ]; then
-        MOUSEY=$PANELH
+    precheck "tint2"
+    precheck "xdpyinfo"
+    precheck "xdotool"
+    precheck "xset"
+    
+    ! is_running_X && return 0
+    
+    local tint2CF="$HOME/.config/tint2/tint2rc"
+    local displayH=$(xdpyinfo  | sed 's/^ *dimensions: *[0-9]*x\([0-9]*\).*/\1/;t;d')
+    local panelH=$(sed -e 's/^panel_size = [0-9]* \([0-9]*\).*/\1/;t;d' "$tint2CF")
+    local mouseX=$(xdotool getmouselocation 2> /dev/null | sed -e 's/x://' | awk '{print $1}')
+    local mouseY=$(($displayH-$panelH))
+    local mouseP=$(xdotool getmouselocation 2> /dev/null | sed -e 's/x://' -e 's/y://' -e 's/ screen:.*$//')
+    local panelP=$(sed -e 's/^panel_position = \([a-z]*\).*/\1/;t;d' "$tint2CF")
+    if [ "$panelP" == "top" ]; then
+        mouseY=$panelH
     else
-        MOUSEY=$(($DISPLAYH-$PANELH))
+        mouseY=$(($displayH-$panelH))
     fi
-    xdotool mousemove $MOUSEX $MOUSEY
+    xdotool mousemove $mouseX $mouseY
     xdotool key super+Escape
-    xdotool mousemove $RESTORE
+    xdotool mousemove $mouseP
     return 0
 }
 

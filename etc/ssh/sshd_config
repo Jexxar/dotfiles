@@ -5,7 +5,8 @@
 Port 22
 # Use these options to restrict which interfaces/protocols sshd will bind to
 #ListenAddress ::
-#ListenAddress 0.0.0.0
+ListenAddress 17.0.0.100
+ListenAddress 127.0.0.1
 Protocol 2
 # HostKeys for protocol version 2
 HostKey /etc/ssh/ssh_host_rsa_key
@@ -21,14 +22,29 @@ AddressFamily any
 KeyRegenerationInterval 3600
 ServerKeyBits 1024
 
+# Specifies the available KEX (Key Exchange) algorithms.
+KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
+ 
+# Specifies the ciphers allowed
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+ 
+#Specifies the available MAC (message authentication code) algorithms
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
+
 # Logging
 SyslogFacility AUTH
 LogLevel INFO
+# logs user's key fingerprint on login. Needed to have a clear audit track of which key was using to log in.
+# LogLevel VERBOSE 
 
 # Authentication:
 LoginGraceTime 120
+
 #PermitRootLogin prohibit-password
 PermitRootLogin no
+DenyUsers root
+DenyGroups root
+
 StrictModes yes
 
 RSAAuthentication yes
@@ -37,10 +53,13 @@ PubkeyAuthentication yes
 
 # Don't read the user's ~/.rhosts and ~/.shosts files
 IgnoreRhosts yes
+
 # For this to work you will also need host keys in /etc/ssh_known_hosts
 RhostsRSAAuthentication no
+
 # similar for protocol version 2
 HostbasedAuthentication no
+
 # Uncomment if you don't trust ~/.ssh/known_hosts for RhostsRSAAuthentication
 #IgnoreUserKnownHosts yes
 
@@ -64,7 +83,7 @@ ChallengeResponseAuthentication no
 #GSSAPIAuthentication no
 #GSSAPICleanupCredentials yes
 
-X11Forwarding yes
+X11Forwarding no
 X11DisplayOffset 10
 PrintMotd no
 PrintLastLog yes
@@ -73,17 +92,17 @@ TCPKeepAlive yes
 
 AllowTcpForwarding no
 AllowStreamLocalForwarding no
+AllowUsers usuario@17.0.0.0/16
+
 GatewayPorts no
 PermitTunnel no
 
+MaxAuthTries 3
 #MaxStartups 10:30:60
 #Banner /etc/issue.net
 
 # Allow client to pass locale environment variables
 AcceptEnv LANG LC_*
-
-#Subsystem sftp /usr/lib/openssh/sftp-server
-Subsystem sftp internal-sftp
 
 # Set this to 'yes' to enable PAM authentication, account processing,
 # and session processing. If this is enabled, PAM authentication will
@@ -95,3 +114,13 @@ Subsystem sftp internal-sftp
 # PAM authentication, then enable this but set PasswordAuthentication
 # and ChallengeResponseAuthentication to 'no'.
 UsePAM yes
+
+# Log sftp level file access (read/write/etc.) that would not be easily logged otherwise.
+#Subsystem sftp  /usr/lib/sftp-server -d %u -f AUTHPRIV -l INFO
+Subsystem sftp internal-sftp
+#   Match Group sftpgroup
+#   ChrootDirectory /home
+#   ForceCommand internal-sftp
+#   X11Forwarding no
+#   AllowTcpForwarding no
+

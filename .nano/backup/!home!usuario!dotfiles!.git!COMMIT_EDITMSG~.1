@@ -1,0 +1,1285 @@
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# No ramo master
+# Your branch is up to date with 'origin/master'.
+#
+# Mudanças a serem submetidas:
+#	modified:   .config/openbox/autostart
+#	modified:   .config/openbox/scripts/help-pipemenu
+#	new file:   .local/share/applications/start_menu.desktop
+#	deleted:    .local/share/file-manager/actions/229d2cf1-a9fb-4489-b782-9db264d745ab.desktop
+#	deleted:    .local/share/file-manager/actions/56cdc54d-e5eb-43b4-82a9-4d89ace274b0.desktop
+#	new file:   .local/share/file-manager/actions/acl_list.desktop
+#	deleted:    .local/share/file-manager/actions/b2f792d3-84b3-43a0-a480-27724428f6c0.desktop
+#	deleted:    .local/share/file-manager/actions/c1f791d3-84b3-43a0-a480-27724428f6c0.desktop
+#	new file:   .local/share/file-manager/actions/copy_to.desktop
+#	deleted:    .local/share/file-manager/actions/d4f32cf1-a9fb-4489-b782-9db264d745ab.desktop
+#	renamed:    .local/share/file-manager/actions/b1f791d3-84b3-43a0-a480-27724428f6c0.desktop -> .local/share/file-manager/actions/edit_as_text.desktop
+#	deleted:    .local/share/file-manager/actions/f71a9ecb-7284-4be3-994a-801f78a2fdea.desktop
+#	new file:   .local/share/file-manager/actions/mb-empty-trash.desktop
+#	renamed:    .local/share/file-manager/actions/c4f32cf1-a9fb-4489-b782-9db264d745ab.desktop -> .local/share/file-manager/actions/moreinfo.desktop
+#	new file:   .local/share/file-manager/actions/mp4tomp3.desktop
+#	renamed:    .local/share/file-manager/actions/009d2cf1-a9fb-4489-b782-9db264d745ab.desktop -> .local/share/file-manager/actions/open_as_root.desktop
+#	new file:   .local/share/file-manager/actions/trashcan.desktop
+#	deleted:    .local/share/nemo/actions/CopyTo.nemo_action
+#	deleted:    .local/share/nemo/actions/MakeExec.nemo_action
+#	deleted:    .local/share/nemo/actions/TextEdit.nemo_action
+#	deleted:    .local/share/nemo/scripts/LockNormal.sh
+#	deleted:    .local/share/nemo/scripts/MakeExec
+#	deleted:    .local/share/nemo/scripts/MudaDono.sh
+#	deleted:    .local/share/nemo/scripts/UnlockAll.sh
+#	deleted:    .local/share/nemo/scripts/UnlockExec.sh
+#	deleted:    .local/share/nemo/scripts/WhichPKG (DPKG)
+#	modified:   .startpage.html
+#	modified:   bin/add-foxy-bookmarks
+#	modified:   bin/amixerctl
+#	new file:   bin/better-ls
+#	new file:   bin/clean-tmp-files
+#
+# ------------------------ >8 ------------------------
+# Do not modify or remove the line above.
+# Everything below it will be ignored.
+diff --git a/.config/openbox/autostart b/.config/openbox/autostart
+index b634ec8b..82cdc9da 100755
+--- a/.config/openbox/autostart
++++ b/.config/openbox/autostart
+@@ -226,7 +226,7 @@ echo "`date +%F-%H:%M:%S` $HOSTNAME $OB_stts - $OB_rc - $OB_str" >> "$OB_logfile
+ # ==================================
+ # Sound global volume at VOLUME
+ # ==================================
+-OB_VOLUME='115%'
++OB_VOLUME='75%'
+ OB_stts=""
+ for OB_SINK in $(pacmd list-sinks | grep 'index:' | cut -b12-); do
+     OB_str="pactl set-sink-volume index: $OB_SINK $OB_VOLUME"
+diff --git a/.config/openbox/scripts/help-pipemenu b/.config/openbox/scripts/help-pipemenu
+index 1c2c3f4b..2bc5ecdc 100755
+--- a/.config/openbox/scripts/help-pipemenu
++++ b/.config/openbox/scripts/help-pipemenu
+@@ -33,7 +33,7 @@ function main(){
+     menuItem "Crontab" 'xdg-open "http://code.tutsplus.com/tutorials/scheduling-tasks-with-cron-jobs--net-8800"' "text-html"
+     menuItem "E2fsprogs" 'xdg-open "https://en.wikipedia.org/wiki/E2fsprogs"' "text-html"
+     menuItem "Internet Tools" 'xdg-open "http://www.infobyip.com/internettools.php"' "text-html"
+-    menuItem "I Forgot" '~/bin/iforgot.sh' "text-html"
++    menuItem "I Forgot" '~/bin/iforgot' "text-html"
+     # menuItem 'Xwd Screenshot' 'xdg-open "http://blog.tordeu.com/?p=135"' "text-html"
+ 
+     menuSep  "Conky"
+diff --git a/.local/share/applications/start_menu.desktop b/.local/share/applications/start_menu.desktop
+new file mode 100644
+index 00000000..0ed73d8c
+--- /dev/null
++++ b/.local/share/applications/start_menu.desktop
+@@ -0,0 +1,12 @@
++[Desktop Entry]
++Encoding=UTF-8
++Name=Tint2 Openbox Menu
++Comment=Tint2 Openbox Menu
++X-GNOME-FullName=Openbox Menu
++Exec=xdotool key super+Escape
++Terminal=false
++X-MultipleArgs=false
++Type=Application
++Icon=drakmenustyle.svg
++Categories=Menu;
++StartupNotify=true
+diff --git a/.local/share/file-manager/actions/229d2cf1-a9fb-4489-b782-9db264d745ab.desktop b/.local/share/file-manager/actions/229d2cf1-a9fb-4489-b782-9db264d745ab.desktop
+deleted file mode 100644
+index e39bef06..00000000
+--- a/.local/share/file-manager/actions/229d2cf1-a9fb-4489-b782-9db264d745ab.desktop
++++ /dev/null
+@@ -1,37 +0,0 @@
+-[Desktop Entry]
+-Type=Action
+-Name=Slideshow
+-Icon=image-x-generic
+-ToolbarLabel=Slideshow
+-Tooltip=Run Slideshow
+-Tooltip[pt_BR]=Roda um show de slides
+-
+-TargetContext=false
+-Profiles=viewnior_on_folder;viewnior_on_images;gpicview_on_folder;gpicview_on_images;
+-
+-[X-Action-Profile viewnior_on_folder]
+-Name=folder
+-TryExec=viewnior
+-Exec=viewnior --fullscreen --slideshow %f
+-MimeTypes=inode/directory;
+-
+-[X-Action-Profile viewnior_on_images]
+-Name=images
+-TryExec=viewnior
+-Exec=viewnior --fullscreen --slideshow %F
+-MimeTypes=image/*;
+-SelectionCount=>1
+-
+-[X-Action-Profile gpicview_on_folder]
+-Name=gpicview_folder
+-TryExec=gpicview
+-Exec=gpicview --slideshow %f
+-MimeTypes=inode/directory;
+-
+-[X-Action-Profile gpicview_on_images]
+-#Bug: gpicview shows other images after selected
+-Name=gpicview_images
+-TryExec=gpicview
+-Exec=gpicview --slideshow %F
+-MimeTypes=image/*;
+-SelectionCount=>1
+diff --git a/.local/share/file-manager/actions/56cdc54d-e5eb-43b4-82a9-4d89ace274b0.desktop b/.local/share/file-manager/actions/56cdc54d-e5eb-43b4-82a9-4d89ace274b0.desktop
+deleted file mode 100644
+index eebb73d6..00000000
+--- a/.local/share/file-manager/actions/56cdc54d-e5eb-43b4-82a9-4d89ace274b0.desktop
++++ /dev/null
+@@ -1,42 +0,0 @@
+-[Desktop Entry]
+-Type=Action
+-Name=MP4 to MP3
+-Name[pt_BR]=MP4 para MP3
+-ToolbarLabel=MP4 to MP3
+-ToolbarLabel[pt_BR]=MP4 para MP3
+-Tooltip=Convert from MP4 to MP3
+-Tooltip[pt_BR]=Converte de MP4 para MP3
+-Icon=applications-multimedia
+-Profiles=mp4-video;mp4-audio;
+-
+-
+-Name[pt]=MP4 para MP3
+-Name[pt_PT]=MP4 para MP3
+-Tooltip[pt]=Converte de MP4 para MP3
+-Tooltip[pt_PT]=Converte de MP4 para MP3
+-Icon[pt_BR]=applications-multimedia
+-Icon[pt]=applications-multimedia
+-Icon[pt_PT]=applications-multimedia
+-ToolbarLabel[pt]=MP4 para MP3
+-ToolbarLabel[pt_PT]=MP4 para MP3
+-
+-[X-Action-Profile mp4-video]
+-Name=video
+-SelectionCount=1
+-Schemes=file;
+-MimeTypes=video/mp4;video/MPEG-4;video/mpeg4;
+-Exec=/home/usuario/bin/MP4toMP3.sh %F
+-
+-Name[pt_BR]=video
+-Name[pt]=video
+-Name[pt_PT]=video
+-
+-[X-Action-Profile mp4-audio]
+-Name=audio
+-SelectionCount=1
+-Schemes=file;
+-MimeTypes=audio/mp4;
+-Exec=/home/usuario/bin/MP4toMP3.sh %F
+-Name[pt_BR]=audio
+-Name[pt]=audio
+-Name[pt_PT]=audio
+diff --git a/.local/share/file-manager/actions/acl_list.desktop b/.local/share/file-manager/actions/acl_list.desktop
+new file mode 100644
+index 00000000..06ab85ce
+--- /dev/null
++++ b/.local/share/file-manager/actions/acl_list.desktop
+@@ -0,0 +1,18 @@
++[Desktop Entry]
++Type=Action
++Name=ACL List
++Name[pt_BR]=Lista de Acesso
++Tooltip=ACL list manager
++Tooltip[pt_BR]=Gerencia lista de acesso
++ToolbarLabel=Eiciel
++ToolbarLabel[pt_BR]=Lista de Acesso
++Icon=config-users
++TargetLocation=true
++TargetToolbar=true
++Profiles=br_acl_list;
++
++[X-Action-Profile br_acl_list]
++MimeTypes=all/all;
++Schemes=file;
++TryExec=/usr/bin/eiciel
++Exec=/usr/bin/eiciel %F
+diff --git a/.local/share/file-manager/actions/b2f792d3-84b3-43a0-a480-27724428f6c0.desktop b/.local/share/file-manager/actions/b2f792d3-84b3-43a0-a480-27724428f6c0.desktop
+deleted file mode 100644
+index 81b59234..00000000
+--- a/.local/share/file-manager/actions/b2f792d3-84b3-43a0-a480-27724428f6c0.desktop
++++ /dev/null
+@@ -1,16 +0,0 @@
+-[Desktop Entry]
+-Type=Action
+-Name=Delete
+-Name[pt_BR]=Excluir
+-Tooltip=Exclude 
+-Tooltip[pt_BR]=Exclui Permanentemente
+-ToolbarLabel=Delete
+-ToolbarLabel[pt_BR]=Excluir
+-Icon=remove
+-Profiles=profile-zero;
+-TargetToolbar=true
+-
+-[X-Action-Profile profile-zero]
+-MimeTypes=all/all;
+-Schemes=file;
+-Exec=xdotool key "Shift+Delete"
+diff --git a/.local/share/file-manager/actions/c1f791d3-84b3-43a0-a480-27724428f6c0.desktop b/.local/share/file-manager/actions/c1f791d3-84b3-43a0-a480-27724428f6c0.desktop
+deleted file mode 100644
+index 649b9f0c..00000000
+--- a/.local/share/file-manager/actions/c1f791d3-84b3-43a0-a480-27724428f6c0.desktop
++++ /dev/null
+@@ -1,28 +0,0 @@
+-[Desktop Entry]
+-Type=Action
+-Name=MakeExec
+-Name[pt_BR]=Executavel
+-Tooltip[pt_BR]=Torna o aquivo executável
+-Tooltip[pt]=Torna o aquivo executável
+-ToolbarLabel[pt_BR]=MakeExec
+-ToolbarLabel[pt]=MakeExec
+-Icon=preferences-other
+-Profiles=profile-zero;
+-
+-Name[pt_PT]=Executavel
+-Tooltip[pt_PT]=Torna o aquivo executável
+-Icon[pt_BR]=preferences-other
+-Icon[pt]=preferences-other
+-Icon[pt_PT]=preferences-other
+-ToolbarLabel[pt_PT]=MakeExec
+-TargetContext=false
+-
+-[X-Action-Profile profile-zero]
+-Name=MakeExec
+-Name[pt_BR]=Executavel
+-Name[pt]=Executavel
+-MimeTypes=all/all;
+-Schemes=file;
+-TryExec=chmod
+-Exec=/home/usuario/bin/MakeExec %F
+-Name[pt_PT]=Executavel
+diff --git a/.local/share/file-manager/actions/copy_to.desktop b/.local/share/file-manager/actions/copy_to.desktop
+new file mode 100644
+index 00000000..b6a87390
+--- /dev/null
++++ b/.local/share/file-manager/actions/copy_to.desktop
+@@ -0,0 +1,28 @@
++[Desktop Entry]
++Type=Action
++Name=Copy To
++Name[pt_BR]=Copiar Para
++Name[pt]=Copiar Para
++Tooltip[pt_BR]=Copiar Para
++Tooltip[pt]=Copiar Para
++ToolbarLabel=CopyTo
++ToolbarLabel[pt_BR]=Copiar Para
++ToolbarLabel[pt]=Copiar Para
++Icon=gnome-stock-mail-fwd
++TargetLocation=true
++TargetToolbar=true
++Profiles=copy_on_file;copy_on_folder;
++
++[X-Action-Profile copy_on_file]
++Name=file
++MimeTypes=all/allfiles;
++Schemes=file;
++Exec=/home/usuario/bin/copy_to %F
++Basenames=!trash:///;*;
++
++[X-Action-Profile copy_on_folder]
++Name=folder
++MimeTypes=inode/directory;
++Schemes=file;
++Exec=/home/usuario/bin/copy_to %F
++Basenames=!trash:///;*;
+diff --git a/.local/share/file-manager/actions/d4f32cf1-a9fb-4489-b782-9db264d745ab.desktop b/.local/share/file-manager/actions/d4f32cf1-a9fb-4489-b782-9db264d745ab.desktop
+deleted file mode 100644
+index b5ecc60f..00000000
+--- a/.local/share/file-manager/actions/d4f32cf1-a9fb-4489-b782-9db264d745ab.desktop
++++ /dev/null
+@@ -1,31 +0,0 @@
+-[Desktop Entry]
+-Type=Action
+-Name=ACL List
+-Name[pt_BR]=Lista de Acesso
+-Tooltip=ACL list manager
+-Tooltip[pt_BR]=Gerencia lista de acesso
+-ToolbarLabel=Eiciel
+-Icon=config-users
+-Profiles=profile-zero;
+-
+-Name[pt]=Lista de Acesso
+-Name[pt_PT]=Lista de Acesso
+-Tooltip[pt]=Gerencia lista de acesso
+-Tooltip[pt_PT]=Gerencia lista de acesso
+-Icon[pt_BR]=config-users
+-Icon[pt]=config-users
+-Icon[pt_PT]=config-users
+-ToolbarLabel[pt_BR]=Lista de Acesso
+-ToolbarLabel[pt]=Lista de Acesso
+-ToolbarLabel[pt_PT]=Lista de Acesso
+-TargetLocation=true
+-TargetToolbar=true
+-
+-[X-Action-Profile profile-zero]
+-MimeTypes=all/all;
+-Schemes=file;
+-TryExec=/usr/bin/eiciel
+-Exec=/usr/bin/eiciel %F
+-Name[pt_BR]=Perfil padrão
+-Name[pt]=Perfil padrão
+-Name[pt_PT]=Perfil padrão
+diff --git a/.local/share/file-manager/actions/b1f791d3-84b3-43a0-a480-27724428f6c0.desktop b/.local/share/file-manager/actions/edit_as_text.desktop
+similarity index 67%
+rename from .local/share/file-manager/actions/b1f791d3-84b3-43a0-a480-27724428f6c0.desktop
+rename to .local/share/file-manager/actions/edit_as_text.desktop
+index 740b8964..9a871680 100644
+--- a/.local/share/file-manager/actions/b1f791d3-84b3-43a0-a480-27724428f6c0.desktop
++++ b/.local/share/file-manager/actions/edit_as_text.desktop
+@@ -6,11 +6,12 @@ Tooltip=Edit file as text
+ Tooltip[pt_BR]=Edita o arquivo em modo texto
+ ToolbarLabel=As Text
+ ToolbarLabel[pt_BR]=Edita
++TargetLocation=true
++TargetToolbar=true
+ Icon=application-text
+-TargetContext=false
+-Profiles=profile-zero;
++Profiles=br_edit_text;
+ 
+-[X-Action-Profile profile-zero]
+-MimeTypes=all/all;
++[X-Action-Profile br_edit_text]
++MimeTypes=all/allfiles;
+ Schemes=file;
+ Exec=myedit %F
+diff --git a/.local/share/file-manager/actions/f71a9ecb-7284-4be3-994a-801f78a2fdea.desktop b/.local/share/file-manager/actions/f71a9ecb-7284-4be3-994a-801f78a2fdea.desktop
+deleted file mode 100644
+index e132b90d..00000000
+--- a/.local/share/file-manager/actions/f71a9ecb-7284-4be3-994a-801f78a2fdea.desktop
++++ /dev/null
+@@ -1,26 +0,0 @@
+-[Desktop Entry]
+-Type=Action
+-Name=Copy To
+-Name[pt_BR]=Copiar Para
+-Name[pt]=Copiar Para
+-Tooltip[pt_BR]=Copiar Para
+-Tooltip[pt]=Copiar Para
+-ToolbarLabel=CopyTo
+-ToolbarLabel[pt_BR]=Copiar Para
+-ToolbarLabel[pt]=Copiar Para
+-Icon=gnome-stock-mail-fwd
+-Profiles=profile-zero;
+-
+-
+-Icon[pt_BR]=gnome-stock-mail-fwd
+-Icon[pt]=gnome-stock-mail-fwd
+-TargetContext=false
+-
+-[X-Action-Profile profile-zero]
+-Name=Copy To
+-Name[pt_BR]=Copiar Para
+-Name[pt]=Copiar Para
+-MimeTypes=all/all;
+-Schemes=file;
+-Exec=/home/usuario/bin/copy_to.sh %F
+-
+diff --git a/.local/share/file-manager/actions/mb-empty-trash.desktop b/.local/share/file-manager/actions/mb-empty-trash.desktop
+new file mode 100644
+index 00000000..f137297d
+--- /dev/null
++++ b/.local/share/file-manager/actions/mb-empty-trash.desktop
+@@ -0,0 +1,13 @@
++[Desktop Entry]
++Type=Action
++Profiles=on_trash;
++Name=Empty Trash
++TargetLocation=true
++TargetToolbar=true
++Icon=remove
++
++[X-Action-Profile on_trash]
++MimeTypes=inode/directory;
++Basenames=trash:///;
++Exec=/usr/bin/trash-empty
++Name=Empty Trash
+\ No newline at end of file
+diff --git a/.local/share/file-manager/actions/c4f32cf1-a9fb-4489-b782-9db264d745ab.desktop b/.local/share/file-manager/actions/moreinfo.desktop
+similarity index 59%
+rename from .local/share/file-manager/actions/c4f32cf1-a9fb-4489-b782-9db264d745ab.desktop
+rename to .local/share/file-manager/actions/moreinfo.desktop
+index 671d632e..2d1e9e01 100644
+--- a/.local/share/file-manager/actions/c4f32cf1-a9fb-4489-b782-9db264d745ab.desktop
++++ b/.local/share/file-manager/actions/moreinfo.desktop
+@@ -7,48 +7,32 @@ ToolbarLabel=More Info
+ ToolbarLabel[pt_BR]=Mais Info
+ Tooltip=More info on media file
+ Tooltip[pt_BR]=Mais info sobre o arquivo de mídia
++TargetToolbar=true
+ TargetLocation=true
+ Profiles=on_images;on_video;on_audio;
+ 
+-Name[pt]=Mais Info
+-Name[pt_PT]=Mais Info
+-Tooltip[pt]=Mais info sobre o arquivo de mídia
+-Tooltip[pt_PT]=Mais info sobre o arquivo de mídia
+-Icon[pt_BR]=applications-multimedia
+-Icon[pt]=applications-multimedia
+-Icon[pt_PT]=applications-multimedia
+-ToolbarLabel[pt]=Mais Info
+-ToolbarLabel[pt_PT]=Mais Info
+-
+-TargetToolbar=true
+-
+ [X-Action-Profile on_images]
+ Name=image
++Name[pt_BR]=imagem
+ Exec=/home/usuario/bin/moreinfo %F
+ MimeTypes=image/*;
+ SelectionCount=1
+-
+-Name[pt_BR]=image
+-Name[pt]=image
+-Name[pt_PT]=image
++Basenames=!trash:///;*;
+ 
+ [X-Action-Profile on_audio]
+ Name=audio
++Name[pt_BR]=áudio
+ Exec=/home/usuario/bin/moreinfo %F
+ Schemes=file;
+ MimeTypes=audio/*;
+ SelectionCount=1
+-
+-Name[pt_BR]=audio
+-Name[pt]=audio
+-Name[pt_PT]=audio
++Basenames=!trash:///;*;
+ 
+ [X-Action-Profile on_video]
+ Name=video
++Name[pt_BR]=vídeo
+ Exec=/home/usuario/bin/moreinfo %F
+ Schemes=file;
+ MimeTypes=video/*;
+ SelectionCount=1
+-Name[pt_BR]=video
+-Name[pt]=video
+-Name[pt_PT]=video
++Basenames=!trash:///;*;
+diff --git a/.local/share/file-manager/actions/mp4tomp3.desktop b/.local/share/file-manager/actions/mp4tomp3.desktop
+new file mode 100644
+index 00000000..707c5242
+--- /dev/null
++++ b/.local/share/file-manager/actions/mp4tomp3.desktop
+@@ -0,0 +1,30 @@
++[Desktop Entry]
++Type=Action
++Name=MP4 to MP3
++Name[pt_BR]=MP4 para MP3
++ToolbarLabel=MP4 to MP3
++ToolbarLabel[pt_BR]=MP4 para MP3
++Tooltip=Convert from MP4 to MP3
++Tooltip[pt_BR]=Converte de MP4 para MP3
++Icon=applications-multimedia
++TargetLocation=true
++TargetToolbar=true
++Profiles=mp4-video;mp4-audio;
++
++[X-Action-Profile mp4-video]
++Name=video
++Name[pt_BR]=vídeo
++SelectionCount=1
++Schemes=file;
++MimeTypes=video/mp4;video/MPEG-4;video/mpeg4;
++Exec=/home/usuario/bin/MP4toMP3 %F
++Basenames=!trash:///;*;
++
++[X-Action-Profile mp4-audio]
++Name=audio
++Name[pt_BR]=áudio
++SelectionCount=1
++Schemes=file;
++MimeTypes=audio/mp4;
++Exec=/home/usuario/bin/MP4toMP3 %F
++Basenames=!trash:///;*;
+diff --git a/.local/share/file-manager/actions/009d2cf1-a9fb-4489-b782-9db264d745ab.desktop b/.local/share/file-manager/actions/open_as_root.desktop
+similarity index 52%
+rename from .local/share/file-manager/actions/009d2cf1-a9fb-4489-b782-9db264d745ab.desktop
+rename to .local/share/file-manager/actions/open_as_root.desktop
+index 08ff0b5a..a37cd6bd 100644
+--- a/.local/share/file-manager/actions/009d2cf1-a9fb-4489-b782-9db264d745ab.desktop
++++ b/.local/share/file-manager/actions/open_as_root.desktop
+@@ -2,25 +2,33 @@
+ Type=Action
+ Name=Open as Root
+ Name[pt_BR]=Abrir como Root
+-Icon=terminal
+ ToolbarLabel=Open as Root
+ ToolbarLabel[pt_BR]=Abrir como Root
+ Tooltip=Open as root
+ Tooltip[pt_BR]=Abrir como root
+-Profiles=on_folder;on_file;
+-TargetContext=false
++TargetLocation=true
++TargetToolbar=true
++Icon=terminal
++Profiles=root_on_folder;root_on_file;
+ 
+-[X-Action-Profile on_file]
++Name[pt]=Abrir como Root
++Tooltip[pt]=Abrir como root
++Icon[pt_BR]=terminal
++Icon[pt]=terminal
++ToolbarLabel[pt]=Abrir como Root
++
++[X-Action-Profile root_on_file]
+ Name=file
+-MimeTypes=all/all;
++MimeTypes=all/allfiles;
+ SelectionCount=1
+ Schemes=file;
+ Exec=gksu /usr/bin/xdg-open %f
++Basenames=!trash:///;*;
+ 
+-[X-Action-Profile on_folder]
++[X-Action-Profile root_on_folder]
+ Name=folder
+ MimeTypes=inode/directory;
+ SelectionCount=1
+ Schemes=file;
+ Exec=gksu /usr/bin/xdg-open %f
+-
++Basenames=!trash:///;*;
+diff --git a/.local/share/file-manager/actions/trashcan.desktop b/.local/share/file-manager/actions/trashcan.desktop
+new file mode 100644
+index 00000000..7a975800
+--- /dev/null
++++ b/.local/share/file-manager/actions/trashcan.desktop
+@@ -0,0 +1,17 @@
++[Desktop Entry]
++Type=Action
++Name=Trash
++Name[pt_BR]=Lixeira
++Tooltip=Move to Trash 
++Tooltip[pt_BR]=Move para Lixeira
++ToolbarLabel=Trash
++ToolbarLabel[pt_BR]=Lixeira
++Icon=remove
++Profiles=br_trashcan;
++TargetToolbar=true
++
++[X-Action-Profile br_trashcan]
++MimeTypes=all/all;
++Schemes=file;
++Exec=gio trash %F
++Basenames=!trash:///;*;
+diff --git a/.local/share/nemo/actions/CopyTo.nemo_action b/.local/share/nemo/actions/CopyTo.nemo_action
+deleted file mode 100644
+index 841e372f..00000000
+--- a/.local/share/nemo/actions/CopyTo.nemo_action
++++ /dev/null
+@@ -1,13 +0,0 @@
+-[Nemo Action]
+-
+-Active=true
+-Name=Copy To
+-Name[pt_BR]=Copiar Para
+-Comment=Action will be applied to %N
+-Comment[pt_BR]=Ação sera aplicada para %N
+-Exec=/home/usuario/bin/copy_to.sh %F
+-Icon-Name=google-apps-script
+-Selection=any
+-EscapeSpaces=true
+-Quote=double
+-Extensions=any;
+diff --git a/.local/share/nemo/actions/MakeExec.nemo_action b/.local/share/nemo/actions/MakeExec.nemo_action
+deleted file mode 100644
+index 133e9204..00000000
+--- a/.local/share/nemo/actions/MakeExec.nemo_action
++++ /dev/null
+@@ -1,14 +0,0 @@
+-[Nemo Action]
+-
+-Active=true
+-Name=Edit It
+-Name[pt_BR]=Executavel
+-Comment=Action will be applied to %N
+-Comment[pt_BR]=Ação será aplicada a %N
+-Exec==/home/usuario/bin/MakeExec %F
+-Icon-Name=folder
+-Selection=any
+-EscapeSpaces=true
+-Quote=double
+-Extensions=any;
+-
+diff --git a/.local/share/nemo/actions/TextEdit.nemo_action b/.local/share/nemo/actions/TextEdit.nemo_action
+deleted file mode 100644
+index 3547a133..00000000
+--- a/.local/share/nemo/actions/TextEdit.nemo_action
++++ /dev/null
+@@ -1,14 +0,0 @@
+-[Nemo Action]
+-
+-Active=true
+-Name=Edit It
+-Name[pt_BR]=Editar
+-Comment=Action will be applied to %N
+-Comment[pt_BR]=Ação será aplicada a %N
+-Exec=subl %F
+-Icon-Name=sublime-text
+-Selection=any
+-EscapeSpaces=true
+-Quote=double
+-Extensions=any;
+-
+diff --git a/.local/share/nemo/scripts/LockNormal.sh b/.local/share/nemo/scripts/LockNormal.sh
+deleted file mode 100755
+index d4b1b1a6..00000000
+--- a/.local/share/nemo/scripts/LockNormal.sh
++++ /dev/null
+@@ -1,83 +0,0 @@
+-#!/bin/bash
+-if [[ $# -eq 0 ]]; then 
+-    exit 1
+-fi    
+-
+-function do_ask_pw() {
+-    local has_yad=`which yad`
+-    local Psw=""
+-    local p
+-    for p in $(seq 1 3 ); do
+-        sudo -K
+-        if [ -z "$has_yad" ]; then
+-            Psw=`zenity --forms --modal --text="Autenticação Necessária $p / 3" --title="Entre com a senha"  --add-password="Senha:"`
+-        else
+-            Psw=`yad --entry --entry-text="" --hide-text --text="Autenticação Necessária $p / 3" --title="Entre com a senha"  --center --on-top --width=260`
+-        fi
+-        if [[ ${?} -ne 0 || -z ${Psw} ]]; then
+-            Psw=""
+-            echo "$Psw"
+-            return 1
+-        fi;
+-        sudo -vSp '' <<<${Psw}
+-        if [[ ${?} -eq 0 ]]; then
+-            echo "$Psw"
+-            return 0
+-        fi;
+-    done
+-    notify-send -t 5000 -i /usr/share/icons/gnome/32x32/status/error.png "Senha Inválida após 3 tentativas"
+-    return 1
+-}
+-
+-# Set IFS so that it won't consider spaces as entry separators.  
+-# Without this, spaces in file/folder names can make the loop go wacky.
+-IFS=$'\n'
+-
+-if [ -z $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS ]; then
+-    NAUTILUS_SCRIPT_SELECTED_FILE_PATHS=$*
+-fi
+-
+-if [[ $UID -ne 0 ]]; then 
+-    mPsw=`do_ask_pw`
+-    if [[ ${?} -ne 0 || -z ${mPsw} ]]; then
+-        exit 1
+-    fi
+-fi
+-
+-meuusr="${USER}"
+-
+-# Loop through the list (from either Nautilus or the command line)
+-for ARCHIVE_FULLPATH in $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS; do
+-    NEWDIRNAME=${ARCHIVE_FULLPATH%.*}
+-    FILENAME=${ARCHIVE_FULLPATH##*/}
+-    NAME=${ARCHIVE_FULLPATH##*/.*}
+-    
+-    if [[ $UID -ne 0 ]]; then 
+-        echo "$mPsw" | sudo -S chown -R $meuusr:$meuusr "$ARCHIVE_FULLPATH"
+-    else
+-        chown -R $meuusr:$meuusr "$ARCHIVE_FULLPATH"
+-    fi
+-
+-    if [[ $? != 0 ]]; then 
+-        notify-send -t 5000 -i /usr/share/icons/gnome/32x32/status/error.png "Erro chown $? em $ARCHIVE_FULLPATH";
+-        unset mPsw
+-        unset meuusr
+-        exit 1
+-    fi    
+-
+-    if [[ $UID -ne 0 ]]; then 
+-        sudo -K
+-        echo "$mPsw" |  sudo -S chmod -R 644 "$ARCHIVE_FULLPATH"
+-    else
+-        chmod -R 644 "$ARCHIVE_FULLPATH"
+-    fi
+-    
+-    unset mPsw
+-    unset meuusr
+-
+-    if [[ $? != 0 ]]; then 
+-        notify-send -t 5000 -i /usr/share/icons/gnome/32x32/status/error.png "Erro chmod $? em $ARCHIVE_FULLPATH";
+-        exit 1
+-    fi    
+-done
+-
+diff --git a/.local/share/nemo/scripts/MakeExec b/.local/share/nemo/scripts/MakeExec
+deleted file mode 100755
+index 39cf2275..00000000
+--- a/.local/share/nemo/scripts/MakeExec
++++ /dev/null
+@@ -1,29 +0,0 @@
+-#!/bin/bash
+-#xf=$(which execf)
+-if [[ $# -eq 0 ]]; then 
+-    exit 1
+-fi    
+-
+-# chmod +x $NEMO_SCRIPT_SELECTED_FILE_PATHS
+-# Set IFS so that it won't consider spaces as entry separators.  
+-# Without this, spaces in file/folder names can make the loop go wacky.
+-IFS=$'\n'
+-
+-if [ -z $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS ]; then
+-    NAUTILUS_SCRIPT_SELECTED_FILE_PATHS=$*
+-fi
+-
+-# Loop through the list (from either Nautilus or the command line)
+-for ARCHIVE_FULLPATH in $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS; do
+-    NEWDIRNAME=${ARCHIVE_FULLPATH%.*}
+-    FILENAME=${ARCHIVE_FULLPATH##*/}
+-    NAME=${ARCHIVE_FULLPATH##*/.*}
+-
+-    chmod +x "$ARCHIVE_FULLPATH"
+-#    notify-send -t 5000 -i "+x para $ARCHIVE_FULLPATH"
+-
+-#    if [[ $? != 0 ]]; then 
+-#        notify-send -t 5000 -i /usr/share/icons/gnome/32x32/status/error.png "Erro chmod $? em $ARCHIVE_FULLPATH";
+-#        exit 1
+-#    fi    
+-done
+\ No newline at end of file
+diff --git a/.local/share/nemo/scripts/MudaDono.sh b/.local/share/nemo/scripts/MudaDono.sh
+deleted file mode 100755
+index 386b54ee..00000000
+--- a/.local/share/nemo/scripts/MudaDono.sh
++++ /dev/null
+@@ -1,97 +0,0 @@
+-#!/bin/bash
+-if [[ $# -eq 0 ]]; then 
+-    exit 1
+-fi
+-
+-function do_ask_pw() {
+-    local has_yad=`which yad`
+-    local Psw=""
+-    local p
+-    for p in $(seq 1 3 ); do
+-        sudo -K
+-        if [ -z "$has_yad" ]; then
+-            Psw=`zenity --forms --modal --text="Autenticação Necessária $p / 3" --title="Entre com a senha"  --add-password="Senha:"`
+-        else
+-            Psw=`yad --entry --entry-text="" --hide-text --text="Autenticação Necessária $p / 3" --title="Entre com a senha"  --center --on-top --width=260`
+-        fi
+-        if [[ ${?} -ne 0 || -z ${Psw} ]]; then
+-            Psw=""
+-            echo "$Psw"
+-            return 1
+-        fi;
+-        sudo -vSp '' <<<${Psw}
+-        if [[ ${?} -eq 0 ]]; then
+-            echo "$Psw"
+-            return 0
+-        fi;
+-    done
+-    notify-send -t 5000 -i /usr/share/icons/gnome/32x32/status/error.png "Senha Inválida após 3 tentativas"
+-    return 1
+-}
+-
+-function do_ask_usr() {
+-    local has_yad=`which yad`
+-    local usrnm="$USER"
+-    local p
+-    for p in $(seq 1 3 ); do
+-        if [ -z "$has_yad" ]; then
+-            usrnm=`zenity --entry --text="Forneça um Usuário $p / 3" --title="Usuário" --entry-text "$usrnm"`
+-        else
+-            usrnm=`yad --entry --text="Forneça um Usuário $p / 3" --title="Usuário" --entry-text "$usrnm"  --center --on-top --width=260`
+-        fi
+-        if [[ ${?} -ne 0 ]]; then
+-            usrnm=""
+-            echo "$usrnm"
+-            return 1
+-        fi;
+-        if [ ! -z $usrnm ] && test `id -u $usrnm;` ; then
+-            echo "$usrnm"
+-            return 0
+-        fi;
+-    done
+-    notify-send -t 5000 -i /usr/share/icons/gnome/32x32/status/error.png "Usuário Inválido após 3 tentativas"
+-    return 1
+-}
+-
+-# Set IFS so that it won't consider spaces as entry separators.  
+-# Without this, spaces in file/folder names can make the loop go wacky.
+-IFS=$'\n'
+-
+-if [ -z $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS ]; then
+-    NAUTILUS_SCRIPT_SELECTED_FILE_PATHS=$*
+-fi
+-
+-if [[ $UID -ne 0 ]]; then 
+-    mPsw=`do_ask_pw`
+-    if [[ ${?} -ne 0 || -z ${mPsw} ]]; then
+-        exit 1
+-    fi
+-fi
+-
+-meuusr=`do_ask_usr`
+-
+-if [[ ${?} -ne 0 || -z ${meuusr} ]]; then
+-    exit 1
+-fi
+-
+-# Loop through the list (from either Nautilus or the command line)
+-for ARCHIVE_FULLPATH in $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS; do
+-    NEWDIRNAME=${ARCHIVE_FULLPATH%.*}
+-    FILENAME=${ARCHIVE_FULLPATH##*/}
+-    NAME=${ARCHIVE_FULLPATH##*/.*}
+-
+-    if [[ $UID -ne 0 ]]; then 
+-        sudo -Sp '' chown -R $meuusr:$meuusr "$ARCHIVE_FULLPATH" <<<${mPsw}
+-    else
+-       chown -R $meuusr:$meuusr "$ARCHIVE_FULLPATH"
+-    fi
+-    
+-    unset mPsw
+-    unset meuusr
+-
+-    if [[ $? -ne 0 ]]; then 
+-        notify-send -t 5000 -i /usr/share/icons/gnome/32x32/status/error.png "Erro chown $? em $ARCHIVE_FULLPATH";
+-        exit 1
+-    fi    
+-done
+-
+diff --git a/.local/share/nemo/scripts/UnlockAll.sh b/.local/share/nemo/scripts/UnlockAll.sh
+deleted file mode 100755
+index 361fc657..00000000
+--- a/.local/share/nemo/scripts/UnlockAll.sh
++++ /dev/null
+@@ -1,83 +0,0 @@
+-#!/bin/bash
+-
+-if [[ $# -eq 0 ]]; then 
+-    exit 1
+-fi    
+-
+-function do_ask_pw() {
+-    local has_yad=`which yad`
+-    local Psw=""
+-    local p
+-    for p in $(seq 1 3 ); do
+-        sudo -K
+-        if [ -z "$has_yad" ]; then
+-            Psw=`zenity --forms --modal --text="Autenticação Necessária $p / 3" --title="Entre com a senha"  --add-password="Senha:"`
+-        else
+-            Psw=`yad --entry --entry-text="" --hide-text --text="Autenticação Necessária $p / 3" --title="Entre com a senha"  --center --on-top --width=260`
+-        fi
+-        if [[ ${?} -ne 0 || -z ${Psw} ]]; then
+-            Psw=""
+-            echo "$Psw"
+-            return 1
+-        fi;
+-        sudo -vSp '' <<<${Psw}
+-        if [[ ${?} -eq 0 ]]; then
+-            echo "$Psw"
+-            return 0
+-        fi;
+-    done
+-    notify-send -t 5000 -i /usr/share/icons/gnome/32x32/status/error.png "Senha Inválida após 3 tentativas"
+-    return 1
+-}
+-
+-# Set IFS so that it won't consider spaces as entry separators.  
+-# Without this, spaces in file/folder names can make the loop go wacky.
+-IFS=$'\n'
+-
+-if [ -z $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS ]; then
+-    NAUTILUS_SCRIPT_SELECTED_FILE_PATHS=$*
+-fi
+-
+-if [[ $UID -ne 0 ]]; then 
+-    mPsw=`do_ask_pw`
+-    if [[ ${?} -ne 0 || -z ${mPsw} ]]; then
+-        exit 1
+-    fi
+-fi
+-
+-meuusr="${USER}"
+-
+-# Loop through the list (from either Nautilus or the command line)
+-for ARCHIVE_FULLPATH in $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS; do
+-    NEWDIRNAME=${ARCHIVE_FULLPATH%.*}
+-    FILENAME=${ARCHIVE_FULLPATH##*/}
+-    NAME=${ARCHIVE_FULLPATH##*/.*}
+-    
+-    if [[ $UID -ne 0 ]]; then 
+-        echo "$mPsw" | sudo -S chown -R $meuusr:$meuusr "$ARCHIVE_FULLPATH"
+-    else
+-        chown -R $meuusr:$meuusr "$ARCHIVE_FULLPATH"
+-    fi
+-
+-    if [[ $? != 0 ]]; then 
+-        notify-send -t 5000 -i /usr/share/icons/gnome/32x32/status/error.png "Erro chown $? em $ARCHIVE_FULLPATH";
+-        unset mPsw
+-        unset meuusr
+-        exit 1
+-    fi    
+-
+-    if [[ $UID -ne 0 ]]; then 
+-        sudo -K
+-        echo "$mPsw" | sudo -S chmod -R 777 "$ARCHIVE_FULLPATH"
+-    else
+-        chmod -R 777 "$ARCHIVE_FULLPATH"
+-    fi
+-
+-    unset mPsw
+-    unset meuusr
+-    
+-    if [[ $? != 0 ]]; then 
+-        notify-send -t 5000 -i /usr/share/icons/gnome/32x32/status/error.png "Erro chmod $? em $ARCHIVE_FULLPATH";
+-        exit 1
+-    fi    
+-done
+diff --git a/.local/share/nemo/scripts/UnlockExec.sh b/.local/share/nemo/scripts/UnlockExec.sh
+deleted file mode 100755
+index 0db07758..00000000
+--- a/.local/share/nemo/scripts/UnlockExec.sh
++++ /dev/null
+@@ -1,81 +0,0 @@
+-#!/bin/bash
+-if [[ $# -eq 0 ]]; then 
+-    exit 1
+-fi    
+-
+-function do_ask_pw() {
+-    local has_yad=`which yad`
+-    local Psw=""
+-    local p
+-    for p in $(seq 1 3 ); do
+-        sudo -K
+-        if [ -z "$has_yad" ]; then
+-            Psw=`zenity --forms --modal --text="Autenticação Necessária $p / 3" --title="Entre com a senha"  --add-password="Senha:"`
+-        else
+-            Psw=`yad --entry --entry-text="" --hide-text --text="Autenticação Necessária $p / 3" --title="Entre com a senha"  --center --on-top --width=260`
+-        fi
+-        if [[ ${?} -ne 0 || -z ${Psw} ]]; then
+-            Psw=""
+-            echo "$Psw"
+-            return 1
+-        fi;
+-        sudo -vSp '' <<<${Psw}
+-        if [[ ${?} -eq 0 ]]; then
+-            echo "$Psw"
+-            return 0
+-        fi;
+-    done
+-    notify-send -t 5000 -i /usr/share/icons/gnome/32x32/status/error.png "Senha Inválida após 3 tentativas"
+-    return 1
+-}
+-
+-# Set IFS so that it won't consider spaces as entry separators.  
+-# Without this, spaces in file/folder names can make the loop go wacky.
+-IFS=$'\n'
+-
+-if [ -z $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS ]; then
+-    NAUTILUS_SCRIPT_SELECTED_FILE_PATHS=$*
+-fi
+-
+-if [[ $UID -ne 0 ]]; then 
+-    mPsw=`do_ask_pw`
+-    if [[ ${?} -ne 0 || -z ${mPsw} ]]; then
+-        exit 1
+-    fi
+-fi
+-
+-meuusr="${USER}"
+-
+-# Loop through the list (from either Nautilus or the command line)
+-for ARCHIVE_FULLPATH in $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS; do
+-    NEWDIRNAME=${ARCHIVE_FULLPATH%.*}
+-    FILENAME=${ARCHIVE_FULLPATH##*/}
+-    NAME=${ARCHIVE_FULLPATH##*/.*}
+-    
+-if [[ $UID -ne 0 ]]; then 
+-    echo "$mPsw" | sudo -S chown -R $meuusr:$meuusr "$ARCHIVE_FULLPATH"
+-else
+-    chown -R $meuusr:$meuusr "$ARCHIVE_FULLPATH"
+-fi
+-    if [[ $? != 0 ]]; then 
+-        notify-send -t 5000 -i /usr/share/icons/gnome/32x32/status/error.png "Erro chown $? em $ARCHIVE_FULLPATH";
+-        unset mPsw
+-        unset meuusr
+-        exit 1
+-    fi
+-    
+-    if [[ $UID -ne 0 ]]; then 
+-        sudo -K
+-        echo "$mPsw"  | sudo -S chmod -R 755 "$ARCHIVE_FULLPATH"
+-    else
+-        chmod -R 755 "$ARCHIVE_FULLPATH"
+-    fi
+-
+-    unset mPsw
+-    unset meuusr
+-     
+-    if [[ $? != 0 ]]; then 
+-        notify-send -t 5000 -i /usr/share/icons/gnome/32x32/status/error.png "Erro chmod $? em $ARCHIVE_FULLPATH";
+-        exit 1
+-    fi    
+-done
+diff --git a/.local/share/nemo/scripts/WhichPKG (DPKG) b/.local/share/nemo/scripts/WhichPKG (DPKG)
+deleted file mode 100755
+index 99b67a7f..00000000
+--- a/.local/share/nemo/scripts/WhichPKG (DPKG)	
++++ /dev/null
+@@ -1,36 +0,0 @@
+-#!/bin/bash
+-#########################################################
+-#							
+-# This are NScripts v3.6				
+-#							
+-# Licensed under the GNU GENERAL PUBLIC LICENSE 3	
+-#							
+-# Copyright 2007 - 2009 Christopher Bratusek		
+-#							
+-#########################################################
+-if [[ $# -eq 0 ]]; then 
+-    exit 1
+-fi
+-# Set IFS so that it won't consider spaces as entry separators.  
+-# Without this, spaces in file/folder names can make the loop go wacky.
+-IFS=$'\n'
+-
+-if [ -z $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS ]; then
+-    NAUTILUS_SCRIPT_SELECTED_FILE_PATHS=$*
+-fi
+-
+-for i in $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS; do echo $i >> /tmp/temp_whichpkg_list; done
+-
+-#for i in $NAUTILUS_SCRIPT_SELECTED_URIS; do echo $i >> /tmp/temp_whichpkg_list; done
+-
+-for file in $(cat /tmp/temp_whichpkg_list); do
+-    realfile=$(echo $file | sed -e 's/file:\/\///g' -e 's/\%20/\ /g')
+-    pkg=$(grep -w $realfile /var/lib/dpkg/info/*.list | sed -e 's/\.list.*//g' -e 's/.*\/info\///g')
+-    echo -en "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n" >> /tmp/whichpkg.txt
+-    echo "$realfile belongs to the $pkg package." >> /tmp/whichpkg.txt;
+-done
+-
+-zenity --text-info --title "Result" --width=640 --height=480 --filename=/tmp/whichpkg.txt
+-
+-rm -f /tmp/temp_whichpkg_list
+-rm -f /tmp/whichpkg.txt
+diff --git a/.startpage.html b/.startpage.html
+index cb7e2dda..622ef551 100644
+--- a/.startpage.html
++++ b/.startpage.html
+@@ -158,6 +158,7 @@
+                     <a class="bookmark" href="https://translate.google.com/" target="_blank">Translate</a>
+                     <a class="bookmark" href="https://github.com/" target="_blank">Github</a>
+                     <a class="bookmark" href="http://dotshare.it" target="_blank">Dotshare.It</a>
++                    <a class="bookmark" href="http://17.0.0.1/main.html" target="_blank">Router</a>
+                 </div>
+             </div>
+             <div class="bookmark-set">
+diff --git a/bin/add-foxy-bookmarks b/bin/add-foxy-bookmarks
+index 2b398fc4..b525f2db 100755
+--- a/bin/add-foxy-bookmarks
++++ b/bin/add-foxy-bookmarks
+@@ -46,6 +46,11 @@ foxy -a "https://www.lifewire.com/beginners-guide-to-conky-4043352" @Desktop @be
+ foxy -a "http://terminal.sexy/" @Desktop @terminal-sexy
+ foxy -a "http://dotshare.it/" @Desktop @dotshare-it
+ foxy -a "http://www.softpanorama.org/index.shtml" @Desktop @softpanorama
++foxy -a "https://github.com/wizbright/waybox" @Desktop @wizbright @waybox
++foxy -a "https://github.com/galihx11" @Desktop @galihx11
++foxy -a "https://dglava.github.io/en/category/linux.html" @Desktop @dinoglava
++foxy -a "https://github.com/zakariaGatter/Gatter_Linux" @Desktop @zakariaGatter @Gatter-Linux
++
+ 
+ 
+ #Dev
+@@ -82,6 +87,7 @@ foxy -a "https://mywiki.wooledge.org/BashPitfalls" @Dev @BashPitfalls
+ foxy -a "http://mywiki.wooledge.org/BashFAQ/098" @Dev @BashFAQ
+ foxy -a "https://www.shellhacks.com/" @Dev @shellhacks
+ foxy -a "https://stackpointer.io/" @Dev @stackpointer
++foxy -a "https://vitux.com/compiling-your-first-qt-program-in-ubuntu/" @Dev @Qt-Program-compile
+ 
+ 
+ #Distros
+@@ -97,6 +103,7 @@ foxy -a "https://www.bunsenlabs.org/installation.html" @Distros @bunsenlabs
+ foxy -a "https://www.linux.com/learn/intro-to-linux/2018/2/namib-linux-makes-arch-linux-dream-new-users" @Distros @namib-linux
+ foxy -a "https://erikdubois.be/" @Distros @Arcolinux
+ foxy -a "https://forum.archlabslinux.com/" @Distros @Archlabs
++foxy -a "https://voidlinux.org/" @Distros @Voidlinux   
+ 
+ 
+ #TechLinux
+@@ -156,6 +163,15 @@ foxy -a "https://suckless.org/" @TechLinux @suckless
+ foxy -a "https://workaround.org/" @TechLinux @workaround
+ foxy -a "https://geekprudens.net/tec/" @TechLinux @geekprudens
+ foxy -a "http://andrwe.org/" @TechLinux @andrwe
++foxy -a "https://petermolnar.net/avahi-nfs-zfs/" @TechLinux @ZFS-NFS-shares
++foxy -a "https://mycroft-ai.gitbook.io/docs/" @TechLinux @Mycroft-AI   
++foxy -a "https://www.reallinuxuser.com/how-to-setup-your-printer-in-linux-mint/" @TechLinux @Printer-setup
++foxy -a "https://www.linuxbabe.com/" @TechLinux @LinuxBabe @Linux-Sysadmin
++foxy -a "https://checkmk.com/" @TechLinux @checkmk   
++foxy -a "https://lucasfcosta.com/" @TechLinux @Lucas-F-Costa
++foxy -a "https://blog.wizardsoftheweb.pro/rofi-basic-configuration/" @TechLinux @rofi @rofi-Basic
++foxy -a "https://www.mankier.com/1/rofi#Theming" @TechLinux @rofi @ManKier
++foxy -a "https://sysctl-explorer.net/" @TechLinux @Sysctl
+ 
+ 
+ #Others
+@@ -164,18 +180,20 @@ foxy -a "http://www.malware-traffic-analysis.net/" @Others @malware-traffic-anal
+ foxy -a "https://ipleak.net/" @Others @ipleak
+ foxy -a "https://opencv.org/" @Others @opencv
+ foxy -a "https://www.hays.com.br/" @Others @hays
+-foxy -a "https://www.amsmeteors.org/" @Others @amsmeteors
++foxy -a "https://www.amsmeteors.org/" @Others @amsmeteors @meteors
+ foxy -a "https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Tips_and_Tricks" @Others @penSCAD-Tips-and-Tricks
+ foxy -a "https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/The_OpenSCAD_Language#Values_and_Data_Types" @Others @OpenSCAD-Language
+ foxy -a "https://filament2print.com/pt/blog/9_duvidas-temperatura-velocidade-pla-abs.html" @Others @temperatura-velocidade-pla-abs
+ foxy -a "https://www.youmagine.com/designs/bed-leveling-tramming-paralleling-test" @Others @bed-leveling-tramming
+ foxy -a "https://3dlab.com.br/propriedades-dos-materiais-para-impressora-3d/" @Others @materiais-para-impressora-3d
+-foxy -a "http://3dprintingninja.blogspot.com/2014/12/how-to-make-3d-model-from-image.html" @Others @3d-model-from-image
++foxy -a "http://3dprintingninja.blogspot.com/2014/12/how-to-make-3d-mode" @TechLinuxmaers @3d-model-from-image
+ foxy -a "https://imaginariopuro.wordpress.com/2017/12/28/calculo-tornado-facil-1/" @Others @calculo-tornado-facil-1
++foxy -a "https://www.marinestore.com/corrosionx" @Others  @Anti-Corrosion @Corrosion-X
++foxy -a "https://www.thirtythreeforty.net/posts/2019/12/my-business-card-runs-linux/" @Others @My-Business-Card-Runs-Linux
+ 
+ 
+ #Social
+-foxy -a "http://facebook.com/" @Social @
++foxy -a "http://facebook.com/" @Social @Facebook
+ foxy -a "https://fosstodon.org/web/getting-started" @Social @fosstodon
+ foxy -a "https://mewe.com/group/57f8f6f0236a6e490f9a0a81" @Social @mewe
+ foxy -a "https://www.linkedin.com/" @Social @linkedin
+@@ -183,7 +201,11 @@ foxy -a "https://unsplash.com/" @Social @unsplash
+ foxy -a "https://wallhaven.cc/" @Social @wallhaven
+ foxy -a "http://vidadesuporte.com.br/" @Social @vidadesuporte
+ foxy -a "https://naomesmo.com.br/" @Social @naomesmo
+-
++foxy -a "https://plus.diolinux.com.br/" @Social @Diolinux @Diolinux-Plus
++foxy -a "https://scholar.google.com.br/schhp?hl=pt-BR&as_sdt=0 5" @Social @Google-Scholar   
++foxy -a "https://www.cancertutor.com/cancer-diet/" @Social @Cancer @Cancer-Diets
++foxy -a "https://www.ouvirmusica.com.br/blues-pills/high-class-woman/#472143" @Social @Music
++ 
+ 
+ #Reddit
+ foxy -a "https://reddit.com/r/photoshopbattles" @Reddit @photoshopbattles
+diff --git a/bin/amixerctl b/bin/amixerctl
+old mode 100644
+new mode 100755
+diff --git a/bin/better-ls b/bin/better-ls
+new file mode 100755
+index 00000000..2eadc5f9
+--- /dev/null
++++ b/bin/better-ls
+@@ -0,0 +1,86 @@
++#!/usr/bin/env bash
++
++##  +-----------------------------------+-----------------------------------+
++##  |                                                                       |
++##  |                               BETTER LS                               |
++##  |                                                                       |
++##  | Copyright (c) 2018, Andres Gongora <mail@andresgongora.com>.          |
++##  |                                                                       |
++##  | This program is free software: you can redistribute it and/or modify  |
++##  | it under the terms of the GNU General Public License as published by  |
++##  | the Free Software Foundation, either version 3 of the License, or     |
++##  | (at your option) any later version.                                   |
++##  |                                                                       |
++##  | This program is distributed in the hope that it will be useful,       |
++##  | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
++##  | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
++##  | GNU General Public License for more details.                          |
++##  |                                                                       |
++##  | You should have received a copy of the GNU General Public License     |
++##  | along with this program. If not, see <http://www.gnu.org/licenses/>.  |
++##  |                                                                       |
++##  +-----------------------------------------------------------------------+
++
++
++##
++##  BETTER LS (overrides 'ls' command, uses /bin/ls)
++##
++##  Modifications:
++##  - Colorized
++##  - Human readable output
++##  - Long timestamp
++##
++##  If no arguments passed
++##      Show . and ..
++##      Shows directories
++##      Shows visible files
++##      Shows hidden directories
++##      Shows hidden files
++##  else
++##      Runs with argument and sorts directories first
++##
++
++
++##  NOTES
++##  =====
++##
++##  shopt -s extglob
++##      This must be enabled for extglob wildcards to work (eg !).
++##
++##  files=$(/bin/ls -U * 2> /dev/null | wc -l)
++##      Create a list of all files in '*' and count it with wc -l
++##      If zero there is no file. -U disables sorting for
++##      shorter response times.
++##
++##  hidden_files=$(/bin/ls -U -d .!(|.) 2> /dev/null | wc -l)
++##      Same as above, but for '.!(|.)', which includes all
++##      hidden files but ommits '.' and '..' .
++##
++##  .!(|.)
++##      Anything starting with '.' and not followed by '|.',
++##      meaning either nothing or another '.' .
++##
++
++shopt -s extglob
++
++## IF NO ARGUMENTS PASSED -> run better ls version on current folder
++if [ $# -eq 0 ]; then    # If no arguments passed
++    ## IF THE CURRENT FOLDER IS NOT EMPTY -> Display all
++    files=$(/bin/ls -U * 2> /dev/null | wc -l)
++    if [ "$files" != "0" ]; then
++        ## List implied . and .., visible folders, then visible files
++        /bin/ls -d {.,..,*} -lA --color=auto --human-readable --time-style=long-iso --group-directories-first;
++        ## List hidden folders and files (only if they exist)
++        hidden_files=$(/bin/ls -U -d .!(|.) 2> /dev/null | wc -l)
++        if [ "$hidden_files" != "0" ]; then
++            echo ""
++            /bin/ls -d .!(|.) -l --color=auto --hide='..' --human-readable --time-style=long-iso --group-directories-first;
++        fi
++        ## IF THE CURRENT FOLDER IS EMPTY -> List . and ..
++    else
++        /bin/ls -d {.,..,} -lA --color=auto --human-readable --time-style=long-iso --group-directories-first;
++    fi
++    ## IF ARGUMENTS PASSED -> run standard ls but with some tweaks (eg: colors)
++else
++    /bin/ls -la --color=auto --human-readable --time-style=long-iso --group-directories-first "$@";
++fi
+diff --git a/bin/clean-tmp-files b/bin/clean-tmp-files
+new file mode 100755
+index 00000000..d5bad2ec
+--- /dev/null
++++ b/bin/clean-tmp-files
+@@ -0,0 +1,6 @@
++#!/usr/bin/env bash
++set -eu
++
++## Anything in /tmp can be deleted any time, as long as it is not accessed.
++## This script deletes any file (no folders) that has not been accessed for over 10 days.
++sudo find /tmp -type f -atime +10 -delete
+\ No newline at end of file

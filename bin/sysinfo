@@ -1,0 +1,230 @@
+#!/usr/bin/env bash
+#                           ██            ████                
+#                          ░░            ░██░                 
+#   ██████  ██   ██  ██████ ██ ███████  ██████  ██████ 
+#  ██░░░░  ░░██ ██  ██░░░░ ░██░░██░░░██░░░██░  ██░░░░██
+# ░░█████   ░░███  ░░█████ ░██ ░██  ░██  ░██  ░██   ░██
+#  ░░░░░██   ░██    ░░░░░██░██ ░██  ░██  ░██  ░██   ░██
+#  ██████    ██     ██████ ░██ ███  ░██  ░██  ░░██████ 
+# ░░░░░░   ██      ░░░░░░  ░░ ░░░   ░░   ░░    ░░░░░░  
+#        ░░      
+#
+#  ▓▓▓▓▓▓▓▓▓▓
+# ░▓ author ▓ xero <x@xero.nu>
+# ░▓ code   ▓ http://code.xero.nu/dotfiles
+# ░▓ mirror ▓ http://git.io/.files
+# ░▓▓▓▓▓▓▓▓▓▓
+# ░░░░░░░░░░
+#
+#█▓▒░ vars
+#FULL=▓
+#EMPTY=░
+FULL=━
+#EMPTY=━
+#EMPTY=─
+#FULL=┅
+EMPTY=┄
+
+# wth_ico=`~/bin/weather -i`
+
+# Format the days, hours and minutes.
+function strip_date() {
+    case "$1" in
+        "0 "*) printf "%s" "" ;;
+        "1 "*) printf "%s" "${1/s}" ;;
+        *)     printf "%s" "$1" ;;
+    esac
+}
+
+
+#█▓▒░ progress bar
+function draw()
+{
+    local perc=$1
+    local size=$2
+    local inc=$(( perc * size / 100 ))
+    local color=""
+    local out=
+    if [ -z $3 ]; then
+        color="36"
+    else
+        color="$3"
+    fi 
+    for v in `seq 0 $(( size - 1 ))`; do
+        test "$v" -le "$inc"   \
+        && out="${out}\e[1;${color}m${FULL}" \
+        || out="${out}\e[0;${color}m${EMPTY}"
+    done
+    printf "$out"
+}
+
+#█▓▒░ colors
+function color_bar(){
+    #printf "\n"
+    i=0
+    while [ $i -le 6 ]; do
+        printf "\e[$((i+41))m\e[$((i+30))m█▓▒░"
+        i=$(($i+1))
+    done
+    printf "\e[37m█\e[0m▒░\n"
+}
+
+
+#█▓▒░ greets
+function greets() {
+    printf "\e[36m"
+    printf "\e[34m\n"
+    fortune -a
+    printf " \e[0m\n"
+}
+
+#█▓▒░ environment
+function environ() {
+    local name="$USER"
+    local host=$(hostname)
+    local distro=$(awk '{ print $0 }' /etc/issue.net | sed "s/$/ \n/g")
+    local kernel=$(uname -r)
+    local pkgs=$(dpkg --get-selections | grep -cv deinstall$)
+    local bversion="$BASH_VERSION"
+    local resolution="$(xrandr --nograb --current |\
+                                          awk 'match($0,/[0-9]*\.[0-9]*\*/) {printf $1 " @ "\
+                                               substr($0,RSTART,RLENGTH) "Hz "}')"
+    local font=$(gsettings get org.gnome.desktop.interface monospace-font-name | tr -d \')
+    local id=""
+    id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
+    id="${id##* }"
+    local wm="$(xprop -id "0xa0009b" -notype -len 100 -f _NET_WM_NAME 8t | awk '/_NET_WM_NAME/{print $3}' | sed "s/\"//g")"
+    [ -z "$wm" ] && wm="$DESKTOP_SESSION"
+    local ob_them="$(xprop -root | awk '/_OB_THEME\(UTF8_STRING\)/ {print $3}' | tr -d \")"
+
+    local uptm=""
+    local days=""
+    local hours=""
+    local mins=""
+    local seconds=""
+    seconds="$(< /proc/uptime)"
+    seconds="${seconds/.*}"
+    days="$((seconds / 60 / 60 / 24)) d "
+    hours="$((seconds / 60 / 60 % 24)) h "
+    mins="$((seconds / 60 % 60)) m"
+    days="$(strip_date "$days")"
+    hours="$(strip_date "$hours")"
+    mins="$(strip_date "$mins")"
+    uptm="${days:+$days, }${hours:+$hours, }${mins}"
+    uptm="${uptm%', '}"
+    uptm="${uptm:-${seconds} seconds}"
+    local weath=""
+    weath=$(weather)
+
+    printf " \e[1;33m     usuario \e[0m$name@$host\n"
+    printf " \e[1;33m      distro \e[0m$distro\n"
+    printf " \e[1;33m      kernel \e[0m$kernel\n"
+    printf " \e[1;33m      uptime \e[0m$uptm\n"
+    printf " \e[1;33m     pacotes \e[0m$pkgs\n"
+    printf " \e[1;33m          wm \e[0m$wm\n"
+    printf " \e[1;33m        tema \e[0m$ob_them\n"
+    printf " \e[1;33m       fonte \e[0m$font\n"
+    printf " \e[1;33m       shell \e[0m$bversion\n"
+    printf " \e[1;33m   resolução \e[0m$resolution\n"
+    printf " \e[1;33m       clima \e[0m$weath\n"
+    printf " \e[0m\n"
+}
+
+#█▓▒░ cpu
+function cpu_inf() {
+    local cpu=""
+    cpu=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}' | sed "s/\./,/g")
+    c_lvl=$(printf "%.0f" $cpu)
+    printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " cpu" "$c_lvl%" `draw $c_lvl 15` 
+}
+
+#█▓▒░ ram
+function mem_inf() {
+    local ram=""
+    ram=$(free | awk '/Mem:/ {print int($3/$2 * 100.0)}')
+    printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " ram" "$ram%" `draw $ram 15` 
+}
+
+#█▓▒░ battery
+function batt_inf() {
+    local battery=/sys/class/power_supply/BAT1
+    local b_full=$battery/charge_full
+    local b_now=$battery/charge_now
+    local bf=$(awk '{ print $0 }' $b_full)
+    local bn=$(awk '{ print $0 }' $b_now)
+    local charge=$(printf $(( 100 * $bn / $bf )))
+    local color=""
+    
+    case 1 in
+        $(($charge <= 15)))
+            color='31'
+            ;;
+        *)
+            color='36'
+            ;;
+    esac
+    printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" " bat" "$charge%" `draw $charge 15 $color`
+}
+
+#█▓▒░ volume
+function vol_inf(){
+    local vol=""
+    vol=$(amixer get Master | awk '$0~/%/{print $4}' | tr -d '[]%')
+    local color=""
+    if amixer get Master | grep -q '\[off\]'; then
+        color='31'
+    else
+        color='36'
+    fi
+    printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" " vol" "$vol%" `draw $vol 15 $color` 
+}
+
+#█▓▒░ temperature
+function temp_inf() {
+    local temp=""
+    temp=$(sensors | awk '/Core\ 0/ {gsub(/\+/,"",$3); gsub(/\..+/,"",$3)    ; print $3}')
+    local color=""
+    case 1 in
+        $(($temp <= 50)))
+            color='34'
+            ;;
+        $(($temp >= 75)))
+            color='31'
+            ;;
+        *)
+            color='36'
+            ;;
+    esac
+    printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n\n" "temp" "$temp°c " `draw $temp 15 $color`
+
+}
+
+function main() {
+    clear
+    color_bar
+    printf "\e[36m"
+    printf "\e[33m\n"
+    inxi -A -c0
+    inxi -C -c0  
+    inxi -d -c0  
+    inxi -plu -c0
+    inxi -o -c0  
+    inxi -G -c0  
+    inxi -MZ -c0 
+    inxi -NniZ -c0 | grep -v "WAN IP"
+    inxi -G -c0
+    printf "\e[0m\n"
+
+    color_bar
+    greets
+    environ
+    mem_inf
+    vol_inf
+    cpu_inf
+    batt_inf
+    temp_inf
+    #echo -e "\n";
+    tput sgr0
+}
+
+main

@@ -1,155 +1,134 @@
-#! /bin/bash
+#!/usr/bin/env bash
+
 #==============================================
-# Exports (auto generated. Do not edit) - Bash Shell
+# Exports (auto generated. Do not edit)
 #==============================================
+
 function do_exports() {
-export -f is_empty
-export -f is_not_empty
-export -f is_file
-export -f is_dir
-export -f rpass
-export -f sys_load
-export -f aencrypt
-export -f bencrypt
-export -f decrypt
-export -f ncpu
-export -f my_ps
-export -f psgrep
-export -f sub
-export -f gotod
-export -f cpf
-export -f mvf
-export -f mkf
-export -f cmd_exists
-export -f top_cmds
-export -f lsr
-export -f cls
-export -f decode_64
-export -f encode_64
-export -f dwordnet
-export -f dacron
-export -f djargon
-export -f dfoldoc
-export -f dthesaurus
-export -f hora
-export -f dateiso
-export -f dateeur
-export -f yday
-export -f tday
-export -f jsgrep
-export -f cssgrep
-export -f phpgrep
-export -f htmgrep
-export -f wdevgrep
-export -f topcount
-export -f mostcolor
-export -f uptime_since
-export -f free_mem
-export -f total_mem
-export -f avail_mem
-export -f ff
-export -f ff_f
-export -f fd
-export -f fd_f
-export -f jobs_count
-export -f stoppedjobs
-export -f laptop_battery
-export -f mouse_battery
-export -f bak
-export -f space
-export -f core
-export -f graph
-export -f ethcard
-export -f wfcard
-export -f onblack
-export -f onred
-export -f ongreen
-export -f onyellow
-export -f onblue
-export -f onmagenta
-export -f oncyan
-export -f onwhite
-export -f cm_fu_motd
-export -f calc
-export -f digga
-export -f tre
-export -f prepend-path
-export -f duplines
-export -f uniqlines
-export -f hostname2ip
-export -f echo_fail
-export -f echo_pass
-export -f authme
-export -f couch-get
-export -f couch-put
-export -f couch-post
-export -f couch-delete
-export -f decimal2hex
-export -f rsync_bpk
-export -f _dir_count
-export -f _file_count
-export -f _pwd_size
-export -f gitdone
-export -f strip_all
-export -f qh
-export -f qtxt
-export -f _mkdir
-export -f position_cursor
-export -f display_status
-export -f is_installed
-export -f ip_inf
-export -f is_newer
-export -f is_systype
-export -f is_alpha
-export -f is_int
-export -f is_float
-export -f serve_py
-export -f serve_php
-export -f ask_confirmation
-export -f is_confirmed
-export -f get_full_path
-export -f exesudo
-export -f servername_pull
-export -f servername_push
-export -f get_xserver
-export -f set_display
-export -f exists_fileordir
-export -f is_active
-export -f activate
-export -f deactivate
-export -f t
-export -f psproc
-export -f psonly
-export -f gen_lock
-export -f interface_info
-export -f dtranslate
-export -f mostused
-export -f cd
-export -f md_view
-export -f MIT
-export -f at_line_no
-export -f meteo
-export -f escape
-export -f shorten
-export -f matches
-export -f edit
-export -f du_full
-export -f du_short
-export -f hosts_up
-export -f screens_count
-export -f screens_and_jobs_count
-export -f strLen
-export -f strLenC
-export -f strU8DiffLen
-export -f process_name
-export -f cl
-export -f do_extract
-export -f qt_mail
-export -f you_have_mail
-export -f uptime_active
-export -f draw
-export -f color_bar
-export -f greetings
+    export -f activate
+    export -f aencrypt
+    export -f argc
+    export -f astrip
+    export -f at_line_no
+    export -f authme
+    export -f avail_mem
+    export -f bak
+    export -f bencrypt
+    export -f calc
+    export -f cd
+    export -f cls
+    export -f cm_fu_motd
+    export -f color_bar
+    export -f core
+    export -f couch-delete
+    export -f couch-get
+    export -f couch-post
+    export -f couch-put
+    export -f dacron
+    export -f dateeur
+    export -f dateiso
+    export -f deactivate
+    export -f decimal2hex
+    export -f decode_64
+    export -f decrypt
+    export -f dfoldoc
+    export -f digga
+    export -f display_status
+    export -f djargon
+    export -f do_extract
+    export -f draw
+    export -f dthesaurus
+    export -f dtranslate
+    export -f du_full
+    export -f duplines
+    export -f du_short
+    export -f dwordnet
+    export -f echo_fail
+    export -f echo_pass
+    export -f edit
+    export -f encode_64
+    export -f escape
+    export -f ethcard
+    export -f exesudo
+    export -f exists_fileordir
+    export -f fd
+    export -f fd_f
+    export -f ff
+    export -f ff_f
+    export -f free_mem
+    export -f gen_lock
+    export -f get_full_path
+    export -f get_xserver
+    export -f gitdone
+    export -f graph
+    export -f greetings
+    export -f hora
+    export -f hostname2ip
+    export -f hosts_up
+    export -f interface_info
+    export -f ip_inf
+    export -f is_active
+    export -f is_alpha
+    export -f is_float
+    export -f is_installed
+    export -f is_int
+    export -f is_newer
+    export -f is_systype
+    export -f jobs_count
+    export -f laptop_battery
+    export -f lower
+    export -f lsr
+    export -f lstrip
+    export -f meteo
+    export -f MIT
+    export -f mostcolor
+    export -f mostused
+    export -f mouse_battery
+    export -f my_ps
+    export -f ncpu
+    export -f onblack
+    export -f onblue
+    export -f oncyan
+    export -f ongreen
+    export -f onmagenta
+    export -f onred
+    export -f onwhite
+    export -f onyellow
+    export -f position_cursor
+    export -f prepend-path
+    export -f process_name
+    export -f psgrep
+    export -f qh
+    export -f qt_mail
+    export -f qtxt
+    export -f rpass
+    export -f rstrip
+    export -f rsync_bpk
+    export -f screens_and_jobs_count
+    export -f screens_count
+    export -f serve_py
+    export -f servername_pull
+    export -f servername_push
+    export -f set_display
+    export -f space
+    export -f stoppedjobs
+    export -f strLen
+    export -f strLenC
+    export -f strU8DiffLen
+    export -f submit
+    export -f sys_load
+    export -f t
+    export -f tday
+    export -f topcount
+    export -f total_mem
+    export -f tre
+    export -f uniqlines
+    export -f upper
+    export -f uptime_active
+    export -f uptime_since
+    export -f wfcard
+    export -f yday
+    export -f you_have_mail
 }
 
 do_exports

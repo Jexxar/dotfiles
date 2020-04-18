@@ -4,7 +4,7 @@
 #include ".Xresources.d/xcursor"
 
 ! ------------------------------------------------------------------------------
-! Color themes for X 
+! Color themes for X
 ! ------------------------------------------------------------------------------
 #include ".Xresources.d/xcolors/themes/nord"
 
@@ -13,12 +13,12 @@
 ! #include ".Xresources.d/xcolors/themes/gnometerm"
 
 ! ------------------------------------------------------------------------------
-! Fonts settings 
+! Fonts settings
 ! ------------------------------------------------------------------------------
 #include ".Xresources.d/fonts/default.font"
 
 ! ------------------------------------------------------------------------------
-! URxvt 
+! URxvt
 ! ------------------------------------------------------------------------------
 #include ".Xresources.d/urxvt/default.urxvt"
 
@@ -28,7 +28,7 @@
 #include ".Xresources.d/xterm/default.xterm"
 
 ! ------------------------------------------------------------------------------
-! XAutoLock for Lock Screen 
+! XAutoLock for Lock Screen
 ! ------------------------------------------------------------------------------
 #include ".Xresources.d/xautolock"
 

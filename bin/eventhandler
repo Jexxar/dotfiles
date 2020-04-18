@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# This script is intended to be run as an event handler helper.
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+function do_eventX(){
+    case "$1" in
+        a)
+            return 0
+        ;;
+        b)
+            return 0
+        ;;
+        c)
+            return 0
+        ;;
+        d)
+            return 0
+        ;;
+        *)
+            return 0
+        ;;
+    esac
+    return 0
+}
+
+function do_eventnoX(){
+    case "$1" in
+        a)
+            return 0
+        ;;
+        b)
+            return 0
+        ;;
+        c)
+            return 0
+        ;;
+        d)
+            return 0
+        ;;
+        *)
+            return 0
+        ;;
+    esac
+}
+
+function main(){
+    precheck "xset"
+    is_running_X && do_eventX "$@" || do_eventnoX "$@"
+}
+
+main "$@"

@@ -1,20 +1,41 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# This script is intended to be run as a start/app launch helper.
 # there has to be at least one parameter, the name of the file to execute
-if [ $# -lt 1 ]; then
-    echo "Usage: `basename $0` {executable_name parameters}"
-    exit 1
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
 fi
 
-# if the program is not running (being managed by wmctrl), then start it
-if [ -z "$(wmctrl -lx | tr -s ' ' | cut -d' ' -f1-3 | grep -i $1)" ]; then
-    $* </dev/null &>/dev/null &
-    disown $1
-    sleep 0.5
-fi
+function usage(){
+    echo "Usage: `basename $0` <executable_name> <parameters>"
+    echo "    Focus on a running application or launch it with parameters."
+    echo "    Examples:"
+    echo "        - launch firefox"
+    echo "        - launch xterm -e nano"
+}
 
-# now let's make sure all related windows are raised and brought to the front
-for win in $(wmctrl -lx | tr -s ' ' | cut -d' ' -f1-3 | grep -i $1 | cut -d' ' -f1); do
-    wmctrl -i -a $win
-done
+# make sure a related window is raised and brought to the front
+function focus_it(){
+    for win in $(wmctrl -lx | tr -s ' ' | cut -d' ' -f1-3 | grep -i $1 | cut -d' ' -f1); do
+        wmctrl -i -a $win && return 0
+    done
+    return 1
+}
 
-exit 0
+function main(){
+    [ $# -lt 1 ] && usage && exit 1
+    
+    precheck "wmctrl"
+
+    # if the program is not running (being managed by wmctrl), then start it
+    if ! focus_it "$1"; then
+        $* </dev/null &>/dev/null &
+        disown
+        snore 0.5
+    fi
+    focus_it "$1"
+    exit 0
+}
+
+main "$@"
+
