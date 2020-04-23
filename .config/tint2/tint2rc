@@ -80,6 +80,7 @@ panel_background_id = 1
 wm_menu = 1
 panel_dock = 0
 panel_position = bottom center horizontal
+#panel_position = center left vertical
 panel_layer = bottom
 panel_monitor = all
 panel_shrink = 0
@@ -135,8 +136,8 @@ task_active_background_id = 2
 task_urgent_background_id = 4
 task_iconified_background_id = 2
 mouse_left = toggle_iconify
-mouse_middle = none
-mouse_right = none
+mouse_middle = close
+mouse_right = maximize_restore
 mouse_scroll_up = toggle
 mouse_scroll_down = iconify
 
@@ -173,7 +174,7 @@ launcher_item_app = /usr/share/applications/mate-search-tool.desktop
 # Clock
 time1_format = %H:%M
 time2_format = 
-time1_font = Ubuntu bold 10
+time1_font = Ubuntu bold 9
 time1_timezone = 
 time2_timezone = 
 clock_font_color = #ffffff 100

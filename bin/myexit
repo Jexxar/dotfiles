@@ -9,12 +9,12 @@ fi
 function do_exit(){
     # Only works if X is running.
     ! is_running_X && log "X server is not running" && return 0
-    
+
     # Screen must be unlocked first.
     locked && return 0;
-    
+
     dunstctl stop
-    
+
     # Stop this session and daemon running processes.
     stop_it "polkit-gnome-authentication-agent-1"
     stop_it "gnome-keyring-daemon"
@@ -33,15 +33,12 @@ function do_exit(){
     stop_it "tint2"
     stop_it "compton"
     stop_it "picom"
-    
     log "Exiting now..."
-    openbox --exit;
-    
-    killall openbox;
-    
+    [ "$XDG_CURRENT_DESKTOP" == "openbox" ] && openbox --exit;
+    # window manager cleanup
+    stop_it "$XDG_CURRENT_DESKTOP"
     # dbus-launch cleanup
     pkill -u $USER -t `tty | cut -d '/' -f 3,4` dbus-launch
-    
     return 0
 }
 
@@ -67,17 +64,16 @@ function do_test(){
     stop_it "tint2" "debug"
     stop_it "compton" "debug"
     stop_it "picom" "debug"
-
     log "Exiting now..."
-    log "openbox --exit;"
-    log "kilall openbox;"
+    [ "$XDG_CURRENT_DESKTOP" == "openbox" ] && log "openbox --exit;"
+    log "kilall $XDG_CURRENT_DESKTOP;"
     log "pkill -u $USER -t `tty | cut -d '/' -f 3,4` dbus-launch"
-    
     return 0
 }
 
 function main(){
     precheck "xset"
+    precheck "pgrep"
     precheck "pkill"
     
     local cmd=${1:-exit}
@@ -92,6 +88,7 @@ function main(){
         *)
             log "Unrecognized option: $1"
     esac
+    return 0
 }
 
 main "$@"

@@ -78,6 +78,78 @@ function findutil(){
     return 1
 }
 
+# urlencode <string>
+function urlencode(){
+    local old_lc_collate=$LC_COLLATE
+    LC_COLLATE=C
+    
+    local length="${#1}"
+    for (( i = 0; i < length; i++ )); do
+        local c="${1:i:1}"
+        case $c in
+            [a-zA-Z0-9.~_-]) printf "$c" ;;
+            *) printf '%%%02X' "'$c" ;;
+        esac
+    done
+    
+    LC_COLLATE=$old_lc_collate
+}
+
+# Using awk and hexdump
+function url_encode(){
+    local encodedurl="$1";
+    encodedurl=$(echo $encodedurl | hexdump -v -e '1/1 "%02x\t"' -e '1/1 "%_c\n"' | LANG=C awk '
+     $1 == "20"                    { printf("%s",   "+"); next } # space becomes plus
+     $1 ~  /0[adAD]/               {                      next } # strip newlines
+     $2 ~  /^[a-zA-Z0-9.*()\/-]$/  { printf("%s",   $2);  next } # pass through what we can
+                                   { printf("%%%s", $1)        } # take hex value of everything else
+    ')
+    echo -e "$encodedurl"
+}
+
+# raw urlencode for GNU systems only
+function rawurlencode(){
+    local string="${1}"
+    echo -e "$string" | od -An -tx1 | tr ' ' % | xargs printf "%s"
+    #echo -ne "$string" | tr -d '\n' | xxd -plain  | sed 's/\(..\)/%\1/g'
+}
+
+# urldecode <string>
+function urldecode(){
+    local url_encoded="${1//+/ }"
+    printf '%b' "${url_encoded//%/\\x}"
+}
+
+# XML String escape encode
+function esc_enc(){
+    local aux="$*"
+    local daux=""
+    # only escape if string needs it
+    case "$aux" in    # only escape if string needs it
+        *\&*|*\<*|*\>*|*\"*|*\'*)
+            #daux=$( echo "$aux" | sed "s/\&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g;s/\"/\&quot;/g;s/'/\&apos;/g;" | sed 's/\&apos;/\&apos;\&quot;\&apos;\&quot;\&apos;/g;' )
+            daux=$( echo "$aux" | sed "s/\&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g;s/\"/\&quot;/g;s/'/\&apos;/g;" )
+        ;;
+        *) daux=$aux;;
+    esac
+    echo "$daux"
+    return 0
+}
+
+# String escape space
+function esc_space(){
+    local aux="$*"
+    local daux=""
+    daux=$(echo "$aux" | sed "s/ /\\\ /g;")
+    echo "$daux"
+    return 0
+}
+
+# Round with awk
+function awkRound(){
+    awk 'BEGIN{printf "%."'$1'"f\n", "'$2'"}'
+}
+
 # direct it all to /dev/null
 function nullify(){
     "$@" >/dev/null 2>&1
@@ -93,7 +165,7 @@ function is_git_repository(){
     [ "$(git rev-parse &>/dev/null; printf $?)" -eq 0 ] && return 0 || return 1
 }
 
-# Trim spaces from a string
+# Trim all spaces from a string
 # Usage: trim "The Quick Brown Fox "
 function trim(){
     set -f
@@ -106,53 +178,53 @@ function trim(){
 # Usage: trim_quotes "string"
 function trim_quotes(){
     trim="${1//\'}"
-printf "%s\\n" "${trim//\"}"
+    printf "%s\\n" "${trim//\"}"
 }
 
-# Trim all spaces
+# Trim all leading and tailing spaces
 # Usage: trim_string "   example   string    "
 function trim_spaces(){
-: "${1#"${1%%[![:space:]]*}"}"
-: "${_%"${_##*[![:space:]]}"}"
-printf '%s\n' "$_"
+    : "${1#"${1%%[![:space:]]*}"}"
+    : "${_%"${_##*[![:space:]]}"}"
+    printf '%s\n' "$_"
 }
 
 # remove trailing slash (substitute for realpath -s)
 # warning: returns empty if $1 is just /
 function trim_slash(){
-printf "%s" "${1%/}"
+    printf "%s" "${1%/}"
 }
 
 # Trim leading spaces
 # Usage: ltrim "   example   string    "
 function ltrim(){
-: "${1#"${1%%[![:space:]]*}"}"
-printf '%s\n' "$_"
+    : "${1#"${1%%[![:space:]]*}"}"
+    printf '%s\n' "$_"
 }
 
 # Trim tailing spaces
 # Usage: rtrim "  example   string    "
 function rtrim(){
-: "${1%"${1##*[![:space:]]}"}"
-printf '%s\n' "$_"
+    : "${1%"${1##*[![:space:]]}"}"
+    printf '%s\n' "$_"
 }
 
 # Ask for a simple yes/no confirmation
 # Usage: ask_confirmation "Are you ready?"
 function ask_confirmation(){
-printf "\n${_cl_bold}$@${_cl_reset}"
-read -p " (y/n) " -n 1
-printf "\n"
+    printf "\n${_cl_bold}$@${_cl_reset}"
+    read -p " (y/n) " -n 1
+    printf "\n"
 }
 
 # Test whether the result of an 'ask' is a confirmation
 # Usage: is_confirmed
 function is_confirmed(){
-[[ "$REPLY" =~ ^[Yy]$ ]] && return 0 || return 1
+    [[ "$REPLY" =~ ^[Yy]$ ]] && return 0 || return 1
 }
 
 # Usage: say text [delayAfterText]
-function say() {
+function say(){
     fold -s -w 76 <<< "$1" | sed 's/^/  /' # wraps text nicely and adds two leading spaces
     snore "${2-0}"
 }
@@ -229,7 +301,7 @@ function kill_them(){
                     snore 0.1
                 fi
             done
-            [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "kill_them but-me-bash: No process bash + $s_name found"
+            [ "$has" == "n" ] && [ "$shw" == "y" ] && log "kill_them but-me-bash: No process bash + $s_name found"
             return 0
         ;;
         sh-c)
@@ -292,25 +364,29 @@ function auth_user(){
 
 # Check if can hibernate using dbus
 function can_hibernate(){
-    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanHibernate | grep "yes") ] && return 0
+    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanHibernate &>/dev/null | grep "yes") ] && return 0 || true
+    [ $(gdbus call --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 --method org.freedesktop.login1.Manager.CanHibernate | grep "yes") ] && return 0
     return 1
 }
 
 # Check if can poweroff using dbus
 function can_poweroff(){
-    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanPowerOff | grep "yes") ] && return 0
+    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanPowerOff | grep "yes") ] && return 0 || true
+    [ $(gdbus call --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 --method org.freedesktop.login1.Manager.CanPowerOff | grep "yes") ] && return 0
     return 1
 }
 
 # Check if can reboot using dbus
 function can_reboot(){
-    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanReboot | grep "yes") ] && return 0
+    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanReboot | grep "yes") ] && return 0 || true
+    [ $(gdbus call --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 --method org.freedesktop.login1.Manager.CanReboot | grep "yes") ] && return 0
     return 1
 }
 
 # Check if can suspend using dbus
 function can_suspend(){
-    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanSuspend | grep "yes") ] && return 0
+    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanSuspend | grep "yes") ] && return 0 || true
+    [ $(gdbus call --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 --method org.freedesktop.login1.Manager.CanSuspend | grep "yes") ] && return 0
     return 1
 }
 
@@ -348,15 +424,21 @@ function dbus_suspend(){
 
 # Control the dunst daemon, if it is running.
 function dunstctl(){
-    [ $(pgrep -lfc dunst) -ge 1 ] || return 0
-
     case ${1:-} in
+        start)
+            [ $(pgrep -lfc dunst) -ge 1 ] && log "Notifications daemon already running." && return 0
+            log "Starting notifications daemon."
+            dunst &
+            disown
+        ;;
         stop)
-            log "Stopping notifications and locking screen."
+            [ $(pgrep -lfc dunst) -eq 0 ] && log "Notifications daemon not running." && return 0
+            log "Stopping notifications daemon."
             pkill -USR1 --euid "$(id -u)" --exact dunst
         ;;
-        resume)
-            log "...Resuming notifications."
+        restart | resume)
+            [ $(pgrep -lfc dunst) -eq 0 ] && log "Notifications daemon not running." && return 0
+            log "...Resuming notifications daemon."
             pkill -USR2 --euid "$(id -u)" --exact dunst
             dunst &
             disown
@@ -366,17 +448,19 @@ function dunstctl(){
             checkfor "dunst" && return 0 || return 1
         ;;
         *)
-            echo "dunstctl argument required: stop, resume or check"
+            echo "dunstctl argument required: start, stop, resume or check"
+            log "dunstctl argument required: start, stop, resume or check"
             return 1
         ;;
     esac
     return 0
 }
 
-# xset required
-# check for a running X server
+# check for a running X server - xset required
 function is_running_X(){
-    xset q &>/dev/null && return 0 || return 1
+    xset q &>/dev/null && return 0
+    precheck "xset"
+    return 1
 }
 
 # Is the screen already locked?
@@ -390,6 +474,7 @@ function locked(){
 
 # builtin sleep version in bash
 function snore(){
+    [ -z "$1" ] && return 0
     local IFS
     [[ -n "${_snore_fd:-}" ]] || exec {_snore_fd}<> <(:)
     read ${1:+-t "$1"} -u $_snore_fd || :
@@ -432,7 +517,7 @@ function findSVGPath(){
 # find current icon theme name
 function findIconThemeName(){
     local tn=""
-    hash dump_xsettings && tn="$(dump_xsettings | grep "Net\/IconThemeName" | awk '{print $2}' | tr -d '"')"
+    checkfor "dump_xsettings" && tn="$(dump_xsettings | grep "Net\/IconThemeName" | awk '{print $2}' | tr -d '"')"
     [ -z "$tn" ] && tn="$(gsettings get org.mate.interface icon-theme | tr -d "'")"
     [ -z "$tn" ] && tn="$(gsettings get org.gnome.desktop.interface icon-theme | tr -d "'")"
     echo "$tn"
@@ -446,6 +531,8 @@ function findIconThemePath(){
     local tp="/usr/share/icons/$tn"
     [ -d "$tp" ] && echo "$tp" && return 0
     tp="$HOME/.icons/$tn"
+    [ -d "$tp" ] && echo "$tp" && return 0
+    tp="$HOME/.local/share/icons/$tn"
     [ -d "$tp" ] && echo "$tp" && return 0
     echo ""
     return 1
@@ -472,15 +559,11 @@ function FallbackiconPath(){
         echo ""
         return 1
     fi
-
-    local sdirs=( $(grep "nherit" "$2/index.theme" | cut -d"=" -f2 | xargs -d ",") )
     local tp=""
     local nip=""
-
-    for i in "${sdirs[@]}"; do
+    for i in $(grep "nherit" "$2/index.theme" | cut -d"=" -f2 | sed -e 's/,/\n/g'); do
         tp=$(findIconThemePath "$i");
         nip=$(FindIconPath "$1" "$tp");
-        #echo "o i = $i e o tp = $tp e o iconName=$1  e o iconPath = $iconPath"
         [ ! -z "$nip" ] && echo "$nip" && return 0
     done
     echo ""

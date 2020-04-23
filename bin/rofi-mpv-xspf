@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# rofi based mpd control app
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+function usage(){
+    echo "usage"
+}
+
+function main(){
+    [ -z "$1" ] && return 1
+    precheck "rofi"
+    local old_IFS=$IFS
+    local files=""
+    local t=""
+    for f in $(xmltaglst "$1" | grep "file:///" | grep -v "cache" | sed -e 's/file:\/\/\//\//' | awk '{print $2}'); do
+        [ -z "$files" ] && files="$(urldecode "$f")" || files="$(echo "$files";urldecode "$f")"
+        [ -z "$t" ] && t="$(urldecode "${f##*/}")" || t="$(echo "$t";urldecode "${f##*/}")"
+    done
+    local s="$(echo -e "$t" | rofi -location 2 -font "Noto Sans 8" -dmenu -l 20 -line-margin 0 -line-padding 1 -i -p "Select:")"
+    mpv $(echo "$files" | grep "$s")
+}
+
+main "$@"

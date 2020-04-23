@@ -5,14 +5,19 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
+function usage(){
+    echo -e "Usage: $(basename $0) <executable name> <parameters>"
+    echo -e "    Start an application with parameters or stop/start the same (with parameters) if already running.\n"
+}
+
 function main(){
+    [ $# -eq 0 ] && usage && return 1
     precheck "pgrep"
     precheck "pkill"
-    [ $# -eq 0 ] && echo "Usage: $(basename $0) <executable name> <parameters>" && return 1
     local orig_cmd="$1"
-    local validcmd="$(LC_ALL=C type -a $orig_cmd 2> /dev/null | grep -v "alias" | grep -v "keyword" | grep " is " | awk 'NR == 1 {print $1}')"
-    [ -z "$validcmd" ] && echo -e "Invalid command $orig_cmd\nUsage: $(basename $0) <executable name> <parameters>" && return 1
-    local cmd="$(command -v "$orig_cmd")"
+    local at_least="$(LC_ALL=C type -a $orig_cmd 2> /dev/null | grep -v "alias\|keyword" | grep " is " | awk 'NR == 1 {print $1}')"
+    [ -z "$at_least" ] && log "Invalid command $orig_cmd" && echo -e "Invalid command $orig_cmd" && usage && return 1
+    local cmd="$(findutil "$orig_cmd")"
     shift
     kill_them "but-me" "$orig_cmd"
     echo "Starting $cmd $@"
