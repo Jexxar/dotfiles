@@ -34,9 +34,11 @@ function do_exit(){
     stop_it "compton"
     stop_it "picom"
     log "Exiting now..."
-    [ "$XDG_CURRENT_DESKTOP" == "openbox" ] && openbox --exit;
+    
+    [ "$XDG_SESSION_DESKTOP" == "openbox" ] && openbox --exit;
     # window manager cleanup
     stop_it "$XDG_CURRENT_DESKTOP"
+    stop_it "$XDG_SESSION_DESKTOP"
     # dbus-launch cleanup
     pkill -u $USER -t `tty | cut -d '/' -f 3,4` dbus-launch
     return 0

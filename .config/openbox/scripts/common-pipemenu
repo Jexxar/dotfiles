@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+# common functions for pipe menus
+# required awk, bc
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+function menuBegin() {
+    echo "<openbox_pipe_menu>"
+}
+
+function menuEnd() {
+    echo "</openbox_pipe_menu>"
+}
+
+function menuSep() {
+    if [ -z "$1" ]; then
+        echo "<separator />"
+    else
+        echo "<separator label=\"$*\"/>"
+    fi
+}
+
+function menuItem() {
+    if [ ! -z "$3" ]; then
+        echo "<item label=\"$1\" icon=\"$(iconPath "$3")\">  <action name=\"Execute\"><command>$2</command></action> </item>"
+    elif [ ! -z "$2" ]; then
+        echo "<item label=\"$1\"> <action name=\"Execute\"><command>$2</command></action> </item>"
+    else
+        echo "<item label=\"$1\"/>"
+    fi
+}
+
+function subMenuBegin() {
+    if [ ! -z "$3" ]; then
+        echo "<menu id=\"$1\" icon=\"$(iconPath "$3")\" label=\"$2\" >"
+    elif [ ! -z "$2" ]; then
+        echo "<menu id=\"$1\" label=\"$2\">"
+    fi
+}
+
+function subMenuActionExec() {
+    if [ ! -z "$1" ]; then
+        echo "<action name=\"Execute\">"
+        echo "<execute> $1 </execute>"
+        echo "</action>"
+    fi
+}
+
+function subMenuExec() {
+    if [ ! -z "$4" ]; then
+        echo "<menu id=\"$1\" icon=\"$(iconPath "$4")\" label=\"$2\" execute=\"$3\" />"
+    elif [ ! -z "$3" ]; then
+        echo "<menu id=\"$1\" label=\"$2\" execute=\"$3\" />"
+    fi
+}
+
+function subMenuEnd() {
+    echo "</menu>"
+}
+

@@ -21,14 +21,14 @@
 #    dash will be used, as it is much faster.
 
 # Usage: add
-# <menu id="places" label="Places" execute="/path/to/cbpp-places-pipemenu ~/" />
+# <menu id="places" label="Places" execute="/path/to/cb-places-pipemenu ~/" />
 # to your .config/openbox/menu.xml
 
 # or, if you want the "recent files" menu incorporated at the top, use:
-# <menu id="places" label="Places" execute="/path/to/cbpp-places-pipemenu --recent ~/" />
-# make sure you have cbpp-recent-files-pipemenu somewhere, and enter its path below.
+# <menu id="places" label="Places" execute="/path/to/cb-places-pipemenu --recent ~/" />
+# make sure you have cb-recent-pipemenu somewhere, and enter its path below.
 
-COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/pipe-common.sh"
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/common-pipemenu"
 
 if [ -f "$COMMON_FUNCTIONS" ]; then
     . "${COMMON_FUNCTIONS}" 2> /dev/null
@@ -38,7 +38,7 @@ else
 fi
 
 # path to your "recent files" script, if you want to incorporate it:
-recent_script=~/bin/obrecent.sh
+recent_script=~/.config/openbox/scripts/cb-recent-pipemenu
 
 # Command to open folders at "Browse here..." - any file manager
 open_folder_cmd=xdg-open

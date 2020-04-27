@@ -1,106 +1,70 @@
 #!/usr/bin/env bash
-#    recently_opened_menu.sh - a script to parse .recently-used.xbel
-#    and generate openbox pipe menu
-#    Copyright (C) 2010  John Crawley
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#    version 2012/07/01
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/common-pipemenu"
 
-# Usage: add
-# <menu id="recent" label="Recent Files" execute="/path/to/recently_opened_menu.sh" />
-# to your .config/openbox/menu.xml, or use with dash_places_menu.sh (see comments there)
-
-maximum_entries=15 # max. number of entries in menu
-
-#######################################################################
-
-# look for recently-used.xbel
-if [ "$XDG_DATA_HOME" ] && [ -r "${XDG_DATA_HOME}/recently-used.xbel" ]
-then
-    file_path="${XDG_DATA_HOME}/recently-used.xbel"
-elif [ -r "${HOME}/.local/share/recently-used.xbel" ]
-then
-    file_path="${HOME}/.local/share/recently-used.xbel"
-elif [ -r "${HOME}/.recently-used.xbel" ]
-then
-    file_path="${HOME}/.recently-used.xbel"
+if [ -f "$COMMON_FUNCTIONS" ]; then
+    . "${COMMON_FUNCTIONS}" 2> /dev/null
 else
-    echo "$0: cannot find a readable recently-used.xbel file" >&2
-    echo '<openbox_pipe_menu>
-<separator label="No recently-used.xbel file found." />
-</openbox_pipe_menu>'
+    echo $"Error: Failed to locate $COMMON_FUNCTIONS" >&2
     exit 1
 fi
 
-# if argument is --clear, empty .recently-used.xbel
-[ "$1" = '--clear' ] && {
-cat <<':EOF' > "${file_path}"
-<?xml version="1.0" encoding="UTF-8"?>
-<xbel version="1.0"
-      xmlns:bookmark="http://www.freedesktop.org/standards/desktop-bookmarks"
-      xmlns:mime="http://www.freedesktop.org/standards/shared-mime-info"
->
-</xbel>
-:EOF
-exit
+function doMenu() {
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) doMenu_en ;; # Deutsch
+        da_* ) doMenu_en ;; # Danish
+        es_* ) doMenu_en ;; # Española
+        fr_* ) doMenu_en ;; # Français
+        id_* ) doMenu_en ;; # Bahasa Indonesia
+        it_* ) doMenu_en ;; # Italian
+        lv_* ) doMenu_en ;; # Latvian
+        pl_* ) doMenu_en ;; # Polish
+        pt_* ) doMenu_pt ;; # Português
+        ru_* ) doMenu_en ;; # Russian
+        * ) doMenu_en ;; # Default to English
+    esac
 }
 
-maximum_entries=$((maximum_entries+2))
+function doMenu_en() {
+    local f=""
+    local fpath=""
+    menuBegin
 
-pre='    <item label="'
-mid='">
-    <action name="Execute"><command>'
-post='</command></action>
-    </item>'
-cmd='xdg-open'
-
-files=$( tac "${file_path}" |  awk -v MAX="$maximum_entries" -v PR="$pre" -v MI="$mid" -v CM="$cmd" -v PO="$post" 'BEGIN {
-    RS="</bookmark>";
-    FS="<info>";
+    grep "file:///" ~/.local/share/recently-used.xbel | cut -d "\"" -f 2 | tac | while read line; do
+        f=$(echo "$line" | sed 's,.*/,,' | sed 'y/+/ /; s/%/\\x/g')
+        f=$(echo -en "$f")
+        fpath=$(echo "$line" | sed 's/file:\/\///g' | sed 'y/+/ /; s/%/\\x/g')
+        fpath=$(echo -en "$fpath")
+        [ -e "$fpath" ] && menuItem "$f" "xdg-open \"$line\""
+    done;
+    
+    menuSep 
+    menuItem "Clear Recent Documents" "rm ~/.local/share/recently-used.xbel"
+    menuEnd
 }
-(NR == MAX) {exit}
-!/<bookmark/ {next}
-!/href=[\"'\'']file:\/\// {next}
-# $1 is the command, $2 the file path
-{
-    sub(/^.*exec=\"\&apos\;/,"",$1)
-    sub(/\&apos\;.*$/,"",$1)
-    sub(/ *%./,"",$1)
-    sub(/^.*file:\/\//,"",$2)
-    sub(/[\"'\''].*$/,"",$2)
-    gsub(/%22/,"\\&quot;",$2)
-    gsub(/%3C/,"\\&lt;",$2)
-    gsub(/%3E/,"\\&gt;",$2)
-    name=$2
-    sub(/^.*\//,"",name)
-    gsub(/_/,"__",name)
-    gsub(/\&apos;/,"\\&apos;\\&quot;\\&apos;\\&quot;\\&apos;",$2)
-    print (PR name MI CM " '"'"'" $2 "'"'"'" PO)
-}' )
-#    print (PR name MI $1 " '"'"'" $2 "'"'"'" PO)
 
-# use perl to decode urlencoded characters
-files=$(perl -MURI::Escape -e 'print uri_unescape($ARGV[0]);' "$files")
+function doMenu_pt() {
+    local f=""
+    menuBegin
+    
+    #grep "file:///" ~/.local/share/recently-used.xbel | tail -n15 | cut -d "\"" -f 2 | tac | while read line; do
+    #    f=$(echo "$line" | sed 's,.*/,,' | sed 'y/+/ /; s/%/\\x/g')
+    #    f=$(echo -en "$f")
+    #    menuItem "$f" "xdg-open \"$line\""
+    #done;
 
-output='<openbox_pipe_menu>
-'"$files"'
-<separator />
-    <item label="Limpar lista">
-        <action name="Execute">
-            <command>
-            &apos;'"$0"'&apos; --clear
-            </command>
-        </action>
-    </item>
-</openbox_pipe_menu>
-'
-printf '%s' "$output"  # printf because echo sometimes eats backslashes
+    grep "file:///" ~/.local/share/recently-used.xbel | cut -d "\"" -f 2 | tac | while read line; do
+        f=$(echo "$line" | sed 's,.*/,,' | sed 'y/+/ /; s/%/\\x/g')
+        f=$(echo -en "$f")
+        fpath=$(echo "$line" | sed 's/file:\/\///g' | sed 'y/+/ /; s/%/\\x/g')
+        fpath=$(echo -en "$fpath")
+        [ -e "$fpath" ] && menuItem "$f" "xdg-open \"$line\""
+    done;
+    
+    menuSep 
+    menuItem "Limpar lista" "rm ~/.local/share/recently-used.xbel"
+    menuEnd
+}
+
+doMenu
 

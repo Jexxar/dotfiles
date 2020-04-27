@@ -29,14 +29,14 @@ LO_DEBUG=0
 
 # Names of programs which, when running, you wish to delay the screensaver.
 # For example ('ardour2' 'gmpc').
-LO_mandatoryApps=('cura' 'wineserver' 'dbgl' 'openscad' 'dgen' 'lutris' 'playonlinux' 'avidemux' 'synaptic' 'scummvm' 'flare' 'frozen-bubble' '0ad' 'TeamViewer' 'remmina' 'dosbox' 'wine')
+LO_mandatoryApps=('cura' 'wineserver' 'dbgl' 'openscad' 'dgen' 'lutris' 'playonlinux' 'avidemux' 'synaptic' 'scummvm' 'flare' 'frozen-bubble' '0ad' 'TeamViewer' 'remmina' 'dosbox' 'wine' 'wget' 'curl')
 
 # Names of programs which, when running, you wish to delay the screensaver.
 # For example ('ardour2' 'gmpc').
 LO_delayMediaApps=('vlc' 'celluloid' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
 
 # Names of programs which, when using sound server, you wish to delay the screensaver.
-LO_delayWebBasedApps=('chrome' 'firefox' 'opera' 'Iceweasel' 'surf' 'yandex_browser' 'luakit' 'WebKit' 'vivaldi' 'brave' 'chromium' 'epiphany' 'youtube-dl' 'smtube' 'midori' 'min' 'falkon' 'slimjet' 'steam')
+LO_delayWebBasedApps=('firefox' 'chrome' 'vivaldi' 'brave' 'chromium' 'epiphany' 'WebKit' 'opera' 'Iceweasel' 'surf' 'yandex_browser' 'luakit' 'youtube-dl' 'smtube' 'midori' 'min' 'falkon' 'slimjet' 'steam')
 
 # Display outputs to check, display screensaver when they are connected.
 # Run xrandr to show current monitor config.

@@ -1,333 +1,177 @@
-#!/usr/bin/perl
-
-# Copyright (C) 2012-2018 Daniel "Trizen" Șuteu <echo dHJpemVueEBnbWFpbC5jb20K | base64 -d>.
+#!/usr/bin/env bash
+#    cb-places-pipemenu - a places openbox pipe menu
+#    Copyright (C) 2010  John Crawley
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#    Version 2012/09/27-cb
 
-# Program: obbrowser
-# License: GPLv3
-# Date: 29 December 2012
-# Latest edit: 10 February 2018
-# https://github.com/trizen/obbrowser
 
-# Contributors:
-#   Daniel Napora - https://github.com/napcok
-#   Musikermomo   - https://github.com/Musikermomo
+# Ported to #!++ <https://crunchbangplusplus.org>
+# by Ben Young <computermouth@crunchbangplusplus.org>
 
-# Recursively browse the filesystem through Openbox pipe menus (with icons)
+#    NB The shell, not bash, is invoked in the hope that
+#    dash will be used, as it is much faster.
 
-use 5.014;
+# Usage: add
+# <menu id="places" label="Places" execute="/path/to/places-pipemenu ~/" />
+# to your .config/openbox/menu.xml
 
-#use strict;
-#use warnings;
+# or, if you want the "recent files" menu incorporated at the top, use:
+# <menu id="places" label="Places" execute="/path/to/places-pipemenu --recent ~/" />
+# make sure you have recent-pipemenu somewhere, and enter its path below.
 
-my $pkgname = 'obbrowser';
-my $version = 0.09;
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/common-pipemenu"
 
-our $CONFIG;
+if [ -f "$COMMON_FUNCTIONS" ]; then
+    . "${COMMON_FUNCTIONS}" 2> /dev/null
+else
+    echo $"Error: Failed to locate $COMMON_FUNCTIONS" >&2
+    exit 1
+fi
 
-my $home_dir =
-     $ENV{HOME}
-  || $ENV{LOGDIR}
-  || (getpwuid($<))[7]
-  || `echo -n ~`;
+# path to your "recent files" script, if you want to incorporate it:
+recent_script=$HOME/.config/openbox/scripts/recent-pipemenu
+# Command to open folders at "Browse here..." - any file manager
+open_folder_cmd=pcmanfm
+# Default command to open files with - others might be xdg-open, gnome-open, pcmanfm...
+default_open_cmd=xdg-open  # exo-open comes with thunar
+# Text editor of choice
+text_editor=~/bin/myedit
 
-my $config_dir  = "$home_dir/.config/obbrowser";
-my $config_file = "$config_dir/config.pl";
-my $cache_db    = "$config_dir/cache.db";
+# extra dotfiles to display in HOME folder (dotfiles are hidden by default)
+# edit the list (space separated, surrounded by single quotes) or comment this line out, to taste:
+shown_dotfiles='.config .conkyrc .local .cache .bashrc .bash_profile .wmdrawerrc .bash_history'
 
-if (not -d $config_dir) {
-    require File::Path;
-    File::Path::make_path($config_dir)
-      or die "Can't create dir `$config_dir': $!";
+# function to open files with default open command, or alternative command for certain files
+# - add other conditions to choice
+function open_file() {
+    #[ -x "$1" ] && exec "$text_editor" "$1" ;    # comment out this line if you don't want to edit executables instead of executing
+    #[ -x "$1" ] && exec "terminator -e" "$1" ;    # uncomment this and comment out previous line to run executables in terminal instead of editing
+    [ "${1##*.}" = desktop ] && exec "$text_editor" "$1" ;    # comment out this line if you don't want to edit .desktop files instead of executing
+    exec "$default_open_cmd" "$1" ;    # use default open command if above conditions not satisfied
 }
 
-sub print_usage {
-    print <<"USAGE";
-usage: $0 [dir]
-
-1. To use this script with Openbox, insert the following
-   line in ~/.config/openbox/menu.xml:
-
-        <menu id="obbrowser" label="Disk" execute="$0"/>
-
-2. If "obmenu-generator" is used for generating the Openbox menu,
-   insert the following line in ~/.config/obmenu-generator/schema.pl:
-
-        {pipe => ["obbrowser", "Disk", "drive-harddisk"]},
-
-3. For more settings, check out the configuration file:
-
-        $config_file
-
-4. After changing the current icon theme, also delete the cache database
-   that is generated by obbrowser:
-
-        $cache_db
-
-USAGE
-    exit;
+function doMenuRecent() {
+    if [ -x "$recent_script" ]; then
+        "$recent_script"
+    fi
 }
 
-if (@ARGV and $ARGV[0] eq '-h' || $ARGV[0] eq '--help') {
-    print_usage();
+function doMenu() {
+    local wpath="${*:-$HOME}"  
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) doMenu_en $wpath ;; # Deutsch
+        da_* ) doMenu_en $wpath ;; # Danish
+        es_* ) doMenu_en $wpath ;; # Española
+        fr_* ) doMenu_en $wpath ;; # Français
+        id_* ) doMenu_en $wpath ;; # Bahasa Indonesia
+        it_* ) doMenu_en $wpath ;; # Italian
+        lv_* ) doMenu_en $wpath ;; # Latvian
+        pl_* ) doMenu_en $wpath ;; # Polish
+        pt_* ) doMenu_pt $wpath ;; # Português
+        ru_* ) doMenu_en $wpath ;; # Russian
+        * ) doMenu_en $wpath ;; # Default to English
+    esac
 }
 
-my $config_documentation = <<"EOD";
-#!/usr/bin/perl
-
-# $pkgname - configuration file
-# This file is updated automatically.
-# Any additional comment and/or indentation will be lost.
-
-=for comment
-
-|| ICON SETTINGS
-    | with_icons       : A true value will make the script to use icons for files and directories.
-                         This option may be slow, depending on the configuration of your system.
-
-    | mime_ext_only    : A true value will make the script to get the mimetype by extension only.
-                         This will improve the performance, as no content will be read from files.
-
-    | icon_size        : Preferred size for icons. (default: 48)
-    | generic_fallback : Try to shorten icon name at '-' characters before looking at inherited themes. (default: 1)
-
-|| MENU
-    | terminal         : Command to a terminal emulator for opening directories.
-    | file_manager     : Command to a file manager for opening files and directories.
-    | browse_label     : Label for "Browse here..." action.
-    | terminal_label   : Laber for "Terminal here..." action.
-    | with_terminal    : Include the "Terminal here..." menu entry, to open directories in a terminal.
-    | start_path       : Absolute path from which to start to browse the filesystem.
-    | dirs_first       : Order directories before files.
-    | ignore_dotfiles  : Ignore files starting with a dot.
-
-=cut
-
-EOD
-
-my %CONFIG = (
-              file_manager      => 'xdg-open',
-              browse_label      => 'Abrir...',
-              terminal_label    => 'Terminal aqui...',
-              terminal_icon     => 'utilities-terminal',
-              file_manager_icon => 'folder-open',
-              terminal          => 'tilix',
-              with_terminal     => 0,
-              start_path        => $home_dir,
-              dirs_first        => 1,
-              with_icons        => 1,
-              mime_ext_only     => 0,
-              ignore_dotfiles   => 1,
-              icon_size         => 32,
-              generic_fallback  => 1,
-              VERSION           => $version,
-             );
-
-sub dump_configuration {
-    require Data::Dump;
-    open my $config_fh, '>', $config_file
-      or die "Can't open file '${config_file}' for write: $!";
-    my $dumped_config = q{our $CONFIG = } . Data::Dump::dump(\%CONFIG) . "\n";
-    $dumped_config =~ s/\Q$home_dir\E/\$ENV{HOME}/g if ($home_dir eq $ENV{HOME});
-    print $config_fh $config_documentation, $dumped_config;
-    close $config_fh;
+function doMenu_en() {
+    local wpath="$*"  
+    local dpath=""
+    dpath=$(esc_enc $wpath)
+    menuBegin
+    menuSep  "Places"
+    #menuItem "Open ..." "$0 --open $dpath" "inode-directory"
+    menuItem "Open ..." "$0 --open &quot;$dpath&quot;" 
+    menuSep
+    doMenu_files "en" "$wpath"
+    menuEnd
 }
 
-if (not -e $config_file or -z _) {
-    dump_configuration();
+function doMenu_pt() {
+    local wpath="$*"  
+    local dpath=""
+    dpath=$(esc_enc $wpath)
+    menuBegin
+    #menuSep  "$Locais"
+    #menuItem "Abrir ..." "$0 --open $dpath" "inode-directory"
+    menuItem "Abrir ..." "$0 --open &quot;$dpath&quot;"
+    menuSep
+    doMenu_files "pt" "$wpath"
+    menuEnd
 }
 
-require $config_file;    # load the configuration file
-
-my @valid_keys = grep exists $CONFIG{$_}, keys %{$CONFIG};
-@CONFIG{@valid_keys} = @{$CONFIG}{@valid_keys};
-
-if ($CONFIG{VERSION} != $version) {
-    $CONFIG{VERSION} = $version;
-    dump_configuration();
+function doMenu_files() {
+    local old_IFS=$IFS
+    [ -z "$1" ] && return 0
+    shift
+    local llang="$1"
+    local extra_entries=""
+    local directories_menu=""
+    local files_menu=""
+    local shortname=""
+    local dname=""
+    local dpath=""
+    local path=""
+    local sdname=""
+    path="${*:-$HOME}"  # default starting place is ~, otherwise $2
+    path="$(echo "${path}"/ | tr -s '/')"    # ensure one final slash
+    local tmp=$(realpath $path)
+    [ -d "$path" ] || { menuSep  "$0 : $path is not a directory"; return 1; }
+    #[ -d '$tmp' ] || { menuSep  "$0 : $path tmp is not a directory"; return 1; }
+    [ "$path" = "$HOME"/ ] && extra_entries="$shown_dotfiles"
+    IFS=$'\n'
+    lstfile=$(/bin/ls $path -L1h --group-directories-first )
+    dpath=$(esc_enc $path)
+    #for i in "$path"* $extra_entries; do
+    for i in $lstfile; do
+        #[ -e "$i" ] || continue;    # only output code if file exists
+        shortname="${i##*/}";
+        dname=$(esc_enc $shortname);
+        [ -d "$path$shortname" ] && { subMenuExec "${dpath}${dname}" "${dname}" "$0 &quot;$path$dname&quot;"; }
+        if [ -f "$path$shortname" ]; then
+            menuItem "${dname}" "<![CDATA[$0 --open \"${dpath}${dname}\"]]>"; 
+        fi
+    done
+    IFS=$old_IFS
+    #for i in $extra_entries; do
+    #    #[ -e "$i" ] || continue;    # only output code if file exists
+    #    shortname="${i##*/}";
+    #    #echo "$dpath$dname"
+    #    dname=$(esc_enc $shortname);
+    #    [ -d "$path$shortname" ] && { menuItem "${dname}" "$0 --open '${dpath}${dname}'" "inode-directory"; }
+    #    [ -f "$path$shortname" ] && { menuItem "${dname}" "$0 --open '${dpath}${dname}'" "gtk-file"; }
+    #done
 }
 
-{
-    @INC{'warnings.pm', 'warnings/register.pm', 'strict.pm'} = ();
-}
+#######################################################################
+# By default, this script will display directories separately, before files.
+# To change this behaviour, see NOTE1, NOTE2 and NOTE3 below, near end of page.
+#######################################################################
 
-{
-    my %table = (
-                 '&' => 'amp',
-                 '"' => 'quot',
-                 "'" => 'apos',
-                 '<' => 'lt',
-                 '>' => 'gt',
-                );
+case $1 in
+    # if "--open" option is sent as $1, open file ($2) instead of generating menu
+    --open)
+        open_file "$2"
+        # in case exec command fails
+        echo "$0 : failed to open $2" >&2
+        exit;;    
+    # if "--recent" option is sent, incorporate "recent files" menu
+    --recent)
+        doMenuRecent
+        exit;;
+esac
 
-    sub xmlEscape {
-        $_[0] =~ tr/&"'<>// ? $_[0] =~ s/([&"'<>])/&$table{$1};/gr : $_[0];
-    }
-}
+#echo "$1" 
 
-sub escapeQuot {
-    index($_[0], '&quot;') == -1 ? $_[0] : $_[0] =~ s/&quot;/\\&quot;/gr;
-}
+doMenu "$*"
 
-sub mk_dir_elem {
-    qq{<menu id="$_[0]/$_[2]" label="}
-      . ($_[2] =~ s/_/__/gr)
-      . qq{" icon="$_[3]" execute="$_[4] &quot;$_[1]/}
-      . escapeQuot($_[2])
-      . q{&quot;"/>};
-}
-
-sub mk_file_elem {
-    qq{<item label="}
-      . ($_[2] =~ s/_/__/gr)
-      . qq{" icon="$_[3]"><action name="Execute"><execute>$CONFIG{file_manager} &quot;$_[1]/}
-      . escapeQuot($_[2])
-      . q{&quot;</execute></action></item>};
-}
-
-require GDBM_File;
-tie my %cache_db, 'GDBM_File', $cache_db, &GDBM_File::GDBM_WRCREAT, 0640;
-
-sub get_icon_path {
-    my ($name) = @_;
-
-    state $gtk = do {
-        require Gtk2;
-        'Gtk2'->init;
-        'Gtk2';
-    };
-
-    state $theme = do {
-        "${gtk}::IconTheme"->get_default;
-    };
-
-#<<<
-    state $flags = "${gtk}::IconLookupFlags"->new([
-                                                    ($CONFIG{generic_fallback} ? 'generic-fallback' : ()),
-                                                  ]);
-#>>>
-
-    my $icon_info = $theme->lookup_icon($name, $CONFIG{icon_size}, $flags);
-
-    defined($icon_info)
-      ? $icon_info->get_filename
-      : '';
-}
-
-sub check_icon {
-    $cache_db{$_[0]} = get_icon_path($_[0]);
-}
-
-my $path = @ARGV ? shift(@ARGV) : $CONFIG{start_path};
-
-my (%alias, %icons, @dirs, @files);
-
-opendir(my $dir_h, $path)
-  or warn "$0: Can't open dir `$path': $!\n";
-
-foreach my $file (readdir $dir_h) {
-
-    if ($CONFIG{ignore_dotfiles}) {
-        next if substr($file, 0, 1) eq q{.};
-    }
-    else {
-        next if ($file eq q{.} or $file eq q{..});
-    }
-
-    if ($CONFIG{with_icons}) {
-
-        if (-d "$path/$file") {
-            push @dirs, [$file, $icons{'inode-directory'} ||= check_icon('inode-directory')];
-            next;
-        }
-
-        require File::MimeInfo;    # File::MimeInfo::Magic is better, but slower!
-
-        my $mime_type = (
-                         (
-                          $CONFIG{mime_ext_only}
-                          ? File::MimeInfo::globs($file)
-                          : File::MimeInfo::mimetype("$path/$file")
-                         ) // 'unknown'
-                        ) =~ tr|/|-|r;
-
-        $mime_type = $alias{$mime_type} if exists $alias{$mime_type};
-
-        {
-            my $type = $mime_type;
-            while (1) {
-                if ($icons{$type} ||= check_icon($type)) {
-                    $alias{$mime_type} = $type;
-                    $mime_type = $type;
-                    last;
-                }
-                elsif ($icons{"gnome-mime-$type"} ||= check_icon("gnome-mime-$type")) {
-                    $alias{$mime_type} = "gnome-mime-$type";
-                    $mime_type = "gnome-mime-$type";
-                    last;
-                }
-                $type =~ s{.*\K[[:punct:]]\w++$}{} || last;
-            }
-        }
-
-        if (!$icons{$mime_type}) {
-            my $type = $mime_type;
-            while (1) {
-                $type =~ s{^application-x-\K.*?-}{} || last;
-                $icons{$type} ||= check_icon($type);
-                $icons{$type} && do { $alias{$mime_type} = $type; $mime_type = $type; last };
-            }
-        }
-        push @files, [
-            $file, $icons{$mime_type} ||=
-              do { $alias{$mime_type} = 'unknown'; check_icon('unknown') }
-        ];
-    }
-    else {
-        push @{-d "$path/$file" ? \@dirs : \@files}, [$file, ''];
-    }
-
-}
-closedir $dir_h;
-
-my $thisDir            = xmlEscape($path);
-my $qEscapedDir        = escapeQuot($thisDir);
-my $escapedProgramName = xmlEscape($0);
-
-# "Browse here..." and "Terminal here..." entries
-my $generated_menu =
-    qq{<openbox_pipe_menu><item label="$CONFIG{browse_label}"}
-  . ($CONFIG{with_icons} ? (qq{ icon="} . check_icon($CONFIG{file_manager_icon}) . q{"}) : '')
-  . qq{><action name="Execute">}
-  . qq{<execute>$CONFIG{file_manager} &quot;$qEscapedDir&quot;</execute></action></item>}
-  . (
-     $CONFIG{with_terminal}
-     ? (qq{<item label="$CONFIG{terminal_label}"}
-        . ($CONFIG{with_icons} ? (qq{ icon="} . check_icon($CONFIG{terminal_icon}) . q{"}) : '')
-        . qq{><action name="Execute"><execute>$CONFIG{terminal} &quot;$qEscapedDir&quot;</execute></action></item>})
-     : q{}
-    )
-  . q{<separator/>};
-
-my @calls = ([\&mk_file_elem => \@files], [\&mk_dir_elem => \@dirs]);
-
-foreach my $call ($CONFIG{dirs_first} ? reverse(@calls) : @calls) {
-    $generated_menu .= $call->[0]->($thisDir, $qEscapedDir, xmlEscape($_->[0]), $_->[1], $escapedProgramName)
-      for sort { lc $a->[0] cmp lc $b->[0] } @{$call->[1]};
-}
-
-local $| = 1;
-print $generated_menu, "</openbox_pipe_menu>";
-exit;
+exit

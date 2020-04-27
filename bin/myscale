@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#set -eu
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+function main(){
+    local C=$(echo -e "Auto\nDual\nSingle" | rofi -dmenu -i -l 3 -p "ScreenLayout")
+    case "$C" in
+        *Auto)
+            xrandr --output LVDS1 --auto --output HDMI1 --auto
+            xrandr --dpi 96
+        ;;
+        *Dual)
+            xrandr --output LVDS1 --primary --mode 1366x768 --pos 0x0 --rotate normal --output HDMI1 --mode 1920x1080 --pos 1366x0 --rotate normal
+            xrandr --dpi 96
+        ;;
+        *Single)
+            xrandr --output LVDS1 --primary --mode 1366x768 --pos 0x0 --rotate normal --output HDMI1 --off
+            xrandr --dpi 96
+        ;;
+    esac
+    exit 0
+}
+
+main "$@"

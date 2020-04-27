@@ -55,6 +55,7 @@ function do_exports() {
     export -f fd_f
     export -f ff
     export -f ff_f
+    export -f find_wm
     export -f free_mem
     export -f gen_lock
     export -f get_full_path
@@ -107,8 +108,6 @@ function do_exports() {
     export -f screens_and_jobs_count
     export -f screens_count
     export -f serve_py
-    export -f servername_pull
-    export -f servername_push
     export -f set_display
     export -f space
     export -f stoppedjobs
@@ -116,6 +115,8 @@ function do_exports() {
     export -f strLenC
     export -f strU8DiffLen
     export -f submit
+    export -f sv_get
+    export -f sv_put
     export -f sys_load
     export -f t
     export -f tday

@@ -2,8 +2,7 @@
 
 function usage(){
 cat <<HELP
-Manpage-as-PDF Viewer
-http://benalman.com/
+Based on Manpage-as-PDF Viewer @ http://benalman.com/
 
 Usage: $(basename "$0") [section] name
 
@@ -16,37 +15,46 @@ http://benalman.com/about/license/
 HELP
 }
 
+function create_it(){
+    [ -z "$1" ] && return 1
+    local file="$1"
+    shift
+    # Create PDF because it doesn't exist.
+    local psbuff="$(man -t "$@")"
+    if [ $? -eq 0 ]; then
+        echo "${psbuff}" | ps2pdf - "$file" >/dev/null 2>&1
+        [ $? -eq 0 ] && return 0
+    fi
+    return 1
+}
+
+function open_it(){
+    [ -z "$1" ] && return 1
+    xdg-open "$1" &
+    disown
+    exit 0
+}
+
 function main(){
     if [[ "$1" == "-h" || "$1" == "--help" ]]; then
         usage
         exit 0;
     fi
-    
     if [ -z "$1" ]; then
         echo 'What manual page do you want?!'
-        exit
+        usage
+        exit 1
     fi
-    
     # Set cache dir name..
     local cache_dir=$HOME/.cache/manpdf
-    
-    # Figure out what the filename should be.
-    local file="$cache_dir/${2:+$2.}$1.pdf"
-    
-    # Open PDF (if it does exist).
-    [[ -e "$file" ]] && xdg-open "$file" && exit 0
-    
     # Create directory if it doesn't exist.
     [[ -e "$cache_dir" ]] || mkdir -p "$cache_dir"
-    
-    # Create PDF because it doesn't exist.
-    local psbuff="$(man -t "$@")"
-    
-    if [ $? -eq 0 ]; then
-        echo "${psbuff}" | ps2pdf - "$file" >/dev/null 2>&1
-        xdg-open "$file"
-    fi
-    
+    # Figure out what the filename should be.
+    local file="$cache_dir/${2:+$2.}$1.pdf"
+    # Create PDF because if it doesn't exist.
+    [ ! -f "$file" ] && create_it "$file" "$@"
+    # Open PDF (if it does exist).
+    [ -f "$file" ] && open_it "$file"
     exit 0
 }
 

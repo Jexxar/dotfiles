@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+#set -eu
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+function main() {
+    if [ -z "$1" ]; then
+        local p=$(pwd)
+    else
+        local p="$1"
+        [ ! -d "$p" ] && echo "Parameter must be a directory" && exit 1
+    fi
+    local curr="$p"
+    local parent=""
+    local opts=""
+    local f=""
+    local t=""
+    while : ; do
+        t=""
+        f="$(find "$curr" -iname '*.pdf' | sed -r "s/(.+)\/.+/\1/" | sort -u; find "$curr" -iname '*.pdf')"
+        [ -n "$parent" ] && opts="$(echo -e "$parent\n$f")" || opts="$(echo -e "$f")"
+        t="$(echo "$opts" | sort -u | rofi -location 2 -font "Noto Sans 8" -dmenu -l 20 -line-margin 0 -line-padding 1 -i -p "PDF Browser $curr:")"
+        if [ -n "$t" ]; then
+            if [ -d "$t" ]; then
+                curr="$t"
+                parent="$(dirname "$curr")"
+                [ $(echo "$parent" | grep -ic "$p") -eq 0 ] && parent="$p"
+                [ "$parent" == "$curr" ] && parent=""
+            elif [ -f "$t" ]; then
+                xdg-open "$t" &
+                disown
+                exit 0
+            else
+                printf "%s is neither a file nor a directory\n" "$1" >&2
+            fi
+        else
+            break
+        fi
+    done
+    exit 0
+}
+
+main "$@"

@@ -31,7 +31,7 @@ my $lang = "$ENV{LANG}";
 
 # Distro -------------------------------------------------------------------
 sub mk_distro {
-    return `~/bin/distro_info -2`;
+    return `~/bin/distro-info -2`;
 }
 
 if ($lang eq "pt_BR.UTF8") {
@@ -56,7 +56,7 @@ our $SCHEMA = [
     {cat => ['network',     'Rede',     'applications-internet']},
     {cat => ['office',      'Escritório',      'applications-office']},
     {cat => ['other',       'Outros',       'applications-other']},
-    {cat => ['settings',    'Preferências',    'applications-accessories']},
+    {cat => ['settings',    'Preferências',    'preferences-desktop']},
     {cat => ['system',      'Sistema',      'applications-system']},
 
     #                  LABEL          ICON
@@ -107,19 +107,19 @@ our $SCHEMA = [
 
     {sep => undef},
 
-    #{pipe => ["~/.config/openbox/scripts/places-pipemenu", "Locais", "drive-harddisk"]},
-    #{pipe => ['~/.config/openbox/scripts/ob-places.pl', 'Diretórios', 'drive-harddisk']}, 
+    #{pipe => ['~/.config/openbox/scripts/ob-places.pl', 'Locais', 'drive-harddisk']}, 
     #{pipe => ['~/.config/openbox/scripts/cb-places-pipemenu', 'Locais', 'drive-harddisk']}, 
-    {pipe => ['~/.config/openbox/scripts/jb-places-pipemenu', 'Locais', 'drive-harddisk']}, 
+    {pipe => ['~/.config/openbox/scripts/places-pipemenu', 'Locais', 'drive-harddisk']}, 
     {pipe => ['~/.config/openbox/scripts/help-pipemenu', 'Ajuda', 'help']}, 
     {pipe => ['~/.config/openbox/scripts/template-pipemenu', 'Modelos', 'folder-templates-symbolic']},
     {pipe => ['~/.config/openbox/scripts/inxi-pipemenu', 'Inxi Info', 'dialog-information-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/storage-pipemenu', 'StorageInfo', 'dialog-information-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/sysinfo-pipemnu', 'SysInfo', 'dialog-information-symbolic']}, 
-    #{pipe => ['~/.config/openbox/scripts/recent-pipemenu', 'Recentes', 'view-wrapped-symbolic']}, 
-    {pipe => ['~/.config/openbox/scripts/recent2-pipemenu', 'Recentes', 'view-wrapped-symbolic']}, 
+    #{pipe => ['~/.config/openbox/scripts/cb-recent-pipemenu', 'Recentes', 'view-wrapped-symbolic']}, 
+    {pipe => ['~/.config/openbox/scripts/recent-pipemenu', 'Recentes', 'view-wrapped-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/mpc-pipemenu', 'MPC', 'multimedia']}, 
     {pipe => ['~/.config/openbox/scripts/audacious-pipemenu', 'Audacious', 'multimedia']}, 
+    {pipe => ['~/.config/openbox/scripts/virtualbox-pipemenu', 'Virtualbox', 'virtualbox']}, 
     # 
     
     # {sep => undef},
@@ -160,7 +160,7 @@ our $SCHEMA = [
     {cat => ['network',     'Network',     'applications-internet']},
     {cat => ['office',      'Office',      'applications-office']},
     {cat => ['other',       'Others',      'applications-other']},
-    {cat => ['settings',    'Preferences', 'applications-accessories']},
+    {cat => ['settings',    'Preferences', 'preferences-desktop']},
     {cat => ['system',      'System',      'applications-system']},
 
     #                  LABEL          ICON
@@ -211,18 +211,19 @@ our $SCHEMA = [
 
     {sep => undef},
 
-    #{pipe => ["~/.config/openbox/scripts/places-pipemenu", "Locais", "drive-harddisk"]},
-    #{pipe => ['~/.config/openbox/scripts/ob-places.pl', 'Diretórios', 'drive-harddisk']}, 
-    #{pipe => ['~/.config/openbox/scripts/cb-places-pipemenu', 'Locais', 'drive-harddisk']}, 
-    {pipe => ['~/.config/openbox/scripts/jb-places-pipemenu', 'Locais', 'drive-harddisk']}, 
+    #{pipe => ['~/.config/openbox/scripts/ob-places.pl', 'Places', 'drive-harddisk']}, 
+    #{pipe => ['~/.config/openbox/scripts/cb-places-pipemenu', 'Places', 'drive-harddisk']}, 
+    {pipe => ['~/.config/openbox/scripts/places-pipemenu', 'Places', 'drive-harddisk']}, 
     {pipe => ['~/.config/openbox/scripts/help-pipemenu', 'Help', 'help']}, 
     {pipe => ['~/.config/openbox/scripts/template-pipemenu', 'Templates', 'folder-templates-symbolic']},
     {pipe => ['~/.config/openbox/scripts/inxi-pipemenu', 'Inxi Info', 'dialog-information-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/storage-pipemenu', 'StorageInfo', 'dialog-information-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/sysinfo-pipemnu', 'SysInfo', 'dialog-information-symbolic']}, 
     {pipe => ['~/.config/openbox/scripts/recent-pipemenu', 'Recent', 'view-wrapped-symbolic']}, 
-    #{pipe => ['~/.config/openbox/scripts/recent2-pipemenu', 'Recent', 'view-wrapped-symbolic']}, 
+    #{pipe => ['~/.config/openbox/scripts/cb-recent-pipemenu', 'Recent', 'view-wrapped-symbolic']}, 
+    #{pipe => ['~/.config/openbox/scripts/mpc-pipemenu', 'MPC', 'multimedia']}, 
     {pipe => ['~/.config/openbox/scripts/audacious-pipemenu', 'Audacious', 'multimedia']}, 
+    {pipe => ['~/.config/openbox/scripts/virtualbox-pipemenu', 'Virtualbox', 'virtualbox']}, 
     # 
     
     # {sep => undef},

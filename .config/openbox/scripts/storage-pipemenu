@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # storage-pipemenu
 
-COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/pipe-common.sh"
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/common-pipemenu"
 
 if [ -f "$COMMON_FUNCTIONS" ]; then
     . "${COMMON_FUNCTIONS}" 2> /dev/null

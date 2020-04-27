@@ -98,9 +98,9 @@ function onwhite(){ sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(
 function cm_fu_motd(){ curl http://www.commandlinefu.com/commands/random/plaintext -o "$HOME"/.motd -s -L && cat "$HOME"/.motd ; }
 # Command line Calculations
 function calc(){ printf '%s\n' "scale=3;${*//[ ]}" | bc -l ; }
-# Run `dig` and display the most useful info
+# Run dig and display the most useful info
 function digga(){ dig +nocmd  any +multiline +noall +answer "$1"; }
-# tre is a shorthand for tree with hidden files and color enabled, ignoring `.git` directory, listing directories first.
+# tre is a shorthand for tree with hidden files and color enabled, ignoring .git directory, listing directories first.
 function tre(){ tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | most -N; }
 # Pre append a path to the PATH
 function prepend-path(){ [ -d "$1" ] && PATH="$1:$PATH" ; }
@@ -192,7 +192,7 @@ function qtxt(){
 #==============================================
 function position_cursor(){
     local RES_COL
-    let RES_COL=`tput cols`-12
+    let RES_COL=$(tput cols)-12
     tput cuf $RES_COL
     tput cuu1
 }
@@ -250,15 +250,15 @@ function display_status(){
 #==============================================
 function is_installed(){
     [ $# -eq 0 ] && echo "Usage: is_installed package_name" && return 1;
-    local AFcmd=$(command -v apt-file 2>/dev/null)
-    if [ -z "$AFcmd" ]; then
-        local PACKAGE="$@"
-    else
-        local BINARY="$(realpath $(which $@) 2>/dev/null)"
+    command -v apt-file &>/dev/null
+    if [ $? -eq 0 ]; then
+        local BINARY="$(realpath $(command -v $@) 2>/dev/null)"
         [ -z "$BINARY" ] && BINARY="$@"
         local PACKAGE="$(apt-file search $BINARY | grep -E ":.*[^-.a-zA-Z0-9]${BINARY}$" | awk -F ":" '{print $1}' | sort -u | head -n 1 )"
+    else
+        local PACKAGE="$@"
     fi
-    dpkg -s "$PACKAGE" &> /dev/null
+    dpkg -s "$PACKAGE" &>/dev/null
     [ $? -eq 0 ] && echo_pass "Package $PACKAGE is installed!" && return 0
     echo_fail "Package $PACKAGE is NOT installed!"
     return 1
@@ -273,13 +273,23 @@ function is_installed(){
 # @param {String} $1  URL to inspect
 #==============================================
 function ip_inf(){
-    if grep -P "(([1-9]\d{0,2})\.){3}(?2)" <<< "$1"; then
+    [ -z "$1" ] && echo " " && return 1
+    if grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" <<< "$1"; then
         curl ipinfo.io/"$1"
+        return 0
     else
-        local ipawk=($(host "$1" | awk '/address/ { print $NF }'));
-        curl ipinfo.io/"${ipawk[0]}"
+        host "$1" > /dev/null
+        if [ $? -eq 0 ]; then
+            local ipawk=($(host "$1" | awk '/address/ { print $NF }'));
+            curl ipinfo.io/"${ipawk[0]}"
+            return 0
+        else
+            echo "Host: $1 not found."
+            return 1
+        fi
     fi
     echo " "
+    return 1
 }
 
 #==============================================
@@ -295,7 +305,7 @@ function is_newer(){
     [ $# -ne 2 ] && echo "Usage: is_newer file1 file2" && return 1
     # Some file not found
     [ ! -f "$1" -o ! -f "$2" ] && return 1
-    [ -n "`find "$1" -newer "$2" -print`" ] && return 0 || return 1
+    [ -n "$(find "$1" -newer "$2" -print)" ] && return 0 || return 1
 }
 
 #==============================================
@@ -416,7 +426,7 @@ function is_float(){
 #==============================================
 function serve_py(){
     local port="${1:-8000}";
-    # Set the default Content-Type to `text/plain` instead of `application/octet-stream`
+    # Set the default Content-Type to text/plain instead of application/octet-stream
     # And serve everything as UTF-8 (although not technically correct, this doesn’t break anything for binary files)
     python -c $'import SimpleHTTPServer;\nmap = SimpleHTTPServer.SimpleHTTPRequestHandler.extensions_map;\nmap[""] = "text/plain";\nfor key, value in map.items():\n\tmap[key] = value + ";charset=UTF-8";\nSimpleHTTPServer.test();' "$port";
 }
@@ -435,8 +445,8 @@ function serve_py(){
 function get_full_path(){
     local user_home="${HOME//\//\\\/}";
     local user_home_sed="s#~#${user_home}#g";
-    local rel_path=`echo "${1}" | sed "${user_home_sed}"`;
-    local result=`readlink -e "${rel_path}"`;
+    local rel_path=$(echo "${1}" | sed "${user_home_sed}");
+    local result=$(readlink -e "${rel_path}");
     echo "${result}";
 }
 
@@ -486,7 +496,7 @@ function exesudo(){
 }
 
 #==============================================
-# servername_pull - Rsync pull from server
+# sv_get - Rsync pull from server
 #
 # @option -h:   help
 # @option -u:   Set a remote username
@@ -495,9 +505,9 @@ function exesudo(){
 # @param {String} $1 - path from
 # @param {String} $2 - path to
 #==============================================
-function servername_pull(){
+function sv_get(){
     function this_usage(){
-        echo "Usage:  servername_pull [options] PATH_FROM PATH_TO."
+        echo "Usage:  sv_get [options] PATH_FROM PATH_TO."
         echo "Purpose: rsync to pull files from servername."
         echo "       "
         echo "Mandatory arguments: "
@@ -510,7 +520,7 @@ function servername_pull(){
         echo "-s:   Set a remote hostname (if not set your LOCAL HOSTNAME variable will be used)"
         echo "Example."
         echo "This:"
-        echo "servername_pull -u server_username -s server.address.edu.au /home/server/path/*.py ./temp"
+        echo "sv_get -u server_username -s server.address.edu.au /home/server/path/*.py ./temp"
         echo "       "
         echo "Becomes:"
         echo "rsync -avz --progress server_username@server.address.edu.au:/home/server/path/*.py ./temp"
@@ -541,12 +551,12 @@ function servername_pull(){
         this_usage ;
         return 1
     fi
-    echo "#rsync -avz --progress $usr_name@$srv_name:$* "
-    #rsync -avz --progress server_username@server.address.edu.au:$*
+    echo "rsync -avz --progress $usr_name@$srv_name:$* "
+    rsync -avz --progress $usr_name@$srv_name:$* 
 }
 
 #==============================================
-# servername_push - Rsync push to a server
+# sv_put - Rsync push to a server
 #
 # @option -h:   help
 # @option -u:   Set a remote username
@@ -555,9 +565,9 @@ function servername_pull(){
 # @param {String} $1 - path from
 # @param {String} $2 - path to
 #==============================================
-function servername_push(){
+function sv_put(){
     function this_usage(){
-        echo "Usage:   servername_push [options] PATH_FROM PATH TO."
+        echo "Usage:   sv_put [options] PATH_FROM PATH TO."
         echo "Purpose: rsync to push files to servername."
         echo "       "
         echo "Mandatory arguments: "
@@ -570,10 +580,10 @@ function servername_push(){
         echo "-s:   Set a remote hostname (if not set your LOCAL HOSTNAME variable will be used)"
         echo "Example."
         echo "This:"
-        echo "servername_push -u server_username -s server.address.edu.au /home/server/path/*.py ./temp"
+        echo "sv_put -u server_username -s server.address.edu.au /home/server/path/*.py /temp"
         echo "       "
         echo "Becomes:"
-        echo "rsync -avz --progress ./temp/* server_username@server.address.edu.au:/home/server/path/"
+        echo "rsync -avz --progress /home/server/path/*.py server_username@server.address.edu.au:/temp"
     }
     local usr_name=""
     local srv_name=""
@@ -608,8 +618,8 @@ function servername_push(){
     #grabs all arguments but the last one...
     #echo ${@:1:$(($#-1))}
 
-    echo "#rsync -avz --progress ${@:1:$(($#-1))} $usr_name@$srv_name:$last"
-    #rsync -avz --progress ${@:1:$(($#-1))} $usr_name@$srv_name:$last
+    echo "rsync -avz --progress ${@:1:$(($#-1))} $usr_name@$srv_name:$last"
+    rsync -avz --progress ${@:1:$(($#-1))} $usr_name@$srv_name:$last
 }
 
 #==============================================
@@ -630,7 +640,7 @@ function get_xserver(){
 #==============================================
 function set_display(){
     if [ -z ${DISPLAY:=""} ]; then
-        local XSERVER=`get_xserver`
+        local XSERVER=$(get_xserver)
         if [[ -z ${XSERVER} || ${XSERVER} == $(hostname) || ${XSERVER} == "unix" ]]; then
             DISPLAY=":0"                # Display on local host.
         else
@@ -817,7 +827,7 @@ function MIT(){
 cat <<EOF
 (The MIT License)
 
-Copyright (c) `echo $(date +"%Y")` `echo $USER` <user@email.com>
+Copyright (c) $(date +"%Y")  $USER <user@email.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -837,9 +847,11 @@ EOF
 # @Params {String} $2: lines around (default 0)
 #==============================================
 function at_line_no(){
-    local LINE_NUMBER=$1
-    local LINES_AROUND=${2:-0}
-    sed -n "`expr $LINE_NUMBER - $LINES_AROUND`,`expr $LINE_NUMBER + $LINES_AROUND`p"
+    local lnr=$1
+    local around=${2:-0}
+    [ $around -ge $lnr ] && local s=1 || local s=$(expr $lnr - $around)
+    echo "From line $s to line $(expr $lnr + $around)"
+    sed -n "$s,$(expr $lnr + $around)p"
 }
 
 #==============================================
@@ -849,14 +861,14 @@ function at_line_no(){
 #   meteo
 #==============================================
 function meteo(){
-    local LOCALE=$(echo ${LANG:-en} | cut -c1-2)
+    local LOCLANG=$(echo ${LANG:-en} | cut -c1-2)
     clear
     if [ $# -eq 0 ]; then
         local LOCATION=$(curl -s ipinfo.io/loc)
     else
         local LOCATION=$1
     fi
-    curl -s "$LOCALE.wttr.in/$LOCATION"
+    curl -s "$LOCLANG.wttr.in/$LOCATION"
 }
 
 #==============================================
@@ -985,10 +997,10 @@ function hosts_up(){
 function screens_count(){
     local scpth="/var/run/screen/S-$USER"
     if [ -e "$scpth" ]; then
-        if [ -n "`find $scpth -prune -empty`" ]; then
+        if [ -n "$(find $scpth -prune -empty)" ]; then
             echo "0"
         else
-            echo `screen -ls | egrep -c "[0-9]+\.([a-zA-Z0-9\-]+)?\.[a-zA-Z]*"`
+            echo $(screen -ls | egrep -c "[0-9]+\.([a-zA-Z0-9\-]+)?\.[a-zA-Z]*")
         fi
     else
         echo  "0"
@@ -1063,7 +1075,7 @@ function do_extract(){
     if [ -z "$1" ]; then
         echo "Usage: do_extract <path/filename>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
     else
-        local f=`echo "$1" | tr '[:upper:]' '[:lower:]'`
+        local f=$(echo "$1" | tr '[:upper:]' '[:lower:]')
         if [ -f $1 ] ; then
             case $f in
                 *.tar.bz2)   tar xvjf ./$1    ;;
@@ -1117,28 +1129,26 @@ function you_have_mail(){
 function prompt_git(){
     local s="";
     local branchName="";
-    local is_a_branch=$(git branch &>/dev/null && echo "yes" || echo "no")
-
     # Check if the current directory is in a Git repository.
-    if [ "$is_a_branch" == "yes" ]; then
+    if git branch &>/dev/null; then
         # check if the current directory is in .git before running git checks
-        if [ "`git rev-parse --is-inside-git-dir 2> /dev/null`" == 'false' ]; then
+        if [ "$(git rev-parse --is-inside-git-dir 2> /dev/null)" == 'false' ]; then
             # Ensure the index is up to date.
             git update-index --really-refresh -q &>/dev/null;
             # Check for uncommitted changes in the index.
-            if ! `git diff --quiet --ignore-submodules --cached`; then
+            if ! $(git diff --quiet --ignore-submodules --cached); then
                 s+='+';
             fi;
             # Check for unstaged changes.
-            if ! `git diff-files --quiet --ignore-submodules --`; then
+            if ! $(git diff-files --quiet --ignore-submodules --); then
                 s+='!';
             fi;
             # Check for untracked files.
-            if [ -n "`git ls-files --others --exclude-standard`" ]; then
+            if [ -n "$(git ls-files --others --exclude-standard)" ]; then
                 s+='?';
             fi;
             # Check for stashed files.
-            if `git rev-parse --verify refs/stash &>/dev/null`; then
+            if $(git rev-parse --verify refs/stash &>/dev/null); then
                 s+='$';
             fi;
         fi;
@@ -1153,8 +1163,9 @@ function prompt_git(){
         #echo -e "${1}${branchName}${2}${s}";
         echo "${1}${branchName}${2}${s} ";
     else
-        return 0;
+        echo ""
     fi;
+    return 0;
 }
 
 #==============================================
@@ -1164,26 +1175,21 @@ function bash_prompt(){
     local git_b_str=""
     local git_prompt=""
     # Checks to see if the current directory is a git repo or not
-    local gitcheck_branch=$(git branch &>/dev/null; if [ $? -eq 0 ]; then echo "yes"; else echo "no"; fi)
-
-    if [ "$gitcheck_branch" == "yes" ]; then
-        git_b_str=" "`prompt_git`;
+    if git branch &>/dev/null; then
+        git_b_str=" "$(prompt_git);
         # If we are in a git repo, then check to see if there are uncommitted files
-        local gitcheck_status=$(git status | grep "nada a submeter\|nothing to commit" > /dev/null 2>&1; if [ $? -eq 0 ]; then echo "clean"; else echo "unclean"; fi)
-        if [ "$gitcheck_status" == "clean" ]; then
+        if LC_ALL=C git status | grep "nothing to commit" > /dev/null 2>&1; then
             # If there are no uncommitted files, then set the color of the git branch name to green
-            git_prompt="$BG$git_b_str"
+            git_prompt="$BG$git_b_str";
         else
             # If there are uncommitted files, set it to red.
-            git_prompt="$BR$git_b_str"
+            git_prompt="$BR$git_b_str";
         fi
     else
         # If we're not in a git repo, then display nothing
         git_prompt=""
     fi
-
-    local sqm=$(qt_mail)
-    local sQtma=$(if [ $sqm -eq 0 ]; then echo ""; else echo "$BG✉ "; fi)
+    local sQtma=$(if [ $(qt_mail) -eq 0 ]; then echo ""; else echo "$BG✉ "; fi)
     PS1="\$(if [[ \$? == 0 ]]; then echo \"$BG✔\"; else echo \"$BR✘\"; fi) ${sQtma}$BW${debian_chroot:+($debian_chroot)}\u@\h $NONE$BY[\w]$NONE\n$BW  └${git_prompt}$BW─$BG[\A]$BW>$BR \\$ $NONE"
     PS2="\$(echo \"$BG✔\") $NONE"
     PS3=": "
@@ -1283,9 +1289,8 @@ function draw(){
     else
         local color="$3"
     fi
-    for v in `seq 0 $(( size - 1 ))`; do
-        test "$v" -le "$inc" && out="${out}\e[1;${color}m${FULL}" \
-        || out="${out}\e[0;${color}m${EMPTY}"
+    for v in $(seq 0 $(( size - 1 ))); do
+        test "$v" -le "$inc" && out="${out}\e[1;${color}m${FULL}" || out="${out}\e[0;${color}m${EMPTY}"
     done 
     printf $out
 }
@@ -1304,7 +1309,27 @@ function color_bar(){
 }
 
 #==============================================
-# Saudacao de novo shell
+# find wm (window manager)
+#==============================================
+function find_wm(){
+    local wm=""
+    if [ -n "$XDG_CURRENT_DESKTOP" ]; then
+        wm="$XDG_CURRENT_DESKTOP"
+    elif [ -n "$DESKTOP_SESSION" ]; then
+        wm="$DESKTOP_SESSION"
+    else
+        wm="$(ps -e | grep -i "^.*wm\|i3\|awesome\|sway\|openbox\|blackbox\|fluxbox" | awk 'NR == 1 {print $4}')"
+    fi
+    if [ -z "$wm" ] && [ $(command -v xprop 2> /dev/null | grep -c "xprop" ) -ge 1 ]; then
+        local id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK 2> /dev/null | grep "id" | awk '{print $5}')"
+        [ -n "$id" ] && wm="$(xprop -id "0xa0009b" -notype -len 100 -f _NET_WM_NAME 8t | grep "_NET_WM_NAME" | awk '{gsub(/"/, "", $3); print $3 }')"
+    fi
+    echo "$wm"
+    return 0
+}
+
+#==============================================
+# Greetings (A kind of fetch info display)
 #==============================================
 function greetings(){
     local USR="$(whoami)"
@@ -1350,15 +1375,8 @@ function greetings(){
         printf " \e[1;36m     uptime  $TIMEU since $TIMEDe\e[0m\n"
     fi
     
-    if xset q >& /dev/null ; then
-        local id=""
-        local wm=""
-        id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
-        id="${id##* }"
-        wm="$(xprop -id "$id" -notype -len 100 -f _NET_WM_NAME 8t)"
-        wm="${wm/*_NET_WM_NAME = }"
-        wm="${wm/\"}"
-        wm="${wm/\"*}"
+    if xset q &>/dev/null ; then
+        local wm="$(find_wm)"
         printf " \e[1;36m      shell  $BVERS @ $wm\e[0m\n"
     else
         printf " \e[1;36m      shell  $BVERS\e[0m\n"
@@ -1372,11 +1390,11 @@ function greetings(){
     fi
 
     local CpuLvl=$(printf "%.0f" $CpuUsg)
-    [ -n "$CpuLvl" ] && printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " cpu" "$CpuLvl%" `draw $CpuLvl 15`
+    [ -n "$CpuLvl" ] && printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " cpu" "$CpuLvl%" $(draw $CpuLvl 15)
 
     # ram
     local RamM=$(free | awk '/Mem/ {print int($3/$2 * 100.0)}')
-    [ -n "$RamM" ] &&  printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " ram" "$RamM%" `draw $RamM 15`
+    [ -n "$RamM" ] &&  printf "   \e[0;36m%-4s \e[1;36m%-5s %-25s \n" " ram" "$RamM%" $(draw $RamM 15)
 
     # battery
     local charge="$(battery_percentage 2> /dev/null)"
@@ -1389,12 +1407,12 @@ function greetings(){
                 local color='36'
             ;;
         esac
-        printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" " bat" "$charge%" `draw $charge 15 $color`
+        printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" " bat" "$charge%" $(draw $charge 15 $color)
     fi
 
     # volume
     # test amixer return first
-    amixer get Master &> /dev/null
+    amixer get Master &>/dev/null
     if [ $? -eq 0 ]; then 
         if amixer get Master | grep -q 'Right'; then
             local vol=$(amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }' | tr -d '[]%')
@@ -1406,11 +1424,11 @@ function greetings(){
         else
             local color='36'
         fi
-        [ -n "$vol" ] && printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" " vol" "$vol%" `draw $vol 15 $color`
+        [ -n "$vol" ] && printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" " vol" "$vol%" $(draw $vol 15 $color)
     fi
     
     # temperature
-    if sensors &> /dev/null; then
+    if sensors &>/dev/null; then
         local SensTemp=$(sensors | awk '/Core 0/ {gsub(/\+/,"",$3); gsub(/\..+/,"",$3)    ; print $3}')
         if [ -n "$SensTemp" ]; then
             case 1 in
@@ -1424,7 +1442,7 @@ function greetings(){
                     color='36'
                 ;;
             esac
-            printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" "temp" "$SensTemp˚C " `draw $SensTemp 15 $color`
+            printf "   \e[0;${color}m%-4s \e[1;${color}m%-5s %-25s \n" "temp" "$SensTemp˚C " $(draw $SensTemp 15 $color)
         fi
     fi
     printf "\e[1;33m\n"
@@ -1432,7 +1450,7 @@ function greetings(){
     ~/bin/my-motd
 
     echo -e "\n"
-    #echo -e "`you_have_mail`\n"
+    #echo -e "$(you_have_mail)\n"
     # Reset colors
     tput sgr0
     #color_bar

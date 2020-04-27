@@ -30,7 +30,7 @@
 # Probably, it's not so hard to make rhythembox or other media player control menus like this,
 # as far as these media players support the CUI control commands.
 
-COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/pipe-common.sh"
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/common-pipemenu"
 
 if [ -f "$COMMON_FUNCTIONS" ]; then
     . "${COMMON_FUNCTIONS}" 2> /dev/null
@@ -39,35 +39,35 @@ else
     exit 1
 fi
 
-function doMenuDownVB() {
+function doMenuInstVB() {
     # l10n support
     case "${LANG:-}" in
-        de_* ) doMenuDownVB_en ;; # Deutsch
-        da_* ) doMenuDownVB_en ;; # Danish
-        es_* ) doMenuDownVB_en ;; # Española
-        fr_* ) doMenuDownVB_en ;; # Français
-        id_* ) doMenuDownVB_en ;; # Bahasa Indonesia
-        it_* ) doMenuDownVB_en ;; # Italian
-        lv_* ) doMenuDownVB_en ;; # Latvian
-        pl_* ) doMenuDownVB_en ;; # Polish
-        pt_* ) doMenuDownVB_pt ;; # Português
-        ru_* ) doMenuDownVB_en ;; # Russian
-        * ) doMenuDownVB_en ;; # Default to English
+        de_* ) doMenuInstVB_en ;; # Deutsch
+        da_* ) doMenuInstVB_en ;; # Danish
+        es_* ) doMenuInstVB_en ;; # Española
+        fr_* ) doMenuInstVB_en ;; # Français
+        id_* ) doMenuInstVB_en ;; # Bahasa Indonesia
+        it_* ) doMenuInstVB_en ;; # Italian
+        lv_* ) doMenuInstVB_en ;; # Latvian
+        pl_* ) doMenuInstVB_en ;; # Polish
+        pt_* ) doMenuInstVB_pt ;; # Português
+        ru_* ) doMenuInstVB_en ;; # Russian
+        * ) doMenuInstVB_en ;; # Default to English
     esac
 }
 
 # Virtualbox not found in the system
-function doMenuDownVB_en(){
+function doMenuInstVB_en(){
     menuBegin
     menuSep "Virtualbox cannot be found"
-    menuItem "How to install Virtualbox" "<![CDATA[x-www-browser https://www.virtualbox.org/wiki/Linux_Downloads]]>" 'text-html' 
+    menuItem "How to install Virtualbox" "<![CDATA[x-www-browser https://www.virtualbox.org/wiki/Linux_Downloads]]>" 'text-html'
     menuEnd
 }
 
-function doMenuDownVB_pt(){
+function doMenuInstVB_pt(){
     menuBegin
     menuSep "Virtualbox não Encontrado"
-    menuItem "Como instalar o Virtualbox" "<![CDATA[x-www-browser https://www.virtualbox.org/wiki/Linux_Downloads]]>" 'text-html' 
+    menuItem "Como instalar o Virtualbox" "<![CDATA[x-www-browser https://www.virtualbox.org/wiki/Linux_Downloads]]>" 'text-html'
     menuEnd
 }
 
@@ -114,7 +114,7 @@ function doMenuControl() {
 }
 
 function doMenuControl_en(){
-    [ -z "$(command -v vboxmanage)" ] && return 0
+    checkfor "vboxmanage" || return 0
     menuSep ""
     # output the list of virtual machines
     vboxmanage list vms | cut -f 2 -d "\"" | sort -f | while read vm
@@ -124,7 +124,7 @@ function doMenuControl_en(){
 }
 
 function doMenuControl_pt(){
-    [ -z "$(command -v vboxmanage)" ] && return 0
+    checkfor "vboxmanage" || return 0
     menuSep ""
     # output the list of virtual machines
     vboxmanage list vms | cut -f 2 -d "\"" | sort -f | while read vm
@@ -134,11 +134,7 @@ function doMenuControl_pt(){
 }
 
 function main(){
-    which "virtualbox" > /dev/null
-    if [ $? -ne 0 ]; then
-        doMenuDownVB
-        exit 0
-    fi
+    ! checkfor "virtualbox" && doMenuInstVB && return 0
     menuBegin
     doMenuRun
     doMenuControl

@@ -5,6 +5,49 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
+function _lsof(){
+    local i=""
+    local l=""
+    for p in /proc/{0..9}*; do
+        i=$(basename "$p")
+        for f in "$p"/fd/*; do
+            l=$(readlink -e "$f")
+            if [ "$l" ]; then
+                echo "$i: $l"
+            fi
+        done
+    done | sort -u | sort -n
+}
+
+function _lsofdown(){
+    local i=""
+    local l=""
+    for p in /proc/{0..9}*; do
+        i=$(basename "$p")
+        for f in "$p"/fd/*; do
+            l=$(readlink -e "$f")
+            if [ "$l" ]; then
+                [ $(echo "$l" | grep -ic "downl") -ge 1 ] && echo "$i: $l"
+            fi
+        done
+    done | sort -u | sort -n
+}
+
+function _lsofp(){
+    [ -z "$1" ] && return 1
+    local i=""
+    local l=""
+    for x in $(pgrep -f "$1"); do
+        if [ -n "$x" ]; then
+            i=$(basename "/proc/$x")
+            for f in "/proc/$x"/fd/*; do
+                l=$(readlink -e "$f")
+                [ -n "$l" ] && echo "$i: $l"
+            done
+        fi
+    done | sort -u | sort -n
+}
+
 function main() {
     #local OLD_IFS=$IFS
     #IFS=$'\n'
@@ -14,7 +57,7 @@ function main() {
     #done
     #IFS=$OLD_IFS
     #return 0
-
+    
     #precheck "dump_xsettings"
     #precheck "gsettings"
     
@@ -28,7 +71,7 @@ function main() {
     #echo
     #echo " ------ dstart testing ----------"
     #if [ $(pgrep -lfc volumeicon) -eq 0 ] && [ $(pgrep -lfc mate-volume-control-applet) -eq 0 ] ; then
-    #    echo "dstart volumeicon" 
+    #    echo "dstart volumeicon"
     #else
     #    echo "volume ok"
     #fi
@@ -101,6 +144,16 @@ function main() {
     echo " ------ kill_them firefox ---"
     ps_ISO "firefox"
     kill_them "sh-c" "firefox"
+    echo
+    echo " ------ _lsof functions ---"
+    echo "_lsofdown"
+    _lsofdown
+    echo
+    #echo "_lsof"
+    #_lsof
+    #echo
+    echo "_lsofp firefox"
+    _lsofp "firefox"
     echo
     exit 0
 }
