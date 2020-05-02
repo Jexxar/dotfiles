@@ -1,4 +1,14 @@
 #===========================================
+# Fix systems missing $USER
+#===========================================
+[ -z "$USER" ] && export USER="$(whoami)"
+
+#===========================================
+# Fix systems missing $HOME
+#===========================================
+[ -z "$HOME" ] && export HOME="$(dirname ~/1)"
+
+#===========================================
 # Don't want coredumps.
 #===========================================
 ulimit -S -c 0
@@ -34,11 +44,6 @@ export SUDO_ASKPASS="${HOME}/bin/askpw"
 export PYTHONIOENCODING='UTF-8';
 
 #===========================================
-# Fix systems missing $USER
-#===========================================
-[ -z "$USER" ] && export USER="$(whoami)"
-
-#===========================================
 # OS variables
 #===========================================
 [ "$(uname -s)" = "Darwin" ] && export MACOS=1 && export UNIX=1
@@ -60,11 +65,8 @@ export CACHE_DIR="/tmp"
 #===========================================
 # PATH settings
 #===========================================
-if [ $UID -gt 999 ]; then
-    export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:/usr/local/sbin:$PATH"
-else
-    export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
-fi
+export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:/usr/local/sbin:$PATH"
+[ -z "$HOME" ] && export PATH="~/bin:~/.local/bin:/usr/local/bin:/usr/local/sbin:$PATH"
 
 #===========================================
 # Don't check mail when opening terminal.

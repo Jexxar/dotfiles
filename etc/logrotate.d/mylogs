@@ -1,0 +1,29 @@
+# no packages own my*.log -- we'll rotate them here
+/var/log/autolock.log
+/var/log/autoping.log
+/var/log/dstart.log
+/var/log/my*.log
+ {
+    maxsize 5M
+    daily
+    missingok
+    notifempty
+    delaycompress
+    compress
+    rotate 1
+}
+
+# no packages own my*.log -- we'll rotate them here
+~/.local/var/log/autolock.log
+~/.local/var/log/autoping.log
+~/.local/var/log/dstart.log
+~/.local/var/log/my*.log
+ {
+    maxsize 5M
+    daily
+    missingok
+    notifempty
+    delaycompress
+    compress
+    rotate 1
+}

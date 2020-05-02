@@ -180,6 +180,7 @@ set softwrap
 ## Set this if your backspace key sends delete most of the time (2.1.3+)
 # bind kdel backspace all
 
+bind ^s writeout main
 bind ^c copytext main
 bind ^x cut main
 bind ^v uncut main
@@ -187,7 +188,8 @@ bind ^z undo main
 bind ^y redo main
 bind ^f whereis main
 bind ^h replace main
-bind ^w exit main
+bind ^w writeout all
+bind ^q exit main
 
 ## Nanorc files
 include "/usr/share/nano/nanorc.nanorc"

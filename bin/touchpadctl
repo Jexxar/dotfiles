@@ -78,6 +78,7 @@ device_id=serio1
 
 function main(){
     if [ $# -eq 0 ]; then
+        echo "vazio"
         usage
         exit 1
     fi

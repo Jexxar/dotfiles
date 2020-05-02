@@ -29,14 +29,17 @@ LO_DEBUG=0
 
 # Names of programs which, when running, you wish to delay the screensaver.
 # For example ('ardour2' 'gmpc').
-LO_mandatoryApps=('cura' 'wineserver' 'dbgl' 'openscad' 'dgen' 'lutris' 'playonlinux' 'avidemux' 'synaptic' 'scummvm' 'flare' 'frozen-bubble' '0ad' 'TeamViewer' 'remmina' 'dosbox' 'wine' 'wget' 'curl')
+LO_mandatoryApps=('cura' 'wineserver' 'dbgl' 'openscad' 'dgen' 'lutris' 'playonlinux' 'avidemux' 'synaptic' 'scummvm' 'flare' 'frozen-bubble' '0ad' 'TeamViewer' 'remmina' 'dosbox' 'wine' 'wget' 'curl' 'rsync' 'scp' 'sftp' 'youtube-dl')
 
 # Names of programs which, when running, you wish to delay the screensaver.
 # For example ('ardour2' 'gmpc').
 LO_delayMediaApps=('vlc' 'celluloid' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
 
 # Names of programs which, when using sound server, you wish to delay the screensaver.
-LO_delayWebBasedApps=('firefox' 'chrome' 'vivaldi' 'brave' 'chromium' 'epiphany' 'WebKit' 'opera' 'Iceweasel' 'surf' 'yandex_browser' 'luakit' 'youtube-dl' 'smtube' 'midori' 'min' 'falkon' 'slimjet' 'steam')
+LO_delayWebBasedApps=('firefox' 'chrome' 'vivaldi' 'brave' 'chromium' 'epiphany' 'WebKit' 'opera' 'Iceweasel' 'surf' 'yandex_browser' 'luakit'  'midori' 'min' 'falkon' 'slimjet' 'steam')
+
+# Names of programs which, when using massive transfer, you wish to delay the screensaver.
+LO_delayBusyApps=('pcmanfm' 'pcmanfm-qt' 'nautilus' 'dolphin' 'thunar' 'caja' 'mc' 'fff' 'nnn' 'ranger' 'vifm')
 
 # Display outputs to check, display screensaver when they are connected.
 # Run xrandr to show current monitor config.
@@ -280,6 +283,50 @@ function LO_isFullScreenBeingUsed(){
     return 1
 }
 
+#check for busy apps using massive transfer/downloads and other important tasks that need to be delayed
+function LO_hasDelayBusyApps(){
+    local tmp=""
+    for p in "${LO_delayBusyApps[@]}" ; do
+        case $p in
+            caja*)
+                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev")"
+            ;;
+            nautilus*)
+                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev")"
+            ;;
+            thunar*)
+                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev")"
+            ;;
+            dolphin*)
+                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev")"
+            ;;
+            *)
+                tmp="$(lsof_p "$p" )"
+            ;;
+        esac
+        [ -n "$tmp" ] && LO_log "LO_hasDelayBusyApps(): $p found for delaying" && return 0
+    done
+    for p in "${LO_delayWebBasedApps[@]}" ; do
+        case $p in
+            firefox*)
+                tmp="$(lsof_p "$p" | grep -v "fonts\|/proc\|/dev/pts\|/sys/dev\|xpi\|startupCache\|omni\|\.mozilla")"
+            ;;
+            chrome*)
+                tmp="$(lsof_p "$p" | grep -v "$p\|fonts\|/proc\|/dev/pts\|/sys/dev\|omni\|chrom\|\.pki\|\.cache")"
+            ;;
+            chromium*)
+                tmp="$(lsof_p "$p" | grep -v "$p\|fonts\|/proc\|/dev/pts\|/sys/dev\|omni\|chrom\|\.pki\|\.cache")"
+            ;;
+            *)
+                tmp="$(lsof_p "$p" | grep -v "$p\|fonts\|/proc\|/dev/pts\|/sys/dev\|omni\|\.pki\|\.cache")"
+            ;;
+        esac
+        [ -n "$tmp" ] && LO_log "LO_hasDelayBusyApps(): $p found for delaying" && return 0
+    done
+    LO_log "LO_hasDelayBusyApps(): No busy apps found for delaying"
+    return 1
+}
+
 #check for output connections to disable xautolock and reset screensaver
 function LO_hasDelayOutputConns(){
     local connOut="$(xrandr | grep " connected" | awk '{print $1}')"
@@ -469,6 +516,14 @@ function LO_delayScreensaver(){
     else
         LO_log "LO_delayScreensaver(): NO delay output connections detected..."
     fi
+    # disable screensaver if we have relevant busy apps
+    if LO_hasDelayBusyApps; then
+        LO_log "LO_delayScreensaver(): Delaying the screensaver because Busy applications were found..."
+        LO_disableScreensaver
+        return 0
+    else
+        LO_log "LO_delayScreensaver(): NO delay Busy applications detected..."
+    fi
     
     LO_log "LO_delayScreensaver(): NO delay programs were detected for suspending screensaver..."
     
@@ -632,6 +687,7 @@ LO_save_state "ENABLED"
 if [ "$LO_scvpgm" = "xautolock" ]; then
     LO_log "Starting xautolock daemon..."
     LO_enableScrXautolock "force"
+    snore 2
 fi
 
 # Initiate monitoring

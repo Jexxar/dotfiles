@@ -20,10 +20,25 @@ function main(){
     local cmd="$(findutil "$orig_cmd")"
     shift
     kill_them "but-me" "$orig_cmd"
-    echo "Starting $cmd $@"
-    log "Starting $cmd $@"
-    $cmd "$@" &
-    disown
+    cmd="$(echo "$cmd $@ &")"
+    eval $cmd &
+    #$cmd "$@" &
+    #echo "$@" | xargs $cmd &
+    #$cmd <<< "$@" &
+    #$cmd <<< "$args" &
+    local rc="$?"
+    if [ $rc -eq 0 ]; then
+        disown
+        echo "Starting $cmd" 
+        log "Starting $cmd" 
+        #echo "Starting $cmd $@" 
+        #log "Starting $cmd $@" 
+    else
+        #echo "Failed [ $rc ] to start $cmd $@" 
+        #log "Failed [ $rc ] to start $cmd $@"
+        echo "Failed [ $rc ] to start $cmd" 
+        log "Failed [ $rc ] to start $cmd"
+    fi
     exit 0
 }
 

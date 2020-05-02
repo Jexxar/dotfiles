@@ -33,20 +33,6 @@ function _lsofdown(){
     done | sort -u | sort -n
 }
 
-function _lsofp(){
-    [ -z "$1" ] && return 1
-    local i=""
-    local l=""
-    for x in $(pgrep -f "$1"); do
-        if [ -n "$x" ]; then
-            i=$(basename "/proc/$x")
-            for f in "/proc/$x"/fd/*; do
-                l=$(readlink -e "$f")
-                [ -n "$l" ] && echo "$i: $l"
-            done
-        fi
-    done | sort -u | sort -n
-}
 
 function main() {
     #local OLD_IFS=$IFS
@@ -75,6 +61,13 @@ function main() {
     #else
     #    echo "volume ok"
     #fi
+    #echo
+    #echo " ------ stopit xautolock ----------"
+    #stop_it "xautolock"
+    #log "enableScrXautolock(): (Re)/Starting xautolock daemon..."
+    #xautolock -detectsleep -noclose -time 5 -locker "\"$HOME/bin/mylock\"" -notify 30 -notifier "\"$HOME/bin/mynotify\"" -killtime 10 -killer "\"$HOME/bin/mysuspend\"" &
+    #snore 0.5
+    #stop_it "xautolock"
     #echo
     echo " ------ url decoding ----------"
     echo "original=V%C3%ADdeos urldecode=$(urldecode "V%C3%ADdeos")"
@@ -120,12 +113,12 @@ function main() {
     kill_them "sh-c" "/usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1"
     #kill_them "strict" "/usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1"
     echo
-    echo " ------ kill_them pcmanfm-qt ---"
-    ps_ISO "pcmanfm-qt"
-    kill_them "check" "pcmanfm-qt"
-    kill_them "sh-c" "pcmanfm-qt"
-    kill_them "strict" "pcmanfm-qt"
-    echo
+    #echo " ------ kill_them pcmanfm-qt ---"
+    #ps_ISO "pcmanfm-qt"
+    #kill_them "check" "pcmanfm-qt"
+    #kill_them "sh-c" "pcmanfm-qt"
+    #kill_them "strict" "pcmanfm-qt"
+    #echo
     echo " ------ kill_them autoping ---"
     ps_ISO "autoping"
     kill_them "check" "autoping"
@@ -146,14 +139,39 @@ function main() {
     kill_them "sh-c" "firefox"
     echo
     echo " ------ _lsof functions ---"
-    echo "_lsofdown"
-    _lsofdown
-    echo
+    #echo "_lsofdown"
+    #_lsofdown
+    #echo
     #echo "_lsof"
     #_lsof
     #echo
-    echo "_lsofp firefox"
-    _lsofp "firefox"
+    echo "lsof_p firefox"
+    #lsof_p "firefox"
+    lsof_p "firefox" | grep -v "xpi\|startupCache\|omni\|\.mozilla"
+    echo
+    echo "lsof_p pcmanfm-qt"
+    lsof_p "pcmanfm-qt"
+    echo
+    echo "lsof_p chrome"
+    lsof_p "chrome" | grep -v "fonts\|/proc\|/dev/pts\|omni\|chrome\|\.pki\|/sys/dev"
+    echo
+    echo "lsof_p wget"
+    lsof_p "wget" | grep -v "fonts\|/proc\|/dev/pts\|/sys/dev"
+    echo
+    echo "lsof_p curl"
+    lsof_p "curl" | grep -v "fonts\|/proc\|/dev/pts\|/sys/dev"
+    echo
+    echo "lsof_p transmission"
+    lsof_p "transmission" | grep -v "fonts\|/proc\|/dev/pts\|/sys/dev"
+    echo
+    echo "lsof_p nautilus"
+    lsof_p "nautilus" | grep -v "nautilus-\|fonts\|/proc\|/dev/pts\|/sys/dev"
+    echo
+    echo "lsof_p caja"
+    lsof_p "caja" | grep -v "caja-\|fonts\|/proc\|/dev/pts\|/sys/dev"
+    echo
+    echo "lsof_p sftp"
+    lsof_p "sftp" | grep -v "caja-\|fonts\|/proc\|/dev/pts\|/sys/dev"
     echo
     exit 0
 }

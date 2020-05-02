@@ -155,6 +155,22 @@ function nullify(){
     "$@" >/dev/null 2>&1
 }
 
+# lsof similar behaviour for a process
+function lsof_p(){
+    [ -z "$1" ] && return 1
+    local i=""
+    local l=""
+    for x in $(pgrep -f "$1"); do
+        if [ -n "$x" ]; then
+            i=$(basename "/proc/$x")
+            for f in "/proc/$x"/fd/*; do
+                l=$(readlink -e "$f")
+                [ -n "$l" ] && echo "$i: $l"
+            done
+        fi
+    done | sort -u | sort -n | grep -v "/dev/null\|/dev/urandom\|/dev/dri\|\.cache\|/dev/pts\|gvfs-metadata"
+}
+
 # Rsync copy w/ progress
 function rsyncp_p(){
     rsync -WavP --human-readable --progress $1 $2
@@ -263,11 +279,11 @@ function kill_them(){
     [ $# -gt 2 ] && local shw="y" || local shw="n"
     case ${1-check} in
         all)
-            pkill -USR1 --euid "$(id -u)" --exact "$s_name" &>/dev/null && has="y" && log "Stopping instances(pkill): name=$s_name" || true
+            LC_ALL=C pkill -USR1 --euid "$(id -u)" --exact "$s_name" > /dev/null 2>&1 && has="y" && log "Stopping instances(pkill): name=$s_name" || true
             for i in $(ps_ISO "$s_name" | grep -v "grep" | awk '{print $3}'); do
                 kill "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name"
-                [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name"
-                [ $? -ne 0 ] && killall "$1" &> /dev/null && has="y" && log "Stopping instances(killall): name=$s_name" || true
+                [ $? -ne 0 ] && kill -9 "$i" > /dev/null 2>&1 && has="y" && log "Stopping instance(kill): pid=$i name=$s_name"
+                [ $? -ne 0 ] && killall "$1" > /dev/null 2>&1 && has="y" && log "Stopping instances(killall): name=$s_name" || true
                 snore 0.1
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] && log "kill_them all: No process $s_name found"

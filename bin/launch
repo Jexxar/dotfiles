@@ -32,8 +32,8 @@ function main(){
         $* </dev/null &>/dev/null &
         disown
         snore 0.5
+        focus_it "$1"
     fi
-    focus_it "$1"
     exit 0
 }
 
