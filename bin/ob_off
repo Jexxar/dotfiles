@@ -10,16 +10,16 @@ function doAction(){
             echo "Cancel"
         ;;
         2)
-            exec ~/bin/mylock lock
+            mylock lock
         ;;
         3)
-            exec ~bin/myexit
+            myexit
         ;;
         4)
-            exec ~bin/myreboot
+            myreboot
         ;;
         5)
-            exec ~/bin/myshutdown
+            myshutdown
         ;;
     esac
 }
@@ -43,10 +43,7 @@ function main() {
     precheck "gxmessage"
     
     # Only works if X is running.
-    if ! is_running_X ; then
-        log "X server is not running";
-        return 0;
-    fi
+    ! is_running_X && log "X server is not running" && return 0
     
     # l10n support
     case "${LANG:-}" in

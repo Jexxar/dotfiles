@@ -27,14 +27,15 @@ require "$ENV{HOME}/.config/obmenu-generator/config.pl";
 
 ## Text editor
 my $editor = $CONFIG->{editor};
-my $lang = "$ENV{LANG}";
+my $syslang = "$ENV{LANG}";
+my $lang = substr($syslang, 0, 2);
 
 # Distro -------------------------------------------------------------------
 sub mk_distro {
     return `~/bin/distro-info -2`;
 }
 
-if ($lang eq "pt_BR.UTF8") {
+if ($lang eq "pt") {
 our $SCHEMA = [
     #          COMMAND                 LABEL              ICON
     {sep => mk_distro },

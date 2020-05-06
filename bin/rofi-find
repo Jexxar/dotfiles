@@ -3,11 +3,19 @@
 # Global variables:
 # Show list of options
 
-choice=$(echo " " | rofi -location 2 -font "Noto Sans 8" -dmenu -lines 1 -line-margin 0 -line-padding 1 -i -p "Filename:")
+function main(){
+    precheck "locate"
+    precheck "rofi"
 
-if [ ! -z "$choice" ]; then
-    find . -maxdepth 2 -type f -print | grep "$choice"
-    if [ $? -ne 0 ]; then
-        locate "$choice"
+    local choice=$(echo " " | rofi -location 2 -font "Noto Sans 8" -dmenu -lines 1 -line-margin 0 -line-padding 1 -i -p "Filename: ")
+    
+    if [ ! -z "$choice" ]; then
+        find . -maxdepth 2 -type f -print | grep "$choice"
+        if [ $? -ne 0 ]; then
+            locate "$choice"
+        fi
     fi
-fi
+    exit 0
+}
+
+main "$@"

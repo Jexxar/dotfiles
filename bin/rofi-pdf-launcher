@@ -12,6 +12,9 @@ function main() {
         local p="$1"
         [ ! -d "$p" ] && echo "Parameter must be a directory" && exit 1
     fi
+    precheck "rofi"
+    precheck "xdg-open"
+
     local curr="$p"
     local parent=""
     local opts=""

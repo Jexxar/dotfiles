@@ -4,32 +4,71 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-function main(){
-    local cmd=$(printf "logout\npoweroff\nreboot\nsuspend\nlock\n" | rofi -location 2 -font "Noto Sans 8" -dmenu -l 10 -line-margin 0 -line-padding 1 -xoffset 50 -yoffset 20 -width 10 -i -p "Pick a choice:" $*)
-    
+function doMenu(){
+    local opt=""
+    local prpt="Pick a choice:"
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) opt=$(getOpt_en) ;; # Deutsch
+        da_* ) opt=$(getOpt_en) ;; # Danish
+        es_* ) opt=$(getOpt_en) ;; # Española
+        fr_* ) opt=$(getOpt_en) ;; # Français
+        id_* ) opt=$(getOpt_en) ;; # Bahasa Indonesia
+        it_* ) opt=$(getOpt_en) ;; # Italian
+        lv_* ) opt=$(getOpt_en) ;; # Latvian
+        pl_* ) opt=$(getOpt_en) ;; # Polish
+        pt_* ) opt=$(getOpt_pt); prpt="Escolha uma opção:" ;; # Português
+        ru_* ) opt=$(getOpt_en) ;; # Russian
+        * ) getOpt_en ;; # Default to English
+    esac
+    local cmd=$(echo -e "$opt" | rofi -location 2 -font "Noto Sans 16" -dmenu -l 10 -line-margin 0 -line-padding 1 -xoffset 50 -yoffset 20 -width 20 -selected-row 0 -i -p "$prpt" $*)
     [ -z "$cmd" ] && return 0
-    
     case "$cmd" in
-        poweroff)
+        ⏻*)
             ~/bin/myshutdown
         ;;
-        reboot)
+        🗘*)
             ~/bin/myreboot
         ;;
-        suspend)
+        ⏾*)
             ~/bin/mysuspend
         ;;
-        lock)
+        🗝*)
             ~/bin/autolock lock
         ;;
-        logout)
+        *)
             ~/bin/myexit
+        ;;
+        🗙*)
+            echo ""
         ;;
         *)
             printf "Option not recognized: %s\n" "$cmd" >&2
         ;;
     esac
     return 0
+}
+
+function getOpt_en(){
+    echo "⏻\tPower off\n🗘\tReboot\n⏾\tSuspend\n\tLogout\n🗝 \tLock session\n🗙\tCancel"
+}
+
+function getOpt_pt(){
+    echo "⏻\tDesligar\n🗘\tReboot\n⏾\tSuspender\n\tSair\n🗝 \tBloquear\n🗙\tCancelar"
+}
+
+function main(){
+    precheck "rofi"
+    precheck "xset"
+
+    # Only works if X is running.
+    ! is_running_X && log "X server is not running" && return 0
+
+    #local options="⏻\tPower off\n🗘\tReboot\n⏸\tSuspend\n⏾\tHibernate\n🗙\tLogout\n🗝 \tLock session"
+    doMenu
+
+    #local cmd=$(printf "logout\npoweroff\nreboot\nsuspend\nlock\n" | rofi -location 2 -font "Noto Sans 8" -dmenu -l 10 -line-margin 0 -line-padding 1 -xoffset 50 -yoffset 20 -width 10 -i -p "Pick a choice:" $*)
+    exit 0
 }
 
 main "$@"

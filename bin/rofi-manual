@@ -1,3 +1,10 @@
 #!/usr/bin/env bash
+function main(){
+    precheck "man"
+    precheck "rofi"
 
-man -k . | awk '{print $1}' | rofi -location 2 -font "Noto Sans 8" -dmenu -line-margin 0 -line-padding 1 -i -p " Manual: " | xargs manp
+    man -k . | awk '{print $1}' | rofi -location 2 -font "Noto Sans 8" -dmenu -line-margin 0 -line-padding 1 -i -p " Manual: " | xargs manp
+}
+
+main "$@"
+

@@ -29,14 +29,14 @@ function main(){
     local rc="$?"
     if [ $rc -eq 0 ]; then
         disown
-        echo "Starting $cmd" 
-        log "Starting $cmd" 
-        #echo "Starting $cmd $@" 
-        #log "Starting $cmd $@" 
+        echo "Starting $cmd"
+        log "Starting $cmd"
+        #echo "Starting $cmd $@"
+        #log "Starting $cmd $@"
     else
-        #echo "Failed [ $rc ] to start $cmd $@" 
+        #echo "Failed [ $rc ] to start $cmd $@"
         #log "Failed [ $rc ] to start $cmd $@"
-        echo "Failed [ $rc ] to start $cmd" 
+        echo "Failed [ $rc ] to start $cmd"
         log "Failed [ $rc ] to start $cmd"
     fi
     exit 0

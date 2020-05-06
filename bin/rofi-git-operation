@@ -11,20 +11,20 @@ function is_git_top_dir(){
 }
 
 # Print status in a clear way.
-function gstatus() {
+function gstatus(){
     LC_ALL=C git status | grep -v "git "
 }
 
-function switchbranch() {
+function switchbranch(){
     local l=$(git branch | rofi -dmenu -i -p "Switch branch:")
     git checkout $l && return 0 || return 1
 }
 
-function listbranch() {
+function listbranch(){
     LC_ALL=C git branch && return 0 || return 1
 }
 
-function stage() {
+function stage(){
     local lu=$(LC_ALL=C git status | grep ":" | grep -v "Untrack" | awk '/not staged.*/,/*/' | grep -v "Change" | awk '{print $2}' | rofi -dmenu -p "Stage:")
     if [ -z "$lu" ]; then
         printf "%s" "Nothing selected to stage"
@@ -38,7 +38,7 @@ function stage() {
     fi
 }
 
-function unstage() {
+function unstage(){
     local lS=$(LC_ALL=C git status | grep ":" | grep -v "Untrack" | awk '/Changes to be committed.*/,/not staged*/' | grep -v "Change" | awk '/modified:/ {print $2}' | rofi -dmenu -p "Unstage:")
     if [ -z "$lS" ];then
         printf "%s" "Nothing selected to unstage"
@@ -52,18 +52,18 @@ function unstage() {
     fi
 }
 
-function commit() {
+function commit(){
     read -p 'enter your commit message: ' message
     git commit -S -v -m "$message"
 }
 
-function listremote() {
+function listremote(){
     local LR=$(git remote -v)
     printf "%s" "$LR"
     echo
 }
 
-function pull() {
+function pull(){
     if [ -z "$1" ]; then
         git pull
     else
@@ -71,7 +71,7 @@ function pull() {
     fi
 }
 
-function push() {
+function push(){
     if [ -z "$1" ]; then
         git push
     else
@@ -80,7 +80,11 @@ function push() {
 }
 
 function main(){
+    precheck "git"
+    precheck "rofi"
+
     ! is_git_top_dir && echo "$(pwd) is not a root repository Directory" && return 1
+
     choice=$(echo -e "Status\nSwitch-branch\nList-branchs\nStage\nUnstage\nCommit\nList-remotes\nPull\nPush" | rofi -dmenu -i -p "Choice git Operation:")
     
     case "$choice" in

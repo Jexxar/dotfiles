@@ -47,6 +47,7 @@ function main(){
         ;;
         *)
             log "Unrecognized option: $1"
+        ;;
     esac
     return 0
 }

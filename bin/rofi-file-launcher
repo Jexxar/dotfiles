@@ -11,7 +11,8 @@ function handle_file() {
         cd "$1"
     elif [ -f "$1" ]; then
         echo "Opening: $(pwd)/$1"
-        exec xdg-open "$(pwd)/$1" &
+        xdg-open "$(pwd)/$1" > /dev/null &
+        disown
         exit 0
     else
         printf "%s is neither a file nor a directory\n" "$(pwd)/$1" >&2
