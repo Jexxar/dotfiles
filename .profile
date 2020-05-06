@@ -44,6 +44,11 @@ export SUDO_ASKPASS="${HOME}/bin/askpw"
 export PYTHONIOENCODING='UTF-8';
 
 #===========================================
+# Make Pipemenus without icons for faster loading
+#===========================================
+export MYPIPM_ICONS='n'
+
+#===========================================
 # OS variables
 #===========================================
 [ "$(uname -s)" = "Darwin" ] && export MACOS=1 && export UNIX=1

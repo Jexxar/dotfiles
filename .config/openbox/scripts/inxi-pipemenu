@@ -192,6 +192,11 @@ function doAll() {
     return 0
 }
 
+function outinrofi(){
+    rofi -e "$@"
+    return 0
+}
+
 function main() {
     local cmd=${1:-menu}
     if checkfor "gxmessage"; then

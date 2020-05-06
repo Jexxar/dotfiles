@@ -4,7 +4,11 @@
 #
 
 # To set your language for displaying messages and time/date formats, use the following:
+#LANG=en_CA.UTF8
+#LANG=en_US.UTF8
+#LANG=pt_BR.UTF8
 GTK_OVERLAY_SCROLLING=0
+MYPIPM_ICONS='n'
 
 ## GNOME Keyring
 #export $(gnome-keyring-daemon --start --components=pkcs11,secrets)

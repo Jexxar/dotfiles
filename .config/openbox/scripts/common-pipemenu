@@ -25,7 +25,11 @@ function menuSep() {
 
 function menuItem() {
     if [ ! -z "$3" ]; then
-        echo "<item label=\"$1\" icon=\"$(iconPath "$3")\">  <action name=\"Execute\"><command>$2</command></action> </item>"
+        if [ "$MYPIPM_ICONS" = "n" ]; then
+            echo "<item label=\"$1\"> <action name=\"Execute\"><command>$2</command></action> </item>"
+        else
+            echo "<item label=\"$1\" icon=\"$(iconPath "$3")\">  <action name=\"Execute\"><command>$2</command></action> </item>"
+        fi
     elif [ ! -z "$2" ]; then
         echo "<item label=\"$1\"> <action name=\"Execute\"><command>$2</command></action> </item>"
     else
@@ -35,7 +39,11 @@ function menuItem() {
 
 function subMenuBegin() {
     if [ ! -z "$3" ]; then
-        echo "<menu id=\"$1\" icon=\"$(iconPath "$3")\" label=\"$2\" >"
+        if [ "$MYPIPM_ICONS" = "n" ]; then
+            echo "<menu id=\"$1\" label=\"$2\">"
+        else
+            echo "<menu id=\"$1\" icon=\"$(iconPath "$3")\" label=\"$2\" >"
+        fi
     elif [ ! -z "$2" ]; then
         echo "<menu id=\"$1\" label=\"$2\">"
     fi
@@ -51,7 +59,11 @@ function subMenuActionExec() {
 
 function subMenuExec() {
     if [ ! -z "$4" ]; then
-        echo "<menu id=\"$1\" icon=\"$(iconPath "$4")\" label=\"$2\" execute=\"$3\" />"
+        if [ "$MYPIPM_ICONS" = "n" ]; then
+            echo "<menu id=\"$1\" label=\"$2\" execute=\"$3\" />"
+        else
+            echo "<menu id=\"$1\" icon=\"$(iconPath "$4")\" label=\"$2\" execute=\"$3\" />"
+        fi
     elif [ ! -z "$3" ]; then
         echo "<menu id=\"$1\" label=\"$2\" execute=\"$3\" />"
     fi
