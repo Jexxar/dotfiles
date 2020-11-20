@@ -158,11 +158,13 @@ do
             exit 0
         ;;
         -s)
+            [ $# -lt 2 ] && usage && exit 1
             sflag=1
             tag=$2
             break
         ;;
         -a)
+            [ $# -lt 2 ] && usage && exit 1
             url=$2
             aflag=1
             break
@@ -176,17 +178,20 @@ do
             break
         ;;
         -d)
+            [ $# -lt 2 ] && usage && exit 1
             dflag=1
             mark=$2
             mark=$(echo "$mark" | sed 's/^/@/')
             break
         ;;
         -c)
+            [ $# -lt 2 ] && usage && exit 1
             cflag=1
             tag=$2
             break
         ;;
         -i)
+            [ $# -lt 2 ] && usage && exit 1
             iflag=1
             tag=$2
             break

@@ -20,7 +20,7 @@ function _fX(){
 
 function _fnoX(){
     # list by priority from the left to the right
-    local noXl=('nano' 'pico' 'jed' 'joe' 'mcedit' 'micro' 'vim' 'neovim' 'vi' 'kakoune' 'emacs')
+    local noXl=('micro' 'nano' 'pico' 'jed' 'joe' 'mcedit' 'micro' 'vim' 'neovim' 'vi' 'kakoune' 'emacs')
     local r=""
     for i in "${noXl[@]}"; do
         r=$(command -v "${i}")
