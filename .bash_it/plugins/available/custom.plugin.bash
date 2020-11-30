@@ -146,6 +146,27 @@ function lstrip(){ printf "%s\\n" "${1##$2}"; }
 function lower(){ printf "%s\\n" "${1,,}"; }
 # Uppercase a string. Usage: lower "string"
 function upper(){ printf "%s\\n" "${1^^}"; }
+# Check var for set and not null
+function var_is_set() { [ "${1+x}" = "x" ] && [ "${#1}" -gt "0" ]; }
+# Check var for unset
+function var_is_unset() { [ -z "${1+x}" ]; } 
+# Check var for set and null
+function var_is_empty() { [ "${1+x}" = "x" ] && [ "${#1}" -eq "0" ]; }
+# Check var for unset, or set and null
+function var_is_blank() { var_is_unset "${1}" || var_is_empty "${1}"; }
+
+
+#==============================================
+# undup_bash_history - Remove all duplicated lines from bash_history file.
+#
+# Examples:
+#    undup_bash_history
+#==============================================
+function undup_bash_history(){
+    tac $HISTFILE | awk '!x[$0]++' | tac | sponge $HISTFILE
+    history -c
+    history -r
+}
 
 #==============================================
 # qh - Search bash history for a command.

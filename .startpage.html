@@ -8,11 +8,17 @@
     <title>Home</title>
   
     <style type="text/css">
+      @font-face {
+          font-family: 'RobotoMono Nerd Font'; /* Define your custom font name here */
+          src:  url('file:///usr/share/fonts/truetype/roboto/Roboto Mono Nerd Font Complete.ttf') format('truetype'); /* Define where the font can be downloaded */
+          font-display: fallback; /* Define how the browser behaves during download */
+      }
+
       body {
           background-color: #263238;
           margin: 0px;
           list-style-type: none;
-          font-family: 'Roboto', sans-serif;
+          font-family: "RobotoMono Nerd Font";
           height: 100%;
           background-position: top center;
           background-repeat: no-repeat;
@@ -104,17 +110,21 @@
       }
       
       .bookmark-set{
+          display: inline-block;
           opacity: 1.0;
           padding: 1em;
           background-color: #272727;
-          border-radius: 2px;
+          border-radius: 6px;
           font-family: "RobotoMono Nerd Font";
           font-size: .87rem;
           width: 45%;
           height: 20em;
           margin: 0em .5em;
           padding-top: 2%;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+          transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
         }
+
       .bookmark-inner-container {
           #overflow-y: scroll;
           height: 95%;
@@ -135,6 +145,23 @@
       .bookmark:hover {
           color: #fff;
       }
+
+      #button {
+          padding: 1em;
+          line-height: 12px;
+          width: 65px;
+          margin-top: 10px;
+          margin-right: 1px;
+          position:absolute;
+          top:0;
+          right:0;
+          font-family: "RobotoMono Nerd Font";
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: #fff;
+          background-color: #272727;
+          display:block;
+      }
     </style>
     
     <link href="favicon.png" rel="shortcut icon" type="image/x-icon" />
@@ -143,8 +170,9 @@
     <div id="search">
         <input id="search-field" type="text" name="search-field" onkeypress="return search(event)"/>
     </div>
+    <!-- <div id="button" onclick="showSearch()">Search</div> -->
     <div class="container">
-        <div id="clock"></div>
+        <div id="clock"></div>     
         <div class="row"><br><br></div>
         <div class="bookmark-container">
             <div class="bookmark-set">
@@ -165,8 +193,11 @@
                 <div class="bookmark-title">Media</div>
                 <div class="bookmark-inner-container">
                     <a class="bookmark" href="https://www.youtube.com/feed/subscriptions" target="_blank" rel="noopener noreferrer">Youtube</a>
+                    <a class="bookmark" href="https://sparkle.hotmart.com" target="_blank" rel="noopener noreferrer">Sparkle</a>
+                    <a class="bookmark" href="https://lbry.tv/" target="_blank" rel="noopener noreferrer">Lbry</a>
                     <a class="bookmark" href="https://yayanimes.net/" target="_blank" rel="noopener noreferrer">Yay Animes</a>
                     <a class="bookmark" href="https://animezeira.com/" target="_blank" rel="noopener noreferrer">AnimeZeira</a>
+                    <a class="bookmark" href="https://www.animeshouse.info/" target="_blank" rel="noopener noreferrer">Animes House</a>
                     <a class="bookmark" href="https://www.meuanime.com/" target="_blank" rel="noopener noreferrer">Meu Anime</a>
                     <a class="bookmark" href="https://netflix.com" target="_blank" rel="noopener noreferrer">Netflix</a>
                 </div>
@@ -214,6 +245,15 @@
     </div>
 
     <script>
+        function showhide(id) {
+            var e = document.getElementById(id);
+            e.style.display = (e.style.display == 'block') ? 'none' : 'block';
+        }
+        // Search on enter key event
+        function showSearch() {
+            document.getElementById('search').style.display = 'flex';
+            document.getElementById('search-field').focus();
+        }
         // Search on enter key event
         function search(e) {
             if (e.keyCode == 13) {

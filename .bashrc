@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 
 #==============================================
+# History options
+#==============================================
+export HISTCONTROL=ignoreboth:erasedups
+export HISTIGNORE=”&:ls:[bf]g:exit:pwd:clear:cls”
+export HISTSIZE=1000
+export HISTFILESIZE=2000
+shopt -s histappend
+
+#==============================================
 # Source goto.sh to handle directories
 #==============================================
 [[ -s "$HOME/bin/goto.sh" ]] && source ~/bin/goto.sh
