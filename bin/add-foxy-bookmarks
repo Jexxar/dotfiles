@@ -44,8 +44,6 @@ foxy -a "https://github.com/galihx11" @Desktop @galihx11
 foxy -a "https://dglava.github.io/en/category/linux.html" @Desktop @dinoglava
 foxy -a "https://github.com/zakariaGatter/Gatter_Linux" @Desktop @zakariaGatter @Gatter-Linux
 
-
-
 #Dev
 foxy -a "http://matt.might.net/articles/ssh-hacks/" @Dev @matt-might-ssh-hacks
 foxy -a "https://firejail.wordpress.com/features-3/" @Dev @firejail-features
@@ -83,8 +81,6 @@ foxy -a "https://stackpointer.io/" @Dev @stackpointer
 foxy -a "https://vitux.com/compiling-your-first-qt-program-in-ubuntu/" @Dev @Qt-Program-compile
 foxy -a "http://mywiki.wooledge.org/EnglishFrontPage" @Dev @wooledge @mywiki
 
-
-
 #Distros
 foxy -a "https://externos.io/download" @Distros @externos
 foxy -a "https://nixos.org/" @Distros @nixos
@@ -99,7 +95,6 @@ foxy -a "https://www.linux.com/learn/intro-to-linux/2018/2/namib-linux-makes-arc
 foxy -a "https://erikdubois.be/" @Distros @Arcolinux
 foxy -a "https://forum.archlabslinux.com/" @Distros @Archlabs
 foxy -a "https://voidlinux.org/" @Distros @Voidlinux   
-
 
 #TechLinux
 foxy -a "http://www.hardware.com.br/comunidade/tutorial-linux/801698/" @TechLinux @tutorial-linux
@@ -168,7 +163,6 @@ foxy -a "https://blog.wizardsoftheweb.pro/rofi-basic-configuration/" @TechLinux 
 foxy -a "https://www.mankier.com/1/rofi#Theming" @TechLinux @rofi @ManKier
 foxy -a "https://sysctl-explorer.net/" @TechLinux @Sysctl
 
-
 #Others
 foxy -a "https://whoer.net/" @Others @whoer
 foxy -a "http://www.malware-traffic-analysis.net/" @Others @malware-traffic-analysis
@@ -186,7 +180,6 @@ foxy -a "https://imaginariopuro.wordpress.com/2017/12/28/calculo-tornado-facil-1
 foxy -a "https://www.marinestore.com/corrosionx" @Others  @Anti-Corrosion @Corrosion-X
 foxy -a "https://www.thirtythreeforty.net/posts/2019/12/my-business-card-runs-linux/" @Others @My-Business-Card-Runs-Linux
 
-
 #Social
 foxy -a "http://facebook.com/" @Social @Facebook
 foxy -a "https://fosstodon.org/web/getting-started" @Social @fosstodon
@@ -200,7 +193,6 @@ foxy -a "https://plus.diolinux.com.br/" @Social @Diolinux @Diolinux-Plus
 foxy -a "https://scholar.google.com.br/schhp?hl=pt-BR&as_sdt=0 5" @Social @Google-Scholar   
 foxy -a "https://www.cancertutor.com/cancer-diet/" @Social @Cancer @Cancer-Diets
 foxy -a "https://www.ouvirmusica.com.br/blues-pills/high-class-woman/#472143" @Social @Music
- 
 
 #Reddit
 foxy -a "https://reddit.com/r/photoshopbattles" @Reddit @photoshopbattles

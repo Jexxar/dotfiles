@@ -25,7 +25,7 @@ function doAction(){
 }
 
 function doMenu_en(){
-    gxmessage -font "Sans bold 16" "          Are you sure you want to leave?" -nofocus -center -borderless -noescape -sticky -ontop \
+    gxmessage -font "Sans bold 16" "          Are you sure you want to leave?" -center -borderless -noescape -sticky -ontop \
         -title "Pick a choice" -default "Cancel" -buttons "_Cancel":1,"_Lock":2,"_Exit":3,"_Reboot":4,"_Poweroff":5 >/dev/null
     
     doAction "$?"
@@ -33,7 +33,7 @@ function doMenu_en(){
 }
 
 function doMenu_pt(){
-    gxmessage -font "Sans bold 16" "          Tem certeza que quer sair?" -nofocus -center -borderless -noescape -sticky -ontop \
+    gxmessage -font "Sans bold 16" "          Tem certeza que quer sair?" -center -borderless -noescape -sticky -ontop \
         -title "Escolha uma ação" -default "Cancelar" -buttons "_Cancelar":1,"_Bloquear":2,"_Sair":3,"_Reiniciar":4,"_Desligar":5 >/dev/null
     doAction "$?"
     return 0

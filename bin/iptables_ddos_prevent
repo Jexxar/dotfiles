@@ -194,7 +194,7 @@ function ipt_port_scan_prot(){
 }
 
 function usage() {
-    echo "Usage: $(basename $0) [Options]"
+    echo "Usage: ${0##*/} [Options]"
     echo "       "
     echo "Purpose: To enable firewall (iptables) rules preventing DDoS attacks"
     echo "       "

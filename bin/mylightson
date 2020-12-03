@@ -35,7 +35,7 @@ LO_mandatoryApps=('cura' 'wineserver' 'dbgl' 'openscad' 'dgen' 'lutris' 'playonl
 LO_delayMediaApps=('vlc' 'celluloid' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
 
 # Names of programs which, when using sound server, you wish to delay the screensaver.
-LO_delayWebBasedApps=('firefox' 'chrome' 'vivaldi' 'brave' 'chromium' 'epiphany' 'WebKit' 'opera' 'Iceweasel' 'surf' 'yandex_browser' 'luakit'  'midori' 'min' 'falkon' 'slimjet' 'steam')
+LO_delayWebBasedApps=('firefox' 'chrome' 'vivaldi' 'brave' 'chromium' 'epiphany' 'WebKit' 'opera' 'Iceweasel' 'surf' 'yandex_browser' 'luakit'  'midori' 'min ' 'falkon' 'slimjet' 'steam')
 
 # Names of programs which, when using massive transfer, you wish to delay the screensaver.
 LO_delayBusyApps=('pcmanfm' 'pcmanfm-qt' 'nautilus' 'dolphin' 'thunar' 'caja' 'mc' 'fff' 'nnn' 'ranger' 'vifm')
@@ -344,7 +344,7 @@ function LO_disableScrXautolock(){
     fi
     if [ "${1}" == "force" ]; then
         LO_log "LO_disableXautolock(): Shutting down xautolock daemon..."
-        stop_it "xautolock"
+        stop_it "xautolock" "stop"
     else
         LO_log "LO_disableScrXautolock(): delaying xautolock..."
         [ "$LO_scvpgm" = "xautolock" ] && xautolock -disable
@@ -649,7 +649,7 @@ fi
 LO_scriptName="${0##*/}"
 LO_scriptBaseName="${LO_scriptName%%.*}"
 LO_scriptFPath="$(dirname "$(readlink -f $0)")/${LO_scriptName}"
-LO_stateFile="/tmp/${LO_scriptBaseName}_${USER}_state.txt"
+LO_stateFile="${XDG_CACHE_HOME}/${LO_scriptBaseName}_${USER}_state.txt"
 trap 'rm -f "$LO_stateFile"; exit' INT TERM EXIT ERR
 
 # enumerate all the attached screens
@@ -688,6 +688,9 @@ if [ "$LO_scvpgm" = "xautolock" ]; then
     LO_enableScrXautolock "force"
     snore 2
 fi
+
+# On the first time kill all lockers remaining
+reset_locker
 
 # Initiate monitoring
 while true; do

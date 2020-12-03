@@ -1,57 +1,60 @@
-#! /bin/bash
+#!/usr/bin/env bash
 # Show local ip address
+#set -eu
 
-#==============================================
-# ip v4
-#==============================================
-function do_ipv4_ID() {
-    local _ipv4_ID=`ip address | grep "inet" | grep -v 'inet6' | grep -v '127.0.0.1' | cut -d'/' -f1 | sed -e s'/inet//g' | sed -e s'/ //g'`
-    echo "${_ipv4_ID}" | sed "s/$/ /g" ;
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+function do_ipv4_ID(){
+    ip address | grep "inet" | grep -v 'inet6' | grep -v '127.0.0.1' | cut -d'/' -f1 | sed -e 's/inet//g;s/ //g;s/$/ /g'
 }
 
-#==============================================
-# ip v6
-#==============================================
-function do_ipv6_ID() {
-    local _ipv6_ID=`ip address | grep "inet6" | grep -v '::1' | cut -d'/' -f1 | sed -e s'/inet6//g' | sed -e s'/ //g'`
-    echo "${_ipv6_ID}" | sed "s/$/ /g" ;
+function do_ipv6_ID(){
+    ip address | grep "inet6" | grep -v '::1' | cut -d'/' -f1 | sed -e s'/inet6//g' | sed -e 's/ //g;s/$/ /g'
 }
 
-#==============================================
-# ip both
-#==============================================
-function do_ipboth_ID() {
-    local _ipboth_ID=`ip address | grep "inet" | grep -v '127.0.0.1' | grep -v '::1' | cut -d'/' -f1 | sed -e s'/inet6//g' | sed -e s'/inet//g' | sed -e s'/ //g'`
-    echo "${_ipboth_ID}" | sed "s/$/ /g" ;
+function do_ipboth_ID(){
+    ip address | grep "inet" | grep -v '127.0.0.1' | grep -v '::1' | cut -d'/' -f1 | sed -e s'/inet6//g' | sed -e 's/inet//g;s/ //g;s/$/ /g'
 }
 
-#==============================================
-# Execution control pull from server
-#==============================================
-function this_usage() {
-    echo "Usage: $0 [options]"
+function usage(){
+    echo "Usage: ${0##*/} [options]"
     echo "Purpose: return local ip address"
     echo "       "
     echo "Options"
-    echo "-4: Show ipv4 address"
+    echo "-4: Show ipv4 address(default)"
     echo "-6: Show ipv6 address"
-    echo "-b: Show both ipv4 and ipv6 addresses(default)"; 
-    return 0;
+    echo "-b: Show both ipv4 and ipv6 addresses"
+    echo 
 }
 
 function main(){
-	local opt="$(echo ${1} | sed -e s'/-//g')"
-	[ -z "${opt}" ] && opt="b"
-    case "${opt}" in
-        4) do_ipv4_ID 
-        	;;
-        6) do_ipv6_ID 
-            ;;
-        b) do_ipboth_ID 
-            ;;
-        *) this_usage
-           ;;
+    # Option strings
+    SHORT=":4::6::b::h"
+    LONG=":4,6,b,help"
+    
+    # Read the options
+    OPTS=$(getopt --options $SHORT --long $LONG --name "$0" -- "$@")
+    if [ $? -ne 0 ] ; then
+        echo "Wrong parameters.OPTS=[$OPTS][ $* ]"
+        usage
+        exit 0
+    fi
+    precheck "ip"
+    case "$1" in
+        -4) do_ipv4_ID
+        ;;
+        -6) do_ipv6_ID
+        ;;
+        -b) do_ipboth_ID
+        ;;
+        -h|--help) usage
+        ;;
+        *) do_ipv4_ID
+        ;;
     esac
+    exit 0
 }
 
-main "${1}"
+main "$@"

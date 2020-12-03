@@ -4,7 +4,7 @@
 set -eu
 
 function usage() {
-    echo "Usage: $(basename $0) [Options]"
+    echo "Usage: $(basename "$0") [Options]"
     echo "       "
     echo "Purpose: To enable or disable Touchpad"
     echo "       "
@@ -17,13 +17,26 @@ function usage() {
 }
 
 function touch_hnd_noX(){
+    local bind_mode_file="/sys/bus/serio/drivers/psmouse/bind_mode"
+    local unbind_dev_file="/sys/bus/serio/drivers/psmouse/unbind"
+    local device_id="serio1"
+
     case "$1" in
+        -a | --auto)
+            local cur_mode=$(grep "auto\|manual" $bind_mode_file)
+            if [ "$cur_mode" == "auto" ]; then
+                echo -n "manual" > $bind_mode_file && /usr/bin/logger -t Touchpadctl -- "Disabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot disable touchpad"
+                echo -n $device_id > $unbind_dev_file 2>/dev/null || true
+            else
+                echo -n "auto" > $bind_mode_file && /usr/bin/logger -t Touchpadctl -- "Enabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot enable touchpad"
+            fi
+        ;;
         -d | --disable)
-            echo -n manual > $base_dir/bind_mode && /usr/bin/logger -t Touchpadctl -- "Disabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot disable touchpad"
-            echo -n $device_id > $base_dir/unbind 2>/dev/null || true
+            echo -n "manual" > $bind_mode_file && /usr/bin/logger -t Touchpadctl -- "Disabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot disable touchpad"
+            echo -n $device_id > $unbind_dev_file 2>/dev/null || true
         ;;
         -e | --enable)
-            echo -n auto > $base_dir/bind_mode && /usr/bin/logger -t Touchpadctl -- "Enabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot enable touchpad"
+            echo -n "auto" > $bind_mode_file && /usr/bin/logger -t Touchpadctl -- "Enabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot enable touchpad"
         ;;
         *)  usage
             exit 0
@@ -73,12 +86,10 @@ function touch_hnd_X(){
 
 user_list="$(w -h | cut -d' ' -f1 | sort | uniq)"
 user_id="$(id -u)"
-base_dir=/sys/bus/serio/drivers/psmouse
-device_id=serio1
 
 function main(){
     if [ $# -eq 0 ]; then
-        echo "vazio"
+        echo "Error: No arguments found"
         usage
         exit 1
     fi
@@ -106,5 +117,3 @@ main "$@"
 
 unset user_list
 unset user_id
-unset base_dir
-unset device_id

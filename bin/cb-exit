@@ -9,6 +9,7 @@ import getpass
 class cb_exit:
   def disable_buttons(self):
     self.cancel.set_sensitive(False)
+    self.lock.set_sensitive(False)
     self.logout.set_sensitive(False)
     self.suspend.set_sensitive(False)
     self.reboot.set_sensitive(False)
@@ -21,24 +22,32 @@ class cb_exit:
   def logout_action(self,btn):
     self.disable_buttons()
     self.status.set_label("Exiting Openbox, please standby...")
-    os.system("openbox --exit")
+    os.system("myexit")
+    gtk.main_quit()
+  
+  def lock_action(self,btn):
+    self.disable_buttons()
+    self.status.set_label("Locking screen...")
+    os.system("mylock")
+    gtk.main_quit()
   
   def suspend_action(self,btn):
     self.disable_buttons()
     self.status.set_label("Suspending, please standby...")
-    os.system("cb-lock")
-    os.system("dbus-send --system --print-reply --dest=\"org.freedesktop.UPower\" /org/freedesktop/UPower org.freedesktop.UPower.Suspend")
+    os.system("mysuspend")
     gtk.main_quit()
   
   def reboot_action(self,btn):
     self.disable_buttons()
     self.status.set_label("Rebooting, please standby...")
-    os.system("dbus-send --system --print-reply --dest=\"org.freedesktop.ConsoleKit\" /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Restart")
+    os.system("myreboot")
+    gtk.main_quit()
   
   def shutdown_action(self,btn):
     self.disable_buttons()
     self.status.set_label("Shutting down, please standby...")
-    os.system("dbus-send --system --print-reply --dest=\"org.freedesktop.ConsoleKit\" /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop")
+    os.system("myshutdown")
+    gtk.main_quit()
   
   def create_window(self):
     self.window = gtk.Window()
@@ -54,7 +63,6 @@ class cb_exit:
     windowicon = self.window.render_icon(gtk.STOCK_QUIT, gtk.ICON_SIZE_MENU)
     self.window.set_icon(windowicon)
   
-      
     #Create HBox for buttons
     self.button_box = gtk.HBox()
     self.button_box.show()
@@ -66,6 +74,13 @@ class cb_exit:
     self.button_box.pack_start(self.cancel)
     self.cancel.show()
       
+    #Lock button
+    self.lock = gtk.Button("_Lock")
+    self.lock.set_border_width(4)
+    self.lock.connect("clicked", self.lock_action)
+    self.button_box.pack_start(self.lock)
+    self.lock.show()
+
     #Logout button
     self.logout = gtk.Button("_Log out")
     self.logout.set_border_width(4)

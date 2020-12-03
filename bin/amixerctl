@@ -1,27 +1,50 @@
 #!/usr/bin/env bash
+# It requires amixer.
+#set -eu
 
-#vol="$(amixer get Master | tail -n1 | sed -r 's/.*\[(.*)%\].*/\1/')"
-#echo "${vol}% "
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
 
-case $1 in
-    up)
-        amixer set Master unmute > /dev/null
-        amixer set Master 5%+ >/dev/null
-    ;;
-    down)
-        amixer set Master unmute > /dev/null
-        amixer set Master 5%- >/dev/null
-    ;;
-    mute)
-        amixer set Master mute > /dev/null
-        amixer -Dhw:1 set Master mute > /dev/null
-    ;;
-    status)
-        amixer get Master | tail -n 1 | awk '{if ($6 ~ /on/) { gsub(/[\[\]]/, "", $5); print $5; } else print "off" }'
-    ;;
-    *)
-        echo "Wrong parameters"
-    ;;
-esac
+function usage(){
+    echo "Usage: ${0##*/} [commands]"
+    echo "Purpose: An amixer helper"
+    echo "       "
+    echo "Commands"
+    echo "    up: Volume up"
+    echo "  down: Volume down"
+    echo "  mute: Mute channel"
+    echo "status: Volume status"
+    echo
+}
 
-exit 0
+function main(){
+    precheck "amixer"
+    #vol="$(amixer get Master | tail -n1 | sed -r 's/.*\[(.*)%\].*/\1/')"
+    #echo "${vol}% "
+    
+    case $1 in
+        up)
+            LC_ALL=C amixer set Master unmute > /dev/null
+            LC_ALL=C amixer set Master 5%+ >/dev/null
+        ;;
+        down)
+            LC_ALL=C amixer set Master unmute > /dev/null
+            LC_ALL=C amixer set Master 5%- >/dev/null
+        ;;
+        mute)
+            LC_ALL=C amixer set Master mute > /dev/null
+            LC_ALL=C amixer -Dhw:1 set Master mute > /dev/null
+        ;;
+        status)
+            LC_ALL=C amixer get Master | tail -n 1 | awk '{if ($6 ~ /on/) { gsub(/[\[\]]/, "", $4); gsub(/[\[\]]/, "", $5); print $5" / "$4; } else print "off" }'
+        ;;
+        *)
+            usage
+        ;;
+    esac
+    
+    exit 0
+}
+
+main "$@"

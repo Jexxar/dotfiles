@@ -4,7 +4,7 @@
 # History options
 #==============================================
 export HISTCONTROL=ignoreboth:erasedups
-export HISTIGNORE=”&:ls:[bf]g:exit:pwd:clear:cls”
+export HISTIGNORE=”ls:exit:pwd:clear:cls”
 export HISTSIZE=1000
 export HISTFILESIZE=2000
 shopt -s histappend
@@ -61,7 +61,8 @@ export BASH_IT="$HOME/.bash_it"
 if [ "$TERM" = "linux" ]; then
     export BASH_IT_THEME='pure'
 else
-    export BASH_IT_THEME='powerline-multiline-custom'
+    #export BASH_IT_THEME='powerline-multiline-custom'
+    export BASH_IT_THEME='demula'
 fi
 
 #==============================================

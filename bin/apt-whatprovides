@@ -7,28 +7,29 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-function hhelp {
+function usage {
     echo "$1 ver. $2 - Copyright by $3, $4 Licence"
     echo "usage: $1 [filename]"
     echo
     echo "Find in what package(s) such filename is provided"
+    echo
 }
 
 function main(){
     precheck "apt-file"
     
-    local PN=`basename "$0"`          # Program name
+    local PN="${0##*/}"          # Program name
     local VER='201801010101'
     local AUTN='alexx'
     local LIC="MIT"
     
     if [ $# -eq 0 ]; then
-        hhelp $PN $VER $AUTN $LIC
+        usage $PN $VER $AUTN $LIC
         exit 1
     fi
     
     if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-        hhelp $PN $VER $AUTN $LIC
+        usage $PN $VER $AUTN $LIC
         exit 0
     fi
     local BINARY=""

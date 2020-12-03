@@ -33,6 +33,8 @@ function do_exit(){
     stop_it "tint2"
     stop_it "compton"
     stop_it "picom"
+    stop_it "redshift"
+    stop_it "redshift-gtk"
     log "Exiting now..."
     
     [ "$XDG_SESSION_DESKTOP" == "openbox" ] && openbox --exit;
@@ -66,6 +68,8 @@ function do_test(){
     stop_it "tint2" "debug"
     stop_it "compton" "debug"
     stop_it "picom" "debug"
+    stop_it "redshift" "debug"
+    stop_it "redshift-gtk" "debug"
     log "Exiting now..."
     [ "$XDG_CURRENT_DESKTOP" == "openbox" ] && log "openbox --exit;"
     log "kilall $XDG_CURRENT_DESKTOP;"

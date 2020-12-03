@@ -56,11 +56,11 @@ function set(){
     [ -z "$1" ] && echo "Specify filename to set" && return 1
     local file="$1"
     local f="$(readlink -f $file)"
-    mkdir -p $HOME/.cache/wp
+    mkdir -p "${XDG_CACHE_HOME}/wp"
     echo "Setting wallpaper: ${f##*/}"
     checkfor "nitrogen" && nitrogen --set-scaled --save "$file" || feh --no-fehbg --bg-fill "$file"
     banner
-    local ts="/tmp/.wp.selection.${USER}"
+    local ts="${XDG_CACHE_HOME}/.wp.selection.${USER}"
     echo "Temporarily storing wallpaper selection: $ts"
     banner
     echo "Use --save to store it permanently."
@@ -71,28 +71,29 @@ function set(){
 # filename to ~/.wp/current (wp will exit with return code 200 if no
 # wallpaper has been temporarily set prior).
 function save(){
-    if [[ ! -f /tmp/.wp.selection.${USER} ]]; then
-        checkfor "nitrogen" && return 0
+    if [[ ! -f "${XDG_CACHE_HOME}/.wp.selection.${USER}" ]]; then
         banner
         echo "No temporarily stored wallpaper selection found."
         exit 200
     else
-        local f="$(tail -n 1 /tmp/.wp.selection.${USER})"
+        local f="$(tail -n 1 ${XDG_CACHE_HOME}/.wp.selection.${USER})"
         banner
         echo "Storing wallpaper selection to ~/.cache/wp/current ..."
-        echo "$f" > $HOME/.cache/wp/current
+        echo "$f" > ${XDG_CACHE_HOME}/wp/current
     fi
 }
 
 # This gets the currently *saved* wallpaper selection (which can be
 # different from a wallpaper that has just been set, but not saved, yet).
 function get(){
-    cat $HOME/.cache/wp/current
+    cat ${XDG_CACHE_HOME}/wp/current
 }
 
 # Restores the last saved wallpaper
 function restore(){
-    checkfor "nitrogen" && nitrogen --restore || banner && set "$(tail -n 1 $HOME/.cache/wp/current)"
+    checkfor "nitrogen" && nitrogen --restore && return 0
+    banner
+    set "$(tail -n 1 ${XDG_CACHE_HOME}/wp/current)"
 }
 
 # Sets a random wallpaper

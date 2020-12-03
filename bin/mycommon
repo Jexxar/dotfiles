@@ -13,7 +13,6 @@ function findLogPath(){
 # Script name that is sourcing this
 myLogScriptName="${0##*/}"
 myLogSctiptBase="${myLogScriptName%%.*}"
-
 # Find a path to Log file
 myLogPath=$(findLogPath)
 myLogFile="$myLogPath/$myLogSctiptBase.log"
@@ -82,7 +81,6 @@ function findutil(){
 function urlencode(){
     local old_lc_collate=$LC_COLLATE
     LC_COLLATE=C
-    
     local length="${#1}"
     for (( i = 0; i < length; i++ )); do
         local c="${1:i:1}"
@@ -91,12 +89,13 @@ function urlencode(){
             *) printf '%%%02X' "'$c" ;;
         esac
     done
-    
     LC_COLLATE=$old_lc_collate
 }
 
 # Using awk and hexdump
 function url_encode(){
+    precheck "hexdump"
+    precheck "awk"
     local encodedurl="$1";
     encodedurl=$(echo $encodedurl | hexdump -v -e '1/1 "%02x\t"' -e '1/1 "%_c\n"' | LANG=C awk '
      $1 == "20"                    { printf("%s",   "+"); next } # space becomes plus
@@ -160,7 +159,7 @@ function lsof_p(){
     [ -z "$1" ] && return 1
     local i=""
     local l=""
-    for x in $(pgrep -f "$1"); do
+    for x in $(ps_ISO "$1" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}' | grep "$1" | awk '{print $1}'); do
         if [ -n "$x" ]; then
             i=$(basename "/proc/$x")
             for f in "/proc/$x"/fd/*; do
@@ -169,11 +168,6 @@ function lsof_p(){
             done
         fi
     done | sort -u | sort -n | grep -v "/dev/null\|/dev/urandom\|/dev/dri\|\.cache\|/dev/pts\|gvfs-metadata"
-}
-
-# Rsync copy w/ progress
-function rsyncp_p(){
-    rsync -WavP --human-readable --progress $1 $2
 }
 
 # Check for a git repo in that location
@@ -279,21 +273,21 @@ function kill_them(){
     [ $# -gt 2 ] && local shw="y" || local shw="n"
     case ${1-check} in
         all)
-            LC_ALL=C pkill -USR1 --euid "$(id -u)" --exact "$s_name" > /dev/null 2>&1 && has="y" && log "Stopping instances(pkill): name=$s_name" || true
-            for i in $(ps_ISO "$s_name" | grep -v "grep" | awk '{print $3}'); do
-                kill "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name"
-                [ $? -ne 0 ] && kill -9 "$i" > /dev/null 2>&1 && has="y" && log "Stopping instance(kill): pid=$i name=$s_name"
-                [ $? -ne 0 ] && killall "$1" > /dev/null 2>&1 && has="y" && log "Stopping instances(killall): name=$s_name" || true
+            LC_ALL=C pkill -USR1 --euid "$(id -u)" --exact "$s_name" > /dev/null 2>&1 && has="y" && log "kill_them all Stopping instances(pkill): name=$s_name" || true
+            for i in $(ps_ISO "$s_name" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}' | grep "$s_name" | awk '{print $1}'); do
+                kill "$i" &>/dev/null && has="y" && log "kill_them all Stopping instance(kill): pid=$i name=$s_name"
+                [ $? -ne 0 ] && kill -9 "$i" > /dev/null 2>&1 && has="y" && log "kill_them all Stopping instance(kill): pid=$i name=$s_name"
+                [ $? -ne 0 ] && killall "$1" > /dev/null 2>&1 && has="y" && log "kill_them all Stopping instances(killall): name=$s_name" || true
                 snore 0.1
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] && log "kill_them all: No process $s_name found"
             return 0
         ;;
         but-me)
-            for i in $(ps_ISO "$s_name" | grep -v "grep" | awk '{print $3}'); do
+            for i in $(ps_ISO "$s_name" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}' | grep "$s_name" | awk '{print $1}'); do
                 if [ "$i" != "$$" ]; then
-                    kill "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name"
-                    [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name" || true
+                    kill "$i" &>/dev/null && has="y" && log "kill_them but-me Stopping instance(kill): pid=$i name=$s_name"
+                    [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && has="y" && log "kill_them but-me Stopping instance(kill): pid=$i name=$s_name" || true
                     snore 0.1
                 fi
             done
@@ -301,19 +295,19 @@ function kill_them(){
             return 0
         ;;
         strict)
-            for i in $(ps_ISO "$s_name" | grep -v "bash" | grep -v "sh -c" | grep -v "grep" | awk '{print $3}'); do
-                kill "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name"
-                [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name" || true
+            for i in $(ps_ISO "$s_name" | sed 's/bash //g' | grep -v "bash" | grep -v "sh -c" | grep -v "grep" | awk '{print $3" "$5}' | grep "$s_name" | awk '{print $1}'); do
+                kill "$i" &>/dev/null && has="y" && log "kill_them strict Stopping instance(kill): pid=$i name=$s_name"
+                [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && has="y" && log "kill_them strict Stopping instance(kill): pid=$i name=$s_name" || true
                 snore 0.1
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "kill_them strict: No process $s_name found"
             return 0
         ;;
         but-me-bash)
-            for i in $(ps_ISO "$s_name" | grep -P "bash" | grep -v "grep" | awk '{print $3}'); do
+            for i in $(ps_ISO "$s_name" | grep -F "bash " | grep -v "grep" | awk '{print $3" "$5}' | grep "$s_name" | awk '{print $1}'); do
                 if [ "$i" != "$$" ]; then
-                    kill "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name"
-                    [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name" || true
+                    kill "$i" &>/dev/null && has="y" && log "kill_them but-me-bash Stopping instance(kill): pid=$i name=$s_name"
+                    [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && has="y" && log "kill_them but-me-bash Stopping instance(kill): pid=$i name=$s_name" || true
                     snore 0.1
                 fi
             done
@@ -321,19 +315,19 @@ function kill_them(){
             return 0
         ;;
         sh-c)
-            for i in $(ps_ISO "$s_name" | grep -P "sh -c" | grep -v "grep" | awk '{print $3}'); do
-                kill "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name"
-                [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && has="y" && log "Stopping instance(kill): pid=$i name=$s_name" || true
+            for i in $(ps_ISO "$s_name" | sed 's/bash //g' | grep -P "sh -c" | grep -v "grep" | awk '{print $3" "$5" "$6" "$7}' | grep "$s_name" | awk '{print $1}'); do
+                kill "$i" &>/dev/null && has="y" && log "kill_them sh-c Stopping instance(kill): pid=$i name=$s_name"
+                [ $? -ne 0 ] && kill -9 "$i" &>/dev/null && has="y" && log "kill_them sh-c Stopping instance(kill): pid=$i name=$s_name" || true
                 snore 0.1
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "kill_them sh-c: No process sh -c + $s_name found"
             return 0
         ;;
         check)
-            for i in $(ps_ISO "$s_name" | grep -v "grep" | awk '{print $3}'); do
-                log "check: Process $s_name pid=$i is running and can be terminated" && has="y"
+            for i in $(ps_ISO "$s_name" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}' | grep "$s_name" | awk '{print $1}'); do
+                log "kill_them check: Process $s_name pid=$i is running and can be terminated" && has="y"
             done
-            [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "check: Process $s_name not found"
+            [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "kill_them check: No process $s_name not found"
             return 0
         ;;
     esac
@@ -486,6 +480,15 @@ function locked(){
         [ $(pgrep -lfc "${p}") -gt 0 ] && return 0;
     done
     return 1;
+}
+
+# Reset locker if screen already locked
+function reset_locker(){
+    local sclist=('i3lock' 'mate-screensaver-dialog' 'cinnamon-screensaver-pam-helper' 'slimlock' 'gnome-screensaver-dialog' 'xscreensaver')
+    for p in "${sclist[@]}"; do
+        [ $(pgrep -lfc "${p}") -gt 0 ] && stop_it "${p}"
+    done
+    return 0;
 }
 
 # builtin sleep version in bash
