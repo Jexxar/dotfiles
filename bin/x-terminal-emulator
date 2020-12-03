@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# This script is intended to be run as a x-terminal-emulator helper.
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+function start_it(){
+    [ -z "$1" ] && return 0
+    local scmd="$1"
+    shift
+    if [ -n "$scmd" ]; then
+        ${scmd} "$@" &
+        disown
+        exit 0
+    fi
+}
+
+function main(){
+    local cmd=""
+    # if we have x-terminal-emulator installed
+    cmd="$(LC_ALL=C type -a x-terminal-emulator 2> /dev/null | grep -v "$USER" | awk '/ is/ {print $3}')"
+    start_it "$cmd" "$@"
+    # otherwise find for another suitable terminal emulator
+    for t in $(compgen -c | grep "term\|tilix\|urxvt\|kitty\|alacritty\|tilda\|guake\|sakura\|konsole" | grep -v "preexec\|intel\|rofi\|dh\|koi8\|_terms\|wrapper" | sort -u);do
+        cmd="$(command -v "$t")"
+        echo "$t is $cmd"
+        start_it "$cmd" "$@"
+    done
+    # look for st
+    cmd="$(command -v st)"
+    start_it "$cmd" "$@"
+    exit 0
+}
+
+main "$@"
