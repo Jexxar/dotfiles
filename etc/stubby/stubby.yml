@@ -160,6 +160,12 @@ upstream_recursive_servers:
     tls_pubkey_pinset:
       - digest: "sha256"
         value: cE2ecALeE5B+urJhDrJlVFmf38cJLAvqekONvjvpqUA=
+## A Surfnet/Sinodun server supporting TLS 1.2 and 1.3
+  - address_data: 145.100.185.18
+    tls_auth_name: "dnsovertls3.sinodun.com"
+    tls_pubkey_pinset:
+      - digest: "sha256"
+        value: 5SpFz7JEPzF71hditH1v2dBhSErPUMcLPJx1uk2svT8=
 # The getdnsapi.net server
   - address_data: 185.49.141.37
     tls_auth_name: "getdnsapi.net"
@@ -180,12 +186,6 @@ upstream_recursive_servers:
       - digest: "sha256"
         value: V6zes8hHBVwUECsHf7uV5xGM7dj3uMXIS9//7qC8+jU=
 ### Test servers ###
-## A Surfnet/Sinodun server supporting TLS 1.2 and 1.3
-  - address_data: 145.100.185.18
-    tls_auth_name: "dnsovertls3.sinodun.com"
-    tls_pubkey_pinset:
-      - digest: "sha256"
-        value: 5SpFz7JEPzF71hditH1v2dBhSErPUMcLPJx1uk2svT8=
 ## LibreDns 116.202.176.26
   - address_data: 116.202.176.26
     tls_port: 853
@@ -202,26 +202,6 @@ upstream_recursive_servers:
     tls_pubkey_pinset:
       - digest: "sha256"
         value: YmcYWZU5dd2EoblZHNf1jTUPVS+uK3280YYCdz4l4wo=
-####### IPv6 addresses ######
-### Test servers ###
-# The Surfnet/Sinodun servers
-  - address_data: 2001:610:1:40ba:145:100:185:15
-    tls_auth_name: "dnsovertls.sinodun.com"
-    tls_pubkey_pinset:
-      - digest: "sha256"
-        value: 62lKu9HsDVbyiPenApnc4sfmSYTHOVfFgL3pyB+cBL4=
-  - address_data: 2001:610:1:40ba:145:100:185:16
-    tls_auth_name: "dnsovertls1.sinodun.com"
-    tls_pubkey_pinset:
-      - digest: "sha256"
-        value: cE2ecALeE5B+urJhDrJlVFmf38cJLAvqekONvjvpqUA=
-# The getdnsapi.net server
-  - address_data: 2a04:b900:0:100::38
-    tls_auth_name: "getdnsapi.net"
-    tls_pubkey_pinset:
-      - digest: "sha256"
-        value: foxZRnIh9gZpWnl+zEiKa0EJ2rdCGroMWm02gaxSc9Q=
-
 ############################ OPTIONAL UPSTREAMS  ###############################
 ####### IPv4 addresses ######
 ### Anycast services ###
@@ -302,6 +282,30 @@ upstream_recursive_servers:
 ##         value: pOXrpUt9kgPgbWxBFFcBTbRH2heo2wHwXp1fd4AEVXI=
 
 ####### IPv6 addresses #######
+### Test servers ###
+# The Surfnet/Sinodun servers
+  - address_data: 2001:610:1:40ba:145:100:185:15
+    tls_auth_name: "dnsovertls.sinodun.com"
+    tls_pubkey_pinset:
+      - digest: "sha256"
+        value: 62lKu9HsDVbyiPenApnc4sfmSYTHOVfFgL3pyB+cBL4=
+  - address_data: 2001:610:1:40ba:145:100:185:16
+    tls_auth_name: "dnsovertls1.sinodun.com"
+    tls_pubkey_pinset:
+      - digest: "sha256"
+        value: cE2ecALeE5B+urJhDrJlVFmf38cJLAvqekONvjvpqUA=
+## A Surfnet/Sinodun server supporting TLS 1.2 and 1.3
+  - address_data: 2001:610:1:40ba:145:100:185:18
+    tls_auth_name: "dnsovertls3.sinodun.com"
+    tls_pubkey_pinset:
+      - digest: "sha256"
+        value: 5SpFz7JEPzF71hditH1v2dBhSErPUMcLPJx1uk2svT8=
+# The getdnsapi.net server
+  - address_data: 2a04:b900:0:100::38
+    tls_auth_name: "getdnsapi.net"
+    tls_pubkey_pinset:
+      - digest: "sha256"
+        value: foxZRnIh9gZpWnl+zEiKa0EJ2rdCGroMWm02gaxSc9Q=
 ### Anycast services ###
 ## Quad 9 'secure' service - Filters, does DNSSEC, doesn't send ECS
 #  - address_data: 2620:fe::fe
@@ -323,17 +327,11 @@ upstream_recursive_servers:
         value: V6zes8hHBVwUECsHf7uV5xGM7dj3uMXIS9//7qC8+jU=
 ### Test servers ###
 ## The Uncensored DNS server
-  - address_data: 2a01:3a0:53:53::0
-    tls_auth_name: "unicast.censurfridns.dk"
-    tls_pubkey_pinset:
-      - digest: "sha256"
-        value: wikE3jYAA6jQmXYTr/rbHeEPmC78dQwZbQp6WdrseEs=
-## A Surfnet/Sinodun server supporting TLS 1.2 and 1.3
-  - address_data: 2001:610:1:40ba:145:100:185:18
-    tls_auth_name: "dnsovertls3.sinodun.com"
-    tls_pubkey_pinset:
-      - digest: "sha256"
-        value: 5SpFz7JEPzF71hditH1v2dBhSErPUMcLPJx1uk2svT8=
+#  - address_data: 2a01:3a0:53:53::0
+#    tls_auth_name: "unicast.censurfridns.dk"
+#    tls_pubkey_pinset:
+#      - digest: "sha256"
+#        value: wikE3jYAA6jQmXYTr/rbHeEPmC78dQwZbQp6WdrseEs=
 ## A Surfnet/Sinodun server using Knot resolver. Warning - has issue when used
 ## for DNSSEC
 #  - address_data: 2001:610:1:40ba:145:100:185:17
@@ -357,11 +355,11 @@ upstream_recursive_servers:
 #      - digest: "sha256"
 #        value: h3mufC43MEqRD6uE4lz6gAgULZ5/riqH/E+U+jE3H8g=
 ## dns-tls.bitwiseshift.net
-  - address_data: 2001:8b0:24:24::24
-    tls_auth_name: "dns-tls.bitwiseshift.net"
-    tls_pubkey_pinset:
-      - digest: "sha256"
-        value: YmcYWZU5dd2EoblZHNf1jTUPVS+uK3280YYCdz4l4wo=
+#  - address_data: 2001:8b0:24:24::24
+#    tls_auth_name: "dns-tls.bitwiseshift.net"
+#    tls_pubkey_pinset:
+#      - digest: "sha256"
+#        value: YmcYWZU5dd2EoblZHNf1jTUPVS+uK3280YYCdz4l4wo=
 ## ns1.dnsprivacy.at
 #  - address_data: 2a01:4f8:c0c:3c03::2
 #    tls_auth_name: "ns1.dnsprivacy.at"

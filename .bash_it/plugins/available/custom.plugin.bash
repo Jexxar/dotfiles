@@ -1,6 +1,27 @@
 # 'custom' functions
 
 #==============================================
+# echo replacement 
+#==============================================
+function echo () {
+    local fmt=%s
+    local end=\\n
+    local OFS="$IFS"
+    
+    while [ $# -gt 1 ] ; do
+        case "$1" in
+            [!-]*|-*[!ne]*) break ;;
+            *ne*|*en*) fmt=%b end= ;;
+            *n*) end= ;;
+            *e*) fmt=%b ;;
+        esac
+        shift
+    done
+    IFS=$OFS
+    printf "$fmt$end" "$*"
+}
+
+#==============================================
 # Oneliners
 #==============================================
 # Random passw. ex: rpass 6
@@ -16,7 +37,7 @@ function decrypt(){ gpg --no-options "$1" ; }
 # Number of CPUs
 function ncpu(){ grep -c 'processor' /proc/cpuinfo ; }
 # Custom ps my user processes
-function my_ps(){ ps -eo etimes,ruser,pid,ppid,cmd --sort=start_time | awk 'BEGIN{now=systime()} {$1=strftime("%Y-%m-%d-%H:%M:%S", now-$1); print $0}' | awk -v u=$USER '$2 == u { print $0 }' | grep -v "grep" | grep -v "awk"; }
+function my_ps(){ ps -eo etimes,ruser,pid,ppid,cmd --sort=start_time | awk 'BEGIN{now=systime()} {$1=strftime("%Y-%m-%d-%H:%M:%S", now-$1); print $0}' | awk -v u=$USER '$2 == u { print $0 }' | grep -v "grep\|awk\|ps -e"; }
 # Custom my user processes tree
 function psgrep(){ my_ps | awk '!/awk/ && $0~var' var="${1:-".*"}" | grep -v "grep" | grep -v "awk" ; }
 # Submit a job

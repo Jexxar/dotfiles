@@ -43,6 +43,7 @@ function do_exports() {
     export -f duplines
     export -f du_short
     export -f dwordnet
+    export -f echo
     export -f echo_fail
     export -f echo_pass
     export -f edit
@@ -123,10 +124,15 @@ function do_exports() {
     export -f topcount
     export -f total_mem
     export -f tre
+    export -f undup_bash_history
     export -f uniqlines
     export -f upper
     export -f uptime_active
     export -f uptime_since
+    export -f var_is_blank
+    export -f var_is_empty
+    export -f var_is_set
+    export -f var_is_unset
     export -f wfcard
     export -f yday
     export -f you_have_mail

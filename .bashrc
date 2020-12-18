@@ -1,59 +1,36 @@
 #!/usr/bin/env bash
 
 #==============================================
-# History options
+# Remember:
+#   Most of the settings are stored in: ~/.bash_it/lib/custom.bash
+#   Check that file before include new settings here.
 #==============================================
-export HISTCONTROL=ignoreboth:erasedups
-export HISTIGNORE=”ls:exit:pwd:clear:cls”
-export HISTSIZE=1000
-export HISTFILESIZE=2000
-shopt -s histappend
+# 1) History options
+# 2) Shell options 
+# 3) Basic exports
+# 4) Default colors 
+#==============================================
 
 #==============================================
 # Source goto.sh to handle directories
 #==============================================
-[[ -s "$HOME/bin/goto.sh" ]] && source ~/bin/goto.sh
+[[ -s "${HOME}/bin/goto.sh" ]] && source ~/bin/goto.sh
 
 #==============================================
-# Set Xterm/screen/Tmux title with only a short hostname.
-# Uncomment this (or set SHORT_HOSTNAME to something else),
-# Will otherwise fall back on $HOSTNAME.
-#==============================================
-#export SHORT_HOSTNAME=$(hostname -s)
-
-#==============================================
-# Set Xterm/screen/Tmux title with only a short username.
-# Uncomment this (or set SHORT_USER to something else),
-# Will otherwise fall back on $USER.
-#==============================================
-#export SHORT_USER=${USER:0:8}
-
-#==============================================
-# Set Xterm/screen/Tmux title with shortened command and directory.
-# Uncomment this to set.
-#==============================================
-#export SHORT_TERM_LINE=true
-
-#==============================================
-# Set Xcursor environment
-#==============================================
-export XCURSOR_PATH="/usr/share/icons:~/.local/share/icons:$XCURSOR_PATH"
-
-#==============================================
-# Set vcprompt executable path for scm advance info in prompt (demula theme)
+# Set vcprompt executable path for scm advance info in prompt (bash_it demula theme)
 # https://github.com/djl/vcprompt
 #==============================================
-export VCPROMPT_EXECUTABLE=~/bin/vcprompt
+export VCPROMPT_EXECUTABLE="${HOME}/bin/vcprompt"
 
 #==============================================
-# Set this to false to turn off version control status checking within the prompt for all themes
+# Set this to false to turn off version control status checking within the prompt for all bash_it themes
 #==============================================
 export SCM_CHECK=true
 
 #==============================================
 # Path to the bash it configuration
 #==============================================
-export BASH_IT="$HOME/.bash_it"
+export BASH_IT="${HOME}/.bash_it"
 
 #==============================================
 # Lock and Load a custom theme file under /.bash_it/themes/
@@ -61,8 +38,7 @@ export BASH_IT="$HOME/.bash_it"
 if [ "$TERM" = "linux" ]; then
     export BASH_IT_THEME='pure'
 else
-    #export BASH_IT_THEME='powerline-multiline-custom'
-    export BASH_IT_THEME='demula'
+    export BASH_IT_THEME='powerline-multiline-custom'
 fi
 
 #==============================================
@@ -78,13 +54,13 @@ fi
 # export BASH_IT_AUTOMATIC_RELOAD_AFTER_CONFIG_CHANGE=1
 
 #==============================================
-# Create another plugin to auto export functions for the session
+# Create a dynamic plugin to auto export all my custom functions (plugins) for the session
 #==============================================
 function exports_gen() {
     local cstfile="$BASH_IT/plugins/available/custom.plugin.bash"
     local expfile="$BASH_IT/plugins/available/exports.plugin.bash"
     [ -f "$expfile" ] && rm -f "$expfile"
-    echo -e "#!/usr/bin/env bash\n" > "$expfile"
+    echo -e "#\041/usr/bin/env bash\n" > "$expfile"
     echo -e "#==============================================" >> "$expfile"
     echo -e "# Exports (auto generated. Do not edit)" >> "$expfile"
     echo -e "#==============================================\n" >> "$expfile"

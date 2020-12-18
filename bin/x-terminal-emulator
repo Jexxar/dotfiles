@@ -22,13 +22,14 @@ function main(){
     cmd="$(LC_ALL=C type -a x-terminal-emulator 2> /dev/null | grep -v "$USER" | awk '/ is/ {print $3}')"
     start_it "$cmd" "$@"
     # otherwise find for another suitable terminal emulator
-    for t in $(compgen -c | grep "term\|tilix\|urxvt\|kitty\|alacritty\|tilda\|guake\|sakura\|konsole" | grep -v "preexec\|intel\|rofi\|dh\|koi8\|_terms\|wrapper" | sort -u);do
+    for t in $(compgen -c | grep "term\|tilix\|urxvt\|kitty\|alacritty\|tilda\|guake\|sakura\|konsole" | grep -v "setterm\|preexec\|intel\|rofi\|dh\|koi8\|_terms\|wrapper\|emu" | sort -u);do
         cmd="$(command -v "$t")"
         echo "$t is $cmd"
         start_it "$cmd" "$@"
     done
     # look for st
     cmd="$(command -v st)"
+    [ -z "$cmd" ] && exit 1
     start_it "$cmd" "$@"
     exit 0
 }

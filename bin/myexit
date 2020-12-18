@@ -35,6 +35,7 @@ function do_exit(){
     stop_it "picom"
     stop_it "redshift"
     stop_it "redshift-gtk"
+    stop_it "xflux"
     log "Exiting now..."
     
     [ "$XDG_SESSION_DESKTOP" == "openbox" ] && openbox --exit;
@@ -70,6 +71,7 @@ function do_test(){
     stop_it "picom" "debug"
     stop_it "redshift" "debug"
     stop_it "redshift-gtk" "debug"
+    stop_it "xflux" "debug"
     log "Exiting now..."
     [ "$XDG_CURRENT_DESKTOP" == "openbox" ] && log "openbox --exit;"
     log "kilall $XDG_CURRENT_DESKTOP;"

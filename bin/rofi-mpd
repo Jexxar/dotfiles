@@ -64,6 +64,10 @@ function addaftercurrentandplay(){
     fi
 }
 
+precheck "mpd"
+precheck "mpc"
+precheck "rofi"
+
 case $1 in
     -a|--artist)
         while true; do

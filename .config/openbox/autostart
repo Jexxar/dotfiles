@@ -98,6 +98,7 @@ if [ $(command -v picom) ]; then
 else
     dstart "compton" "-b --config ~/.config/compton.conf" &
 fi
+sleep 2
 
 # ==================================
 # Daemon status
@@ -105,9 +106,12 @@ fi
 # Start mate settings - (moved to xdg-autostart)
 # Start power manager deamon from mate - (moved to xdg-autostart)
 # Start sound applet from mate - (moved to xdg-autostart)
-# Start redshift - (moved to xdg-autostart)
 # Start network manager applet - (moved to xdg-autostart)
 # ==================================
+if [ $(pgrep -lfc xflux) -eq 0 ] ; then
+    sleep 1
+    dstart "xflux" "-l -25.43, -g -49.27" &
+fi
 if [ $(pgrep -lfc pulseaudio) -eq 0 ] ; then
     sleep 1
     dstart "pulseaudio" "--start --log-target=syslog" &
@@ -128,11 +132,6 @@ if [ $(pgrep -lfc volumeicon) -eq 0 ] && [ $(pgrep -lfc mate-volume-control-appl
     sleep 1
     dstart "volumeicon" &
 fi
-if [ $(pgrep -lfc redshift) -gt 2 ] ; then
-    sleep 1
-    LC_ALL=C pkill -USR1 --euid "$(id -u)" --exact "redshift" > /dev/null 2>&1 &
-    dstart "redshift-gtk" &
-fi
 if [ $(pgrep -lfc nm-applet) -eq 0 ] ; then
     sleep 1
     dstart "nm-applet" &
@@ -143,10 +142,10 @@ if [ $(pgrep -lfc wicd) -eq 0 ] && [ $(pgrep -lfc nm-applet) -eq 0 ]; then
 fi
 
 # ==================================
-# Start Tint2 panel
+# My touchpad controller - auto=off in presence of mouse and on otherwise
 # ==================================
-sleep 1
-dstart "tint2" &
+sleep 0.5
+dstart "touchpadctl" "-a" &
 
 # ==================================
 # My settings to prevent screen blanking when demanded
@@ -163,14 +162,14 @@ dstart "mywallchng" &
 # ==================================
 # Orcsome WM_NET_ Window customizing
 # ==================================
-#sleep 1
-#orcsome -c ~/.config/orcsome/rc.py &
+sleep 1
+orcsome -c ~/.config/orcsome/rc.py &
 
 # ==================================
-# My touchpad controller - auto=off in presence of mouse and on otherwise
+# Start Tint2 panel
 # ==================================
-sleep 0.5
-dstart "touchpadctl" "-a" &
+sleep 1
+dstart "tint2" &
 
 # ==================================
 # Sound global volume at VOLUME

@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 #
-#Use dmenu to open and edit a file from a given list.
+#Use rofi -dmenu to open and edit a file from a given list.
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
 function main(){
     precheck "rofi"
-
+    
     local sdir=${1:-"$PWD"}
     # Show list of options
     local choice=""
