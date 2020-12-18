@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#set -eu
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+# Counts TIME_WAIT conns by ports.
+function main(){
+    for x in $(LC_ALL=C netstat -nat | grep "TIME_WAIT" | awk '{print $4}' | awk -F":" '{print $2}' | sort -u) ; do
+        printf "TIME_WAIT on Port $x : `netstat -nat | grep ":$x" | grep TIME_WAIT | wc -l`\n"
+    done
+}
+
+main "$@"
