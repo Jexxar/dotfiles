@@ -4,7 +4,7 @@
 set -eu
 
 function usage() {
-    echo "Usage: $(basename "$0") [Options]"
+    echo "Usage: $(basename $0) [Options]"
     echo "       "
     echo "Purpose: To enable or disable Touchpad"
     echo "       "
@@ -12,31 +12,17 @@ function usage() {
     echo "-h | --help : Show this help"
     echo "-d | --disable: Disable touchpad"
     echo "-e | --enable: Enable touchpad"
-    echo "-a | --auto: Disable/Enable touchpad when mouse is/(is not) present"
     return 0;
 }
 
 function touch_hnd_noX(){
-    local bind_mode_file="/sys/bus/serio/drivers/psmouse/bind_mode"
-    local unbind_dev_file="/sys/bus/serio/drivers/psmouse/unbind"
-    local device_id="serio1"
-
     case "$1" in
-        -a | --auto)
-            local cur_mode=$(grep "auto\|manual" $bind_mode_file)
-            if [ "$cur_mode" == "auto" ]; then
-                echo -n "manual" > $bind_mode_file && /usr/bin/logger -t Touchpadctl -- "Disabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot disable touchpad"
-                echo -n $device_id > $unbind_dev_file 2>/dev/null || true
-            else
-                echo -n "auto" > $bind_mode_file && /usr/bin/logger -t Touchpadctl -- "Enabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot enable touchpad"
-            fi
-        ;;
         -d | --disable)
-            echo -n "manual" > $bind_mode_file && /usr/bin/logger -t Touchpadctl -- "Disabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot disable touchpad"
-            echo -n $device_id > $unbind_dev_file 2>/dev/null || true
+            echo -n manual > $base_dir/bind_mode && /usr/bin/logger -t Touchpadctl -- "Disabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot disable touchpad"
+            echo -n $device_id > $base_dir/unbind 2>/dev/null || true
         ;;
         -e | --enable)
-            echo -n "auto" > $bind_mode_file && /usr/bin/logger -t Touchpadctl -- "Enabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot enable touchpad"
+            echo -n auto > $base_dir/bind_mode && /usr/bin/logger -t Touchpadctl -- "Enabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot enable touchpad"
         ;;
         *)  usage
             exit 0
@@ -46,13 +32,13 @@ function touch_hnd_noX(){
 
 function touch_hnd_X(){
     local usr="$2"
-    local touch_id=$(/usr/bin/xinput list | \egrep -Eo 'Touchpad\s*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}')
+    local touch_id=$(/usr/bin/xinput list | \egrep -iEo 'Touchpad\s*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}')
     local touch_stt=$(/usr/bin/xinput list-props $touch_id | \grep 'Device Enabled' | \awk '{print $4}')
     [ $touch_id -eq 0 ] && /usr/bin/logger -t Touchpadctl -- "Touchpad device not found. $usr. ($XAUTHORITY - $DISPLAY)"
     
     case "$1" in
         -a | --auto )
-            local mouse_id="$(xinput list | \egrep -Eo '[Mm]ouse\s*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}')"
+            local mouse_id="$(xinput list | \egrep -iEo 'mouse\s*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}')"
             local mouse_stt=$(/usr/bin/xinput list-props $mouse_id | \grep 'Device Enabled' | \awk '{print $4}')
             if [ $mouse_id -ne 0 ] && [ $mouse_stt -eq 1 ]; then
                 /usr/bin/xinput disable $touch_id
@@ -86,10 +72,11 @@ function touch_hnd_X(){
 
 user_list="$(w -h | cut -d' ' -f1 | sort | uniq)"
 user_id="$(id -u)"
+base_dir=/sys/bus/serio/drivers/psmouse
+device_id=serio1
 
 function main(){
     if [ $# -eq 0 ]; then
-        echo "Error: No arguments found"
         usage
         exit 1
     fi
@@ -117,3 +104,5 @@ main "$@"
 
 unset user_list
 unset user_id
+unset base_dir
+unset device_id

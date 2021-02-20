@@ -139,9 +139,7 @@ function esc_enc(){
 # String escape space
 function esc_space(){
     local aux="$*"
-    local daux=""
-    daux=$(echo "$aux" | sed "s/ /\\\ /g;")
-    echo "$daux"
+    echo "$aux" | sed "s/ /\\\ /g;"
     return 0
 }
 

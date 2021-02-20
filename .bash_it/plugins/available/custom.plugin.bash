@@ -719,34 +719,6 @@ function is_active(){
 }
 
 #==============================================
-# activate - Activate a systemd service
-#
-# Examples:
-#   activate "ssh" 
-#
-# @Params {String} $1: service name
-#==============================================
-function activate(){
-    [ -z "$1" ] && echo "Usage: activate <service name>" && return 1
-    [ is_active "$1" ] && return 0
-    sudo systemctl enable "$1"
-    sudo systemctl start "$1"
-}
-
-#==============================================
-# deactivate - Deactivate a systemd service
-#
-# Examples:
-#   deactivate "ssh" 
-#
-# @Params {String} $1: service name
-#==============================================
-function deactivate(){
-    [ -z "$1" ] && echo "Usage: deactive <service name>" && return 1
-    [ is_active "$1" ] && sudo systemctl stop "$1"
-}
-
-#==============================================
 # t - A tree alternative
 #
 # Examples:
@@ -826,21 +798,6 @@ function dtranslate(){
         echo "Searching..."
         curl dict://dict.org/d:${w}:fd-${i} 2> /dev/null | grep -Ev "html|head|body|h1|hr|center|100|150|220|221|250|251|\%|Dload|\-"
     done
-}
-
-#==============================================
-# mostused - Most used Commands
-#
-# Examples:
-#   mostused 
-#==============================================
-function mostused(){
-    cat $HISTFILE | grep -Ev "^#" | awk '{ print $1 }' | grep -Ev '^`' | grep -Ev ' ' |
-    sort |
-    uniq -c |
-    sort -n -k1 |
-    tail -25 |
-    tac
 }
 
 #==============================================
