@@ -1,0 +1,2 @@
+elevator=bfq-mq quiet splash scsi_mod.use_blk_mq=1 nopat drm.vblankoffdelay=1 vesafb.invalid=1 intel_idle.max_cstate=1 clocksource=hpet usbcore.autosuspend=-1 usbhid.mousepoll=4
+
