@@ -396,6 +396,15 @@
         <command>gksudo -k -u root -- nice --10 qps</command>
       </action>
     </keybind>
+    <keybind key="W-r">
+      <action name="Execute">
+        <startupnotify>
+          <enabled>true</enabled>
+          <name>Monitor</name>
+        </startupnotify>
+        <command>gksudo -k -u root -- nice --10 qps</command>
+      </action>
+    </keybind>
     <keybind key="W-f">
       <action name="Execute">
         <startupnotify>

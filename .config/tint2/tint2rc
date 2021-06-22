@@ -163,6 +163,7 @@ startup_notifications = 1
 launcher_tooltip = 1
 launcher_item_app = ~/.local/share/applications/start_menu.desktop
 launcher_item_app = /usr/share/applications/matecc.desktop
+launcher_item_app = /usr/share/applications/messengerfordesktop.desktop
 launcher_item_app = /usr/share/applications/firefox.desktop
 launcher_item_app = /usr/share/applications/thunderbird.desktop
 launcher_item_app = /usr/share/applications/com.gexperts.Tilix.desktop
