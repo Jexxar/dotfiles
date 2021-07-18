@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Note: Doesn't work anymore (at least for Gnome 3.34, possibly later; see Python script instead)
+# Usage: gnome-inhibit <command-line>
+# Example: gnome-inhibit mpv video.mp4
+
+cookie=$(dbus-send \
+  --session \
+  --dest=org.freedesktop.ScreenSaver \
+  --type=method_call \
+  --print-reply=literal \
+  --reply-timeout=20000 \
+  /org/freedesktop/ScreenSaver \
+  org.freedesktop.ScreenSaver.Inhibit \
+  "string:$1" "string:gnome-inhibit" | awk '{print $2}')
+
+uninhibit() {
+  dbus-send \
+    --session \
+    --dest=org.freedesktop.ScreenSaver \
+    --type=method_call \
+    --print-reply=literal \
+    --reply-timeout=20000 \
+    /org/freedesktop/ScreenSaver \
+    org.freedesktop.ScreenSaver.UnInhibit uint32:$cookie
+  echo "Screensaver uninhibited (cookie:$cookie)"
+}
+
+echo "Screensaver inhibited (cookie:$cookie)"
+trap uninhibit EXIT
+
+"$@"
