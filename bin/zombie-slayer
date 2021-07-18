@@ -28,14 +28,15 @@ function main(){
         ppid=$(echo $i | awk '{print $1}')
         zbid=$(echo $i | awk '{print $2}')
         stat=$(echo $i | awk '{print $3}')
-        cmdl=$(echo $i | awk '{print $4}')
-        ownr=$(echo $i | awk '{print $5}')
+        cmdl=$(ps -p $zbid -o comm=; )
+        ownr=$(ps -p $zbid -o user=;)
         # Make sure this is a zombie file and we are not getting a Z from the command field.
-        if [[ "$stat" =~ "Zl" ]] || [[ "$stat" =~ "Zs" ]]; then
+        if [[ "$stat" =~ "Zl" ]] || [[ "$stat" =~ "Zs" ]] || [[ "$stat" =~ "Z" ]]; then
             echo "Slay zombie ppid= ${ppid} pid=${zbid}, cmd=\"${cmdl}\""
             echo -n "[Y/n]: "
             read ok </dev/tty
-            ok=$(echo "$ok" | tr '[:upper:]' '[:lower:]')
+            [ -z "$ok" ] && ok="y"
+            ok="${ok,,}"
             if [ "$ok" == "y" ]; then
                 if [ "$ppid" != "$lastparentid" ]; then
                     if [ "$lastparentid" != "0" ]; then
@@ -53,7 +54,6 @@ function main(){
         echo "========================================================"
     done
     IFS=$OLD_IFS
-    
     if [ $(wc -l < "$slaylist") -gt 0 ]; then
         if [ $lastparentid -ne 0 ]; then
             gdb_cmd "detach" "$slaylist"
@@ -65,7 +65,7 @@ function main(){
         cat "$slaylist"
         echo "========================================================"
         sudo -v
-        sudo gdb -batch -x "$slaylist"
+        sudo gdb -batch -x "$slaylist" > /dev/null 2>&1
     fi
     rm "$slaylist"
 }

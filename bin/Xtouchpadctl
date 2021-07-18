@@ -62,7 +62,7 @@ for CUR_USER in ${USERLIST}; do
         
         case "$1" in
             -a | --auto )
-                xinput list | \egrep -Eo '[Mm]ouse\s*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}' &>/dev/null
+                xinput list | grep -iv 'touchpad\|control\|virtual core\|core XTEST' | grep 'slave  pointer' | \egrep -iEo '*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}'  &>/dev/null
                 if [ $? -eq 0 ] ; then
                     /usr/bin/xinput disable $TOUCH_ID
                     /usr/bin/logger -t Touchpadctl -- "Additional external mice found. Touchpad disabled for $CUR_USER. ($XAUTHORITY - $DISPLAY)"

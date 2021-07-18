@@ -243,8 +243,13 @@ function main() {
     echo "lsof_p synaptic"
     #ps_ISO "synaptic" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}' | grep "synaptic" | awk '{print $1}'
     lsof_p "synaptic" | grep -v "caja-\|fonts\|/proc\|/dev/pts\|/sys/dev"
-    echo "======================================"
-    exit 0
+    #echo "======================================"
+    #echo "launching xautolock"
+    #xautolock -detectsleep -noclose -time 5 -locker "\"$HOME/bin/mylock\"" -notify 30 -notifier "\"$HOME/bin/mynotify\"" -killtime 10 -killer "\"$HOME/bin/mysuspend\"" &
+    #sleep 2
+    #echo "teste stop_it"
+    #stop_it "xautolock" "stop"
+    #exit 0
 }
 
 main "$@"

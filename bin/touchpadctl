@@ -9,6 +9,7 @@ function usage() {
     echo "Purpose: To enable or disable Touchpad"
     echo "       "
     echo "Options"
+    echo "-a | --auto : Disable/enable touchpad depending on other pointer attach"
     echo "-h | --help : Show this help"
     echo "-d | --disable: Disable touchpad"
     echo "-e | --enable: Enable touchpad"
@@ -16,6 +17,9 @@ function usage() {
 }
 
 function touch_hnd_noX(){
+    local base_dir="/sys/bus/serio/drivers/psmouse"
+    local device_id="serio1"
+
     case "$1" in
         -d | --disable)
             echo -n manual > $base_dir/bind_mode && /usr/bin/logger -t Touchpadctl -- "Disabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot disable touchpad"
@@ -30,39 +34,60 @@ function touch_hnd_noX(){
     esac
 }
 
+function xinput_disable_touch(){
+    local t_id=$1
+    local t_st=$2
+    local usr=$3
+    if [ $t_st -ne 0 ]; then
+        /usr/bin/xinput disable $t_id
+        /usr/bin/logger -t Touchpadctl -- "Disabling touchpad for $usr. ($XAUTHORITY - $DISPLAY)"
+    else
+        /usr/bin/logger -t Touchpadctl -- "Touchpad already disabled for $usr. ($XAUTHORITY - $DISPLAY)"
+    fi
+}
+
+function xinput_enable_touch(){
+    local t_id=$1
+    local t_st=$2
+    local usr=$3
+    if [ $t_st -eq 0 ]; then
+        /usr/bin/xinput enable $t_id
+        /usr/bin/logger -t Touchpadctl -- "Enabling touchpad for $usr. ($XAUTHORITY - $DISPLAY)"
+    else
+        /usr/bin/logger -t Touchpadctl -- "Touchpad already enabled for $usr. ($XAUTHORITY - $DISPLAY)"
+    fi
+}
+
 function touch_hnd_X(){
     local usr="$2"
-    local touch_id=$(/usr/bin/xinput list | \egrep -iEo 'Touchpad\s*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}')
-    local touch_stt=$(/usr/bin/xinput list-props $touch_id | \grep 'Device Enabled' | \awk '{print $4}')
-    [ $touch_id -eq 0 ] && /usr/bin/logger -t Touchpadctl -- "Touchpad device not found. $usr. ($XAUTHORITY - $DISPLAY)"
+    local touch_id=0
+    local touch_stt=0
+    local mouse_id=0
+    local mouse_stt=0
+    
+    touch_id=$(/usr/bin/xinput list | \egrep -iEo 'Touchpad\s*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}')
+    [ $? -ne 0 ] && touch_id=0 && /usr/bin/logger -t Touchpadctl -- "Touchpad device not found. $usr. ($XAUTHORITY - $DISPLAY)" && return 0
+
+    touch_stt=$(/usr/bin/xinput list-props $touch_id | \grep 'Device Enabled' | \awk '{print $4}')
+    [ $? -ne 0 ] && touch_stt=0
     
     case "$1" in
         -a | --auto )
-            local mouse_id="$(xinput list | \egrep -iEo 'mouse\s*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}')"
-            local mouse_stt=$(/usr/bin/xinput list-props $mouse_id | \grep 'Device Enabled' | \awk '{print $4}')
-            if [ $mouse_id -ne 0 ] && [ $mouse_stt -eq 1 ]; then
-                /usr/bin/xinput disable $touch_id
-                /usr/bin/logger -t Touchpadctl -- "Additional external mice found. Touchpad disabled for $usr. ($XAUTHORITY - $DISPLAY)"
+            mouse_id="$(xinput list | grep -iv 'touchpad\|control\|virtual core\|core XTEST' | grep 'slave  pointer' | \egrep -iEo '*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}' | tail -n1)"
+            [ $? -ne 0 ] && mouse_id=0 && /usr/bin/logger -t Touchpadctl -- "Mouse/Pointer device not found. $usr. ($XAUTHORITY - $DISPLAY)" && return 0
+            mouse_stt=$(/usr/bin/xinput list-props $mouse_id | \grep 'Device Enabled' | \awk '{print $4}')
+            [ $? -ne 0 ] && mouse_stt=0;
+            if [ $mouse_id -ne 0 ] && [ $mouse_stt -ne 0 ]; then
+                xinput_disable_touch "$touch_id" "$touch_stt" "$usr"
             else
-                /usr/bin/xinput enable $touch_id
-                /usr/bin/logger -t Touchpadctl -- "Additional external mice not found. Touchpad enabled for $usr. ($XAUTHORITY - $DISPLAY)"
+                xinput_enable_touch "$touch_id" "$touch_stt" "$usr"
             fi
         ;;
         -d | --disable )
-            if [ $touch_stt -eq 1 ]; then
-                /usr/bin/xinput disable $touch_id
-                /usr/bin/logger -t Touchpadctl -- "Disabling touchpad for $usr. ($XAUTHORITY - $DISPLAY)"
-            else
-                /usr/bin/logger -t Touchpadctl -- "Touchpad already disabled for $usr. ($XAUTHORITY - $DISPLAY)"
-            fi
+            xinput_disable_touch "$touch_id" "$touch_stt" "$usr"
         ;;
         -e | --enable )
-            if [ $touch_stt -eq 0 ]; then
-                /usr/bin/xinput enable $touch_id
-                /usr/bin/logger -t Touchpadctl -- "Enabling touchpad for $usr. ($XAUTHORITY - $DISPLAY)"
-            else
-                /usr/bin/logger -t Touchpadctl -- "Touchpad already enabled for $usr. ($XAUTHORITY - $DISPLAY)"
-            fi
+            xinput_enable_touch "$touch_id" "$touch_stt" "$usr"
         ;;
         *)  usage
             exit 0
@@ -70,15 +95,24 @@ function touch_hnd_X(){
     esac
 }
 
-user_list="$(w -h | cut -d' ' -f1 | sort | uniq)"
-user_id="$(id -u)"
-base_dir=/sys/bus/serio/drivers/psmouse
-device_id=serio1
-
 function main(){
     if [ $# -eq 0 ]; then
         usage
         exit 1
+    fi
+    
+    local user_list
+    local user_id
+    
+    user_list="$(w -h | cut -d' ' -f1 | sort | uniq)"
+    user_id="$(id -u)"
+
+    if [ $user_id -eq 0 ]; then
+        if xset q &>/dev/null; then
+            /usr/bin/logger -t Touchpadctl -- "Xserver is running."
+            touch_hnd_X "$1" "root"
+        fi
+        exit 0
     fi
     
     for u in ${user_list}; do
@@ -89,20 +123,15 @@ function main(){
         export DISPLAY="${displ}"
         if [ -f "${XAUTHORITY}" ]; then
             # Check running X
-            if ! xset q &>/dev/null; then
-                /usr/bin/logger -t Touchpadctl -- "Xserver is not running."
-                touch_hnd_noX "$1" "$u"
-            else
+            if xset q &>/dev/null; then
                 /usr/bin/logger -t Touchpadctl -- "Xserver is running."
                 touch_hnd_X "$1" "$u"
+            #else
+            #    /usr/bin/logger -t Touchpadctl -- "Xserver is not running."
+            #    touch_hnd_noX "$1" "$u"
             fi
         fi
     done
 }
 
 main "$@"
-
-unset user_list
-unset user_id
-unset base_dir
-unset device_id

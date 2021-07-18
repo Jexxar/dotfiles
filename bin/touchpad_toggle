@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-xinput list | \egrep -iEo 'mouse\s*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}' &>/dev/null
+xinput list | grep -iv 'touchpad\|control\|virtual core\|core XTEST' | grep 'slave  pointer' | \egrep -iEo '*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}' | tail -n1
 if [ $? -eq 0 ] ; then
     /usr/bin/touchpadctl -d
 else

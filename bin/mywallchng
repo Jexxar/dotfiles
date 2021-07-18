@@ -35,7 +35,7 @@ function main(){
     snore 0.2
     while is_running_X ; do
         [ -z "$DISPLAY" ] && DISPLAY=:0.0
-        [ -n "$1" ] && snore $1 || snore 420
+        [ -n "$1" ] && snore $1 || snore 540
         change_wallpaper;
     done;
 }

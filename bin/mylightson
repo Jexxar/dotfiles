@@ -395,19 +395,24 @@ function LO_disableScvOther(){
     if [ "$LO_scvpgm" == "xscreensaver" ]; then
         LO_log "LO_disableScvOther(): delaying xscreensaver..."
         xscreensaver-command -deactivate > /dev/null
-    elif [ "$LO_scvpgm" == "kscreensaver" ]; then
+    fi
+    if [ "$LO_scvpgm" == "kscreensaver" ]; then
         LO_log "LO_disableScvOther(): delaying kscreensaver..."
         qdbus org.freedesktop.ScreenSaver /ScreenSaver SimulateUserActivity > /dev/null
-    elif [ "$LO_scvpgm" == "gnome-screensaver" ]; then
+    fi
+    if [ "$LO_scvpgm" == "gnome-screensaver" ]; then
         LO_log "LO_disableScvOther(): delaying gnome-screensaver..."
         dbus-send --session --dest=org.gnome.ScreenSaver --type=method_call /org/gnome/ScreenSaver org.gnome.ScreenSaver.SimulateUserActivity >/dev/null 2>&1
-    elif [ "$LO_scvpgm" == "cinnamon-screensaver" ]; then
+    fi
+    if [ "$LO_scvpgm" == "cinnamon-screensaver" ]; then
         LO_log "LO_disableScvOther(): delaying cinnamon-screensaver..."
         dbus-send --session --dest=org.cinnamon.ScreenSaver --type=method_call /org/cinnamon/ScreenSaver org.cinnamon.ScreenSaver.SimulateUserActivity >/dev/null 2>&1
-    elif [ "$LO_scvpgm" == "mate-screensaver" ]; then
+    fi
+    if [ "$LO_scvpgm" == "mate-screensaver" ]; then
         LO_log "LO_disableScvOther(): delaying mate-screensaver..."
         dbus-send --session --dest=org.mate.ScreenSaver --type=method_call /org/mate/ScreenSaver org.mate.ScreenSaver.SimulateUserActivity >/dev/null 2>&1
-    elif [ $LO_xdgScvPresent -eq 1 ]; then
+    fi
+    if [ $LO_xdgScvPresent -eq 1 ]; then
         LO_log "LO_disableScvOther(): trying to delay with xdg-screensaver..."
         xdg-screensaver reset
     fi
