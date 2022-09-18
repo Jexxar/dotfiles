@@ -35,10 +35,10 @@ LO_mandatoryApps=('cura' 'wineserver' 'dbgl' 'openscad' 'dgen' 'lutris' 'playonl
 LO_delayMediaApps=('vlc' 'celluloid' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
 
 # Names of programs which, when using sound server, you wish to delay the screensaver.
-LO_delayWebBasedApps=('firefox' 'chrome' 'vivaldi' 'brave' 'chromium' 'epiphany' 'WebKit' 'opera' 'Iceweasel' 'surf' 'yandex_browser' 'luakit'  'midori' 'min ' 'falkon' 'slimjet' 'steam')
+LO_delayWebBasedApps=('firefox' 'LibreWolf' 'chrome' 'vivaldi' 'brave' 'chromium' 'epiphany' 'WebKit' 'opera' 'Iceweasel' 'surf' 'yandex_browser' 'luakit'  'midori' 'min ' 'falkon' 'slimjet' 'steam')
 
 # Names of programs which, when using massive transfer, you wish to delay the screensaver.
-LO_delayBusyApps=('pcmanfm' 'pcmanfm-qt' 'nautilus' 'dolphin' 'thunar' 'caja' 'mc' 'fff' 'nnn' 'ranger' 'vifm')
+LO_delayBusyApps=('pcmanfm' 'pcmanfm-qt' 'nautilus' 'dolphin' 'nemo' 'thunar' 'caja' 'mc' 'fff' 'nnn' 'ranger' 'vifm')
 
 # Display outputs to check, display screensaver when they are connected.
 # Run xrandr to show current monitor config.
@@ -242,7 +242,7 @@ function LO_hasDelayApp(){
         [ $(pgrep -lfc "yandex_browser") -ge 1 ] && LO_log "LO_hasDelayApp(): Yandex browser detected" && return 0
     fi
     
-    # Check if user want to detect Flash on Firefox.
+    # Check if user want to detect Flash on Firefox based browsers.
     if [ $(echo "$wClass" | grep -ic "plugin-container") -gt 0 ]; then
         [ "$(pidof -s plugin-container)" ] && LO_log "LO_hasDelayApp(): Firefox flash detected" && return 0
     fi
@@ -290,13 +290,16 @@ function LO_hasDelayBusyApps(){
             caja*)
                 tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev")"
             ;;
+            dolphin*)
+                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev")"
+            ;;
             nautilus*)
                 tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev")"
             ;;
-            thunar*)
+            nemo*)
                 tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev")"
             ;;
-            dolphin*)
+            thunar*)
                 tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev")"
             ;;
             *)
@@ -315,6 +318,9 @@ function LO_hasDelayBusyApps(){
             ;;
             chromium*)
                 tmp="$(lsof_p "$p" | grep -v "$p\|fonts\|/proc\|/dev/pts\|/sys/dev\|omni\|chrom\|\.pki\|\.cache")"
+            ;;
+            LibreWolf*)
+                tmp="$(lsof_p "$p" | grep -v "fonts\|/proc\|/dev/pts\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse")"
             ;;
             *)
                 tmp="$(lsof_p "$p" | grep -v "$p\|fonts\|/proc\|/dev/pts\|/sys/dev\|omni\|\.pki\|\.cache")"
@@ -364,10 +370,10 @@ function LO_enableScrXautolock(){
     if [ "${1}" == "force" ]; then
         stop_it "xautolock"
         LO_log "LO_enableScrXautolock(): (Re)/Starting xautolock daemon..."
-        xautolock -detectsleep -noclose -time 5 -locker "\"$HOME/bin/mylock\"" -notify 30 -notifier "\"$HOME/bin/mynotify\"" -killtime 10 -killer "\"$HOME/bin/mysuspend\"" &
+        xautolock -detectsleep -noclose -time 5 -locker "\"$HOME/bin/mylock\"" -notify 30 -notifier "\"$HOME/bin/mynotify\"" -killtime 10 -killer "\"$HOME/bin/mysuspend\"" & disown
         snore 0.5
     else
-        xautolock -enable
+        xautolock -enable & disown
         LO_log "LO_enableScrXautolock(): xautolock ENABLED..."
     fi
     

@@ -16,11 +16,16 @@ function change_wallpaper(){
     local qty=${#wpList[@]}
     [ $qty -eq 0 ] && log "No Wallpaper files found in $wpDir" && log "Ending process..." && exit 1
     local curr=1
-    [ -f "$wpDir/.last" ] && let curr="`cat "$wpDir/.last"` + 1" || let curr=1
+    if [ -f "$wpDir/.last" ]; then 
+        let curr="$(cat "$wpDir/.last") + 1"
+        echo " "
+    else
+        let curr=1
+    fi
     [ $curr -ge $qty ] && let curr=1
     echo $curr > "$wpDir"/.last
     wpctl --set "${wpList[$curr]}" && wpctl --save
-    log "Wallpaper changed to: ${wpList[$curr]}"
+    # log "Wallpaper changed to: ${wpList[$curr]}"
 }
 
 function main(){

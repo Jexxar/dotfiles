@@ -7,7 +7,7 @@ if [ -f "$HOME/bin/mycommon" ]; then
 fi
 
 function do_suspend() {
-    auth_user && continue || return 0
+    auth_user || return 0 
     
     if is_running_X ; then
         # locked && return 0
@@ -58,7 +58,7 @@ function main(){
     
     case "$cmd" in
         suspend)
-            log "suspend now..."
+            # log "suspend now..."
             do_suspend
         ;;
         debug)

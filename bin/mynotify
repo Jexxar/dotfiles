@@ -18,8 +18,8 @@ function do_notify() {
     local secs="$(xrdb -query | grep -m1 '^Xautolock.notify' | cut -f2)"
     [ -n "$secs" ] || secs="30"
     
-    log "Locking in $secs seconds"
-    log "Sending notification."
+    # log "Locking in $secs seconds"
+    # log "Sending notification."
     
     notify-send --urgency="normal" --app-name="mynotify" --icon="$(iconPath system-lock-screen)" -- "Screen Lock in " "$secs seconds"
     return 0

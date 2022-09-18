@@ -285,10 +285,10 @@ function kill_them(){
     [ $# -gt 2 ] && local shw="y" || local shw="n"
     case ${1-check} in
         all)
-            LC_ALL=C pkill -USR1 --euid "$(id -u)" --exact "$s_name" > /dev/null 2>&1 && has="y" && log "kill_them all Stopping instances(pkill): name=$s_name"
-            [ $? -ne 0 ] && killall -u "$USER" "$s_name" > /dev/null 2>&1 && has="y" && log "kill_them all Stopping instances(killall): name=$s_name" || true
+            LC_ALL=C pkill -USR1 --euid "$(id -u)" --exact "$s_name" > /dev/null 2>&1 && has="y" ## && log "kill_them all Stopping instances(pkill): name=$s_name"
+            [ $? -ne 0 ] && killall -u "$USER" "$s_name" > /dev/null 2>&1 && has="y" ## && log "kill_them all Stopping instances(killall): name=$s_name" || true
             for i in $(ps_ISO "$s_name" | awk '{print $3}'); do
-                proper_kill "$i" && has="y" && log "kill_them all Stopping instance(kill): pid=$i name=$s_name"
+                proper_kill "$i" && has="y" ## && log "kill_them all Stopping instance(kill): pid=$i name=$s_name"
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] && log "kill_them all: No process $s_name found"
             return 0
@@ -296,15 +296,15 @@ function kill_them(){
         but-me)
             for i in $(ps_ISO "$s_name" | awk '{print $3}'); do
                 if [ "$i" != "$$" ]; then
-                    proper_kill "$i" && has="y" && log "kill_them but-me Stopping instance(kill): pid=$i name=$s_name"
+                    proper_kill "$i" && has="y" ## && log "kill_them but-me Stopping instance(kill): pid=$i name=$s_name"
                 fi
             done
-            [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "kill_them but-me: No process $s_name found"
+            [ "$has" == "n" ] && [ "$shw" == "y" ] && log "kill_them but-me: No process $s_name found"
             return 0
         ;;
         strict)
             for i in $(ps_ISO "$s_name" | sed 's/bash //g' | grep -v "bash\|sh -c\|grep" | awk '{print $3}'); do
-                proper_kill "$i" && has="y" && log "kill_them strict Stopping instance(kill): pid=$i name=$s_name"
+                proper_kill "$i" && has="y" ## && log "kill_them strict Stopping instance(kill): pid=$i name=$s_name"
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "kill_them strict: No process $s_name found"
             return 0
@@ -312,7 +312,7 @@ function kill_them(){
         but-me-bash)
             for i in $(ps_ISO "$s_name" | grep -F "bash " | grep -v "grep" | awk '{print $3}'); do
                 if [ "$i" != "$$" ]; then
-                    proper_kill "$i" && has="y" && log "kill_them but-me-bash Stopping instance(kill): pid=$i name=$s_name"
+                    proper_kill "$i" && has="y" ## && log "kill_them but-me-bash Stopping instance(kill): pid=$i name=$s_name"
                 fi
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] && log "kill_them but-me-bash: No process bash + $s_name found"
@@ -320,7 +320,7 @@ function kill_them(){
         ;;
         sh-c)
             for i in $(ps_ISO "$s_name" | sed 's/bash //g' | grep -P "sh -c" | grep -v "grep" | awk '{print $3}'); do
-                proper_kill "$i" && has="y" && log "kill_them sh-c Stopping instance(kill): pid=$i name=$s_name"
+                proper_kill "$i" && has="y" ## && log "kill_them sh-c Stopping instance(kill): pid=$i name=$s_name"
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "kill_them sh-c: No process sh -c + $s_name found"
             return 0
@@ -438,21 +438,20 @@ function dbus_suspend(){
 function dunstctl(){
     case ${1:-} in
         start)
-            [ $(pgrep -lfc dunst) -ge 1 ] && log "Notifications daemon already running." && return 0
-            log "Starting notifications daemon."
-            dunst &
+            [ $(pgrep -lfc dunst) -ge 1 ] && return 0 ## log "Notifications daemon already running."
+            # log "Starting notifications daemon."
+            checkfor "dunst" && dunst &
             disown
         ;;
         stop)
-            [ $(pgrep -lfc dunst) -eq 0 ] && log "Notifications daemon not running." && return 0
-            log "Stopping notifications daemon."
+            [ $(pgrep -lfc dunst) -eq 0 ] && return 0 ## log "Notifications daemon not running."
+            # log "Stopping notifications daemon."
             pkill -USR1 --euid "$(id -u)" --exact dunst
         ;;
         restart | resume)
-            [ $(pgrep -lfc dunst) -eq 0 ] && log "Notifications daemon not running." && return 0
-            log "...Resuming notifications daemon."
-            pkill -USR2 --euid "$(id -u)" --exact dunst
-            dunst &
+            [ $(pgrep -lfc dunst) -ge 1 ] && pkill -USR2 --euid "$(id -u)" --exact dunst
+            # log "...Resuming notifications daemon."
+            checkfor "dunst" && dunst &
             disown
         ;;
         check)
