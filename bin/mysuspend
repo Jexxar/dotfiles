@@ -12,17 +12,14 @@ function do_suspend() {
     if is_running_X ; then
         # locked && return 0
         if checkfor "systemctl"; then
-            systemctl suspend &
-            exit 0
+            systemctl suspend && exit 0
         fi
         if can_suspend; then
-            dbus_suspend &
-            exit 0
+            dbus_suspend && exit 0
         fi
     else
         if checkfor "systemctl"; then
-            systemctl suspend &
-            exit 0
+            systemctl suspend && exit 0
         fi
     fi
 }
@@ -51,6 +48,7 @@ function do_test() {
 }
 
 function main(){
+    #[ $# -ge 1 ] && log "suspend started... no parms" || log "suspend started... with ${1:-}"
     precheck "xset"
     precheck "loginctl"
 
@@ -58,7 +56,7 @@ function main(){
     
     case "$cmd" in
         suspend)
-            # log "suspend now..."
+            #log "suspend now..."
             do_suspend
         ;;
         debug)

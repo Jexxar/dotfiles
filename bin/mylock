@@ -25,9 +25,9 @@ function do_lock() {
     dunstctl stop
     # Fork both i3lock and its monitor to avoid blocking xautolock.
     # this must be the last command, and it must be 'non forking', as expected by 'xautolock'
-    ~/bin/lock -gpf Comic-Sans-MS -- &
+    $HOME/bin/lock -n -gpf Comic-Sans-MS -- scrot &
     pid="$!"
-    # log "Locked and Waiting until (screen lock) PID $pid ends up..."
+    #log "Locked and Waiting until (screen lock) PID $pid ends up..."
     touch "$ML_lockFile"
     echo "LockPID=$pid" > "$ML_lockFile"
     while 2>/dev/null kill -0 "$pid"; do
@@ -35,7 +35,7 @@ function do_lock() {
     done
     [ -f "$ML_lockFile" ] && rm -f "$ML_lockFile"
     stop_it "i3lock"
-    # log "Unlocked and resumed..."
+    #log "Unlocked and resumed..."
     dunstctl resume
 }
 
@@ -54,7 +54,7 @@ function main(){
     case "$cmd" in
         lock)
             trap 'rm -f "$ML_lockFile"; exit' INT TERM EXIT ERR
-            do_lock &
+            do_lock
         ;;
         debug)
             do_test

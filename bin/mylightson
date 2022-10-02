@@ -47,14 +47,18 @@ LO_outputDevices=('HDMI1' 'VGA1' 'DP1' 'VIRTUAL1')
 # DPMS settings in seconds, 600 seconds = 10 minutes.
 # If you don't want to change DMPS settings, modify LO_DPMSControl to 0.
 LO_DPMSControl=1
-LO_DPMSStandbyTime=600
+#LO_DPMSStandbyTime=600
+#LO_DPMSSuspendTime=600
+#LO_DPMSOffTime=600
+LO_DPMSStandbyTime=180
 LO_DPMSSuspendTime=600
 LO_DPMSOffTime=600
+
 
 # X11 Screen Saver Extension settings in seconds, 600 seconds = 10 minutes.
 # If you don't want to change these settings, modify LO_X11ScvControl to 0.
 LO_X11ScvControl=1
-LO_X11ScvTimeout=600
+LO_X11ScvTimeout=180
 
 # clean status file
 function LO_state_clean(){
@@ -370,7 +374,8 @@ function LO_enableScrXautolock(){
     if [ "${1}" == "force" ]; then
         stop_it "xautolock"
         LO_log "LO_enableScrXautolock(): (Re)/Starting xautolock daemon..."
-        xautolock -detectsleep -noclose -time 5 -locker "\"$HOME/bin/mylock\"" -notify 30 -notifier "\"$HOME/bin/mynotify\"" -killtime 10 -killer "\"$HOME/bin/mysuspend\"" & disown
+        # xautolock -detectsleep -noclose -time 5 -locker "\"$HOME/bin/mylock\"" -notify 30 -notifier "\"$HOME/bin/mynotify\"" -killtime 10 -killer "\"$HOME/bin/mysuspend\"" &
+        xautolock -detectsleep -noclose -time 3 -locker "\"$HOME/bin/mylock\"" -notify 30 -notifier "\"$HOME/bin/mynotify\"" &
         snore 0.5
     else
         xautolock -enable & disown
@@ -388,8 +393,8 @@ function LO_enableScrXautolock(){
     
     # Setting X11 Screensaver Extension.
     if [ $LO_X11ScvControl -eq 1 ]; then
-        LO_log "LO_enableScrXautolock(): Setting X11 Screensaver Extension to Timeout: $LO_X11ScvTimeout"
-        xset s $LO_X11ScvTimeout
+        LO_log "LO_enableScrXautolock(): Setting X11 Screensaver Extension to Timeout: $LO_DPMSStandbyTime $LO_DPMSSuspendTime"
+        xset s $LO_DPMSStandbyTime $LO_DPMSSuspendTime
     fi
     
     LO_save_state "ENABLED"
@@ -460,10 +465,10 @@ function LO_enableScvOther(){
     
     LO_XSetOn
     
-    # Setting X11 Screensaver Extension.
+    # Setting X11 Screensaver Extension time and cycle.
     if [ $LO_X11ScvControl -eq 1 ]; then
-        LO_log "LO_enableScvOther(): Setting X11 Screensaver Extension to Timeout: $LO_X11ScvTimeout"
-        xset s $LO_X11ScvTimeout
+        LO_log "LO_enableScvOther(): Setting X11 Screensaver Extension to Timeout: $LO_DPMSStandbyTime $LO_DPMSSuspendTime"
+        xset s $LO_DPMSStandbyTime $LO_DPMSSuspendTime
     fi
     
     LO_save_state "ENABLED"
@@ -703,17 +708,34 @@ fi
 # On the first time kill all lockers remaining
 reset_locker
 
+# initial value for suspend pid
+LO_SPID=""
+LO_idle="0"
+
 # Initiate monitoring
 while true; do
-    # if screen is already locked do nothing
+    # if screen is already locked do proper suspend
     if locked; then
-        LO_log "LO_delayScreensaver(): Screen is already locked..."
+        LO_log "main(): Screen is already locked... Suspend time = $LO_DPMSSuspendTime"
+        if [ -z "$LO_SPID" ]; then
+            LO_idle=$(xprintidle)
+            if [ $LO_idle -gt $LO_DPMSSuspendTime ]; then
+                LO_log "main(): Suspend time elapsed. Suspending..."
+                nice -3 $HOME/bin/mysuspend & disown
+                LO_SPID="$!"
+                log "suspending - idle = $LO_idle spid = $LO_SPID"
+                LO_idle="0"
+                LO_log "main(): Suspend PID=$LO_SPID"
+            fi
+        fi
     else
+        LO_SPID=""
+        LO_idle="0"
         #LO_scvpgm=$(LO_whichScvRunning)
         [ "$LO_scvpgm" = "xautolock" ] && LO_disableOtherSS
         LO_delayScreensaver
-        LO_sleep $LO_delay
     fi
+    LO_sleep $LO_delay
 done
 trap - INT TERM EXIT ERR
 exit 0
