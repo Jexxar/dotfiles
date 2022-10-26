@@ -32,7 +32,7 @@ function main(){
     precheck "xset"
     precheck "xdg-open"
     
-    log "=====[ mywallchng started currrent PID=$$ ]====="
+    #log "=====[ mywallchng started currrent PID=$$ ]====="
     ! is_running_X && log "No X server at \$DISPLAY [$DISPLAY]" >&2 && exit 1
     kill_older
     ## nitrogen --restore

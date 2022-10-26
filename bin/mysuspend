@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # This script is intended to be run as the main suspend script for this installation.
-set -eu
+set -u
 
 if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
@@ -12,14 +12,17 @@ function do_suspend() {
     if is_running_X ; then
         # locked && return 0
         if checkfor "systemctl"; then
-            systemctl suspend && exit 0
+            systemctl suspend 
+            exit 0
         fi
         if can_suspend; then
-            dbus_suspend && exit 0
+            dbus_suspend 
+            exit 0
         fi
     else
         if checkfor "systemctl"; then
-            systemctl suspend && exit 0
+            systemctl suspend 
+            exit 0
         fi
     fi
 }

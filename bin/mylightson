@@ -117,7 +117,7 @@ function LO_XSetOff(){
 # Find mandatory apps in fullscreen mode
 function LO_hasMandatoryDelay(){
     for p1 in "${LO_mandatoryApps[@]}"; do
-        [ $(pgrep -lfc "$p1") -gt 0 ] && LO_log "LO_hasMandatoryDelay(): mandatory delay program $p1 found..." && return 0
+        [ $(pgrep -lfc "$p1") -gt 0 ] && LO_log "LO_hasMandatoryDelay(): YES Mandatory delay program $p1 found..." && return 0
     done
     return 1
 }
@@ -166,7 +166,7 @@ function LO_detectOnlineMedia(){
     local tmp=""
     tmp=$(wmctrl -lxp 2> /dev/null | grep -si "lbry\|philo\|tubi\|tv\|fubo\|vrv\|disney\|prime vi\|hulu\|tube\|stream\|mp4\|mpeg\|mkv\|mpg\|webm\|vimeo\|anime\|divX\|flix\|rackle\|odcast\|cecast\|cine\|muu\|movie")
     if [ $? -eq 0 ]; then
-        [ -n "$1" ] && [ $(echo "$tmp" | grep -ic "$1") -ge 1 ] && LO_log "LO_detectOnlineMedia(): $tmp" && return 0
+        [ -n "$1" ] && [ $(echo "$tmp" | grep -ic "$1") -ge 1 ] && LO_log "LO_detectOnlineMedia(): YES $tmp" && return 0
         [ -z "$1" ] && LO_log "LO_detectOnlineMedia(): $tmp" && return 0 || return 1
     else
         return 1
@@ -223,42 +223,42 @@ function LO_hasDelayApp(){
     
     # detect programs that need delay screensaver
     for p in "${LO_delayMediaApps[@]}"; do
-        LO_runcheck "$wClass" "$p" && LO_log "LO_hasDelayApp(): $p fullscreen detected" && return 0
+        LO_runcheck "$wClass" "$p" && LO_log "LO_hasDelayApp(): YES $p fullscreen detected" && return 0
     done
     
     # detect web based apps that need delay screensaver
     for w in "${LO_delayWebBasedApps[@]}"; do
-        LO_runcheck "$wClass" "$w" && LO_log "LO_hasDelayApp(): $w detected" && return 0
+        LO_runcheck "$wClass" "$w" && LO_log "LO_hasDelayApp(): YES $w detected" && return 0
     done
     
     # Check if user want to detect Flash on Chrome.
     if [ $(echo "$wClass" | grep -ic "oogle-chrome") -gt 0 ]; then
-        [ $(pgrep -lfc "(c|C)hrome --type=ppapi ") -ge 1 ] && LO_log "LO_hasDelayApp(): Google Chrome flash detected" && return 0
+        [ $(pgrep -lfc "(c|C)hrome --type=ppapi ") -ge 1 ] && LO_log "LO_hasDelayApp(): YES Google Chrome flash detected" && return 0
     fi
     
     # Check if user want to detect Flash on Chromium.
     if [ $(echo "$wClass" | grep -ic "hromium") -gt 0 ]; then
-        [ $(pgrep -lfc ".*chromium.*flashp.*") -ge 1 ] && LO_log "LO_hasDelayApp(): Chromium flash detected" && return 0
+        [ $(pgrep -lfc ".*chromium.*flashp.*") -ge 1 ] && LO_log "LO_hasDelayApp(): YES Chromium flash detected" && return 0
     fi
     
     # Check if user want to detect HTML5 on Yandex browser.
     if [ $(echo "$wClass" | grep -ic "andex-browser") -gt 0 ]; then
-        [ $(pgrep -lfc "yandex_browser") -ge 1 ] && LO_log "LO_hasDelayApp(): Yandex browser detected" && return 0
+        [ $(pgrep -lfc "yandex_browser") -ge 1 ] && LO_log "LO_hasDelayApp(): YES Yandex browser detected" && return 0
     fi
     
     # Check if user want to detect Flash on Firefox based browsers.
     if [ $(echo "$wClass" | grep -ic "plugin-container") -gt 0 ]; then
-        [ "$(pidof -s plugin-container)" ] && LO_log "LO_hasDelayApp(): Firefox flash detected" && return 0
+        [ "$(pidof -s plugin-container)" ] && LO_log "LO_hasDelayApp(): YES Firefox flash detected" && return 0
     fi
     
     # Check if user want to detect Flash on Opera.
     if [ $(echo "$wClass" | grep -ic "operapluginwrapper") -gt 0 ]; then
-        [ $(pgrep -lfc "operapluginwrapper-native") -ge 1 ] && LO_log "LO_hasDelayApp(): Opera flash detected" && return 0
+        [ $(pgrep -lfc "operapluginwrapper-native") -ge 1 ] && LO_log "LO_hasDelayApp(): YES Opera flash detected" && return 0
     fi
     
     # Check if user want to detect Flash on WebKit.
     if [ $(echo "$wClass" | grep -ic "WebKitPluginProcess") -gt 0 ]; then
-        [ $(pgrep -lfc ".*WebKitPluginProcess.*flashp.*") -ge 1 ] && LO_log "LO_hasDelayApp(): Webkit flash detected" && return 0
+        [ $(pgrep -lfc ".*WebKitPluginProcess.*flashp.*") -ge 1 ] && LO_log "LO_hasDelayApp(): YES Webkit flash detected" && return 0
     fi
     
     LO_log "LO_hasDelayApp(): NO applications detected"
@@ -280,8 +280,8 @@ function LO_isFullScreenBeingUsed(){
     fi
     # if we reach this part at least one window id was found
     LO_log "LO_isFullScreenBeingUsed(): active Win ID=$wID"
-    LO_detectOnlineMedia "$wID" && LO_log "LO_isFullScreenBeingUsed(): Fullscreen detected: streaming is running..." && return 0
-    LO_hasDelayApp "$wID" && LO_log "LO_isFullScreenBeingUsed(): Fullscreen detected: the app is set to trigger the delay" && return 0
+    LO_detectOnlineMedia "$wID" && LO_log "LO_isFullScreenBeingUsed(): YES Fullscreen detected: streaming is running..." && return 0
+    LO_hasDelayApp "$wID" && LO_log "LO_isFullScreenBeingUsed(): YES Fullscreen detected: the app is set to trigger the delay" && return 0
     LO_log "LO_isFullScreenBeingUsed(): Fullscreen detected: the app is UNKNOWN or NOT set to trigger the delay"
     return 1
 }
@@ -292,47 +292,58 @@ function LO_hasDelayBusyApps(){
     for p in "${LO_delayBusyApps[@]}" ; do
         case $p in
             caja*)
-                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev")"
+                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev\|/usr/share/caja")"
             ;;
             dolphin*)
                 tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev")"
             ;;
             nautilus*)
-                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev")"
+                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev\|/usr/share/nautilus")"
             ;;
             nemo*)
-                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev")"
+                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev\|/usr/share/nemo")"
+            ;;
+            pcmanfm*)
+                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev\|/usr/share/pcmanfm")"
             ;;
             thunar*)
+                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev\|/usr/share/thunar")"
+            ;;
+            mc*)
                 tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev")"
             ;;
             *)
                 tmp="$(lsof_p "$p" )"
             ;;
         esac
-        [ -n "$tmp" ] && LO_log "LO_hasDelayBusyApps(): $p found for delaying" && return 0
+        [ -n "$tmp" ] && LO_log "LO_hasDelayBusyApps(): YES $p found for delaying" && return 0
     done
+
+    tmp="$(_lsof | grep -i "Downloads")"
+    [ -n "$tmp" ] && LO_log "LO_hasDelayBusyApps(): YES Download in progress delaying" && return 0
+
     for p in "${LO_delayWebBasedApps[@]}" ; do
         case $p in
             firefox*)
-                tmp="$(lsof_p "$p" | grep -v "fonts\|/proc\|/dev/pts\|/sys/dev\|xpi\|startupCache\|omni\|\.mozilla")"
+                [ -z "$tmp" ] && tmp="$(lsof_p "$p" | grep -v "/tmp\|fonts\|/proc\|/dev/pts\|/sys/dev\|xpi\|startupCache\|omni\|\.mozilla")"
             ;;
             chrome*)
-                tmp="$(lsof_p "$p" | grep -v "$p\|fonts\|/proc\|/dev/pts\|/sys/dev\|omni\|chrom\|\.pki\|\.cache")"
+                [ -z "$tmp" ] && tmp="$(lsof_p "$p" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/sys/dev\|omni\|chrom\|\.pki\|\.cache")"
             ;;
             chromium*)
-                tmp="$(lsof_p "$p" | grep -v "$p\|fonts\|/proc\|/dev/pts\|/sys/dev\|omni\|chrom\|\.pki\|\.cache")"
+                [ -z "$tmp" ] && tmp="$(lsof_p "$p" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/sys/dev\|omni\|chrom\|\.pki\|\.cache")"
             ;;
             LibreWolf*)
-                tmp="$(lsof_p "$p" | grep -v "fonts\|/proc\|/dev/pts\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse")"
+                [ -z "$tmp" ] && tmp="$(lsof_p "$p" | grep -v "/tmp\|fonts\|/proc\|/dev/pts\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse")"
+                [ -z "$tmp" ] && tmp="$(lsof_p "librewolf" | grep -v "/tmp\|fonts\|/proc\|/dev/pts\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse")"
             ;;
             *)
-                tmp="$(lsof_p "$p" | grep -v "$p\|fonts\|/proc\|/dev/pts\|/sys/dev\|omni\|\.pki\|\.cache")"
+                [ -z "$tmp" ] && tmp="$(lsof_p "$p" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/sys/dev\|omni\|\.pki\|\.cache")"
             ;;
         esac
-        [ -n "$tmp" ] && LO_log "LO_hasDelayBusyApps(): $p found for delaying" && return 0
+        [ -n "$tmp" ] && LO_log "LO_hasDelayBusyApps(): YES $p found for delaying" && return 0
     done
-    LO_log "LO_hasDelayBusyApps(): No busy apps found for delaying"
+    LO_log "LO_hasDelayBusyApps(): NO busy apps found for delaying"
     return 1
 }
 
@@ -342,7 +353,7 @@ function LO_hasDelayOutputConns(){
     for out in "${LO_outputDevices[@]}" ; do
         [ $(echo "$connOut" | grep -ic "$out") -ge 1 ] && LO_log "LO_hasDelayOutputConns(): $out Output connection found for delaying" && return 0
     done
-    LO_log "LO_hasDelayOutputConns(): No output connections found for delaying"
+    LO_log "LO_hasDelayOutputConns(): NO output connections found for delaying"
     return 1
 }
 
@@ -498,11 +509,11 @@ function LO_delayScreensaver(){
     LO_log "LO_delayScreensaver(): Screensaver $LO_scvpgm detected ..."
     # disable screensaver if mandatory delay progs were found
     if LO_hasMandatoryDelay; then
-        LO_log "LO_delayScreensaver(): Delaying the screensaver because a mandatory delay program is running..."
+        LO_log "LO_delayScreensaver(): Mandatory delay programs running..."
         LO_disableScreensaver
         return 0
-    else
-        LO_log "LO_delayScreensaver(): NO mandatory delay programs were found..."
+    #else
+    #    LO_log "LO_delayScreensaver(): NO Mandatory delay programs were found..."
     fi
     # disable screensaver if there are delay apps using sound card
     if LO_isSndCardBeingUsed; then
@@ -511,8 +522,8 @@ function LO_delayScreensaver(){
             LO_log "LO_delayScreensaver(): Delaying the screensaver because a delay program (or stream), \"$progName\", is running..."
             LO_disableScreensaver
             return 0
-        else
-            LO_log "LO_delayScreensaver(): NO delay program (or stream) using sound card is running..."
+        #else
+        #    LO_log "LO_delayScreensaver(): NO delay program (or stream) using sound card is running..."
         fi
     fi
     # disable screensaver if there are delay apps in fullscreen mode
@@ -520,24 +531,24 @@ function LO_delayScreensaver(){
         LO_log "LO_delayScreensaver(): Delaying the screensaver because a Fullscreen delay program is running..."
         LO_disableScreensaver
         return 0
-    else
-        LO_log "LO_delayScreensaver(): NO delay program (or stream) in Fullscreen mode is running..."
+    #else
+    #    LO_log "LO_delayScreensaver(): NO delay program (or stream) in Fullscreen mode is running..."
     fi
     # disable screensaver if we have significant ouput connections
     if LO_hasDelayOutputConns; then
         LO_log "LO_delayScreensaver(): Delaying the screensaver because Output connections were found..."
         LO_disableScreensaver
         return 0
-    else
-        LO_log "LO_delayScreensaver(): NO delay output connections detected..."
+    #else
+    #    LO_log "LO_delayScreensaver(): NO delay output connections detected..."
     fi
     # disable screensaver if we have relevant busy apps
     if LO_hasDelayBusyApps; then
         LO_log "LO_delayScreensaver(): Delaying the screensaver because Busy applications were found..."
         LO_disableScreensaver
         return 0
-    else
-        LO_log "LO_delayScreensaver(): NO delay Busy applications detected..."
+    #else
+    #    LO_log "LO_delayScreensaver(): NO delay Busy applications detected..."
     fi
     
     LO_log "LO_delayScreensaver(): NO delay programs were detected for suspending screensaver..."
@@ -714,17 +725,16 @@ LO_idle="0"
 
 # Initiate monitoring
 while true; do
-    # if screen is already locked do proper suspend
+    # workaround due to issues on xautolock
+    # if screen is already locked do proper suspend both on screen and laptop 
     if locked; then
-        LO_log "main(): Screen is already locked... Suspend time = $LO_DPMSSuspendTime"
+        let LO_idle=$(xprintidle)/1000
+        LO_log "main(): Screen is already locked... Idle =  $LO_idle / Suspend time = $LO_DPMSSuspendTime"
         if [ -z "$LO_SPID" ]; then
-            LO_idle=$(xprintidle)
             if [ $LO_idle -gt $LO_DPMSSuspendTime ]; then
                 LO_log "main(): Suspend time elapsed. Suspending..."
                 nice -3 $HOME/bin/mysuspend & disown
                 LO_SPID="$!"
-                log "suspending - idle = $LO_idle spid = $LO_SPID"
-                LO_idle="0"
                 LO_log "main(): Suspend PID=$LO_SPID"
             fi
         fi

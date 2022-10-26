@@ -153,13 +153,28 @@ function nullify(){
     "$@" >/dev/null 2>&1
 }
 
-# lsof similar behaviour for a process
+# lsof similar behaviour for a process - raw
+function _lsof(){
+    local i=""
+    local l=""
+    for p in /proc/{0..9}*; do
+        i=$(basename "$p")
+        for f in "$p"/fd/*; do
+            l=$(readlink -e "$f")
+            if [ "$l" ]; then
+                echo "$i: $l"
+            fi
+        done
+    done | sort -u | sort -n
+}
+
+# lsof similar behaviour for a process with some filtering
 function lsof_p(){
     [ -z "$1" ] && return 1
     local i=""
     local l=""
     #for x in $(ps_ISO "$1" | sed 's/bash //g' | awk '{print $3" "$5}' | grep "$1" | grep -v "grep" | awk '{print $1}'); do
-    for x in $(ps_ISO "$1" | awk '{print $3}'); do
+    for x in $(ps_ISO "$1" | grep -iw "$1" | grep -v "grep" | awk '{print $3}'); do
         if [ -n "$x" ]; then
             i=$(basename "/proc/$x")
             for f in "/proc/$x"/fd/*; do
@@ -285,10 +300,16 @@ function kill_them(){
     [ $# -gt 2 ] && local shw="y" || local shw="n"
     case ${1-check} in
         all)
-            LC_ALL=C pkill -USR1 --euid "$(id -u)" --exact "$s_name" > /dev/null 2>&1 && has="y" ## && log "kill_them all Stopping instances(pkill): name=$s_name"
-            [ $? -ne 0 ] && killall -u "$USER" "$s_name" > /dev/null 2>&1 && has="y" ## && log "kill_them all Stopping instances(killall): name=$s_name" || true
+            LC_ALL=C pkill -USR1 --euid "$(id -u)" --exact "$s_name" > /dev/null 2>&1 && has="y" 
+            if [ $? -eq 0 ]; then 
+                [ "$shw" == "y" ] && log "kill_them all Stopping instances(pkill): name=$s_name"
+            else
+                killall -u "$USER" "$s_name" > /dev/null 2>&1 && has="y" 
+                [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them all Stopping instances(killall): name=$s_name" || true
+            fi
             for i in $(ps_ISO "$s_name" | awk '{print $3}'); do
-                proper_kill "$i" && has="y" ## && log "kill_them all Stopping instance(kill): pid=$i name=$s_name"
+                proper_kill "$i" && has="y" 
+                [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them all Stopping instance(kill): pid=$i name=$s_name"
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] && log "kill_them all: No process $s_name found"
             return 0
@@ -296,7 +317,8 @@ function kill_them(){
         but-me)
             for i in $(ps_ISO "$s_name" | awk '{print $3}'); do
                 if [ "$i" != "$$" ]; then
-                    proper_kill "$i" && has="y" ## && log "kill_them but-me Stopping instance(kill): pid=$i name=$s_name"
+                    proper_kill "$i" && has="y" 
+                    [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them but-me Stopping instance(kill): pid=$i name=$s_name"
                 fi
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] && log "kill_them but-me: No process $s_name found"
@@ -304,7 +326,8 @@ function kill_them(){
         ;;
         strict)
             for i in $(ps_ISO "$s_name" | sed 's/bash //g' | grep -v "bash\|sh -c\|grep" | awk '{print $3}'); do
-                proper_kill "$i" && has="y" ## && log "kill_them strict Stopping instance(kill): pid=$i name=$s_name"
+                proper_kill "$i" && has="y" 
+                [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them strict Stopping instance(kill): pid=$i name=$s_name"
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "kill_them strict: No process $s_name found"
             return 0
@@ -312,7 +335,8 @@ function kill_them(){
         but-me-bash)
             for i in $(ps_ISO "$s_name" | grep -F "bash " | grep -v "grep" | awk '{print $3}'); do
                 if [ "$i" != "$$" ]; then
-                    proper_kill "$i" && has="y" ## && log "kill_them but-me-bash Stopping instance(kill): pid=$i name=$s_name"
+                    proper_kill "$i" && has="y" 
+                    [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them but-me-bash Stopping instance(kill): pid=$i name=$s_name"
                 fi
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] && log "kill_them but-me-bash: No process bash + $s_name found"
@@ -320,14 +344,15 @@ function kill_them(){
         ;;
         sh-c)
             for i in $(ps_ISO "$s_name" | sed 's/bash //g' | grep -P "sh -c" | grep -v "grep" | awk '{print $3}'); do
-                proper_kill "$i" && has="y" ## && log "kill_them sh-c Stopping instance(kill): pid=$i name=$s_name"
+                proper_kill "$i" && has="y" 
+                [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them sh-c Stopping instance(kill): pid=$i name=$s_name"
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "kill_them sh-c: No process sh -c + $s_name found"
             return 0
         ;;
         check)
             for i in $(ps_ISO "$s_name" | awk '{print $3}'); do
-                log "kill_them check: Process $s_name pid=$i is running and can be terminated" && has="y"
+                [ "$shw" == "y" ] && log "kill_them check: Process $s_name pid=$i is running and can be terminated" && has="y"
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "kill_them check: No process $s_name not found"
             return 0
