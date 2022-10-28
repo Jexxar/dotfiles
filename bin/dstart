@@ -15,19 +15,26 @@ function main(){
     precheck "pgrep"
     precheck "pkill"
     local orig_cmd="$1"
-    local at_least="$(LC_ALL=C type -a $orig_cmd 2> /dev/null | grep -v "alias\|keyword" | grep " is " | awk 'NR == 1 {print $1}')"
-    [ -z "$at_least" ] && log "Invalid command $orig_cmd" && echo -e "Invalid command $orig_cmd" && usage && return 1
+    #local at_least="$(LC_ALL=C type -a $orig_cmd 2> /dev/null | grep -v "alias\|keyword" | grep " is " | awk 'NR == 1 {print $1}')"
+    #[ -z "$at_least" ] && log "Invalid command $orig_cmd" && echo -e "Invalid command $orig_cmd" && usage && return 1
     local cmd="$(findutil "$orig_cmd")"
+    [ -z "$cmd" ] && log "Invalid command $orig_cmd" && echo -e "Invalid command $orig_cmd" && usage && return 1
     shift
     kill_them "but-me" "$orig_cmd"
+
     cmd="$(echo "$cmd $@ &")"
     eval $cmd &
+    
+    #setsid -w $cmd "$@" &
+    
     #$cmd "$@" &
     #echo "$@" | xargs $cmd &
     #$cmd <<< "$@" &
     #$cmd <<< "$args" &
-    local rc="$?"
-    if [ $rc -eq 0 ]; then
+    
+    #local rc="$?"
+    #if [ $rc -eq 0 ]; then
+    if [ $? -eq 0 ]; then
         disown
         echo "Starting $cmd"
         log "Starting $cmd"
