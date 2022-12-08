@@ -21,7 +21,7 @@ function doMenu(){
         ru_* ) opt=$(getOpt_en) ;; # Russian
         * ) getOpt_en ;; # Default to English
     esac
-    local cmd=$(echo -e "$opt" | rofi -location 2 -font "Noto Sans 16" -dmenu -l 10 -line-margin 0 -line-padding 1 -xoffset 50 -yoffset 20 -width 20 -selected-row 0 -i -p "$prpt" $*)
+    local cmd=$(echo -e "$opt" | rofi -location 2 -font "Noto Sans 14" -dmenu -l 10 -line-margin 0 -line-padding 1 -xoffset 50 -yoffset 20 -width 20 -selected-row 0 -i -p "$prpt" $*)
     [ -z "$cmd" ] && return 0
     case "$cmd" in
         ⏻*)
@@ -34,7 +34,7 @@ function doMenu(){
             ~/bin/mysuspend
         ;;
         🗝*)
-            ~/bin/autolock lock
+            ~/bin/mylock
         ;;
         *)
             ~/bin/myexit

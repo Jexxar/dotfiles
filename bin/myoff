@@ -6,7 +6,7 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-#off the screen if possible.
+# turn off the screen if possible.
 function do_off() {
     # Only works if X is running.
     ! is_running_X && log "X server is not running" && return 0
@@ -18,8 +18,7 @@ function do_off() {
 
 function do_test() {
     is_running_X && log "X is running" || log "X server down"
-    checkfor "xset" && log "xset command can be used" || log "xset command not found"
-    locked "debug" && log "Screen already locked" || log "Screen not locked"
+    checkfor "xset" && log "xset dpms force off"
     return 0
 }
 

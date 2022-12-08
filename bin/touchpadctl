@@ -17,30 +17,44 @@ usage() {
 }
 
 touch_hnd_noX(){
-    local base_dir="/sys/bus/serio/drivers/psmouse"
-    local device_id="serio1"
-    local dmode=""
-
-    [ -f $base_dir/bind_mode ] || /usr/bin/logger -t Touchpadctl -- "Cannot enable touchpad - not found" && return 0
-
+    #local base_dir="/sys/bus/serio/drivers/psmouse"
+    #local device_id="serio1"
+    #local dmode=""
+    #[ -f $base_dir/bind_mode ] || /usr/bin/logger -t Touchpadctl -- "Cannot enable touchpad - not found" && return 0
+    local qt_mouses=0
+    
     case "$1" in
         -a | --auto )
-            dmode="`/bin/cat $base_dir/bind_mode`"
-            if [ "$dmode" = "manual" ]; then
-                echo -n auto > $base_dir/bind_mode && /usr/bin/logger -t Touchpadctl -- "Enabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot enable touchpad"
-                echo -n $device_id > $base_dir/bind 2>/dev/null || true
+            # hard way indeed
+            qt_mouses=$(lsusb -v 2>/dev/null | grep -e "bInterfaceProtocol.*Mouse" | wc -l)
+            if [ $qt_mouses -eq 0 ]; then
+                lsmod | grep psmouse >/dev/null
+                if [ $? -ne 0 ]; then
+                    modprobe psmouse
+                else
+                    rmmod psmouse
+                fi
             else
-                echo -n manual > $base_dir/bind_mode && /usr/bin/logger -t Touchpadctl -- "Disabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot disable touchpad"
-                echo -n $device_id > $base_dir/unbind 2>/dev/null || true
+                lsmod | grep psmouse >/dev/null && rmmod psmouse
             fi
+            #dmode="`/bin/cat $base_dir/bind_mode`"
+            #if [ "$dmode" = "manual" ]; then
+            #    echo auto | tee $base_dir/bind_mode && /usr/bin/logger -t Touchpadctl -- "Enabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot enable touchpad"
+            #    echo $device_id | tee $base_dir/bind 2>/dev/null || true
+            #else
+            #    echo manual | tee $base_dir/bind_mode && /usr/bin/logger -t Touchpadctl -- "Disabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot disable touchpad"
+            #    echo $device_id | tee $base_dir/unbind 2>/dev/null || true
+            #fi
         ;;
         -d | --disable)
-            echo -n manual > $base_dir/bind_mode && /usr/bin/logger -t Touchpadctl -- "Disabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot disable touchpad"
-            echo -n $device_id > $base_dir/unbind 2>/dev/null || true
+            lsmod | grep psmouse >/dev/null && rmmod psmouse
+            #echo manual | tee $base_dir/bind_mode && /usr/bin/logger -t Touchpadctl -- "Disabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot disable touchpad"
+            #echo $device_id | tee $base_dir/unbind 2>/dev/null || true
         ;;
         -e | --enable)
-            echo -n auto > $base_dir/bind_mode && /usr/bin/logger -t Touchpadctl -- "Enabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot enable touchpad"
-            echo -n $device_id > $base_dir/bind 2>/dev/null || true
+            lsmod | grep psmouse  >/dev/null || modprobe psmouse
+            #echo auto | tee $base_dir/bind_mode && /usr/bin/logger -t Touchpadctl -- "Enabling the touchpad" || /usr/bin/logger -t Touchpadctl -- "Cannot enable touchpad"
+            #echo $device_id | tee $base_dir/bind 2>/dev/null || true
         ;;
         *)  usage
             exit 0
@@ -80,20 +94,27 @@ touch_hnd_X(){
     local touch_stt=0
     local mouse_id=0
     local mouse_stt=0
-    
-    /usr/bin/logger -t Touchpadctl -- "hnd_X with option $1 and usr=$usr"
-    
-    touch_id="`/usr/bin/xinput list | \egrep -iEo 'Touchpad\s*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}'`"
-    [ $? -ne 0 ] && touch_id=0 && /usr/bin/logger -t Touchpadctl -- "Touchpad device not found. $usr. ($XAUTHORITY - $DISPLAY)" && return 0
+    #/usr/bin/logger -t Touchpadctl -- "hnd_X with option $1 and usr=$usr"
+    touch_id=$(/usr/bin/xinput list | \egrep -iEo 'Touchpad\s*id\=[0-9]{1,2}' | awk -F[=] '{print $2}')
+    [ $? -ne 0 ] && touch_id=0
+    [ -z "$touch_id" ] && touch_id=0
+    if [ $touch_id -eq 0 ]; then
+        touch_id=$(/usr/bin/xinput list | \egrep -iEo 'PS/2 Generic Mouse.*id\=[0-9]{1,2}' | awk -F[=] '{print $2}')
+        [ $? -ne 0 ] && touch_id=0
+        [ -z "$touch_id" ] && touch_id=0
+        [ $touch_id -eq 0 ] && /usr/bin/logger -t Touchpadctl -- "Touchpad device not found. $usr. ($XAUTHORITY - $DISPLAY)" && return 0
+    fi
     touch_stt="`/usr/bin/xinput list-props $touch_id | \grep 'Device Enabled' | \awk '{print $4}'`"
     [ $? -ne 0 ] && touch_stt=0
-    
     case "$1" in
         -a | --auto )
-            mouse_id="`xinput list | grep -iv 'touchpad\|control\|virtual core\|core XTEST' | grep 'slave  pointer' | \egrep -iEo '*id\=[0-9]{1,2}' | \egrep -Eo '[0-9]{1,2}' | tail -n1`"
-            [ $? -ne 0 ] && mouse_id=0 && /usr/bin/logger -t Touchpadctl -- "Mouse/Pointer device not found. $usr. ($XAUTHORITY - $DISPLAY)" && return 0
-            mouse_stt="`/usr/bin/xinput list-props $mouse_id | \grep 'Device Enabled' | \awk '{print $4}'`"
+            mouse_id=$(xinput list | grep -iv 'touchpad\|control\|virtual core\|core XTEST\|PS/2 Generic Mouse' | grep 'slave  pointer' | \egrep -iEo '*id\=[0-9]{1,2}' | awk -F[=] '{print $2}')
+            [ $? -ne 0 ] && mouse_id=0 
+            [ -z "$mouse_id" ] && mouse_id=0 
+            [ $mouse_id -eq 0 ] && /usr/bin/logger -t Touchpadctl -- "Mouse/Pointer device not found. $usr. ($XAUTHORITY - $DISPLAY)" && return 0
+            mouse_stt=$(/usr/bin/xinput list-props $mouse_id | \grep 'Device Enabled' | \awk '{print $4}')
             [ $? -ne 0 ] && mouse_stt=0
+            [ -z "$mouse_stt" ] && mouse_stt=0 
             if [ $mouse_id -ne 0 ] && [ $mouse_stt -ne 0 ]; then
                 xinput_disable_touch "$touch_id" "$touch_stt" "$usr"
             else
@@ -118,29 +139,21 @@ main(){
         exit 1
     fi
     
-    local user_list
-    local user_id
+    local user_id="`id -u`"
     
-    user_list="`w -h | cut -d' ' -f1 | sort | uniq`"
-    user_id="`id -u`"
+    if [ $user_id -eq 0 ]; then
+        #/usr/bin/logger -t Touchpadctl -- "Superuser permissions to perform override on driver settings."
+        touch_hnd_noX "$1" "root"
+        exit 0
+    fi
     
     # Check running X
     if command -v xset >/dev/null 2>&1 && xset q >/dev/null 2>&1; then
-        /usr/bin/logger -t Touchpadctl -- "Xserver is running."
+        local user_list="`w -h | cut -d' ' -f1 | sort | uniq`"
+        #/usr/bin/logger -t Touchpadctl -- "Xserver is running."
     else
-        /usr/bin/logger -t Touchpadctl -- "Xserver is not running."
-        if [ $user_id -eq 0 ]; then
-            /usr/bin/logger -t Touchpadctl -- "User: root to perform manual override on driver settings."
-            touch_hnd_noX "$1" "root"
-            exit 0
-        fi
+        #/usr/bin/logger -t Touchpadctl -- "Xserver is not running."
         return 0
-    fi
-    
-    if [ $user_id -eq 0 ]; then
-        /usr/bin/logger -t Touchpadctl -- "User: root to perform xinput."
-        touch_hnd_X "$1" "root"
-        exit 0
     fi
     
     for u in ${user_list}; do
@@ -150,7 +163,7 @@ main(){
         export XAUTHORITY="`sudo -Hiu "${u}" env | grep -e "^HOME=" | cut -d'=' -f2`/.Xauthority"
         export DISPLAY="${displ}"
         if [ -f "${XAUTHORITY}" ]; then
-            /usr/bin/logger -t Touchpadctl -- "User: $u to perform xinput."
+            #/usr/bin/logger -t Touchpadctl -- "User: $u to perform xinput."
             touch_hnd_X "$1" "$u"
         fi
     done

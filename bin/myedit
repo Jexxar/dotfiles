@@ -7,7 +7,7 @@ fi
 
 function _fX(){
     # list by priority from the left to the right
-    local Xl=('subl' 'subl3' 'sublime-text' 'geany' 'xed' 'gedit' 'pluma' 'kate' 'kwrite' 'medit' 'leafpad' 'atom' 'vscode' 'eclipse' 'brackets' 'gvim')
+    local Xl=('subl' 'subl3' 'subl4' 'sublime-text' 'geany' 'xed' 'gedit' 'pluma' 'kate' 'kwrite' 'medit' 'leafpad' 'atom' 'vscode' 'eclipse' 'brackets' 'gvim')
     local r=""
     for i in "${Xl[@]}"; do
         r=$(command -v "${i}")
@@ -20,7 +20,7 @@ function _fX(){
 
 function _fnoX(){
     # list by priority from the left to the right
-    local noXl=('micro' 'nano' 'pico' 'jed' 'joe' 'mcedit' 'micro' 'vim' 'neovim' 'vi' 'kakoune' 'emacs')
+    local noXl=('micro' 'nano' 'pico' 'jed' 'joe' 'mcedit' 'vim' 'neovim' 'vi' 'kakoune' 'emacs')
     local r=""
     for i in "${noXl[@]}"; do
         r=$(command -v "${i}")

@@ -5,32 +5,38 @@ function __powerline_last_status_prompt {
 }
 
 function __powerline_disto_char {
-    local _DISTRIB_ID=`cat /etc/*-release  2> /dev/null | grep 'DISTRIB_ID' | sed -e "s/DISTRIB_ID=//g" | sed -e "s/\"//g" | tr '[:upper:]' '[:lower:]'`
-    if [ $(echo "$_DISTRIB_ID" | grep "mint") ]; then echo " "; return 0; fi
-    if [ $(echo "$_DISTRIB_ID" | grep "arc") ]; then echo " "; return 0; fi
-    if [ $(echo "$_DISTRIB_ID" | grep "debian") ]; then echo " "; return 0; fi
-    if [ $(echo "$_DISTRIB_ID" | grep "ubunt") ]; then echo " "; return 0; fi
-    if [ $(echo "$_DISTRIB_ID" | grep "fedora") ]; then echo " "; return 0; fi
-    if [ $(echo "$_DISTRIB_ID" | grep "manjaro") ]; then echo " "; return 0; fi
-    if [ $(echo "$_DISTRIB_ID" | grep "suse") ]; then echo " "; return 0; fi
-    if [ $(echo "$_DISTRIB_ID" | grep "gentoo") ]; then echo " "; return 0; fi
-    if [ $(echo "$_DISTRIB_ID" | grep "hat") ]; then echo " "; return 0; fi
-    echo " "
-    return 0;
+    local _DISTRIB_ID="$(grep 'DISTRIB_ID' /etc/*-release  2> /dev/null | awk -F[=] '/DISTRIB_ID/ {print $2}' | sed -e "s/\"//g" | tr '[:upper:]' '[:lower:]')"
+    case $_DISTRIB_ID in
+        mint*)  echo "  " ;; 
+        arc*)  echo "  " ;; 
+        debian*)  echo "  " ;; 
+        ubunt*)  echo "  " ;; 
+        fedora*)  echo "  " ;; 
+        manjaro*)  echo "  " ;; 
+        suse*)  echo "  " ;; 
+        gentoo*)  echo "  " ;;  
+        *hat*)  echo "  " ;; 
+        void*)  echo "  " ;; 
+          *) echo "  " ;;
+    esac
+    return 0
 }
 
 function __powerline_disto_color {
-    local _DISTRIB_ID=`cat /etc/*-release  2> /dev/null | grep 'DISTRIB_ID' | sed -e "s/DISTRIB_ID=//g" | sed -e "s/\"//g" | tr '[:upper:]' '[:lower:]'`
-    if [ $(echo "$_DISTRIB_ID" | grep "mint") ]; then echo "22"; return 0; fi
-    if [ $(echo "$_DISTRIB_ID" | grep "arc") ]; then echo "18"; return 0; fi
-    if [ $(echo "$_DISTRIB_ID" | grep "debian") ]; then echo "53"; return 0; fi
-    if [ $(echo "$_DISTRIB_ID" | grep "ubunt") ]; then echo "88"; return 0; fi
-    if [ $(echo "$_DISTRIB_ID" | grep "fedora") ]; then echo "30"; return 0; fi
-    if [ $(echo "$_DISTRIB_ID" | grep "manjaro") ]; then echo "22"; return 0; fi
-    if [ $(echo "$_DISTRIB_ID" | grep "suse") ]; then echo "29"; return 0; fi
-    if [ $(echo "$_DISTRIB_ID" | grep "gentoo") ]; then echo "63"; return 0; fi
-    if [ $(echo "$_DISTRIB_ID" | grep "hat") ]; then echo "16"; return 0; fi
-    echo "0"
+    local _DISTRIB_ID="$(grep 'DISTRIB_ID' /etc/*-release  2> /dev/null | awk -F[=] '/DISTRIB_ID/ {print $2}' | sed -e "s/\"//g" | tr '[:upper:]' '[:lower:]')"
+    case $_DISTRIB_ID in
+        mint*) echo "22" ;;
+        arc*) echo "18" ;;
+        debian*) echo "53" ;;
+        ubunt*) echo "88" ;;
+        fedora*) echo "18" ;;
+        manjaro*) echo "22" ;;
+        *suse*) echo "29" ;;
+        gentoo*) echo "56" ;;
+        *hat*) echo "16" ;;
+        void*) echo "22" ;;
+        *) echo "0" ;;
+    esac
     return 0;
 }
 

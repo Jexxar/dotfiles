@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
 #set -eu
-
 if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
 function main(){
+    set -o noglob
     [ -z "$1" ] && exit 0
-    if [[ -n $(find . -name "${1}" -print0) ]]; then
-        find . -name "${1}" -ls ;
-    else
-        echo "Arquivo nao encontrado";
-    fi
+    local name="${1}"
+    echo "$name"
+    find . -name "$name" -ls || echo "Arquivo nao encontrado";
 }
 
 main "$@"

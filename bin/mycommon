@@ -30,16 +30,17 @@ function log(){
         touch "$myLogFile"
         LOCK_rc=$?
     fi
-    if [[ $LOCK_rc -eq 0 && -f "$myLogFile" ]]; then
+    #if [[ $LOCK_rc -eq 0 && -f "$myLogFile" ]]; then
+    if [[ $LOCK_rc -eq 0 && -w "$myLogFile" ]]; then
         info "$@" | tee -a "$myLogFile" > /dev/null
-        #info >>"$myLogFile" "$@"
     else
         info "$@"
     fi
+    return 0
 }
 
 function bailout(){
-    echo "Error: $@"
+    info "Error: $@"
     [ -f "$myLogFile" ] && log "Error: $@"
     exit 1
 }
@@ -268,16 +269,19 @@ function ps_ISO(){
     fi
 }
 
-# Proper Killing processes using kill command
+# Over Killing processes using kill command
 function proper_kill(){
     kill -SIGTERM "$1" > /dev/null 2>&1 || true
-    for SIG in 2 9 ; do 
-        if ps -p $1 > /dev/null; then
-            kill -$SIG $1 > /dev/null 2>&1 || true; 
-            snore 0.3; 
-        fi
+    while 2>/dev/null kill -0 "$1"; do
+        for SIG in 2 9 ; do 
+            if ps -p $1 > /dev/null; then
+                kill -$SIG "$1" > /dev/null 2>&1 || true; 
+                snore 0.3; 
+            fi
+        done
     done
-    ps -p $1 > /dev/null 2>&1 && return 1 || return 0
+    return 0
+    #ps -p $1 > /dev/null 2>&1 && return 1 || return 0
 }
 
 # Killing user processes helper
@@ -300,25 +304,33 @@ function kill_them(){
     [ $# -gt 2 ] && local shw="y" || local shw="n"
     case ${1-check} in
         all)
-            LC_ALL=C pkill -USR1 --euid "$(id -u)" --exact "$s_name" > /dev/null 2>&1 && has="y" 
+            LC_ALL=C pkill --euid "$(id -u)" --exact "$s_name" > /dev/null 2>&1 && has="y" 
+            #LC_ALL=C pkill -USR1 --euid "$(id -u)" --exact "$s_name" > /dev/null 2>&1 && has="y" 
             if [ $? -eq 0 ]; then 
-                [ "$shw" == "y" ] && log "kill_them all Stopping instances(pkill): name=$s_name"
+                [ "$shw" == "y" ] && log "kill_them all: Stopping instances(pkill): name=$s_name"
+                return 0;
             else
-                killall -u "$USER" "$s_name" > /dev/null 2>&1 && has="y" 
-                [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them all Stopping instances(killall): name=$s_name" || true
+                [ "$shw" == "y" ] && log "kill_them all: Cannot Stop instances(pkill): name=$s_name";
             fi
-            for i in $(ps_ISO "$s_name" | awk '{print $3}'); do
-                proper_kill "$i" && has="y" 
-                [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them all Stopping instance(kill): pid=$i name=$s_name"
+            LC_ALL=C killall -u "$USER" "$s_name" > /dev/null 2>&1 && has="y" 
+            if [ $? -eq 0 ]; then
+                [ "$shw" == "y" ] && log "kill_them all: Stopping instances(killall): name=$s_name";
+                return 0;
+            else
+                [ "$shw" == "y" ] && log "kill_them all Cannot Stop instances(killall): name=$s_name"
+            fi
+            for i in $(ps_ISO "$s_name" | grep -v "$0" | awk '{print $3}'); do
+                [ -n "$i" ] && proper_kill "$i" && has="y" ;
+                [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them all: Stopping instance(kill): pid=$i name=$s_name";
             done
-            [ "$has" == "n" ] && [ "$shw" == "y" ] && log "kill_them all: No process $s_name found"
-            return 0
+            [ "$has" == "n" ] && [ "$shw" == "y" ] && log "kill_them all: No process $s_name found";
+            return 0;
         ;;
         but-me)
             for i in $(ps_ISO "$s_name" | awk '{print $3}'); do
                 if [ "$i" != "$$" ]; then
                     proper_kill "$i" && has="y" 
-                    [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them but-me Stopping instance(kill): pid=$i name=$s_name"
+                    [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them but-me: Stopping instance(kill): pid=$i name=$s_name"
                 fi
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] && log "kill_them but-me: No process $s_name found"
@@ -327,7 +339,7 @@ function kill_them(){
         strict)
             for i in $(ps_ISO "$s_name" | sed 's/bash //g' | grep -v "bash\|sh -c\|grep" | awk '{print $3}'); do
                 proper_kill "$i" && has="y" 
-                [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them strict Stopping instance(kill): pid=$i name=$s_name"
+                [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them strict: Stopping instance(kill): pid=$i name=$s_name"
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "kill_them strict: No process $s_name found"
             return 0
@@ -336,7 +348,7 @@ function kill_them(){
             for i in $(ps_ISO "$s_name" | grep -F "bash " | grep -v "grep" | awk '{print $3}'); do
                 if [ "$i" != "$$" ]; then
                     proper_kill "$i" && has="y" 
-                    [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them but-me-bash Stopping instance(kill): pid=$i name=$s_name"
+                    [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them but-me-bash: Stopping instance(kill): pid=$i name=$s_name"
                 fi
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] && log "kill_them but-me-bash: No process bash + $s_name found"
@@ -345,7 +357,7 @@ function kill_them(){
         sh-c)
             for i in $(ps_ISO "$s_name" | sed 's/bash //g' | grep -P "sh -c" | grep -v "grep" | awk '{print $3}'); do
                 proper_kill "$i" && has="y" 
-                [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them sh-c Stopping instance(kill): pid=$i name=$s_name"
+                [ $? -eq 0 ] && [ "$shw" == "y" ] && log "kill_them sh-c: Stopping instance(kill): pid=$i name=$s_name"
             done
             [ "$has" == "n" ] && [ "$shw" == "y" ] &&  log "kill_them sh-c: No process sh -c + $s_name found"
             return 0
@@ -379,11 +391,15 @@ function stop_it(){
     [ -z "$1" ] && return 1
     case ${2:-stop} in
         stop)
-            kill_them "all" "$1"
+            if [ $# -gt 2 ]; then 
+                kill_them "all" "$1" "y"
+            else
+                kill_them "all" "$1"
+            fi
             return 0
         ;;
         debug)
-            kill_them "check" "$1"
+            kill_them "check" "$1" "y"
             return 0
         ;;
         *)
@@ -393,37 +409,37 @@ function stop_it(){
     esac
 }
 
-# Return 0 if user in the active session can issue power related commands via policykit
-function auth_user(){
-    [ $(loginctl show-session $XDG_SESSION_ID --property=Active | grep "yes") ] && return 0
-    return 1
+# Check if an active session exists
+# If so an user can issue power related commands via policykit
+function is_session_active(){
+    loginctl show-session $XDG_SESSION_ID --property=Active | grep "yes" > /dev/null || return 1
 }
 
 # Check if can hibernate using dbus
 function can_hibernate(){
-    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanHibernate &>/dev/null | grep "yes") ] && return 0 || true
-    [ $(gdbus call --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 --method org.freedesktop.login1.Manager.CanHibernate | grep "yes") ] && return 0
+    gdbus call --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 --method org.freedesktop.login1.Manager.CanHibernate | grep "yes" > /dev/null && return 0
+    checkfor "qdbus" && qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanHibernate | grep "yes" > /dev/null && return 0 
     return 1
 }
 
 # Check if can poweroff using dbus
 function can_poweroff(){
-    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanPowerOff | grep "yes") ] && return 0 || true
-    [ $(gdbus call --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 --method org.freedesktop.login1.Manager.CanPowerOff | grep "yes") ] && return 0
+    gdbus call --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 --method org.freedesktop.login1.Manager.CanPowerOff | grep "yes" > /dev/null && return 0
+    checkfor "qdbus" && qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanPowerOff | grep "yes" > /dev/null && return 0
     return 1
 }
 
 # Check if can reboot using dbus
 function can_reboot(){
-    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanReboot | grep "yes") ] && return 0 || true
-    [ $(gdbus call --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 --method org.freedesktop.login1.Manager.CanReboot | grep "yes") ] && return 0
+    gdbus call --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 --method org.freedesktop.login1.Manager.CanReboot | grep "yes" > /dev/null && return 0
+    checkfor "qdbus" && qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanReboot | grep "yes" > /dev/null && return 0
     return 1
 }
 
 # Check if can suspend using dbus
 function can_suspend(){
-    [ $(qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanSuspend | grep "yes") ] && return 0 || true
-    [ $(gdbus call --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 --method org.freedesktop.login1.Manager.CanSuspend | grep "yes") ] && return 0
+    gdbus call --system --dest org.freedesktop.login1 --object-path /org/freedesktop/login1 --method org.freedesktop.login1.Manager.CanSuspend | grep "yes" > /dev/null && return 0
+    checkfor "qdbus" && qdbus --system org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.CanSuspend | grep "yes" > /dev/null && return 0
     return 1
 }
 
@@ -494,23 +510,39 @@ function dunstctl(){
 
 # check for a running X server - xset required
 function is_running_X(){
-    xset q &>/dev/null && return 0
-    precheck "xset"
+    checkfor "xset" && xset -q &>/dev/null && return 0
     return 1
+}
+
+# find wm (window manager)
+function _wm(){
+    local wm=""
+    [ -n "$XDG_CURRENT_DESKTOP" ] && wm="$XDG_CURRENT_DESKTOP" && echo "$wm" && return 0
+    hash wmctrl 2> /dev/null  && wm=$(wmctrl -m | awk '/Name:/ {print $2}')
+    [ -n "$wm" ] && echo "$wm" && return 0
+    wm="$(ps -e | grep -i "^.*wm\|i3\|awesome\|sway\|openbox\|blackbox\|fluxbox" | awk 'NR == 1 {print $4}')"
+    [ -n "$wm" ] && echo "$wm" && return 0
+    hash xprop 2> /dev/null && {
+        local id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK 2> /dev/null | grep "id" | awk '{print $5}')"
+        [ -n "$id" ] && wm="$(xprop -id "$id" -notype -len 100 -f _NET_WM_NAME 8t | grep "_NET_WM_NAME" | awk '{gsub(/"/, "", $3); print $3 }')"
+    }
+    [ -n "$DESKTOP_SESSION" ] && wm="$DESKTOP_SESSION" && echo "$wm" | ~/bin/tolower | ~/bin/capitalize && return 0
+    echo "$wm"
+    return 0
 }
 
 # Is the screen already locked?
 function locked(){
-    local sclist=('i3lock' 'mate-screensaver-dialog' 'cinnamon-screensaver-pam-helper' 'slimlock' 'gnome-screensaver-dialog' 'xscreensaver')
+    local sclist=('i3lock' 'slock' 'xlock' 'light-locker' 'mate-screensaver-dialog' 'cinnamon-screensaver-pam-helper' 'slimlock' 'gnome-screensaver-dialog' 'xscreensaver')
     for p in "${sclist[@]}"; do
         [ $(pgrep -lfc "${p}") -gt 0 ] && return 0;
     done
     return 1;
 }
 
-# Reset locker if screen already locked
+# Reset locker kill running lock apps
 function reset_locker(){
-    local sclist=('i3lock' 'mate-screensaver-dialog' 'cinnamon-screensaver-pam-helper' 'slimlock' 'gnome-screensaver-dialog' 'xscreensaver')
+    local sclist=('i3lock' 'slock' 'xlock' 'light-locker' 'mate-screensaver-dialog' 'cinnamon-screensaver-pam-helper' 'slimlock' 'gnome-screensaver-dialog' 'xscreensaver')
     for p in "${sclist[@]}"; do
         [ $(pgrep -lfc "${p}") -gt 0 ] && stop_it "${p}"
     done

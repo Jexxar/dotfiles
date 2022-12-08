@@ -7,59 +7,60 @@ if [ -f "$HOME/bin/mycommon" ]; then
 fi
 
 function do_suspend() {
-    auth_user || return 0 
-    
-    if is_running_X ; then
-        # locked && return 0
-        if checkfor "systemctl"; then
-            systemctl suspend 
-            exit 0
+    # if there is an active session for login manager
+    if is_session_active; then 
+        # try xss-lock if no locked
+        if ! locked; then
+            "$HOME/bin/mylock" & disown
+            snore 0.3
         fi
-        if can_suspend; then
-            dbus_suspend 
-            exit 0
-        fi
-    else
-        if checkfor "systemctl"; then
-            systemctl suspend 
-            exit 0
+        # try systemd version first
+        checkfor "systemctl" && systemctl suspend && exit 0
+        # try elogind version
+        checkfor "loginctl" && loginctl suspend && exit 0
+        # try for dbus freedesktop service to interact with logind
+        if is_running_X ; then
+            if can_suspend; then
+                dbus_suspend 
+                exit 0
+            fi
         fi
     fi
+    # if there is nor active session neither login manager
+    local su_no_pw="$(sudo -l | grep "NOPASSWD")"
+    # make sure systemctl suspend is in sudoers file
+    [ -z "${su_no_pw##*systemctl suspend*}" ] && checkfor "systemctl" && sudo systemctl suspend && exit 0
+    # make sure pm-suspend is in sudoers file
+    [ -z "${su_no_pw##*pm-suspend*}" ] && checkfor "pm-suspend" && sudo pm-suspend && exit 0
+    # make sure zzz is in sudoers file
+    [ -z "${su_no_pw##*zzz*}" ] && checkfor "zzz" && sudo zzz && exit 0
+    log "No suitable suspend command found. Check your installation." && exit 0
 }
 
 function do_test() {
-    if is_running_X ; then
-        log "X is running"
-        locked && log "Screen locked" || log "Screen not locked"
-        if auth_user; then
-            log "user $USER has polkit binding to suspend"
-            checkfor "systemctl" && log "using: systemctl suspend"
-            can_suspend && log "using: dbus logind to suspend"
-        else
-            log "user $USER has not polkit binding to suspend"
+    if is_session_active; then
+        log "User $USER has an active session. Polkit allow to suspend"
+        checkfor "systemctl" && log "Found: systemctl suspend"
+        checkfor "loginctl" && log "Found: loginctl suspend"
+        if is_running_X ; then
+            log "X is running"
+            can_suspend && log "User $USER can suspend using Dbus"
         fi
     else
-        log "X is not running"
-        if auth_user; then
-            log "user $USER has polkit binding to suspend"
-            checkfor "systemctl" && log "using: systemctl suspend"
-        else
-            log "user $USER has not polkit binding to suspend"
-        fi
+        log "User $USER does NOT have an active session"
+        local su_no_pw="$(sudo -l | grep "NOPASSWD")"
+        [ -z "${su_no_pw##*systemctl suspend*}" ] && checkfor "systemctl" && log "Found: sudo systemctl suspend"
+        [ -z "${su_no_pw##*pm-suspend*}" ] && checkfor "pm-suspend" && log "Found: sudo pm-suspend"
+        [ -z "${su_no_pw##*zzz*}" ] && checkfor "zzz" && log "Found: sudo zzz"
     fi
     return 0
 }
 
 function main(){
-    #[ $# -ge 1 ] && log "suspend started... no parms" || log "suspend started... with ${1:-}"
-    precheck "xset"
-    precheck "loginctl"
-
     local cmd=${1:-suspend}
     
     case "$cmd" in
         suspend)
-            #log "suspend now..."
             do_suspend
         ;;
         debug)

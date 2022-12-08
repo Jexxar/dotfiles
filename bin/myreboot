@@ -1,85 +1,60 @@
 #!/usr/bin/env bash
 # This script is intended to be run as the main reboot script for this installation.
-set -eu
+set -u
 
 if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
 function do_reboot() {
-    auth_user && continue || return 0
-    
-    if is_running_X ; then
-        locked && return 0
-        
-        if checkfor "systemctl"; then
-            systemctl reboot &
-            exit 0
-        fi
-        if can_reboot; then
-            dbus_reboot &
-            exit 0
-        fi
-        if checkfor "shutdown"; then
-            shutdown -r now &
-            exit 0
-        fi
-        if checkfor "init"; then
-            init 6 &
-            exit 0
-        fi
-    else
-        if checkfor "systemctl"; then
-            systemctl reboot &
-            exit 0
-        fi
-        if checkfor "shutdown"; then
-            shutdown -r now &
-            exit 0
-        fi
-        if checkfor "init"; then
-            init 6 &
-            exit 0
+    if is_session_active; then
+        # try systemd version first
+        checkfor "systemctl" && systemctl reboot && exit 0
+        # try elogind version
+        checkfor "loginctl" && loginctl reboot && exit 0
+        # try for dbus freedesktop service to interact with logind
+        if is_running_X; then
+            if can_reboot; then
+                dbus_reboot 
+                exit 0
+            fi
         fi
     fi
+    # if there is nor active session neither login manager
+    local su_no_pw="$(sudo -l | grep "NOPASSWD")"
+    # make sure systemctl reboot is in sudoers file
+    [ -z "${su_no_pw##*systemctl reboot*}" ] && checkfor "systemctl" && sudo systemctl reboot && exit 0
+    # make sure reboot is in sudoers file
+    [ -z "${su_no_pw##*reboot*}" ] && checkfor "reboot" && sudo reboot && exit 0
+    # make sure shutdown is in sudoers file
+    [ -z "${su_no_pw##*shutdown*}" ] && checkfor "shutdown" && sudo shutdown -r now && exit 0
+    log "No suitable reboot command found. Check your installation." && exit 0
 }
 
 function do_test() {
-    if is_running_X ; then
-        log "X is running"
-        locked  && log "Screen locked" || log "Screen not locked"
-        if auth_user; then
-            log "user $USER has polkit binding to reboot"
-            checkfor "systemctl" && log "can use: systemctl reboot"
-            can_reboot && log "can use: dbus logind to reboot"
-            checkfor "shutdown" && log "can use: shutdown -r now"
-            checkfor "init" && log "can use: init 6"
-        else
-            log "user $USER has not polkit binding to reboot"
+    if is_session_active; then
+        log "User $USER has an active session. Polkit allow to reboot"
+        checkfor "systemctl" && log "Found: systemctl reboot"
+        checkfor "loginctl" && log "Found: loginctl reboot"
+        if is_running_X ; then
+            log "X is running"
+            can_reboot && log "User $USER can reboot using Dbus"
         fi
     else
-        log "X is not running"
-        if auth_user; then
-            log "user $USER has polkit binding to reboot"
-            checkfor "systemctl" && log "can use: systemctl reboot"
-            checkfor "shutdown" && log "can use: shutdown -r now"
-            checkfor "init" && log "can use: init 6"
-        else
-            log "user $USER has not polkit binding to reboot"
-        fi
+        log "user $USER does NOT have an active session"
+        local su_no_pw="$(sudo -l | grep "NOPASSWD")"
+        [ -z "${su_no_pw##*systemctl reboot*}" ] && checkfor "systemctl" && log "Found: sudo systemctl reboot"
+        [ -z "${su_no_pw##*reboot*}" ] && checkfor "reboot" && log "Found: sudo reboot"
+        [ -z "${su_no_pw##*shutdown*}" ] && checkfor "shutdown" && log "Found: sudo shutdown -r"
     fi
     return 0
 }
 
 function main(){
-    precheck "xset"
-    precheck "loginctl"
-    
     local cmd=${1:-reboot}
     
     case "$cmd" in
         reboot)
-            log "reboot now..."
             do_reboot
         ;;
         debug)
@@ -91,4 +66,3 @@ function main(){
 }
 
 main "$@"
-

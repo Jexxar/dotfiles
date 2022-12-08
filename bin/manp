@@ -40,8 +40,11 @@ function create_it(){
 
 function open_it(){
     [ -z "$1" ] && return 1
-    xdg-open "$1" >/dev/null 2>&1 &
-    disown
+    if type -p zathura >/dev/null 2>&1; then 
+        zathura "$1" >/dev/null 2>&1 & disown;
+    else
+        xdg-open "$1" >/dev/null 2>&1 & disown;
+    fi
     exit 0
 }
 

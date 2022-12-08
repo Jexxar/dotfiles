@@ -18,734 +18,542 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-# LO_DEBUG=0 for NO output
-# LO_DEBUG=1 for sleep prints
-# LO_DEBUG=2 for everything
-LO_DEBUG=0
+# For when an unexpected error occurs
+trap 'prevcmd=$thiscmd; thiscmd=$BASH_COMMAND' DEBUG
 
-# Modify these variables if you want this script to detect if MPV, Mplayer,
-# VLC, Minitube, Totem or a web browser Flash/HTML5 Video.
+# Perform cleanup on exception
+trap 'cleanup; exit' INT TERM EXIT ERR
 
-# Names of programs which, when running, you wish to delay the screensaver.
+# DEBUG=0 for NO output
+# DEBUG=1 for state change events (YES)
+# DEBUG=2 for everything
+# DEBUG=3 sleeping for
+DEBUG=0
+
+# Modify these variables if you want this script to detect other apps
+# Names of programs which, when loaded, you wish to delay the xautolock.
 # For example ('ardour2' 'gmpc').
-LO_mandatoryApps=('cura' 'wineserver' 'dbgl' 'openscad' 'dgen' 'lutris' 'playonlinux' 'avidemux' 'synaptic' 'scummvm' 'flare' 'frozen-bubble' '0ad' 'TeamViewer' 'remmina' 'dosbox' 'wine' 'wget' 'curl' 'rsync' 'scp' 'sftp' 'youtube-dl')
+mandatoryApps=('etcher' 'cura' 'wineserver' 'dbgl' 'openscad' 'dgen' 'lutris' 'playonlinux' 'avidemux' 'synaptic' 'scummvm' 'flare' 'frozen-bubble' '0ad' 'TeamViewer' 'remmina' 'dosbox' 'wine' 'wget' 'curl' 'rsync' 'scp' 'sftp' 'youtube-dl')
 
-# Names of programs which, when running, you wish to delay the screensaver.
+# Names of programs which, when running (and only when de facto running), you wish to delay the xautolock.
 # For example ('ardour2' 'gmpc').
-LO_delayMediaApps=('vlc' 'celluloid' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
+delayMediaApps=('vlc' 'celluloid' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
 
-# Names of programs which, when using sound server, you wish to delay the screensaver.
-LO_delayWebBasedApps=('firefox' 'LibreWolf' 'chrome' 'vivaldi' 'brave' 'chromium' 'epiphany' 'WebKit' 'opera' 'Iceweasel' 'surf' 'yandex_browser' 'luakit'  'midori' 'min ' 'falkon' 'slimjet' 'steam')
+# Names of programs which, when using sound server, downloading files or gaming, you wish to delay the xautolock.
+delayWebApps=('firefox' 'qutebrowser' 'librewolf' 'chrome' 'vivaldi' 'brave' 'chromium' 'epiphany' 'webkit' 'opera' 'iceweasel' 'surf' 'yandex_browser' 'luakit'  'midori' 'min ' 'falkon' 'slimjet' 'steam')
 
-# Names of programs which, when using massive transfer, you wish to delay the screensaver.
-LO_delayBusyApps=('pcmanfm' 'pcmanfm-qt' 'nautilus' 'dolphin' 'nemo' 'thunar' 'caja' 'mc' 'fff' 'nnn' 'ranger' 'vifm')
+# Names of programs which, when using massive transfer, you wish to delay the xautolock.
+delayBusyApps=('pcmanfm' 'pcmanfm-qt' 'nautilus' 'dolphin' 'nemo' 'thunar' 'caja' 'mc' 'fff' 'nnn' 'ranger' 'vifm')
 
-# Display outputs to check, display screensaver when they are connected.
-# Run xrandr to show current monitor config.
-LO_outputDevices=('HDMI1' 'VGA1' 'DP1' 'VIRTUAL1')
+# Names of programs which, when in fullscreen mode, you wish to delay the xautolock.
+delayDndApps=('sublime_text' 'geany' )
+
+# Display outputs available. Run xrandr to show current monitor config.
+lstoutdev="$(xrandr | grep 'conn' | awk '{print $1}' | sed 's/\"//g' | sed 's/\n//g')"
+outputDevices=( $lstoutdev )
 
 # DPMS settings in seconds, 600 seconds = 10 minutes.
-# If you don't want to change DMPS settings, modify LO_DPMSControl to 0.
-LO_DPMSControl=1
-#LO_DPMSStandbyTime=600
-#LO_DPMSSuspendTime=600
-#LO_DPMSOffTime=600
-LO_DPMSStandbyTime=180
-LO_DPMSSuspendTime=600
-LO_DPMSOffTime=600
-
+# If you don't want to change DMPS settings, modify DPMSControl to 0.
+#DPMSStandbyTime=600
+#DPMSSuspendTime=600
+#DPMSOffTime=600
+DPMSControl=1
+DPMSStandbyTime=240
+DPMSSuspendTime=600
+DPMSOffTime=600
 
 # X11 Screen Saver Extension settings in seconds, 600 seconds = 10 minutes.
-# If you don't want to change these settings, modify LO_X11ScvControl to 0.
-LO_X11ScvControl=1
-LO_X11ScvTimeout=180
+# If you don't want to change these settings, modify X11ScvControl to 0.
+X11ScvControl=1
+X11ScvTimeout=240
 
-# clean status file
-function LO_state_clean(){
-    [ -f "$LO_stateFile" ] && rm -f "$LO_stateFile"
-    return 0
+# config vars
+scriptName="${0##*/}"
+scriptBaseName="${scriptName%%.*}"
+scriptFPath="$(dirname "$(readlink -f $0)")/${scriptName}"
+[ -n "$XDG_CACHE_HOME" ] && stateFile="${XDG_CACHE_HOME}/${scriptBaseName}_${USER}_state.txt" || stateFile="${HOME}./cache/${scriptBaseName}_${USER}_state.txt"
+
+# enumerate all the attached screens
+mScreens=$(xvinfo | awk -F'#' '/^screen/ {print $2}' | xargs)
+
+# default
+defaultSleepDelay=150
+delay=""
+
+scvpgm="xautolock"
+
+# mlog feature
+function mlog(){
+    [ $DEBUG -eq 0 ] && return 0
+    if [ $DEBUG -eq 1 ]; then
+        [ "$(echo "$@" | grep -c 'YES\|sleeping for')" -eq 1 ] && echo "$@" && log "$@";
+        return 0;
+    fi
+    if [ $DEBUG -eq 2 ]; then
+        echo "$@" && log "$@";
+        return 0;
+    fi
+    [ "$(echo "$@" | grep -c 'sleeping for')" -eq 1 ] && echo "$@" && log "$@" && return 0
 }
 
-# LO_log feature
-function LO_log(){
-    [ $LO_DEBUG -eq 0 ] && return 0
-    [ $LO_DEBUG -eq 2 ] && echo "$@" && log "$@" && return 0
-    [ "$(echo "$@" | grep -c 'sleeping for')" -eq 1 ] && echo "$@" && log "$@"
+# clean status file
+function state_clean(){
+    [ -f "$stateFile" ] && rm -f "$stateFile"
     return 0
 }
 
 # save current state
-function LO_save_state(){
+function SaveState(){
     local st="$1"
-    echo "$st" > "$LO_stateFile" && LO_log "LO_save_state(): State: $st" && return 0
+    echo "$st" > "$stateFile" 
+    mlog "SaveState(): State: $st" 
+    return 0
 }
 
 # enable dpms
-# NOTE the timeouts are set by laptop-mode.
-function LO_enable_dpms(){
+function EnableDpms(){
     xset +dpms
-    LO_log "LO_enable_dpms(): DPMS ENABLED"
+    mlog "EnableDpms(): DPMS ENABLED"
 }
 
 # disable dpms
-function LO_disable_dpms(){
+function DisableDpms(){
     xset -dpms
-    LO_log "LO_disable_dpms(): DPMS DISABLED"
+    mlog "DisableDpms(): DPMS DISABLED"
 }
 
 # query state
-function LO_read_state(){
-    [ -f "$LO_stateFile" ] && awk 'NR==1 { print $1 }' "$LO_stateFile" || echo "ENABLED"
+function ReadState(){
+    [ -f "$stateFile" ] && awk 'NR==1 { print $1 }' "$stateFile" || echo "ENABLED"
 }
 
 # Turn X11 Xset to on
-function LO_XSetOn(){
+function XSetOn(){
     if [ $(xset q | grep timeout | sed "s/cycle.*$//" | tr -cd '[:digit:]') -eq 0 ]; then
-        LO_log "LO_XSetOn(): X11 Screensaver Extension ENABLED"
+        mlog "XSetOn(): X11 Screensaver Extension ENABLED"
         xset s on
     fi
 }
 
 # Turn X11 Xset to off
-function LO_XSetOff(){
+function XSetOff(){
     if [ $(xset q | grep timeout | sed "s/cycle.*$//" | tr -cd '[:digit:]') -ge 1 ]; then
-        LO_log "LO_XSetOff(): X11 Screensaver Extension DISABLED"
+        mlog "XSetOff(): X11 Screensaver Extension DISABLED"
         xset s off
     fi
 }
 
-# Find mandatory apps in fullscreen mode
-function LO_hasMandatoryDelay(){
-    for p1 in "${LO_mandatoryApps[@]}"; do
-        [ $(pgrep -lfc "$p1") -gt 0 ] && LO_log "LO_hasMandatoryDelay(): YES Mandatory delay program $p1 found..." && return 0
-    done
+# Detect if soundcard is being used
+function isSndCardBeingUsed(){
+    grep RUNNING /proc/asound/card*/pcm*/sub*/status > /dev/null && mlog "isSndCardBeingUsed(): YES" && return 0
+    mlog "isSndCardBeingUsed(): NO"
     return 1
 }
 
-# Find a screensaver process running
-function LO_whichScvRunning(){
-    [ $(pgrep -lfc xautolock) -gt 0 ] && echo "xautolock" && return 0
-    [ $(pgrep -lfc gnome-screensaver) -gt 0 ] && echo "gnome-screensaver" && return 0
-    [ $(pgrep -lfc mate-screensaver) -gt 0 ] && echo "mate-screensaver" && return 0
-    [ $(pgrep -lfc cinnamon-screensaver) -gt 0 ] && echo "cinnamon-screensaver" && return 0
-    [ $(pgrep -lfc xscreensaver) -gt 0 ] && echo "xscreensaver" && return 0
-    [ $(pgrep -lfc xdg-screensaver) -gt 0 ] && echo "xdg-screensaver" && return 0
-    echo ""
-    return 0
-}
-
-# Detect if soundcard is being used
-function LO_isSndCardBeingUsed(){
-    grep RUNNING /proc/asound/card*/pcm*/sub*/status > /dev/null && LO_log "LO_isSndCardBeingUsed(): YES" && return 0
-    LO_log "LO_isSndCardBeingUsed(): NO"
+# Find mandatory apps 
+function detectMandatoryDelay(){
+    for p1 in "${mandatoryApps[@]}"; do
+        [ $(pgrep -lfc "$p1") -gt 0 ] && mlog "detectMandatoryDelay(): YES Mandatory delay program $p1 found..." && return 0
+    done
     return 1
 }
 
 # find a delay program using pulseaudio
-function LO_whichUsingPulseaudio(){
+function whichUsingPulseaudio(){
     local nm_ps=""
-    local str=""
-    str=$(pacmd list-sink-inputs | grep "application.process.id" | awk '{print $3}' | sed 's/\"//g' | sed 's/\n//g')
-    [ -z "$str" ] && echo "$nm_ps" && return 0
-    local arr=( $str )
-    for i in "${arr[@]}"; do
-        nm_ps=$(ps -p "$i" -o comm=;)
-        for p1 in "${LO_delayMediaApps[@]}"; do
-            [ "$p1" = "$nm_ps" ] && echo "$nm_ps" && return 0
+    local pidlist=""
+    pidlist=$(pacmd list-sink-inputs | grep "application.process.id" | awk '{print $3}' | sed 's/\"//g' | sed 's/\n//g')
+    if [ -n "$pidlist" ]; then 
+        local pidv=( $pidlist )
+        for i in "${pidv[@]}"; do
+            nm_ps=$(ps -p "$i" -o comm= | tr '[:upper:]' '[:lower:]')
+            [ $(grep -ic "$nm_ps" <<< "${delayMediaApps[@]}") -gt 0 ] && echo "$nm_ps" && return 0
+            #[[ " ${delayMediaApps[*]} " =~ $nm_ps} ]] && echo "$nm_ps" && return 0
+            [ $(grep -ic "$nm_ps" <<< "${delayWebApps[@]}") -gt 0 ] && echo "$nm_ps" && return 0
+            #[[ " ${delayWebApps[*]} " =~ $nm_ps} ]] && echo "$nm_ps" && return 0
         done
-        for p2 in "${LO_delayWebBasedApps[@]}"; do
-            [ "$p2" = "$nm_ps" ] && echo "$nm_ps" && return 0
-        done
-    done
+    fi
     echo "$nm_ps"
     return 0
 }
 
-# find a running online stream
-function LO_detectOnlineMedia(){
-    local tmp=""
-    tmp=$(wmctrl -lxp 2> /dev/null | grep -si "lbry\|philo\|tubi\|tv\|fubo\|vrv\|disney\|prime vi\|hulu\|tube\|stream\|mp4\|mpeg\|mkv\|mpg\|webm\|vimeo\|anime\|divX\|flix\|rackle\|odcast\|cecast\|cine\|muu\|movie")
-    if [ $? -eq 0 ]; then
-        [ -n "$1" ] && [ $(echo "$tmp" | grep -ic "$1") -ge 1 ] && LO_log "LO_detectOnlineMedia(): YES $tmp" && return 0
-        [ -z "$1" ] && LO_log "LO_detectOnlineMedia(): $tmp" && return 0 || return 1
-    else
-        return 1
+# find any online stream
+function getOnlineMediaWList(){
+    local _filt="lbry\|philo\|tubi\|tv\|fubo\|vrv\|disney\|prime vi\|hulu\|tube\|stream\|mp4\|mpeg\|mkv\|mpg\|webm\|vimeo\|anime\|divX\|flix\|rackle\|odcast\|cecast\|cine\|muu\|movie"
+    local wLst=$(wmctrl -lxp 2> /dev/null | grep -si "$_filt")
+    [ $? -ne 0 ] && wLst=""
+    echo "$wLst"
+    return 0
+}
+
+# find an online app using sound card
+function whichOnlineMediaRunning(){
+    local wCls=""
+    local wLst="$(getOnlineMediaWList)"
+    if [ -n "$wLst" ]; then
+        local OLD_IFS=$IFS
+        IFS=$'\n'
+        local wv=( $wLst )
+        for i in "${wv[@]}"; do
+            wCls="$(awk '{ print $4 }' <<< "$i" | awk -F[.] '{print $2}' | tr '[:upper:]' '[:lower:]' | tr -d ' ')"
+            [ -n "$wCls" ] && IFS=$OLD_IFS && echo "$wCls" && return 0;
+        done
+        IFS=$OLD_IFS
     fi
+    echo "$wCls"
+    return 0
 }
 
-# find a running online stream
-function LO_fullScrWinID(){
-    local oldIFS=$IFS
-    IFS=$'\n'
-    # Loop through every display looking for a fullscreen window.
-    for d in $LO_displays; do
-        for wID in $(DISPLAY=:${d} wmctrl -l | awk '{print $1}'); do
-            [ $(DISPLAY=:${d} xprop -id "$wID" 2> /dev/null | grep -c _NET_WM_STATE_FULLSCREEN) -gt 0 ] && IFS=$oldIFS && echo "$wID" && return 0
-        done
-    done
-    IFS=$oldIFS
-    echo ""
-    return 1
-}
-
-# find a running online stream
-function LO_scrAboveWinID(){
-    local oldIFS=$IFS
-    IFS=$'\n'
-    # Loop through every display looking for a above window.
-    for d in $LO_displays; do
-        for wID in $(DISPLAY=:${d} wmctrl -l | awk '{print $1}'); do
-            [ $(DISPLAY=:${d} xprop -id "$wID" 2> /dev/null | grep -c _NET_WM_STATE_ABOVE) -gt 0 ] && IFS=$oldIFS && echo "$wID" && return 0
-        done
-    done
-    IFS=$oldIFS
-    echo ""
-    return 1
-}
-
-# Check if active window is matched with user settings.
-# This function covers the standard way to check apps in LO_hasDelayApp
-function LO_runcheck(){
-    [ $(echo "$1" | grep -ic "$2") -ge 1 ] && [ "$(pidof -s "$2")" ] && return 0
-    if [[ "$1" = *$2* ]]; then
-        [ "$(pidof -s "$2")" ] && return 0
+# detect any online Media in fullscreen
+function detectOnlineMedia(){
+    local wLst="$(getOnlineMediaWList)"
+    local wCls=""
+    if [ -n "$wLst" ]; then
+        [ -n "$1" ] && wCls="$(awk -v i=$1 '{ if ($1 == i) { print $4 } }' <<< "$wLst" | awk -F[.] '{print $2}' | tr '[:upper:]' '[:lower:]')"
+        [ -n "$wCls" ] && mlog "detectOnlineMedia(): YES $1 $wCls found..." && return 0
     fi
     return 1
 }
 
 # find a delay program for a given window ID
-function LO_hasDelayApp(){
+function detectDelayApp(){
     # active window ID must be passed as parameter
-    [ -z "$1" ] && LO_log "LO_hasDelayApp(): Active Win ID parameter needed" &&  return 1
-    
+    [ -z "$1" ] && mlog "detectDelayApp(): Active Win ID parameter needed" &&  return 1
     # Get class/title of active window.
-    local wClass="$(xprop -id "$1" 2> /dev/null | grep "WM_CLASS(STRING)")"
-    
-    # detect programs that need delay screensaver
-    for p in "${LO_delayMediaApps[@]}"; do
-        LO_runcheck "$wClass" "$p" && LO_log "LO_hasDelayApp(): YES $p fullscreen detected" && return 0
-    done
-    
-    # detect web based apps that need delay screensaver
-    for w in "${LO_delayWebBasedApps[@]}"; do
-        LO_runcheck "$wClass" "$w" && LO_log "LO_hasDelayApp(): YES $w detected" && return 0
-    done
-    
-    # Check if user want to detect Flash on Chrome.
-    if [ $(echo "$wClass" | grep -ic "oogle-chrome") -gt 0 ]; then
-        [ $(pgrep -lfc "(c|C)hrome --type=ppapi ") -ge 1 ] && LO_log "LO_hasDelayApp(): YES Google Chrome flash detected" && return 0
-    fi
-    
-    # Check if user want to detect Flash on Chromium.
-    if [ $(echo "$wClass" | grep -ic "hromium") -gt 0 ]; then
-        [ $(pgrep -lfc ".*chromium.*flashp.*") -ge 1 ] && LO_log "LO_hasDelayApp(): YES Chromium flash detected" && return 0
-    fi
-    
-    # Check if user want to detect HTML5 on Yandex browser.
-    if [ $(echo "$wClass" | grep -ic "andex-browser") -gt 0 ]; then
-        [ $(pgrep -lfc "yandex_browser") -ge 1 ] && LO_log "LO_hasDelayApp(): YES Yandex browser detected" && return 0
-    fi
-    
-    # Check if user want to detect Flash on Firefox based browsers.
-    if [ $(echo "$wClass" | grep -ic "plugin-container") -gt 0 ]; then
-        [ "$(pidof -s plugin-container)" ] && LO_log "LO_hasDelayApp(): YES Firefox flash detected" && return 0
-    fi
-    
-    # Check if user want to detect Flash on Opera.
-    if [ $(echo "$wClass" | grep -ic "operapluginwrapper") -gt 0 ]; then
-        [ $(pgrep -lfc "operapluginwrapper-native") -ge 1 ] && LO_log "LO_hasDelayApp(): YES Opera flash detected" && return 0
-    fi
-    
-    # Check if user want to detect Flash on WebKit.
-    if [ $(echo "$wClass" | grep -ic "WebKitPluginProcess") -gt 0 ]; then
-        [ $(pgrep -lfc ".*WebKitPluginProcess.*flashp.*") -ge 1 ] && LO_log "LO_hasDelayApp(): YES Webkit flash detected" && return 0
-    fi
-    
-    LO_log "LO_hasDelayApp(): NO applications detected"
+    local wClass="$(xprop -id "$1" WM_CLASS | tr '[:upper:]' '[:lower:]' | awk -F[=,] '{gsub(/"/, "", $3);print $3}' | tr -d ' ')"
+    # detect media programs
+    [ $(grep -ic "$wClass" <<< "${delayMediaApps[@]}") -gt 0 ] && mlog "detectDelayApp(): YES $wClass fullscreen detected" && return 0
+    #[[ " ${delayMediaApps[*]} " =~ $wClass} ]] && mlog "detectDelayApp(): YES $wClass fullscreen detected" && return 0
+    # detect web based apps
+    [ $(grep -ic "$wClass" <<< "${delayWebApps[@]}") -gt 0 ] && mlog "detectDelayApp(): YES $wClass fullscreen detected" && return 0
+    #[[ " ${delayWebApps[*]} " =~ $wClass} ]] && mlog "detectDelayApp(): YES $wClass fullscreen detected" && return 0
+    # detect non disturb mode apps
+    [ $(grep -ic "$wClass" <<< "${delayDndApps[@]}") -gt 0 ] && mlog "detectDelayApp(): YES $wClass fullscreen detected" && return 0
+    #[[ " ${delayDndApps[*]} " =~ $wClass} ]] && mlog "detectDelayApp(): YES $wClass detected" && return 0
+    mlog "detectDelayApp(): NO applications detected"
     return 1
 }
 
-# check for fullscreen or above screen that set to trigger the delay
-function LO_isFullScreenBeingUsed(){
-    local wIDFull="$(LO_fullScrWinID)"
+# check for fullscreen app that trigger the delay
+function isFullScreenBeingUsed(){
+    local oldIFS=$IFS
+    local wLst=""
     local wID=""
-    if [ -z "$wIDFull" ]; then
-        LO_log "LO_isFullScreenBeingUsed(): NO fullscreen detected. Checking for Above windows..."
-        # Above state is used in some window managers instead of fullscreen.
-        local wIDAbov="$(LO_scrAboveWinID)"
-        [ -z "$wIDAbov" ] && LO_log "LO_isFullScreenBeingUsed(): NO above screen detected" && return 1
-        wID=$wIDAbov
-    else
-        wID=$wIDFull
-    fi
-    # if we reach this part at least one window id was found
-    LO_log "LO_isFullScreenBeingUsed(): active Win ID=$wID"
-    LO_detectOnlineMedia "$wID" && LO_log "LO_isFullScreenBeingUsed(): YES Fullscreen detected: streaming is running..." && return 0
-    LO_hasDelayApp "$wID" && LO_log "LO_isFullScreenBeingUsed(): YES Fullscreen detected: the app is set to trigger the delay" && return 0
-    LO_log "LO_isFullScreenBeingUsed(): Fullscreen detected: the app is UNKNOWN or NOT set to trigger the delay"
+    IFS=$'\n'
+    # Loop through every display looking for a fullscreen window.
+    for d in $mScreens; do
+        wLst="$(DISPLAY=:${d} wmctrl -l -p -x -G)"
+        for w in $wLst; do
+            wID="$(awk '{print $1}' <<< "$w")"
+            # Search only for any relevant app to return
+            [ $(DISPLAY=:${d} xprop -id "$wID" _NET_WM_STATE 2> /dev/null | grep -c _NET_WM_STATE_FULLSCREEN) -gt 0 ] && {
+                mlog "isFullScreenBeingUsed(): Fullscreen Win ID=$wID"
+                detectDelayApp "$wID" && IFS=$oldIFS && mlog "isFullScreenBeingUsed(): YES Fullscreen detected: Some app triggered the delay" && return 0
+                detectOnlineMedia "$wID" && IFS=$oldIFS && mlog "isFullScreenBeingUsed(): YES Fullscreen detected: Online Media..."  && return 0
+            }
+        done
+    done
+    IFS=$oldIFS
+    mlog "isFullScreenBeingUsed(): NO fullscreen detected. Checking for Above windows..."
     return 1
 }
 
-#check for busy apps using massive transfer/downloads and other important tasks that need to be delayed
-function LO_hasDelayBusyApps(){
+# check for above window app that trigger the delay
+function isAboveWindowBeingUsed(){
+    local oldIFS=$IFS
+    local wLst=""
+    local wID=""
+    local wCls=""
+    IFS=$'\n'
+    # Loop through every display looking for a fullscreen window.
+    for d in $mScreens; do
+        wLst="$(DISPLAY=:${d} wmctrl -l -p -x -G)"
+        for w in $wLst; do
+            wID="$(awk '{print $1}' <<< "$w")"
+            wCls="$(awk '{print $8}' <<< "$w" | awk -F[.] '{print $2}' | tr '[:upper:]' '[:lower:]')"
+            # Search only for any relevant app to return
+            [ $(DISPLAY=:${d} xprop -id "$wID" _NET_WM_STATE 2> /dev/null | grep -c _NET_WM_STATE_ABOVE) -gt 0 ] && {
+                mlog "isAboveWindowBeingUsed(): Above Window ID=$wID"
+                detectDelayApp "$wID" && IFS=$oldIFS && mlog "isAboveWindowBeingUsed(): YES Above window detected: Media app triggered the delay" && return 0
+                detectOnlineMedia "$wID" && IFS=$oldIFS && mlog "isAboveWindowBeingUsed(): YES Above window detected: Online Media..." && return 0
+            }
+        done
+    done
+    IFS=$oldIFS
+    mlog "isAboveWindowBeingUsed(): NO above sceens detected"
+    return 1
+}
+
+# check for busy apps using massive transfer/downloads and other important tasks
+function hasDelayBusyApps(){
     local tmp=""
-    for p in "${LO_delayBusyApps[@]}" ; do
-        case $p in
-            caja*)
-                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev\|/usr/share/caja")"
-            ;;
-            dolphin*)
-                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev")"
-            ;;
-            nautilus*)
-                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev\|/usr/share/nautilus")"
-            ;;
-            nemo*)
-                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev\|/usr/share/nemo")"
-            ;;
-            pcmanfm*)
-                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev\|/usr/share/pcmanfm")"
-            ;;
-            thunar*)
-                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev\|/usr/share/thunar")"
-            ;;
-            mc*)
-                tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/sys/dev")"
-            ;;
-            *)
-                tmp="$(lsof_p "$p" )"
-            ;;
-        esac
-        [ -n "$tmp" ] && LO_log "LO_hasDelayBusyApps(): YES $p found for delaying" && return 0
+    for p in "${delayBusyApps[@]}" ; do
+        tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|/usr/share/${p}")"
+        [ -n "$tmp" ] && mlog "hasDelayBusyApps(): YES $p found for delaying" && return 0
     done
 
     tmp="$(_lsof | grep -i "Downloads")"
-    [ -n "$tmp" ] && LO_log "LO_hasDelayBusyApps(): YES Download in progress delaying" && return 0
+    [ -n "$tmp" ] && mlog "hasDelayBusyApps(): YES Download in progress delaying" && return 0
 
-    for p in "${LO_delayWebBasedApps[@]}" ; do
+    for p in "${delayWebApps[@]}" ; do
         case $p in
             firefox*)
-                [ -z "$tmp" ] && tmp="$(lsof_p "$p" | grep -v "/tmp\|fonts\|/proc\|/dev/pts\|/sys/dev\|xpi\|startupCache\|omni\|\.mozilla")"
+                tmp="$(lsof_p "$p" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|xpi\|startupCache\|omni\|\.mozilla")"
             ;;
             chrome*)
-                [ -z "$tmp" ] && tmp="$(lsof_p "$p" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/sys/dev\|omni\|chrom\|\.pki\|\.cache")"
+                tmp="$(lsof_p "$p" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|omni\|chrom\|\.pki\|\.cache\|google")"
             ;;
             chromium*)
-                [ -z "$tmp" ] && tmp="$(lsof_p "$p" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/sys/dev\|omni\|chrom\|\.pki\|\.cache")"
+                tmp="$(lsof_p "$p" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|omni\|chrom\|\.pki\|\.cache")"
             ;;
-            LibreWolf*)
-                [ -z "$tmp" ] && tmp="$(lsof_p "$p" | grep -v "/tmp\|fonts\|/proc\|/dev/pts\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse")"
-                [ -z "$tmp" ] && tmp="$(lsof_p "librewolf" | grep -v "/tmp\|fonts\|/proc\|/dev/pts\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse")"
+            librewolf*)
+                tmp="$(lsof_p "$p" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse\|\.mozilla")"
+                [ -z "$tmp" ] && tmp="$(lsof_p "LibreWolf" | grep -v "/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse\|\.mozilla")"
             ;;
             *)
-                [ -z "$tmp" ] && tmp="$(lsof_p "$p" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/sys/dev\|omni\|\.pki\|\.cache")"
+                tmp="$(lsof_p "$p" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|omni\|\.pki\|\.cache")"
             ;;
         esac
-        [ -n "$tmp" ] && LO_log "LO_hasDelayBusyApps(): YES $p found for delaying" && return 0
+        [ -n "$tmp" ] && mlog "hasDelayBusyApps(): YES $p found for delaying" && return 0
     done
-    LO_log "LO_hasDelayBusyApps(): NO busy apps found for delaying"
+    mlog "hasDelayBusyApps(): NO busy apps found for delaying"
     return 1
 }
 
-#check for output connections to disable xautolock and reset screensaver
-function LO_hasDelayOutputConns(){
-    local connOut="$(xrandr | grep " connected" | awk '{print $1}')"
-    for out in "${LO_outputDevices[@]}" ; do
-        [ $(echo "$connOut" | grep -ic "$out") -ge 1 ] && LO_log "LO_hasDelayOutputConns(): $out Output connection found for delaying" && return 0
-    done
-    LO_log "LO_hasDelayOutputConns(): NO output connections found for delaying"
+# check for output connections (others than primary) to disable/reset screensaver
+function hasDelayOutputConns(){
+    local connOut="$(xrandr | grep " connected" | grep -v "primary" | awk '{print $1}')"
+    # if other connections were found
+    [ -n "$connOut" ] && {
+        for out in "${outputDevices[@]}"; do
+            [ -z "${out##*$connOut*}" ] && mlog "hasDelayOutputConns(): YES $out Connection found for delaying" && return 0
+        done
+    }
+    mlog "hasDelayOutputConns(): NO output connections found for delaying"
     return 1
 }
 
 # disable xautolock + Xset + dpms off
-function LO_disableScrXautolock(){
-    if [ "$(LO_read_state)" == "DISABLED" ]; then
-        LO_log "LO_disableScrXautolock(): xautolock screensaver already DISABLED..."
-        return 0
-    fi
+function disableXautolock(){
     if [ "${1}" == "force" ]; then
-        LO_log "LO_disableXautolock(): Shutting down xautolock daemon..."
+        mlog "disableXautolock(): Shutting down xautolock daemon..."
         stop_it "xautolock" "stop"
+    elif [ "$(ReadState)" == "DISABLED" ]; then
+        mlog "disableXautolock(): xautolock screensaver already DISABLED..."
+        return 0
     else
-        LO_log "LO_disableScrXautolock(): delaying xautolock..."
-        [ "$LO_scvpgm" = "xautolock" ] && xautolock -disable
+        mlog "disableXautolock(): delaying xautolock..."
+        xautolock -disable
     fi
-    LO_disable_dpms
-    LO_XSetOff
-    LO_save_state "DISABLED"
+    DisableDpms
+    XSetOff
+    SaveState "DISABLED"
 }
 
 # enable xautolock + Xset + dpms on
-function LO_enableScrXautolock(){
-    if [ "$(LO_read_state)" == "ENABLED" ] && [ "${1}" != "force" ]; then
-        LO_log "LO_enableScrXautolock(): xautolock screensaver already ENABLED..."
+function enableXautolock(){
+    if [ "$(ReadState)" == "ENABLED" ] && [ "${1}" != "force" ]; then
+        mlog "enableXautolock(): xautolock screensaver already ENABLED..."
         return 0
     fi
-    
     if [ "${1}" == "force" ]; then
         stop_it "xautolock"
-        LO_log "LO_enableScrXautolock(): (Re)/Starting xautolock daemon..."
+        mlog "enableXautolock(): (Re)/Starting xautolock daemon..."
         # xautolock -detectsleep -noclose -time 5 -locker "\"$HOME/bin/mylock\"" -notify 30 -notifier "\"$HOME/bin/mynotify\"" -killtime 10 -killer "\"$HOME/bin/mysuspend\"" &
         xautolock -detectsleep -noclose -time 3 -locker "\"$HOME/bin/mylock\"" -notify 30 -notifier "\"$HOME/bin/mynotify\"" &
         snore 0.5
     else
         xautolock -enable & disown
-        LO_log "LO_enableScrXautolock(): xautolock ENABLED..."
+        mlog "enableXautolock(): xautolock ENABLED..."
     fi
-    
-    LO_enable_dpms
-    LO_XSetOn
-    
+    EnableDpms
+    XSetOn
     # Setting DPMS.
-    if [ $LO_DPMSControl -eq 1 ]; then
-        LO_log "LO_enableScrXautolock(): LO_enableScrXautolock(): Setting DPMS Standby Time: $LO_DPMSStandbyTime, Suspend: $LO_DPMSSuspendTime, Off: $LO_DPMSOffTime"
-        xset dpms $LO_DPMSStandbyTime $LO_DPMSSuspendTime $LO_DPMSOffTime
+    if [ $DPMSControl -eq 1 ]; then
+        mlog "enableXautolock(): enableXautolock(): Setting DPMS Standby Time: $DPMSStandbyTime, Suspend: $DPMSSuspendTime, Off: $DPMSOffTime"
+        xset dpms $DPMSStandbyTime $DPMSSuspendTime $DPMSOffTime
     fi
-    
     # Setting X11 Screensaver Extension.
-    if [ $LO_X11ScvControl -eq 1 ]; then
-        LO_log "LO_enableScrXautolock(): Setting X11 Screensaver Extension to Timeout: $LO_DPMSStandbyTime $LO_DPMSSuspendTime"
-        xset s $LO_DPMSStandbyTime $LO_DPMSSuspendTime
+    if [ $X11ScvControl -eq 1 ]; then
+        mlog "enableXautolock(): Setting X11 Screensaver Extension to Timeout: $DPMSStandbyTime $DPMSSuspendTime"
+        xset s $DPMSStandbyTime $DPMSSuspendTime
     fi
-    
-    LO_save_state "ENABLED"
+    SaveState "ENABLED"
 }
 
-# delay/disable other than xautolock
-function LO_disableScvOther(){
-    # Reset inactivity time counter so screensaver is not started.
-    if [ "$LO_scvpgm" == "xscreensaver" ]; then
-        LO_log "LO_disableScvOther(): delaying xscreensaver..."
-        xscreensaver-command -deactivate > /dev/null
-    fi
-    if [ "$LO_scvpgm" == "kscreensaver" ]; then
-        LO_log "LO_disableScvOther(): delaying kscreensaver..."
-        qdbus org.freedesktop.ScreenSaver /ScreenSaver SimulateUserActivity > /dev/null
-    fi
-    if [ "$LO_scvpgm" == "gnome-screensaver" ]; then
-        LO_log "LO_disableScvOther(): delaying gnome-screensaver..."
-        dbus-send --session --dest=org.gnome.ScreenSaver --type=method_call /org/gnome/ScreenSaver org.gnome.ScreenSaver.SimulateUserActivity >/dev/null 2>&1
-    fi
-    if [ "$LO_scvpgm" == "cinnamon-screensaver" ]; then
-        LO_log "LO_disableScvOther(): delaying cinnamon-screensaver..."
-        dbus-send --session --dest=org.cinnamon.ScreenSaver --type=method_call /org/cinnamon/ScreenSaver org.cinnamon.ScreenSaver.SimulateUserActivity >/dev/null 2>&1
-    fi
-    if [ "$LO_scvpgm" == "mate-screensaver" ]; then
-        LO_log "LO_disableScvOther(): delaying mate-screensaver..."
-        dbus-send --session --dest=org.mate.ScreenSaver --type=method_call /org/mate/ScreenSaver org.mate.ScreenSaver.SimulateUserActivity >/dev/null 2>&1
-    fi
-    if [ $LO_xdgScvPresent -eq 1 ]; then
-        LO_log "LO_disableScvOther(): trying to delay with xdg-screensaver..."
-        xdg-screensaver reset
-    fi
-    
-    # Reset gnome session idle timer.
-    if [[ $LO_gsettingsPresent -eq 1 && $(gsettings get org.gnome.desktop.session idle-delay 2>/dev/null) ]]; then
-        local sessionIdleDelay=$(gsettings get org.gnome.desktop.session idle-delay 2>/dev/null | sed "s/^.* //")
-        if [[ $sessionIdleDelay -ge 1 ]]; then
-            LO_log "LO_disableScvOther(): resetting gnome session..."
-            gsettings set org.gnome.desktop.session idle-delay 0 2>/dev/null
-            gsettings set org.gnome.desktop.session idle-delay "$sessionIdleDelay" 2>/dev/null
-        fi
-    fi
-    LO_disable_dpms
-    LO_XSetOff
-    LO_save_state "DISABLED"
+# This function is called when something goes wrong
+function cleanup(){
+    local wtf="$?"
+    log "RC = $wtf / Last cmd = $prevcmd  / Screensaver = $scvpgm"
+    [ -z "$scvpgm" ] && scvpgm="xautolock"
+    disableXautolock "force"
+    wtf="$?"
+    log "After disableXautolock RC = $wtf "
+    state_clean
+    wtf="$?"
+    log "After state_clean RC = $wtf"
 }
 
-# enable other than xautolock
-function LO_enableScvOther(){
-    # Reset inactivity time counter so screensaver is not started.
-    if [ "$LO_scvpgm" == "xscreensaver" ]; then
-        LO_log "LO_enableScvOther(): delaying xscreensaver..."
-        xscreensaver-command -activate > /dev/null
-    else
-        if [ $LO_xdgScvPresent -eq 1 ]; then
-            LO_log "LO_enableScvOther(): trying to delay with xdg-screensaver..."
-            xdg-screensaver reset
-        fi
-    fi
-    
-    LO_enable_dpms
-    
-    # Setting DPMS.
-    if [ $LO_DPMSControl -eq 1 ]; then
-        LO_log "LO_enableScvOther(): Setting DPMS Standby Time: $LO_DPMSStandbyTime, Suspend: $LO_DPMSSuspendTime, Off: $LO_DPMSOffTime"
-        xset dpms $LO_DPMSStandbyTime $LO_DPMSSuspendTime $LO_DPMSOffTime
-    fi
-    
-    LO_XSetOn
-    
-    # Setting X11 Screensaver Extension time and cycle.
-    if [ $LO_X11ScvControl -eq 1 ]; then
-        LO_log "LO_enableScvOther(): Setting X11 Screensaver Extension to Timeout: $LO_DPMSStandbyTime $LO_DPMSSuspendTime"
-        xset s $LO_DPMSStandbyTime $LO_DPMSSuspendTime
-    fi
-    
-    LO_save_state "ENABLED"
-}
-
-# disable xautolock/screensaver
-function LO_disableScreensaver(){
-    if [ "$LO_scvpgm" = "xautolock" ]; then
-        LO_disableScrXautolock "force"
-    else
-        LO_disableScvOther
-    fi
-}
-
-# enable xautolock/screensaver
-function LO_enableScreensaver(){
-    LO_log "LO_enableScreensaver(): Enabling screensaver $LO_scvpgm..."
-    if [ "$LO_scvpgm" = "xautolock" ]; then
-        LO_enableScrXautolock "force"
-    else
-        LO_enableScvOther
-    fi
-}
-
-# Check for delay programs to disable xautolock/screensaver
-function LO_delayScreensaver(){
-    LO_log "LO_delayScreensaver(): Screensaver $LO_scvpgm detected ..."
-    # disable screensaver if mandatory delay progs were found
-    if LO_hasMandatoryDelay; then
-        LO_log "LO_delayScreensaver(): Mandatory delay programs running..."
-        LO_disableScreensaver
+# enable/disable xautolock according to presets
+function manageXautolock(){
+    # disable xautolock if mandatory delay progs were found
+    if detectMandatoryDelay; then
+        mlog "manageXautolock(): YES Mandatory delay programs running..."
+        disableXautolock "force"
         return 0
-    #else
-    #    LO_log "LO_delayScreensaver(): NO Mandatory delay programs were found..."
+    else
+        mlog "manageXautolock(): NO Mandatory delay programs were found..."
     fi
-    # disable screensaver if there are delay apps using sound card
-    if LO_isSndCardBeingUsed; then
-        local progName="$(LO_whichUsingPulseaudio)"
-        if [ ! -z "$progName" ]; then
-            LO_log "LO_delayScreensaver(): Delaying the screensaver because a delay program (or stream), \"$progName\", is running..."
-            LO_disableScreensaver
+    # disable xautolock if there are delay apps using sound card
+    if isSndCardBeingUsed; then
+        local progName="$(whichUsingPulseaudio)"
+        [ -z "$progName" ] && progName="$(whichOnlineMediaRunning)"
+        if [ -n "$progName" ]; then
+            mlog "manageXautolock(): YES Delaying the xautolock because a delay program (or stream), \"$progName\", is running..."
+            disableXautolock "force"
             return 0
         #else
-        #    LO_log "LO_delayScreensaver(): NO delay program (or stream) using sound card is running..."
+        #    mlog "manageXautolock(): NO delay program using sound card. Unknown app is running..."
         fi
     fi
-    # disable screensaver if there are delay apps in fullscreen mode
-    if LO_isFullScreenBeingUsed; then
-        LO_log "LO_delayScreensaver(): Delaying the screensaver because a Fullscreen delay program is running..."
-        LO_disableScreensaver
+    # disable xautolock if there are delay apps in fullscreen mode
+    if isFullScreenBeingUsed; then
+        mlog "manageXautolock(): YES Delaying the xautolock because a Fullscreen delay program is running..."
+        disableXautolock "force"
+        return 0
+    elif isAboveWindowBeingUsed; then
+        mlog "manageXautolock(): YES Delaying the xautolock because an Above window delay program is running..."
+        disableXautolock "force"
         return 0
     #else
-    #    LO_log "LO_delayScreensaver(): NO delay program (or stream) in Fullscreen mode is running..."
+    #    mlog "manageXautolock(): NO delay program (or stream) in Fullscreen mode is running..."
     fi
-    # disable screensaver if we have significant ouput connections
-    if LO_hasDelayOutputConns; then
-        LO_log "LO_delayScreensaver(): Delaying the screensaver because Output connections were found..."
-        LO_disableScreensaver
+    # disable xautolock if we have significant ouput connections
+    if hasDelayOutputConns; then
+        mlog "manageXautolock(): YES Delaying the xautolock because Output connections were found..."
+        disableXautolock "force"
         return 0
     #else
-    #    LO_log "LO_delayScreensaver(): NO delay output connections detected..."
+    #    mlog "manageXautolock(): NO delay output connections detected..."
     fi
-    # disable screensaver if we have relevant busy apps
-    if LO_hasDelayBusyApps; then
-        LO_log "LO_delayScreensaver(): Delaying the screensaver because Busy applications were found..."
-        LO_disableScreensaver
+    # disable xautolock if we have relevant busy apps
+    if hasDelayBusyApps; then
+        mlog "manageXautolock(): YES Delaying the xautolock because Busy applications were found..."
+        disableXautolock "force"
         return 0
     #else
-    #    LO_log "LO_delayScreensaver(): NO delay Busy applications detected..."
+    #    mlog "manageXautolock(): NO delay Busy applications detected..."
     fi
     
-    LO_log "LO_delayScreensaver(): NO delay programs were detected for suspending screensaver..."
-    
-    # Since NO delay situations were detected we must enable screensaver if necessary
-    local stt="$(LO_read_state)"
-    LO_log "LO_delayScreensaver(): Current screensaver state = $stt "
-    if [ "$stt" == "DISABLED" ]; then
-        LO_enableScreensaver
-        LO_log "LO_delayScreensaver(): running screensaver ENABLED..."
-        return 0
+    # Since NO delay situations were detected we must enable xautolock
+    mlog "manageXautolock(): NO delay programs were detected for suspending xautolock..."
+    local stt="$(ReadState)"
+    mlog "manageXautolock(): Current xautolock state = $stt "
+    if [ "$stt" == "DISABLED" ] || [ $(pgrep -lfc xautolock) -eq 0 ]; then
+        enableXautolock "force"
+        mlog "manageXautolock(): running xautolock ENABLED..."
     fi
-}
-
-# sleep for the next iteration
-function LO_sleep(){
-    if [ $LO_enableDynDelay -eq 0 ]; then
-        LO_log "LO_sleep(): sleeping for $LO_delay"
-        LO_log "--------------- loop done! ---------------"
-        snore "$LO_delay"
-        return 0
-    fi
-    local LO_systemSleepDelay=""
-    local LO_sleepDelay=""
-    if [ $LO_mateScvPresent -eq 1 ]; then
-        if [ $LO_gsettingsPresent -eq 1 ]; then
-            if [ "$(awk '/1/ { print $0 }' /sys/class/power_supply/ADP*/online || echo "0")" == "1" ]; then
-                LO_systemSleepDelay=$(gsettings get org.mate.power-manager sleep-display-ac 2>/dev/null)
-            else
-                LO_systemSleepDelay=$(gsettings get org.mate.power-manager sleep-display-battery 2>/dev/null)
-            fi
-        fi
-    elif [ $LO_gnomeScvPresent -eq 1 ]; then
-        if [ $LO_gsettingsPresent -eq 1 ]; then
-            if [ "$(awk '/1/ { print $0 }' /sys/class/power_supply/ADP*/online || echo "0")" == "1" ]; then
-                LO_systemSleepDelay=$(gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 2>/dev/null)
-            else
-                LO_systemSleepDelay=$(gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-battery-timeout 2>/dev/null)
-            fi
-        fi
-    fi
-    if [ $(echo "$LO_systemSleepDelay" | egrep -c "^[0-9]+$") -ge 1 ]; then
-        if [ $LO_systemSleepDelay -le $(($LO_defaultSleepDelay)) ]; then
-            LO_sleepDelay=$LO_defaultSleepDelay
-        else
-            LO_sleepDelay=$(($LO_systemSleepDelay))
-        fi
-    else
-        LO_sleepDelay=$LO_defaultSleepDelay
-    fi
-    LO_log "LO_sleep(): sleeping for $LO_sleepDelay (system idle timeout is $LO_systemSleepDelay)"
-    LO_log "--------------- loop done! ---------------"
-    snore "$LO_sleepDelay"
-}
-
-# If we are using custom xautolock configs, we can kill all other screensavers daemons
-function LO_disableOtherSS(){
-    stop_it "cinnamon-screensaver"
-    stop_it "mate-screensaver"
-    stop_it "gnome-screensaver"
-    stop_it "xscreensaver"
-    stop_it "xdg-screensaver"
     return 0
 }
 
-# required binaries that must be present in order to run
-precheck "xset"
-precheck "wmctrl"
-precheck "xvinfo"
-precheck "xprop"
-precheck "xrandr"
-precheck "bc"
-precheck "xautolock"
-precheck "pulseaudio"
-precheck "awk"
-precheck "grep"
-
-# Enable use of dynamic delay via gsettings
-LO_enableDynDelay=0
-LO_delay=""
-
-# This is actually the minimum allowed dynamic delay.
-# Also the default (if everything else fails)
-LO_defaultSleepDelay=150
-
-# If passed argument is not integer quit.
-if [ ! -z "$1" ]; then
-    if [[ $1 = *[^0-9]* ]]; then
-        LO_log "The Argument \"$1\" is not valid, not an integer."
-        echo "The Argument \"$1\" is not valid, not an integer"
-        echo "Please use the time in seconds you want the checks to repeat."
-        echo "You want it to be ~10 seconds less than the time it takes your screensaver or DPMS to activate"
-        exit 1
-    else
-        LO_delay=$1
+# sleep until the next iteration
+function sleepscv(){
+    if [ $1 -gt 0 ]; then
+        mlog "sleepscv(): sleeping for $1"
+        mlog "--------------- loop done! ---------------"
+        snore "$1"
+        return 0
     fi
-elif [ $LO_enableDynDelay -eq 0 ]; then # if DynDelay is deactivated we can use default delay time.
-    LO_delay=$LO_defaultSleepDelay
-fi
+    mlog "sleepscv(): sleeping for $defaultSleepDelay"
+    mlog "--------------- loop done! ---------------"
+    snore "$$defaultSleepDelay"
+}
 
-# Check for screensaver apps on your system
-LO_xautolockPresent="$(findutil "xautolock" > /dev/null && echo "1" || echo "0")"
-LO_gsettingsPresent="$(findutil "gsettings" > /dev/null && echo "1" || echo "0")"
-LO_xdgScvPresent="$(findutil "xdg-screensaver" > /dev/null && echo "1" || echo "0")"
-LO_mateScvPresent="$(findutil "mate-screensaver" > /dev/null && echo "1" || echo "0")"
-LO_gnomeScvPresent="$(findutil "gnome-screensaver" > /dev/null && echo "1" || echo "0")"
-LO_cinnamonScvPresent="$(findutil "cinnamon-screensaver" > /dev/null && echo "1" || echo "0")"
-LO_xScvPresent="$(findutil "xscreensaver" > /dev/null && echo "1" || echo "0")"
-
-# Search for a running screensaver program
-LO_scvpgm=$(LO_whichScvRunning)
-
-# xautolock is default and also fallback option
-if [ -z "$LO_scvpgm" ]; then
-    [ $LO_xautolockPresent -eq 1 ] && LO_scvpgm="xautolock"
-fi
-
-# If argument empty, use dynamic delay.
-if [ -z "$LO_delay" ]; then
-    LO_enableDynDelay=1
-    LO_log "NO delay specified, dynamic delay activated"
-fi
-
-# config vars
-LO_scriptName="${0##*/}"
-LO_scriptBaseName="${LO_scriptName%%.*}"
-LO_scriptFPath="$(dirname "$(readlink -f $0)")/${LO_scriptName}"
-LO_stateFile="${XDG_CACHE_HOME}/${LO_scriptBaseName}_${USER}_state.txt"
-trap 'rm -f "$LO_stateFile"; exit' INT TERM EXIT ERR
-
-# enumerate all the attached screens
-LO_displays=$(xvinfo | awk -F'#' '/^screen/ {print $2}' | xargs)
-
-# Kill older instances of this job
-kill_older
-
-# clean LO_state file
-LO_state_clean
-
-# start-up LO_log messages
-LO_log "[ START ] $LO_scriptName  "
-LO_log "LO_stateFile............: $LO_stateFile"
-LO_log "LO_scriptName...........: $LO_scriptName"
-LO_log "LO_scriptFPath..........: $LO_scriptFPath"
-LO_log "LO_defaultSleepDelay....: $LO_defaultSleepDelay"
-LO_log "LO_enableDynDelay.......: $LO_enableDynDelay"
-LO_log "LO_delay................: $LO_delay"
-LO_log "LO_xautolockPresent.....: $LO_xautolockPresent"
-LO_log "LO_gsettingsPresent.....: $LO_gsettingsPresent"
-LO_log "LO_xdgScvPresent........: $LO_xdgScvPresent"
-LO_log "LO_mateScvPresent.......: $LO_mateScvPresent"
-LO_log "LO_gnomeScvPresent......: $LO_gnomeScvPresent"
-LO_log "LO_cinnamonScvPresent...: $LO_cinnamonScvPresent"
-LO_log "LO_xScvPresent..........: $LO_xScvPresent"
-LO_log "Original Screensaver detected = $LO_scvpgm"
-
-# Starting with ENABLED state
-LO_log "Saving initial state = ENABLED"
-LO_save_state "ENABLED"
-
-# Starting procedures for xautolock daemon
-if [ "$LO_scvpgm" = "xautolock" ]; then
-    LO_log "Starting xautolock daemon..."
-    LO_enableScrXautolock "force"
-    snore 2
-fi
-
-# On the first time kill all lockers remaining
-reset_locker
-
-# initial value for suspend pid
-LO_SPID=""
-LO_idle="0"
-
-# Initiate monitoring
-while true; do
-    # workaround due to issues on xautolock
-    # if screen is already locked do proper suspend both on screen and laptop 
-    if locked; then
-        let LO_idle=$(xprintidle)/1000
-        LO_log "main(): Screen is already locked... Idle =  $LO_idle / Suspend time = $LO_DPMSSuspendTime"
-        if [ -z "$LO_SPID" ]; then
-            if [ $LO_idle -gt $LO_DPMSSuspendTime ]; then
-                LO_log "main(): Suspend time elapsed. Suspending..."
-                nice -3 $HOME/bin/mysuspend & disown
-                LO_SPID="$!"
-                LO_log "main(): Suspend PID=$LO_SPID"
-            fi
+function main(){
+    if [ -n "$1" ]; then
+        # If passed argument is not integer quit.
+        if [[ $1 = *[^0-9]* ]]; then
+            echo "The Argument \"$1\" is not valid, not an integer"
+            echo "Please use the time in seconds you want the checks to repeat."
+            echo "You want it to be ~10 seconds less than the time it takes your xautolock or DPMS to activate"
+            mlog "The Argument \"$1\" is not valid, not an integer."
+            exit 1
+        else
+            delay=$1
         fi
     else
-        LO_SPID=""
-        LO_idle="0"
-        #LO_scvpgm=$(LO_whichScvRunning)
-        [ "$LO_scvpgm" = "xautolock" ] && LO_disableOtherSS
-        LO_delayScreensaver
+        mlog "NO delay specified, assuming default value=$defaultSleepDelay"
+        delay=$defaultSleepDelay
     fi
-    LO_sleep $LO_delay
-done
-trap - INT TERM EXIT ERR
-exit 0
+
+    # required binaries that must be present in order to run
+    precheck "xset"
+    precheck "wmctrl"
+    precheck "xvinfo"
+    precheck "xprop"
+    precheck "xrandr"
+    precheck "bc"
+    precheck "xautolock"
+    precheck "pacmd"
+    precheck "pulseaudio"
+    precheck "awk"
+    precheck "grep"
+    precheck "xprintidle"
+    
+    # Kill older instances of this job
+    kill_older
+    
+    # clean state file
+    state_clean
+    
+    # On load kill all lockers remaining
+    reset_locker
+    
+    # start-up mlog messages
+    mlog "[ START ] $scriptName "
+    mlog "stateFile............: $stateFile"
+    mlog "scriptName...........: $scriptName"
+    mlog "scriptFPath..........: $scriptFPath"
+    mlog "defaultSleepDelay....: $defaultSleepDelay"
+    mlog "delay................: $delay"
+    
+    # Starting with ENABLED state
+    mlog "Saving initial state = DISABLED"
+    SaveState "DISABLED"
+    
+    # Starting procedures for xautolock daemon
+    #mlog "Starting xautolock daemon..."
+    #enableXautolock "force"
+    #snore 2
+    
+    # initial value for suspend pid
+    local SPID=""
+    local idle="0"
+    
+    # Initiate monitoring
+    while true; do
+        # workaround due to issues on xautolock
+        # if screen is already locked do proper suspend both on screen and laptop 
+        if locked; then
+            let idle=$(xprintidle)/1000
+            mlog "main(): Screen is already locked... Idle =  $idle / Suspend time = $DPMSSuspendTime"
+            if [ -z "$SPID" ]; then
+                if [ $idle -gt $DPMSSuspendTime ]; then
+                    mlog "main(): Suspend time elapsed. Suspending..."
+                    nice -3 $HOME/bin/mysuspend & disown
+                    SPID="$!"
+                    mlog "main(): Suspend PID=$SPID"
+                fi
+            fi
+        else
+            SPID=""
+            idle="0"
+            manageXautolock
+        fi
+        sleepscv $delay
+    done
+    #trap - INT TERM EXIT ERR
+    exit 0
+}
+
+main "$@"

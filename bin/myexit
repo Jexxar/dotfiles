@@ -5,77 +5,58 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-# Exit wm if possible.
+# Cleanup and Exit wm if possible.
 function do_exit(){
     # Only works if X is running.
     ! is_running_X && log "X server is not running" && return 0
 
     # Screen must be unlocked first.
-    locked && return 0;
-
-    dunstctl stop
-
-    # Stop this session and daemon running processes.
-    stop_it "polkit-gnome-authentication-agent-1"
-    stop_it "gnome-keyring-daemon"
-    stop_it "gnome-settings-daemon"
-    stop_it "gnome-screensaver"
-    stop_it "polkit-mate-authentication-agent-1"
-    stop_it "mate-settings-daemon"
-    stop_it "mate-power-manager"
-    stop_it "mate-volume-control-applet"
-    stop_it "mate-screensaver"
-    stop_it "cinnamon-screensaver"
-    stop_it "xscreensaver"
-    stop_it "xautolock"
-    stop_it "mylightson"
-    stop_it "mywallchng"
-    stop_it "tint2"
-    stop_it "compton"
-    stop_it "picom"
-    stop_it "redshift"
-    stop_it "redshift-gtk"
-    stop_it "xflux"
-    log "Exiting now..."
+    #locked && return 0;
     
-    [ "$XDG_SESSION_DESKTOP" == "openbox" ] && openbox --exit;
-    # window manager cleanup
-    stop_it "$XDG_CURRENT_DESKTOP"
-    stop_it "$XDG_SESSION_DESKTOP"
+    dunstctl stop
+    
+    # Stop this session and user daemon running processes.
+    local OLD_IFS=$IFS
+    local cml=""
+    local filter="$1"
+    IFS=$'\n'
+    for x in $(ps_ISO | awk -v u=$USER '{ if ($2 == u) { print $0 } }' | sed 's/bash/###/g' | sed 's/### //g' | sed 's/ sh -c//g' \
+        | sed 's|/bin/sh -c ||g' | sed 's|/bin/sh ||g' | sed -E 's|/usr/bin/python.? ||g' | grep -v "$filter"); do
+        cml=$(awk '{print $5}' <<< $x)
+        cml="${cml##*/}"
+        log "stop_it $x"
+        [ -n "$cml" ] && stop_it "$cml"
+    done
+    IFS=$OLD_IFS
+    log "$XDG_CURRENT_DESKTOP Exiting now..."
+    if [ "$XDG_CURRENT_DESKTOP" == "Openbox" ]; then
+        openbox --exit;
+    else
+        stop_it "dbus-daemon"
+    fi
     # dbus-launch cleanup
-    pkill -u $USER -t `tty | cut -d '/' -f 3,4` dbus-launch
+    stop_it "dbus-launch"
     return 0
 }
 
 function do_test(){
     is_running_X && log "X is running" || log "X server down"
-    locked "debug" && log "Screen already locked" || log "Screen not locked";
     pgrep -f dunst && log "dunst found" || log "dunst not found"
-    
-    stop_it "polkit-gnome-authentication-agent-1" "debug"
-    stop_it "gnome-keyring-daemon" "debug"
-    stop_it "gnome-settings-daemon" "debug"
-    stop_it "gnome-screensaver" "debug"
-    stop_it "polkit-mate-authentication-agent-1" "debug"
-    stop_it "mate-settings-daemon" "debug"
-    stop_it "mate-power-manager" "debug"
-    stop_it "mate-volume-control-applet" "debug"
-    stop_it "mate-screensaver" "debug"
-    stop_it "cinnamon-screensaver" "debug"
-    stop_it "xscreensaver" "debug"
-    stop_it "xautolock" "debug"
-    stop_it "mylightson" "debug"
-    stop_it "mywallchng" "debug"
-    stop_it "tint2" "debug"
-    stop_it "compton" "debug"
-    stop_it "picom" "debug"
-    stop_it "redshift" "debug"
-    stop_it "redshift-gtk" "debug"
-    stop_it "xflux" "debug"
-    log "Exiting now..."
-    [ "$XDG_CURRENT_DESKTOP" == "openbox" ] && log "openbox --exit;"
-    log "kilall $XDG_CURRENT_DESKTOP;"
-    log "pkill -u $USER -t `tty | cut -d '/' -f 3,4` dbus-launch"
+    # Stop this session and user daemon running processes.
+    local OLD_IFS=$IFS
+    local cml=""
+    local filter="$1"
+    IFS=$'\n'
+    for x in $(ps_ISO | awk -v u=$USER '{ if ($2 == u) { print $0 } }' | sed 's/bash/###/g' | sed 's/### //g' | sed 's/ sh -c//g' \
+        | sed 's|/bin/sh -c ||g' | sed 's|/bin/sh ||g' | sed -E 's|/usr/bin/python.? ||g' | grep -v "$filter"); do
+        cml=$(awk '{print $5}' <<< $x)
+        cml="${cml##*/}"
+        log "stop_it $cml"
+        #stop_it "$cml" "debug"
+    done
+    IFS=$OLD_IFS
+    [ "$XDG_CURRENT_DESKTOP" == "Openbox" ] && log "openbox --exit;" || log "stop_it dbus-daemon"
+    log "stop_it dbus-launch"
     return 0
 }
 
@@ -83,15 +64,21 @@ function main(){
     precheck "xset"
     precheck "pgrep"
     precheck "pkill"
-    
+    precheck "wmctrl"
+    precheck "xprop"
+    local filter="${0##*/}\|###\|startx\|gconf\|dconf\|openbox\|dbus\|keeptty\|ssh-agent\|sd-pam\|gpg-agent\|sed\|grep\|dbus\|gvfs\|systemd --user\|/ps -aux\|contentproc\|plugin_host"
     local cmd=${1:-exit}
-    
+
+    # Workaround when XDG vars are not set 
+    [ -z "$XDG_CURRENT_DESKTOP" ] && export XDG_CURRENT_DESKTOP="$(_wm)"
+    [ -z "$XDG_CURRENT_DESKTOP" ] &&  log "_wm failed" && cmd="debug"
+
     case "$cmd" in
         exit)
-            do_exit
+            do_exit "$filter"
         ;;
         debug)
-            do_test
+            do_test "$filter"
         ;;
         *)
             log "Unrecognized option: $1"

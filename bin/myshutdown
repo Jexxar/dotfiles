@@ -1,56 +1,59 @@
 #!/usr/bin/env bash
 # This script is intended to be run as the main shutdown script for this installation.
-#set -eu
+set -u
 
 if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
 function do_shutdown() {
-    ! auth_user && log "user $USER has not polkit binding to poweroff" && return 0
-    
-    if is_running_X ; then
-        locked && return 0
-        checkfor "systemctl" && systemctl poweroff && return 0
-        can_poweroff && dbus_poweroff && return 0
-    else
-        checkfor "systemctl" && systemctl poweroff && return 0
-        checkfor "shutdown" && shutdown -h now && return 0
-        checkfor "init" && init 0 && return 0
+    if is_session_active; then
+        # try systemd version first
+        checkfor "systemctl" && systemctl poweroff && exit 0
+        # try elogind version
+        checkfor "loginctl" && loginctl poweroff && exit 0
+        # try for dbus freedesktop service to interact with logind
+        if is_running_X; then
+            if can_poweroff; then
+                dbus_poweroff 
+                exit 0
+            fi
+        fi
     fi
+    # if there is nor active session neither login manager
+    local su_no_pw="$(sudo -l | grep "NOPASSWD")"
+    # make sure systemctl poweroff is in sudoers file
+    [ -z "${su_no_pw##*systemctl poweroff*}" ] && checkfor "systemctl" && sudo systemctl poweroff && exit 0
+    # make sure poweroff is in sudoers file
+    [ -z "${su_no_pw##*poweroff*}" ] && checkfor "poweroff" && sudo poweroff && exit 0
+    # make sure shutdown is in sudoers file
+    [ -z "${su_no_pw##*shutdown*}" ] && checkfor "shutdown" && sudo shutdown -h now && exit 0
+    # make sure halt is in sudoers file
+    [ -z "${su_no_pw##*halt*}" ] && checkfor "halt" && sudo halt && exit 0
+    log "No suitable poweroff command found. Check your installation." && exit 0
 }
 
 function do_test() {
-    if is_running_X ; then
-        log "X is running"
-        locked && log "Screen locked" || log "Screen not locked"
-        if auth_user; then
-            log "user $USER has polkit binding to poweroff"
-            checkfor "systemctl" && log "can use: systemctl poweroff"
-            can_poweroff && log "can use: dbus logind to poweroff"
-            checkfor "shutdown" && log "can use: shutdown -h now"
-            checkfor "init" && log "can use: init 0"
-        else
-            log "user $USER has not polkit binding to poweroff"
+    if is_session_active; then
+        log "User $USER has an active session. Polkit allow to poweroff"
+        checkfor "systemctl" && log "Found: systemctl poweroff"
+        checkfor "loginctl" && log "Found: loginctl poweroff"
+        if is_running_X ; then
+            log "X is running"
+            can_poweroff && log "User $USER can poweroff using Dbus"
         fi
     else
-        log "X is not running"
-        if auth_user; then
-            log "user $USER has polkit binding to poweroff"
-            checkfor "systemctl" && log "can use: systemctl poweroff"
-            checkfor "shutdown" && log "can use: shutdown -h now"
-            checkfor "init" && log "can use: init 0"
-        else
-            log "user $USER has not polkit binding to poweroff"
-        fi
+        log "User $USER does NOT have an active session"
+        local su_no_pw="$(sudo -l | grep "NOPASSWD")"
+        [ -z "${su_no_pw##*systemctl poweroff*}" ] && checkfor "systemctl" && log "Found: sudo systemctl poweroff"
+        [ -z "${su_no_pw##*poweroff*}" ] && checkfor "poweroff" && log "Found: sudo poweroff"
+        [ -z "${su_no_pw##*shutdown*}" ] && checkfor "shutdown" && log "Found: sudo shutdown"
+        [ -z "${su_no_pw##*halt*}" ] && checkfor "halt" && log "Found: sudo halt"
     fi
     return 0
 }
 
 function main(){
-    precheck "xset"
-    precheck "loginctl"
-    
     local cmd=${1:-down}
     
     case "$cmd" in

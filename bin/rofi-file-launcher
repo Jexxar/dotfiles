@@ -10,9 +10,13 @@ function handle_file() {
     if [ -d "$1" ]; then
         cd "$1"
     elif [ -f "$1" ]; then
-        echo "Opening: $(pwd)/$1"
-        xdg-open "$(pwd)/$1" > /dev/null &
-        disown
+        local f="$(pwd)/$1"
+        if [ -x $f ]; then
+            dstart "$f"
+        else
+            echo "Opening: $f"
+            xdg-open "$(pwd)/$1" > /dev/null & disown
+        fi
         exit 0
     else
         printf "%s is neither a file nor a directory\n" "$(pwd)/$1" >&2
@@ -22,12 +26,15 @@ function handle_file() {
 function main() {
     precheck "xdg-open"
     precheck "rofi"
-
+    precheck "dstart"
+    
     local old_IFS=$IFS
     local file=""
     while : ; do
         IFS=$'\n'
-        file=$(ls -1a --group-directories-first | rofi -location 2 -font "Noto Sans 8" -dmenu -l 20 -line-margin 0 -line-padding 1 -i -p "Browse $(basename $(pwd)):")
+        local t=$(/bin/ls -L1h --group-directories-first)
+        file=$(echo -e "../\n${t}")
+        file=$(echo "$file" | rofi -location 2 -font "Noto Sans 8" -dmenu -l 20 -line-margin 0 -line-padding 1 -i -p "Browse $(basename $(pwd)):")
         IFS=$old_IFS
         if [ -e "$file" ]; then
             handle_file "$file"

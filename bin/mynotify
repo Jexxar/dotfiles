@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# This script is intended to be run as the main notifier script for this installation.
-#set -eu
+# This script is intended to be the screen lock notifier for this installation.
+set -u
 
 if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
@@ -14,13 +14,16 @@ function do_notify() {
     # Notification should not be issued while locked.
     locked && return 0;
     
+    # custom notify message
+    [ $# -gt 1 ] && {
+        shift
+        notify-send --urgency="normal" --app-name="mynotify" --icon="$(iconPath system-lock-screen)" -- "$@"
+        return 0
+    }
+
     # grep finds either Xautolock.notify or Xautolock*notify
     local secs="$(xrdb -query | grep -m1 '^Xautolock.notify' | cut -f2)"
     [ -n "$secs" ] || secs="30"
-    
-    # log "Locking in $secs seconds"
-    # log "Sending notification."
-    
     notify-send --urgency="normal" --app-name="mynotify" --icon="$(iconPath system-lock-screen)" -- "Screen Lock in " "$secs seconds"
     return 0
 }
@@ -33,14 +36,13 @@ function do_test() {
 }
 
 function main(){
-    precheck "xset"
     precheck "xrdb"
     
     cmd=${1:-notify}
     
     case "$cmd" in
         notify)
-            do_notify
+            do_notify "$@"
         ;;
         debug)
             do_test

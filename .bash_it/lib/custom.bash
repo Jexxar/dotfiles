@@ -1,40 +1,36 @@
 #!/usr/bin/env bash
 #===========================================
-# Distingue quando se esta em um sistema chrooted
+# Identifies debian chrooted
 #===========================================
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
 #===========================================
-# Não armazenar as linhas duplicadas ou linhas que começam com espaço no historico
+# History file options
 #===========================================
 export HISTCONTROL="erasedups:ignoreboth"
-
-#===========================================
-# Define do tamanho e formato do historico.
-#===========================================
 export HISTSIZE=1000
 export HISTFILESIZE=2000
 export HISTTIMEFORMAT="%h %d %H:%M:%S "
 #don't record commands preceeded by a space
-export HISTIGNORE="&:[ ]*:clear:exit"
+export HISTIGNORE="&:[ ]*:clear:exit:cls:ls:ll"
 
 #===========================================
-# Define PROMPT_COMMAND do lado esquerdo inicial
-# Unifica o history através das sessões bash
+# Define PROMPT_COMMAND and Unifies history 
+# filea thru bash sessions
 #===========================================
 export PROMPT_COMMAND="history -a; history -r"
 
 #===========================================
-# Adicionar ao Historico e não substitui-lo
+# Add to History 
 #===========================================
 shopt -s histappend
 
 #===========================================
-# These  two options are useful for debugging.
+# These two options are useful for debugging.
 #===========================================
-#set -o nounset     # These  two options are useful for debugging.
+#set -o nounset
 #set -o xtrace
 
 #===========================================
@@ -98,39 +94,37 @@ else
 fi
 
 #===========================================
-# Variaveis de Cores (especialmente para o prompt)
+# Colors 
 #===========================================
-export NONE="\[\033[0m\]" # Eliminar as Cores, deixar padrão)
+export NONE="\[\033[0m\]" # Reset colors
 
-## Cores de Fonte
-export K="\[\033[0;30m\]" # Black (Preto)
-export R="\[\033[0;31m\]" # Red (Vermelho)
-export G="\[\033[0;32m\]" # Green (Verde)
-export Y="\[\033[0;33m\]" # Yellow (Amarelo)
-export B="\[\033[0;34m\]" # Blue (Azul)
-export M="\[\033[0;35m\]" # Magenta (Vermelho Claro)
-export C="\[\033[0;36m\]" # Cyan (Ciano - Azul Claro)
-export W="\[\033[0;37m\]" # White (Branco)
+## Foreground  
+export K="\[\033[0;30m\]" # Black 
+export R="\[\033[0;31m\]" # Red 
+export G="\[\033[0;32m\]" # Green 
+export Y="\[\033[0;33m\]" # Yellow 
+export B="\[\033[0;34m\]" # Blue 
+export M="\[\033[0;35m\]" # Magenta
+export C="\[\033[0;36m\]" # Cyan  
+export W="\[\033[0;37m\]" # White 
+export BK="\[\033[1;30m\]" # Bold+Black 
+export BR="\[\033[1;31m\]" # Bold+Red 
+export BG="\[\033[1;32m\]" # Bold+Green 
+export BY="\[\033[1;33m\]" # Bold+Yellow 
+export BB="\[\033[1;34m\]" # Bold+Blue 
+export BM="\[\033[1;35m\]" # Bold+Magenta
+export BC="\[\033[1;36m\]" # Bold+Cyan 
+export BW="\[\033[1;37m\]" # Bold+White 
 
-## Efeito Negrito (bold) e cores
-export BK="\[\033[1;30m\]" # Bold+Black (Negrito+Preto)
-export BR="\[\033[1;31m\]" # Bold+Red (Negrito+Vermelho)
-export BG="\[\033[1;32m\]" # Bold+Green (Negrito+Verde)
-export BY="\[\033[1;33m\]" # Bold+Yellow (Negrito+Amarelo)
-export BB="\[\033[1;34m\]" # Bold+Blue (Negrito+Azul)
-export BM="\[\033[1;35m\]" # Bold+Magenta (Negrito+Vermelho Claro)
-export BC="\[\033[1;36m\]" # Bold+Cyan (Negrito+Ciano - Azul Claro)
-export BW="\[\033[1;37m\]" # Bold+White (Negrito+Branco)
-
-## Cores de fundo (backgroud)
-export BGK="\[\033[40m\]" # Black (Preto)
-export BGR="\[\033[41m\]" # Red (Vermelho)
-export BGG="\[\033[42m\]" # Green (Verde)
-export BGY="\[\033[43m\]" # Yellow (Amarelo)
-export BGB="\[\033[44m\]" # Blue (Azul)
-export BGM="\[\033[45m\]" # Magenta (Vermelho Claro)
-export BGC="\[\033[46m\]" # Cyan (Ciano - Azul Claro)
-export BGW="\[\033[47m\]" # White (Branco)
+## Background
+export BGK="\[\033[40m\]" # Black 
+export BGR="\[\033[41m\]" # Red 
+export BGG="\[\033[42m\]" # Green 
+export BGY="\[\033[43m\]" # Yellow
+export BGB="\[\033[44m\]" # Blue 
+export BGM="\[\033[45m\]" # Magenta
+export BGC="\[\033[46m\]" # Cyan 
+export BGW="\[\033[47m\]" # White
 
 #=============================================
 # TERMCAP Setup

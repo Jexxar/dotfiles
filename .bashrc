@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #==============================================
-# Remember:
+# <<< REMEMBER >>>
 #   Most of the settings are stored in: ~/.bash_it/lib/custom.bash
 #   Check that file before include new settings here.
 #==============================================
@@ -10,6 +10,22 @@
 # 3) Basic exports
 # 4) Default colors 
 #==============================================
+
+#===========================================
+# Start gpg-agent if not already running
+#===========================================
+if ! pgrep -x -u "${USER}" gpg-agent &> /dev/null; then
+    hash gpg-connect-agent && gpg-connect-agent /bye &> /dev/null
+fi
+
+#===========================================
+# Reuse ssh-agent and/or gpg-agent between logins for some keys
+#===========================================
+if [ $UID -ne "0" ]; then
+    [ -f $HOME/.ssh/githubkey_rsa ] && /usr/bin/keychain --eval --quiet -Q $HOME/.ssh/githubkey_rsa;
+    [ -f $HOME/.keychain/$HOSTNAME-sh ] && . $HOME/.keychain/$HOSTNAME-sh;
+    [ -f $HOME/.keychain/$HOSTNAME-sh-gpg ] && . $HOME/.keychain/$HOSTNAME-sh-gpg;
+fi
 
 #==============================================
 # Source goto.sh to handle directories
@@ -54,25 +70,29 @@ fi
 # export BASH_IT_AUTOMATIC_RELOAD_AFTER_CONFIG_CHANGE=1
 
 #==============================================
-# Create a dynamic plugin to auto export all my custom functions (plugins) for the session
+# Create a dynamic plugin to auto export all 
+# my custom functions (in plugins) for the session
+# if they are enabled
 #==============================================
 function exports_gen() {
     local cstfile="$BASH_IT/plugins/available/custom.plugin.bash"
-    local expfile="$BASH_IT/plugins/available/exports.plugin.bash"
-    [ -f "$expfile" ] && rm -f "$expfile"
-    echo -e "#\041/usr/bin/env bash\n" > "$expfile"
-    echo -e "#==============================================" >> "$expfile"
-    echo -e "# Exports (auto generated. Do not edit)" >> "$expfile"
-    echo -e "#==============================================\n" >> "$expfile"
-    echo -e "function do_exports() {" >> "$expfile"
-    grep "^function" "$cstfile" | cut -d'(' -f1 | sed -e 's/function //g' | grep -v "^_\|exports_gen\|usage\|prompt\|do_exports" | sort | awk '{print "    export -f",$1}' >> "$expfile"
-    echo -e "}\n" >> "$expfile"
-    echo -e "do_exports" >> "$expfile"
+    if [ $(ls ${BASH_IT}/plugins/enabled/*custom* | grep -c "custom.plugin.bash") -gt 0 ]; then
+        local expfile="$BASH_IT/plugins/available/exports.plugin.bash"
+        [ -f "$expfile" ] && rm -f "$expfile"
+        echo -e "#\041/usr/bin/env bash\n" > "$expfile"
+        echo -e "#==============================================" >> "$expfile"
+        echo -e "# Exports (auto generated. Do not edit)" >> "$expfile"
+        echo -e "#==============================================\n" >> "$expfile"
+        echo -e "function do_exports() {" >> "$expfile"
+        grep "^function" "$cstfile" | cut -d'(' -f1 | sed -e 's/function //g' | grep -v "^_\|exports_gen\|usage\|prompt\|do_exports" | sort | awk '{print "    export -f",$1}' >> "$expfile"
+        echo -e "}\n" >> "$expfile"
+        echo -e "do_exports" >> "$expfile"
+    fi
     return 0
 }
 
 #==============================================
-# Generate an export regen for my custom functions
+# Generate an export list regen for my custom functions
 #==============================================
 exports_gen
 
@@ -82,7 +102,7 @@ exports_gen
 source "$BASH_IT"/bash_it.sh
 
 #==============================================
-# greetings if we can do it
+# Greetings if we can do it
 #==============================================
 if [ "$TERM" != "linux" ]; then
     greetings

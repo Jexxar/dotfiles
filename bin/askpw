@@ -155,7 +155,7 @@ function X_ask_pw() {
         if [ -z "$(command -v yad)" ]; then
             Psw=$(zenity --forms --modal --text="$authm $p / 3" --title="$title"  --add-password="$pwcap:")
         else
-            Psw=$(yad --entry --entry-text="x" --hide-text --text="$authm $p / 3" --title="$title"  --center --on-top --width=260)
+            Psw=$(yad --window-icon="dialog-password" --image="dialog-password" --entry --entry-text="x" --hide-text --text="$authm $p / 3" --title="$title"  --center --on-top --width=415 --buttons-layout=center)
         fi
         stty echo
         if [ $? -ne 0 ] || [ -z "$Psw" ]; then

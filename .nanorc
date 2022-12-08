@@ -11,17 +11,17 @@
 set autoindent
 
 # Create backup files in "filename~"
-set backup
+#set backup
 
 # Set the directory where nano puts unique backup files if file backups
 # are enabled.
-set backupdir "~/.nano/backup"
+#set backupdir "~/.nano/backup"
 
 # Enable line numbering.
 set linenumbers
 
 # Do backwards searches by default.
-unset backwards
+#unset backwards
 
 # Use bold text instead of reverse video text.
 set boldtext
@@ -44,7 +44,7 @@ set casesensitive
 set constantshow
 
 # Use cut to end of line by default.
-unset cut
+#unset cut
 
 # Wrap lines at column number n. If n is 0 or less, the maximum line length
 # will be the screen width less n columns. The default value is -8.
@@ -60,7 +60,7 @@ set historylog
 set matchbrackets string "(<[{)>]}"
 
 # Use of the blank line below the titlebar as extra editing space.
-unset morespace
+#unset morespace
 
 # Enable mouse support, so that mouse clicks can be used to place the cursor,
 # set the mark (with a double click), or execute shortcuts.
@@ -119,7 +119,7 @@ unset rebinddelete
 # Interpret the numeric keypad keys so that they all work properly. You should
 # only need to use this option if they don't, as mouse support won't work
 # properly with this option enabled.
-unset rebindkeypad
+#unset rebindkeypad
 
 # Do extended regular expression searches by default.
 set regexp
@@ -131,14 +131,14 @@ set regexp
 set smarthome
 
 # Use smooth scrolling by default.
-set smooth
+#set smooth
 
 # Use spelling checker spellprog instead of the built-in one, which calls
 # "spell".
 #set speller "aspell"
 
 # Allow nano to be suspended.
-set suspend
+#set suspend
 
 set positionlog
 
@@ -150,10 +150,10 @@ set tabsize "4"
 set tabstospaces
 
 # Save automatically on exit, don't prompt.
-unset tempfile
+#unset tempfile
 
 # Disallow file modification.
-unset view
+#unset view
 
 # Set the two characters used to display the first characters of tabs and
 # spaces. They must be single-column characters.

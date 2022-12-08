@@ -7,31 +7,31 @@ about-plugin 'virtualenvwrapper helper functions'
 
 
 function mkvenv {
-  about 'create a new virtualenv for this directory'
-  group 'virtualenv'
-
-  cwd=`basename \`pwd\``
-  mkvirtualenv --distribute $cwd
+    about 'create a new virtualenv for this directory'
+    group 'virtualenv'
+    
+    cwd=`basename \`pwd\``
+    mkvirtualenv --distribute $cwd
 }
 
 
 function mkvbranch {
-  about 'create a new virtualenv for the current branch'
-  group 'virtualenv'
-
-  mkvirtualenv --distribute "$(basename `pwd`)@$SCM_BRANCH"
+    about 'create a new virtualenv for the current branch'
+    group 'virtualenv'
+    
+    mkvirtualenv --distribute "$(basename `pwd`)@$SCM_BRANCH"
 }
 
 function wovbranch {
-  about 'sets workon branch'
-  group 'virtualenv'
-
-  workon "$(basename `pwd`)@$SCM_BRANCH"
+    about 'sets workon branch'
+    group 'virtualenv'
+    
+    workon "$(basename `pwd`)@$SCM_BRANCH"
 }
 
 function wovenv {
-  about 'works on the virtualenv for this directory'
-  group 'virtualenv'
-
-  workon "$(basename `pwd`)"
+    about 'works on the virtualenv for this directory'
+    group 'virtualenv'
+    
+    workon "$(basename `pwd`)"
 }

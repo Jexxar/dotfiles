@@ -7,62 +7,111 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
-# config vars
-ML_scriptName="${0##*/}"
-ML_scriptBaseName="${ML_scriptName%%.*}"
-ML_scriptFPath="$(dirname "$(readlink -f $0)")/${ML_scriptName}"
-ML_lockFile="/tmp/${ML_scriptBaseName}_${USER}_$(timestamp).txt"
-
 # Lock screen if possible.
 function do_lock() {
+    [ $# -ge 1 ] && shift
     # Only works if X is running.
     ! is_running_X && log "X server is not running" && return 0
     
     # Already locked
-    locked && return 0;
+    locked && log "do_lock(): already locked" && return 0;
 
-    #log "Locking screen now..."
-    dunstctl stop
-    # Fork both i3lock and its monitor to avoid blocking xautolock.
-    # this must be the last command, and it must be 'non forking', as expected by 'xautolock'
-    $HOME/bin/lock -n -gpf Comic-Sans-MS -- scrot &
-    pid="$!"
+    # Find locker
+    if pidof light-locker >/dev/null; then
+        light-locker-command -l >/dev/null 2>&1
+        return 0
+    elif pidof xscreensaver >/dev/null; then
+        xscreensaver-command -lock >/dev/null 2>&1
+        return 0
+    elif pidof gnome-screensaver >/dev/null; then
+        gnome-screensaver-command --lock
+        return 0
+    elif pidof mate-screensaver >/dev/null; then
+        mate-screensaver-command -l >/dev/null 2>&1
+        return 0
+    elif pidof cinnamon-screensaver-pam-helper >/dev/null; then
+        cinnamon-screensaver-command -l >/dev/null 2>&1
+        return 0
+    elif hash lock >/dev/null 2>&1; then
+        $HOME/bin/lock -n -gpf Roboto  &
+        pid="$!"
+    elif hash slock >/dev/null 2>&1; then
+        slock &
+        pid="$!"
+    elif hash xlock >/dev/null 2>&1; then
+        xlock $* &
+        pid="$!"
+    elif hash i3lock >/dev/null 2>&1; then
+        i3lock -d &
+        pid="$!"
+    elif hash slimlock >/dev/null; then
+        slimlock &
+        pid="$!"
+    else
+        # Try to fallback to xscreensaver
+        if hash xscreensaver >/dev/null; then
+            xscreensaver -nosplash >/dev/null 2>&1 &
+            xscreensaver-command -lock >/dev/null 2>&1
+            return 0
+        fi
+    fi
+    
     #log "Locked and Waiting until (screen lock) PID $pid ends up..."
-    touch "$ML_lockFile"
-    echo "LockPID=$pid" > "$ML_lockFile"
     while 2>/dev/null kill -0 "$pid"; do
-        snore 1.2
+        snore 2
     done
-    [ -f "$ML_lockFile" ] && rm -f "$ML_lockFile"
-    stop_it "i3lock"
-    #log "Unlocked and resumed..."
-    dunstctl resume
+    
+    # reset all running lockers
+    reset_locker
 }
 
 function do_test() {
-    is_running_X && log "X is running" || log "X server down"
-    locked "debug" && log "Screen already locked" || log "Screen not locked";
-    pgrep -f dunst && log "dunst found" || log "dunst not found"
+    [ $# -ge 1 ] && shift
+    is_running_X && log "do_test(): X is running" || log "do_test(): X server down"
+    locked && log "do_test(): Screen already locked" || log "do_test(): Screen not locked";
+    if pidof light-locker >/dev/null; then
+        log "light-locker-command -l"
+    elif pidof xscreensaver >/dev/null; then
+        log "xscreensaver-command -lock"
+    elif pidof gnome-screensaver >/dev/null; then
+        log "gnome-screensaver-command --lock"
+    elif pidof mate-screensaver >/dev/null; then
+        log "mate-screensaver-command -l"
+    elif pidof cinnamon-screensaver-pam-helper >/dev/null; then
+        log "cinnamon-screensaver-command -l"
+    elif hash lock >/dev/null 2>&1; then
+        precheck "convert"
+        precheck "import"
+        precheck "i3lock"
+        log "$HOME/bin/lock -n -gpf Roboto"
+    elif hash slock >/dev/null 2>&1; then
+        log "slock"
+    elif hash xlock >/dev/null 2>&1; then
+        log "xlock $@" 
+    elif hash i3lock >/dev/null 2>&1; then
+        log "i3lock -d"
+    elif hash slimlock >/dev/null; then
+        log "slimlock"
+    elif hash xscreensaver >/dev/null; then
+        log "xscreensaver -nosplash"
+        log "xscreensaver-command -lock"
+    fi
+    return 0
 }
 
 function main(){
-    precheck "xset"
-    precheck "i3lock"
-
     local cmd=${1:-lock}
     
     case "$cmd" in
         lock)
-            trap 'rm -f "$ML_lockFile"; exit' INT TERM EXIT ERR
-            do_lock
+            do_lock "$@"
         ;;
         debug)
-            do_test
+            do_test "$@"
         ;;
         *)
             log "Unrecognized option: $1"
     esac
-    trap - INT TERM EXIT ERR
     exit 0
 }
 

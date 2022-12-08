@@ -15,19 +15,28 @@ about-plugin '                              z is DEPRECATED, use fasd instead'
 #   * z -t foo  # goes to most recently accessed dir matching foo
 #   * z -l foo  # list all dirs matching foo (by frecency)
 
-if [ -e "${BASH_IT}/plugins/enabled/fasd.plugin.bash" ] || [ -e "${BASH_IT}/plugins/enabled/*${BASH_IT_LOAD_PRIORITY_SEPARATOR}fasd.plugin.bash" ]; then
+
+#if [ -e "${BASH_IT}/plugins/enabled/fasd.plugin.bash" ] || [ -e "${BASH_IT}/plugins/enabled/*${BASH_IT_LOAD_PRIORITY_SEPARATOR}fasd.plugin.bash" ]; then
+#    printf '%s\n' 'sorry, the z plugin is incompatible with the fasd plugin. you may use either, but not both.'
+#    return
+#fi
+## Workaround
+tmp="${BASH_IT}/plugins/enabled/*"
+if [ -e "${BASH_IT}/plugins/enabled/fasd.plugin.bash" ] || [ -e $tmp${BASH_IT_LOAD_PRIORITY_SEPARATOR}"fasd.plugin.bash" ]; then
     printf '%s\n' 'sorry, the z plugin is incompatible with the fasd plugin. you may use either, but not both.'
+    unset tmp
     return
 fi
+unset tmp
 
 z() {
  local datafile="$HOME/.z"
  if [ "$1" = "--add" ]; then
-  # add
-  shift
-  # $HOME isn't worth matching
-  [ "$*" = "$HOME" ] && return
-  awk -v p="$*" -v t="$(date +%s)" -F"|" '
+    # add
+    shift
+    # $HOME isn't worth matching
+    [ "$*" = "$HOME" ] && return
+    awk -v p="$*" -v t="$(date +%s)" -F"|" '
    BEGIN { rank[p] = 1; time[p] = t }
    $2 >= 1 {
     if( $1 == p ) {
@@ -45,10 +54,10 @@ z() {
     } else for( i in rank ) print i "|" rank[i] "|" time[i]
    }
   ' "$datafile" 2>/dev/null > "$datafile.tmp"
-  mv -f "$datafile.tmp" "$datafile"
+    mv -f "$datafile.tmp" "$datafile"
  elif [ "$1" = "--complete" ]; then
-  # tab completion
-  awk -v q="$2" -F"|" '
+    # tab completion
+    awk -v q="$2" -F"|" '
    BEGIN {
     if( q == tolower(q) ) nocase = 1
     split(substr(q,3),fnd," ")
@@ -65,20 +74,23 @@ z() {
    }
   ' "$datafile" 2>/dev/null
  else
-  # list/go
-  while [ "$1" ]; do case "$1" in
-   -h) echo "z [-h][-l][-r][-t] args" >&2; return;;
-   -l) local list=1;;
-   -r) local typ="rank";;
-   -t) local typ="recent";;
-   --) while [ "$1" ]; do shift; local fnd="$fnd $1";done;;
-    *) local fnd="$fnd $1";;
-  esac; local last=$1; shift; done
-  [ "$fnd" ] || local list=1
-  # if we hit enter on a completion just go there
-  [ -d "$last" ] && cd "$last" && return
-  [ -f "$datafile" ] || return
-  local cd="$(awk -v t="$(date +%s)" -v list="$list" -v typ="$typ" -v q="$fnd" -v tmpfl="$datafile.tmp" -F"|" '
+    # list/go
+    while [ "$1" ]; do 
+        case "$1" in
+            -h) echo "z [-h][-l][-r][-t] args" >&2; return;;
+            -l) local list=1;;
+            -r) local typ="rank";;
+            -t) local typ="recent";;
+            --) while [ "$1" ]; do shift; local fnd="$fnd $1";done;;
+             *) local fnd="$fnd $1";;
+        esac; 
+        local last=$1; shift; 
+    done
+    [ "$fnd" ] || local list=1
+    # if we hit enter on a completion just go there
+    [ -d "$last" ] && cd "$last" && return
+    [ -f "$datafile" ] || return
+    local cd="$(awk -v t="$(date +%s)" -v list="$list" -v typ="$typ" -v q="$fnd" -v tmpfl="$datafile.tmp" -F"|" '
    function frecent(rank, time) {
     dx = t-time
     if( dx < 3600 ) return rank*4
@@ -138,12 +150,12 @@ z() {
     } else if( ncx ) output(nocase, ncx, common(nocase, a, 1))
    }
   ' "$datafile")"
-  if [ $? -gt 0 ]; then
-   rm -f "$datafile.tmp"
-  else
-   mv -f "$datafile.tmp" "$datafile"
-   [ "$cd" ] && cd "$cd"
-  fi
+    if [ $? -gt 0 ]; then
+        rm -f "$datafile.tmp"
+    else
+        mv -f "$datafile.tmp" "$datafile"
+        [ "$cd" ] && cd "$cd"
+    fi
  fi
 }
 # tab completion

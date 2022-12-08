@@ -5,11 +5,8 @@
 #==============================================
 
 function do_exports() {
-    export -f activate
     export -f aencrypt
-    export -f argc
     export -f astrip
-    export -f at_line_no
     export -f authme
     export -f avail_mem
     export -f bak
@@ -18,7 +15,6 @@ function do_exports() {
     export -f cd
     export -f cls
     export -f cm_fu_motd
-    export -f color_bar
     export -f core
     export -f couch-delete
     export -f couch-get
@@ -27,18 +23,14 @@ function do_exports() {
     export -f dacron
     export -f dateeur
     export -f dateiso
-    export -f deactivate
     export -f decimal2hex
     export -f decode_64
     export -f decrypt
     export -f dfoldoc
     export -f digga
-    export -f display_status
     export -f djargon
-    export -f do_extract
     export -f draw
     export -f dthesaurus
-    export -f dtranslate
     export -f du_full
     export -f duplines
     export -f du_short
@@ -48,76 +40,56 @@ function do_exports() {
     export -f echo_pass
     export -f edit
     export -f encode_64
-    export -f escape
     export -f ethcard
-    export -f exesudo
-    export -f exists_fileordir
     export -f fd
     export -f fd_f
     export -f ff
     export -f ff_f
     export -f find_wm
     export -f free_mem
-    export -f gen_lock
     export -f get_full_path
     export -f get_xserver
     export -f gitdone
     export -f graph
     export -f greetings
-    export -f hora
+    export -f grtxt
+    export -f h24
     export -f hostname2ip
     export -f hosts_up
-    export -f interface_info
+    export -f httpdump
+    export -f ifinfo
     export -f ip_inf
-    export -f is_active
-    export -f is_alpha
-    export -f is_float
-    export -f is_installed
-    export -f is_int
-    export -f is_newer
-    export -f is_systype
     export -f jobs_count
     export -f laptop_battery
+    export -f listeners
+    export -f logs
     export -f lower
     export -f lsr
     export -f lstrip
+    export -f memw
     export -f meteo
-    export -f MIT
     export -f mostcolor
-    export -f mostused
     export -f mouse_battery
+    export -f msumm
+    export -f mydistro
     export -f my_ps
     export -f ncpu
-    export -f onblack
-    export -f onblue
-    export -f oncyan
-    export -f ongreen
-    export -f onmagenta
-    export -f onred
-    export -f onwhite
-    export -f onyellow
-    export -f position_cursor
+    export -f ns
+    export -f pgca
+    export -f ports
     export -f prepend-path
-    export -f process_name
+    export -f psa
     export -f psgrep
+    export -f psname
     export -f qh
     export -f qt_mail
-    export -f qtxt
     export -f rpass
     export -f rstrip
     export -f rsync_bpk
-    export -f screens_and_jobs_count
-    export -f screens_count
-    export -f serve_py
     export -f set_display
+    export -f sniff
     export -f space
     export -f stoppedjobs
-    export -f strLen
-    export -f strLenC
-    export -f strU8DiffLen
-    export -f submit
-    export -f sv_get
-    export -f sv_put
     export -f sys_load
     export -f t
     export -f tday
@@ -134,6 +106,8 @@ function do_exports() {
     export -f var_is_set
     export -f var_is_unset
     export -f wfcard
+    export -f wiki
+    export -f wttr
     export -f yday
     export -f you_have_mail
 }
