@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+#==============================================
+# Rsync pull from server
+#
+# @option -h:   help
+# @option -u:   Set a remote username
+# @option -s:   Set a remote hostname
+#
+# @param {String} $1 - path from (remote)
+# @param {String} $2 - path to (local)
+#==============================================
+set -u
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+function usage(){
+    echo "Usage:  "${0##*/}" [options] PATH_FROM PATH_TO."
+    echo "Purpose: rsync to pull files from servername."
+    echo "       "
+    echo "Mandatory arguments: "
+    echo "PATH_FROM: Path on server to Rsync from"
+    echo "PATH_TO:   Path on local to Rsync to"
+    echo "       "
+    echo "Options"
+    echo "-h:   Show this help"
+    echo "-u:   Set a remote username (if not set your LOCAL USER variable will be used)"
+    echo "-s:   Set a remote hostname (if not set your LOCAL HOSTNAME variable will be used)"
+    echo "Example."
+    echo "This:"
+    echo ""${0##*/}" -u server_username -s server.address.edu.au /home/server/path/*.py ./temp"
+    echo "       "
+    echo "Becomes:"
+    echo "rsync -avz --progress server_username@server.address.edu.au:/home/server/path/*.py ./temp"
+    return 0
+}
+
+function main(){
+    precheck "rsync"
+
+    local usr_name=""
+    local srv_name=""
+    local OPTIND=1
+    while getopts "u:s:h" opt; do
+        case $opt in
+            u) usr_name=$OPTARG ;;
+            s) srv_name=$OPTARG ;;
+            h) usage; return 0;;
+            *) return 1;;
+        esac
+    done
+    shift $((OPTIND-1))
+    
+    if [[ -z "$usr_name" ]] ; then
+        usr_name=$USER ;
+    fi
+    
+    if [[ -z "$srv_name" ]] ; then
+        srv_name=$HOSTNAME ;
+    fi
+    
+    if [[ ( $# -eq 0 ) || ( "$1" == "" ) || ( "$2" == "" ) ]] ; then
+        usage ;
+        return 1
+    fi
+    echo "rsync -avz --progress $usr_name@$srv_name:$* "
+    rsync -avz --progress $usr_name@$srv_name:$*
+}
+
+main "$@"

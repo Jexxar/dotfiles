@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+#set -eu
+#==============================================
+# exesudo - Execute a function or command with sudo
+#
+# Examples:
+#   exesudo "funcname" followed by any param
+#   exesudo psonly mdm
+#
+# @Params {String} $1:   name of the object to be executed with sudo
+# @Params {String} $2:   arg1
+# @Params {String} $..:  argn
+#==============================================
+# Luca Borrione  2012
+#==============================================
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+function usage(){
+cat <<HELP
+Usage: $(basename "$0") <command> [arg1] [arg2] .. [argn]
+
+Run a program, a function or a builtin shell command with sudo.
+
+Copyright (c) 2012 Luca Borrione
+Licensed under the MIT license.
+HELP
+}
+
+function runfunction(){
+    local _cmd_="$1"            ## command or function (or alias)
+    local _args=( "$@" )        ## array containing all params passed here
+    local tmpfile=$(mktemp)     ## temporary file
+    local content               ## content of the temporary file
+    local regex="\s+"           ## regular expression
+    local func                  ## aux for alias stripping
+    trap 'rm -f "${tmpfile}"' INT TERM EXIT ERR
+    # Shift the first param (which is the name of the object)
+    unset _args[0]              ## remove first element
+    _args=( "${_args[@]}" )     ## repack array
+    # Delete existing older file
+    [ -f "$tmpfile" ] && rm -f "$tmpfile"
+    # bash header for TEMPORARY FILE:
+    content="#!/usr/bin/env bash\n\n"
+    # Write the params array
+    content="${content}_args=(\n"
+    for p in "${_args[@]}"; do
+        if [[ "$p" =~ $regex ]]; then
+            content="${content}\t\"${p}\"\n"
+        else
+            content="${content}\t${p}\n"
+        fi
+    done
+    content="$content)\n"
+    echo -e "$content" > "$tmpfile"
+    echo "#$(type "$_cmd_")" >> "$tmpfile"
+    echo -e "\n$_cmd_ \"\${_args[@]}\"\n" >> "$tmpfile"
+    cat $tmpfile
+    #sudo bash "$tmpfile"
+    [ -f "$tmpfile" ] && rm -f "$tmpfile"
+}
+
+function runas(){
+    local _tp="$1"
+    local _cmd_="$2"            ## command or function (or alias)
+    local _args=( "$@" )        ## array containing all params passed here
+    local tmpfile=$(mktemp)     ## temporary file
+    local content               ## content of the temporary file
+    local regex="\s+"           ## regular expression
+    trap 'rm -f "${tmpfile}"' INT TERM EXIT ERR
+    # Shift the first param (which is the name of the object)
+    unset _args[0]              ## remove first element
+    unset _args[1]              ## remove second element
+    unset _args[2]              ## remove second element
+    _args=( "${_args[@]}" )     ## repack array
+    # Delete existing older file
+    [ -f "$tmpfile" ] && rm -f "$tmpfile"
+    # bash header for TEMPORARY FILE:
+    content="#!/usr/bin/env bash\n\n"
+    # Write the params array
+    content="${content}_args=(\n"
+    for p in "${_args[@]}"; do
+        if [[ "$p" =~ $regex ]]; then
+            content="${content}\t\"${p}\"\n"
+        else
+            content="${content}\t${p}\n"
+        fi
+    done
+    content="$content)\n"
+    echo -e "$content" > "$tmpfile"
+    case $_tp in
+        buil) echo -e "\n$_cmd_ \"\${_args[@]}\"\n" >> "$tmpfile"  ;;
+        prog) echo -e "\n$_cmd_ \"\${_args[@]}\"\n" >> "$tmpfile"  ;;
+        func) echo "#$(type "$_cmd_")" >> "$tmpfile"  ;;
+    esac
+    cat $tmpfile
+    #sudo bash "$tmpfile"
+    [ -f "$tmpfile" ] && rm -f "$tmpfile"
+}
+
+function main(){
+    [ $# -eq 0 ] && usage && return 0;
+    local _cmdp_="$1"
+    local _buil_=$(LC_ALL=C type $_cmdp_ 2> /dev/null| grep -v "function" | grep "shell" | awk '{print $1}')
+    local _pgmn_=$(LC_ALL=C type $_cmdp_ 2> /dev/null| grep -v "function" | grep " is " | awk '{print $3}')
+    local _func_=$(LC_ALL=C type $_cmdp_ 2> /dev/null| grep "function")
+    [ -n "$_buil_" ] && runas "buil" "$_buil_" "$@" && return 0
+    [ -n "$_pgmn_" ] && runas "prog" "$_pgmn_" "$@" && return 0
+    [ -n "$_func_" ] && runas "func" "$_cmdp_" "$@" && return 0
+    echo "Command not found..."
+}
+
+main "$@"
