@@ -101,10 +101,6 @@ function do_exports() {
     export -f upper
     export -f uptime_active
     export -f uptime_since
-    export -f var_is_blank
-    export -f var_is_empty
-    export -f var_is_set
-    export -f var_is_unset
     export -f wfcard
     export -f wiki
     export -f wttr

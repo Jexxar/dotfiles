@@ -7,6 +7,9 @@ if [[ -z "$CUSTOM_THEME_DIR" ]]; then
     CUSTOM_THEME_DIR="${BASH_IT_CUSTOM:=${BASH_IT}/custom}/themes"
 fi
 
+: "${CLICOLOR:=$(tput colors)}"
+export CLICOLOR
+
 # Load the theme
 if [[ $BASH_IT_THEME ]]; then
     if [[ -f $BASH_IT_THEME ]]; then

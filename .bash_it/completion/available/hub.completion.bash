@@ -1,13 +1,34 @@
 # hub tab-completion script for bash.
 # This script complements the completion script that ships with git.
 
+# Copyright (c) 2009 Chris Wanstrath
+
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 # If there is no git tab completion, but we have the _completion loader try to load it
-if ! declare -F _git > /dev/null && declare -F _completion_loader > /dev/null; then
+if ! _is_function _git && _is_function _completion_loader; then
   _completion_loader git
 fi
 
-# Check that git tab completion is available
-if declare -F _git > /dev/null; then
+# Check that git tab completion is available and we haven't already set up completion
+if _is_function _git && ! _is_function __git_list_all_commands_without_hub; then
   # Duplicate and rename the 'list_all_commands' function
   eval "$(declare -f __git_list_all_commands | \
         sed 's/__git_list_all_commands/__git_list_all_commands_without_hub/')"
@@ -17,11 +38,16 @@ if declare -F _git > /dev/null; then
     cat <<-EOF
 alias
 pull-request
+pr
+issue
+release
 fork
 create
+delete
 browse
 compare
 ci-status
+sync
 EOF
     __git_list_all_commands_without_hub
   }
@@ -201,7 +227,7 @@ EOF
       ((c++))
     done
     if [ -z "$name" ]; then
-      repo=$(basename "$(pwd)")
+      repo="$(basename "${PWD}")"
     fi
     case "$prev" in
       -d|-h)
@@ -213,21 +239,36 @@ EOF
     esac
   }
 
-  # hub fork [--no-remote]
+  # hub fork [--no-remote] [--remote-name REMOTE] [--org ORGANIZATION]
   _git_fork() {
-    local i c=2 remote=yes
+    local i c=2 flags="--no-remote --remote-name --org"
     while [ $c -lt $cword ]; do
       i="${words[c]}"
       case "$i" in
+        --org)
+          ((c++))
+          flags=${flags/$i/}
+          ;;
+        --remote-name)
+          ((c++))
+          flags=${flags/$i/}
+          flags=${flags/--no-remote/}
+          ;;
         --no-remote)
-          unset remote
+          flags=${flags/$i/}
+          flags=${flags/--remote-name/}
           ;;
       esac
       ((c++))
     done
-    if [ -n "$remote" ]; then
-      __gitcomp "--no-remote"
-    fi
+    case "$prev" in
+      --remote-name|--org)
+        COMPREPLY=()
+        ;;
+      *)
+        __gitcomp "$flags"
+        ;;
+    esac
   }
 
   # hub pull-request [-f] [-m <MESSAGE>|-F <FILE>|-i <ISSUE>|<ISSUE-URL>] [-b <BASE>] [-h <HEAD>] [-a <USER>] [-M <MILESTONE>] [-l <LABELS>]

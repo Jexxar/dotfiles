@@ -1,9 +1,9 @@
 ### Exports for session ###
-if [ -f "$HOME/.profile" ]; then
-    . "$HOME/.profile"
+if [ -f "~/.profile" ]; then
+    . "~/.profile"
 fi
 
 ### Include .bashrc if it exists  ###
-if [ -f "$HOME/.bashrc" ]; then
-    . "$HOME/.bashrc"
+if [ -f "~/.bashrc" ]; then
+    . "~/.bashrc"
 fi

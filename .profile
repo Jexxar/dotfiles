@@ -1,3 +1,8 @@
+#==============================================
+# workaround for some stubborn distros who never loads .profile
+#==============================================
+export NOSTUBBORN="Y"
+
 #===========================================
 # Fix system missing $USER
 #===========================================

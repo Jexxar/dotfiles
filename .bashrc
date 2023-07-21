@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
 #==============================================
+# workaround for some stubborn distros who never loads .profile
+#==============================================
+[ -z "$NOSTUBBORN" ] && . ~/.profile
+
+#==============================================
 # <<< REMEMBER >>>
 #   Most of the settings are stored in: ~/.bash_it/lib/custom.bash
 #   Check that file before include new settings here.

@@ -1,34 +1,69 @@
+#GOTO="ondemand_touchpad_end"
+
 ACTION!="add|remove", GOTO="ondemand_touchpad_end"
 
-SUBSYSTEM=="input" \
-, KERNEL=="mouse[0-9]*" \
-, ATTRS{name}!="*TouchPad" \
-, ATTRS{name}!="*Stick" \
-, ACTION=="add", ENV{DISPLAY}=":0" \
-, ENV{XAUTHORITY}="/var/run/user/1000/.Xauthority" \
-, RUN+="/usr/bin/synclient TouchpadOff=1"
-
-ENV{ID_INPUT_MOUSE}=="1" \
-, ENV{DEVNAME}=="/dev/input/event6"\
-, ACTION=="add" \
+ACTION=="add" \
+, ATTRS{idProduct}=="8108" \
+, ATTRS{idVendor}=="10c4" \
 , ENV{DISPLAY}=":0" \
 , ENV{XAUTHORITY}="/var/run/user/1000/.Xauthority" \
-, RUN+="/bin/sh -c /usr/bin/xinput list | /bin/egrep -iEo 'Touchpad\s*id\=[0-9]{1,2}' | /bin/egrep -Eo '[0-9]{1,2}' | /usr/bin/xargs /usr/bin/xinput disable" 
+, RUN+="/usr/bin/touchpadctl -d" 
 
-SUBSYSTEM=="input" \
-, KERNEL=="mouse[0-9]*" \
-, ATTRS{name}!="*TouchPad" \
-, ATTRS{name}!="*Stick" \
-, ACTION=="remove" \
+ACTION=="add" \
+, ATTRS{idProduct}=="c52f" \
+, ATTRS{idVendor}=="046d" \
 , ENV{DISPLAY}=":0" \
 , ENV{XAUTHORITY}="/var/run/user/1000/.Xauthority" \
-, RUN+="/usr/bin/synclient TouchpadOff=0"
+, RUN+="/usr/bin/touchpadctl -d" 
 
-ENV{ID_INPUT_MOUSE}=="1" \
-, ENV{DEVNAME}=="/dev/input/event6"\
-, ACTION=="remove" \
+#SUBSYSTEM=="input" \
+#, KERNEL=="mouse[0-9]*" \
+#, ATTRS{name}!="*TouchPad" \
+#, ATTRS{name}!="*Stick" \
+#, ACTION=="add" \
+#, ENV{DISPLAY}=":0" \
+#, ENV{XAUTHORITY}="/var/run/user/1000/.Xauthority" \
+#, RUN+="/usr/bin/synclient TouchpadOff=1"
+
+#ENV{ID_INPUT_MOUSE}=="1" \
+#, ENV{DEVNAME}=="/dev/input/event6" \
+#, ATTRS{name}!="*TouchPad" \
+#, ATTRS{name}!="*Stick" \
+#, ACTION=="add" \
+#, ENV{DISPLAY}=":0" \
+#, ENV{XAUTHORITY}="/var/run/user/1000/.Xauthority" \
+#, RUN+="/bin/sh -c /usr/bin/xinput list | /bin/egrep -iEo 'Touchpad\s*id\=[0-9]{1,2}' | /bin/egrep -Eo '[0-9]{1,2}' | /usr/bin/xargs /usr/bin/xinput disable" 
+
+ACTION=="remove" \
+, ATTRS{idProduct}=="8108" \
+, ATTRS{idVendor}=="10c4" \
 , ENV{DISPLAY}=":0" \
 , ENV{XAUTHORITY}="/var/run/user/1000/.Xauthority" \
-, RUN+="/bin/sh -c /usr/bin/xinput list | /bin/egrep -iEo 'Touchpad\s*id\=[0-9]{1,2}' | /bin/egrep -Eo '[0-9]{1,2}' | /usr/bin/xargs /usr/bin/xinput enable" 
+, RUN+="/usr/bin/touchpadctl -e" 
+
+ACTION=="remove" \
+, ATTRS{idProduct}=="c52f" \
+, ATTRS{idVendor}=="046d" \
+, ENV{DISPLAY}=":0" \
+, ENV{XAUTHORITY}="/var/run/user/1000/.Xauthority" \
+, RUN+="/usr/bin/touchpadctl -e" 
+
+#SUBSYSTEM=="input" \
+#, KERNEL=="mouse[0-9]*" \
+#, ATTRS{name}!="*TouchPad" \
+#, ATTRS{name}!="*Stick" \
+#, ACTION=="remove" \
+#, ENV{DISPLAY}=":0" \
+#, ENV{XAUTHORITY}="/var/run/user/1000/.Xauthority" \
+#, RUN+="/usr/bin/synclient TouchpadOff=0"
+
+#ENV{ID_INPUT_MOUSE}=="1" \
+#, ENV{DEVNAME}=="/dev/input/event6" \
+#, ATTRS{name}!="*TouchPad" \
+#, ATTRS{name}!="*Stick" \
+#, ACTION=="remove" \
+#, ENV{DISPLAY}=":0" \
+#, ENV{XAUTHORITY}="/var/run/user/1000/.Xauthority" \
+#, RUN+="/bin/sh -c /usr/bin/xinput list | /bin/egrep -iEo 'Touchpad\s*id\=[0-9]{1,2}' | /bin/egrep -Eo '[0-9]{1,2}' | /usr/bin/xargs /usr/bin/xinput enable" 
 
 LABEL="ondemand_touchpad_end"
