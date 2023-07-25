@@ -55,6 +55,6 @@ export XDG_CONFIG_HOME="${HOME}/.config"
 #===========================================
 # Console based text editor
 #===========================================
-hash nano 2> /dev/null && export EDITOR=$(type -p nano)
-[ -z "$EDITOR" ] && { hash micro 2> /dev/null && export EDITOR=$(type -p micro); }
-[ -z "$EDITOR" ] && { hash myedit 2> /dev/null && export EDITOR=$(type -p myedit); }
+hash nano 2> /dev/null && export EDITOR="$(type -p nano)"
+[ -z "$EDITOR" ] && { hash micro 2> /dev/null && export EDITOR="$(type -p micro)"; }
+[ -z "$EDITOR" ] && { hash myedit 2> /dev/null && export EDITOR="$(type -p myedit)"; }

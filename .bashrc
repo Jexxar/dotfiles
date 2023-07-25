@@ -11,9 +11,9 @@
 #   Check that file before include new settings here.
 #==============================================
 # 1) History options
-# 2) Shell options 
+# 2) Shell options
 # 3) Basic exports
-# 4) Default colors 
+# 4) Default colors
 #==============================================
 
 #===========================================

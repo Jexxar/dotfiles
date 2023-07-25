@@ -16,17 +16,20 @@ alias df='df -h'                          # human-readable sizes
 alias dir='dir -lah1FX --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
 alias rm='rm -i'
 
-# utilizacao do disco
+# disk utiliztion
 alias ducks='du -cks * | sort -rn | head'
 
+# custom ls
 alias lf='ls -lah1FX --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
 alias ll='ls -lahXF --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
 alias ls='ls -ahXF --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
 
+# date and time
 alias nowtime='date +"%T"'
 alias nowdate='date +"%d-%m-%Y"'
+
+# 
 alias reswap='sudo swapoff -a && sudo swapon -a'
-alias sha1='openssl sha1'
 alias wget='wget -c'
 
 # shortcut for iptables and pass it via sudo
@@ -37,17 +40,13 @@ alias iptlistin='sudo /sbin/iptables -L INPUT -n -v --line-numbers'
 alias iptlistout='sudo /sbin/iptables -L OUTPUT -n -v --line-numbers'
 alias iptlistfw='sudo /sbin/iptables -L FORWARD -n -v --line-numbers'
 
-#█▓▒░ dumb tmux trix
+# dumb tmux tricks
 alias tsad="printf '\033k┐(T_T)┌\033\\'"
 alias tshrug="printf '\033k┐(\`-\`)┌\033\\'"
 alias tlol="printf '\033k┐(^0^)┌\033\\'"
 
-# One of @janmoesen’s ProTip™s
-#for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do
-#    alias "$method"="lwp-request -m '$method'"
-#done
-
-if hash java 2> /dev/null; then
+# java helping aliases
+if hash java &> /dev/null; then
     alias java.debug.enable='export JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,address=5009,suspend=y"'
     alias java.debug.disable='export JAVA_OPTS=""'
 fi
@@ -65,10 +64,16 @@ fi
 # colored grep
 # Need to check an existing file for a pattern that will be found to ensure
 # that the check works when on an OS that supports the color option
-if grep --color=auto "shell " "${BASH_IT}/"*.md &> /dev/null; then
+#if grep --color=auto "shell " "${BASH_IT}/"*.md &> /dev/null; then
+#    alias grep='grep --color=auto'
+#    alias egrep='egrep --color=auto'
+#    alias fgrep='fgrep --color=auto'
+#fi
+if hash grep &> /dev/null; then
     alias grep='grep --color=auto'
     alias egrep='egrep --color=auto'
     alias fgrep='fgrep --color=auto'
+    alias grp='grep -v "grep" | grep --color=auto'
 fi
 
 # Common misspellings of bash-it
