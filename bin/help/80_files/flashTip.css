@@ -1,9 +1,0 @@
-
-.overlay{height:100%; width:100%; position:fixed;  top:0;  background: #000; display:none; }
-.flashContent{width: 862px; height: 392px; background: url(../img/flashTip/flashBg.png) no-repeat; position:absolute; top:40%; left:50%; margin:-196px auto auto -431px;  }
-.flashContent img{ position:absolute; left: 126px; top: 50px;}
-.getTip{position: absolute; top:154px; z-index: 1; left: 90px; line-height: 22px; color: #ffca74; font-size: 19px; font-weight: bold; font-family:'Times New Roman'; }
-.getlink{position: absolute; top:140px; left: 17px; width: 454px;  height: 229px; background: url(../img/flashTip/flashBtn.png) no-repeat 0 0;}
-.getlink:hover{background: url(../img/flashTip/flashBtn.png) no-repeat 0 -229px;}
-.getClick{position: absolute; top:302px; left: 65px; font-size: 12px; font-family: Arial; font-weight:bold;  color: #c79129;}
-.getClick a{color:#59a9ff; text-decoration: underline}
