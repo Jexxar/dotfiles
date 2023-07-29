@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [[ ! $- == *i* ]]; then
+    [ -f ~/.profile ] && . ~/.profile
+    return
+fi
+
 #==============================================
 # workaround for some stubborn distros who never loads .profile
 #==============================================
