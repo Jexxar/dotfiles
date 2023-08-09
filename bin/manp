@@ -40,7 +40,7 @@ function create_it(){
 
 function open_it(){
     [ -z "$1" ] && return 1
-    if type -p zathura >/dev/null 2>&1; then 
+    if hash zathura >/dev/null 2>&1; then 
         zathura "$1" >/dev/null 2>&1 & disown;
     else
         xdg-open "$1" >/dev/null 2>&1 & disown;

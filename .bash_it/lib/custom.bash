@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+#==============================================
+# Set vcprompt executable path for scm advance info in prompt (bash_it demula theme)
+# https://github.com/djl/vcprompt
+#==============================================
+export VCPROMPT_EXECUTABLE="${HOME}/bin/vcprompt"
+
 #===========================================
 # Identifies debian chrooted
 #===========================================
@@ -58,7 +64,7 @@ shopt -s histappend histreedit histverify
 shopt -s extglob
 
 #===========================================
-# Variaveis de Cores (uso geral)
+# Colors 
 #===========================================
 if tput setaf 1 &> /dev/null; then
     tput sgr0; # reset colors
@@ -96,35 +102,35 @@ fi
 #===========================================
 # Colors 
 #===========================================
-export NONE="\[\033[0m\]" # Reset colors
+#export NONE="\[\033[0m\]" # Reset colors
 
 ## Foreground  
-export K="\[\033[0;30m\]" # Black 
-export R="\[\033[0;31m\]" # Red 
-export G="\[\033[0;32m\]" # Green 
-export Y="\[\033[0;33m\]" # Yellow 
-export B="\[\033[0;34m\]" # Blue 
-export M="\[\033[0;35m\]" # Magenta
-export C="\[\033[0;36m\]" # Cyan  
-export W="\[\033[0;37m\]" # White 
-export BK="\[\033[1;30m\]" # Bold+Black 
-export BR="\[\033[1;31m\]" # Bold+Red 
-export BG="\[\033[1;32m\]" # Bold+Green 
-export BY="\[\033[1;33m\]" # Bold+Yellow 
-export BB="\[\033[1;34m\]" # Bold+Blue 
-export BM="\[\033[1;35m\]" # Bold+Magenta
-export BC="\[\033[1;36m\]" # Bold+Cyan 
-export BW="\[\033[1;37m\]" # Bold+White 
+#export K="\[\033[0;30m\]" # Black 
+#export R="\[\033[0;31m\]" # Red 
+#export G="\[\033[0;32m\]" # Green 
+#export Y="\[\033[0;33m\]" # Yellow 
+#export B="\[\033[0;34m\]" # Blue 
+#export M="\[\033[0;35m\]" # Magenta
+#export C="\[\033[0;36m\]" # Cyan  
+#export W="\[\033[0;37m\]" # White 
+#export BK="\[\033[1;30m\]" # Bold+Black 
+#export BR="\[\033[1;31m\]" # Bold+Red 
+#export BG="\[\033[1;32m\]" # Bold+Green 
+#export BY="\[\033[1;33m\]" # Bold+Yellow 
+#export BB="\[\033[1;34m\]" # Bold+Blue 
+#export BM="\[\033[1;35m\]" # Bold+Magenta
+#export BC="\[\033[1;36m\]" # Bold+Cyan 
+#export BW="\[\033[1;37m\]" # Bold+White 
 
 ## Background
-export BGK="\[\033[40m\]" # Black 
-export BGR="\[\033[41m\]" # Red 
-export BGG="\[\033[42m\]" # Green 
-export BGY="\[\033[43m\]" # Yellow
-export BGB="\[\033[44m\]" # Blue 
-export BGM="\[\033[45m\]" # Magenta
-export BGC="\[\033[46m\]" # Cyan 
-export BGW="\[\033[47m\]" # White
+#export BGK="\[\033[40m\]" # Black 
+#export BGR="\[\033[41m\]" # Red 
+#export BGG="\[\033[42m\]" # Green 
+#export BGY="\[\033[43m\]" # Yellow
+#export BGB="\[\033[44m\]" # Blue 
+#export BGM="\[\033[45m\]" # Magenta
+#export BGC="\[\033[46m\]" # Cyan 
+#export BGW="\[\033[47m\]" # White
 
 #=============================================
 # TERMCAP Setup
@@ -143,3 +149,11 @@ export LESS_TERMCAP_so=$(printf '\e[01;32m')
 export LESS_TERMCAP_ue=$(printf '\e[0m')
 # enter underline mode - blue
 export LESS_TERMCAP_us=$(printf '\e[04;34m')
+
+#===========================================
+# Console based text editor
+#===========================================
+hash nano 2> /dev/null && export EDITOR="nano"
+[ -z "$EDITOR" ] && { hash micro 2> /dev/null && export EDITOR="micro"; }
+[ -z "$EDITOR" ] && { hash myedit 2> /dev/null && export EDITOR="myedit"; }
+

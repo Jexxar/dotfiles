@@ -238,7 +238,8 @@ function rtrim(){
 # Ask for a simple yes/no confirmation
 # Usage: ask_confirmation "Are you ready?"
 function ask_confirmation(){
-    printf "\n${_cl_bold}$@${_cl_reset}"
+    printf "\n"
+    printf "\e[1;37m$@\e[0m"
     read -p " (y/n) " -n 1
     printf "\n"
 }

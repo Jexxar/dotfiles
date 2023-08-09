@@ -35,14 +35,22 @@ sub mk_distro {
     return `~/bin/distro-info -2`;
 }
 
+my $def_browser = `/usr/bin/xdg-mime query default application/x-extension-html`;
+my $brcmd = `dex -d /usr/share/applications/$def_browser`;
+$brcmd = (split ': ', $brcmd)[1];
+
+my $def_fileman = `/usr/bin/xdg-mime query default inode/directory`;
+my $fileman = `/usr/bin/dex -d /usr/share/applications/$def_fileman`;
+$fileman = (split ': ', $fileman)[1];
+
 if ($lang eq "pt") {
 our $SCHEMA = [
     #          COMMAND                 LABEL              ICON
     {sep => mk_distro },
 
-    {item => ['xdg-open .',       'Arquivos', 'system-file-manager']},
-    {item => ['tilix',            'Terminal',     'utilities-terminal']},
-    {item => ['xdg-open https://', 'Web Browser',  'web-browser']},
+    {item => ["$fileman .",       'Arquivos', 'system-file-manager']},
+    {item => ['x-terminal-emulator',            'Terminal',     'utilities-terminal']},
+    {item => ["$brcmd", 'Web Browser',  'web-browser']},
     {item => ['gmrun',            'Executar comando',  'system-run']},
 
     {sep       => undef},
@@ -66,8 +74,6 @@ our $SCHEMA = [
     #{end => undef},
 
     #            COMMAND     LABEL        ICON
-    #{pipe => ['obbrowser', 'Disk', 'drive-harddisk']},
-
     ## Generic advanced settings
     #{sep       => undef},
     #{obgenmenu => ['Openbox Settings', 'applications-engineering']},
@@ -108,19 +114,24 @@ our $SCHEMA = [
 
     {sep => undef},
 
+    #{pipe => ['~/.config/openbox/scripts/obbrowser.pl', 'Disk', 'drive-harddisk']},
+
     #{pipe => ['~/.config/openbox/scripts/ob-places.pl', 'Locais', 'drive-harddisk']}, 
     #{pipe => ['~/.config/openbox/scripts/cb-places-pipemenu', 'Locais', 'drive-harddisk']}, 
     {pipe => ['~/.config/openbox/scripts/places-pipemenu', 'Locais', 'drive-harddisk']}, 
     {pipe => ['~/.config/openbox/scripts/help-pipemenu', 'Ajuda', 'help']}, 
-    {pipe => ['~/.config/openbox/scripts/template-pipemenu', 'Modelos', 'folder-templates-symbolic']},
-    {pipe => ['~/.config/openbox/scripts/inxi-pipemenu', 'Inxi Info', 'dialog-information-symbolic']}, 
+    {pipe => ['~/.config/openbox/scripts/template-pipemenu', 'Modelos', 'applications-libraries']},
+    {pipe => ['~/.config/openbox/scripts/inxi-pipemenu', 'Inxi Info', 'application-menu']}, 
     #{pipe => ['~/.config/openbox/scripts/storage-pipemenu', 'StorageInfo', 'dialog-information-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/sysinfo-pipemnu', 'SysInfo', 'dialog-information-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/cb-recent-pipemenu', 'Recentes', 'view-wrapped-symbolic']}, 
+    #{pipe => ['corgi-openbox-menus-power-management', 'Power', 'applications-multimedia']}, 
+    #{pipe => ['corgi-openbox-menus-displays', 'Monitores', 'applications-graphics']}, 
+    #{pipe => ['corgi-openbox-menus-network', 'Rede', 'applications-internet']}, 
     {pipe => ['~/.config/openbox/scripts/recent-pipemenu', 'Recentes', 'view-wrapped-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/mpc-pipemenu', 'MPC', 'multimedia']}, 
     {pipe => ['~/.config/openbox/scripts/audacious-pipemenu', 'Audacious', 'multimedia']}, 
-    {pipe => ['~/.config/openbox/scripts/virtualbox-pipemenu', 'Virtualbox', 'virtualbox']}, 
+    #{pipe => ['~/.config/openbox/scripts/virtualbox-pipemenu', 'Virtualbox', 'virtualbox']}, 
     # 
     
     # {sep => undef},
@@ -144,9 +155,9 @@ our $SCHEMA = [
     #          COMMAND                 LABEL              ICON
     {sep => mk_distro },
 
-    {item => ['xdg-open .',       'Files', 'system-file-manager']},
-    {item => ['tilix',            'Terminal',     'utilities-terminal']},
-    {item => ['xdg-open http://', 'Web Browser',  'web-browser']},
+    {item => ["$fileman .",       'Files', 'system-file-manager']},
+    {item => ['x-terminal-emulator',            'Terminal',     'utilities-terminal']},
+    {item => ["$brcmd", 'Web Browser',  'web-browser']},
     {item => ['gmrun',            'Run command',  'system-run']},
 
     {sep       => undef},
@@ -216,21 +227,21 @@ our $SCHEMA = [
     #{pipe => ['~/.config/openbox/scripts/cb-places-pipemenu', 'Places', 'drive-harddisk']}, 
     {pipe => ['~/.config/openbox/scripts/places-pipemenu', 'Places', 'drive-harddisk']}, 
     {pipe => ['~/.config/openbox/scripts/help-pipemenu', 'Help', 'help']}, 
-    {pipe => ['~/.config/openbox/scripts/template-pipemenu', 'Templates', 'folder-templates-symbolic']},
-    {pipe => ['~/.config/openbox/scripts/inxi-pipemenu', 'Inxi Info', 'dialog-information-symbolic']}, 
+    {pipe => ['~/.config/openbox/scripts/template-pipemenu', 'Templates', 'applications-libraries']},
+    {pipe => ['~/.config/openbox/scripts/inxi-pipemenu', 'Inxi Info', 'application-menu']}, 
     #{pipe => ['~/.config/openbox/scripts/storage-pipemenu', 'StorageInfo', 'dialog-information-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/sysinfo-pipemnu', 'SysInfo', 'dialog-information-symbolic']}, 
     {pipe => ['~/.config/openbox/scripts/recent-pipemenu', 'Recent', 'view-wrapped-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/cb-recent-pipemenu', 'Recent', 'view-wrapped-symbolic']}, 
     #{pipe => ['~/.config/openbox/scripts/mpc-pipemenu', 'MPC', 'multimedia']}, 
     {pipe => ['~/.config/openbox/scripts/audacious-pipemenu', 'Audacious', 'multimedia']}, 
-    {pipe => ['~/.config/openbox/scripts/virtualbox-pipemenu', 'Virtualbox', 'virtualbox']}, 
+    #{pipe => ['~/.config/openbox/scripts/virtualbox-pipemenu', 'Virtualbox', 'virtualbox']}, 
     # 
     
     # {sep => undef},
 
     ## The xscreensaver lock command
-    {item => ['~/bin/autolock.sh lock', 'Lock', 'system-lock-screen']},
+    {item => ['~/bin/autolock lock', 'Lock', 'system-lock-screen']},
 
     ## This option uses the default Openbox's "Exit" action
     {item => ['oblogout', 'Exit', 'application-exit']},

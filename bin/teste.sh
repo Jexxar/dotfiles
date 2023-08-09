@@ -170,6 +170,35 @@ function var_is_empty() { [ "${1+x}" = "x" ] && [ "${#1}" -eq "0" ]; }
 # Check var for unset, or set and null
 function var_is_blank() { var_is_unset "${1}" || var_is_empty "${1}"; }
 
+#==============================================
+# qh - Search bash history for a command.
+#
+# Examples:
+#    qh ls 
+#
+# @param {String} $*  search string
+#==============================================
+function qh() {
+    local _cmd="";
+    local _parm="$*"
+    if [ -z "$HISTFILE" ]; then 
+        export HISTFILE="$HOME/.bash_history"
+    fi
+    if hash fzy > /dev/null 2>&1 ; then
+        _cmd=$(grep "$*" "$HISTFILE" | fzy)
+        [ -n "$_cmd" ] && eval "$_cmd"
+    elif hash fzf > /dev/null 2>&1 ; then
+        _cmd=$(grep "$*" "$HISTFILE" | fzf)
+        [ -n "$_cmd" ] && eval "$_cmd"
+    elif hash pick > /dev/null 2>&1 ; then
+        _cmd=$(grep "$*" "$HISTFILE" | pick)
+        [ -n "$_cmd" ] && eval "$_cmd"
+    elif hash hstr > /dev/null 2>&1 ; then
+        hstr "$*"
+    fi 
+}
+
+
 function main() {
     #local OLD_IFS=$IFS
     #IFS=$'\n'
@@ -649,7 +678,9 @@ function main() {
     #lsof_p "LibreWolf" | grep -v "/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse\|\.mozilla"
     #uptime_active
     #psname "$@"
-    hosts_up
+    #hosts_up
+    qh "$@"
+    #_lsof
 }
 
 main "$@"

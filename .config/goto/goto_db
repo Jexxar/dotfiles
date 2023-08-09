@@ -1,6 +1,7 @@
 bin /home/usuario/bin
 devshell /home/usuario/Workspace/dev/shell
 devC /home/usuario/Workspace/dev/c
+devPl /home/usuario/Workspace/dev/pl
 devPy /home/usuario/Workspace/dev/py
 devJava /home/usuario/Workspace/dev/java
 devC++ /home/usuario/Workspace/dev/c++collections /home/usuario/Workspace/collections
@@ -8,3 +9,7 @@ colldots /home/usuario/Workspace/collections/dotfiles-collection
 collfonts /home/usuario/Workspace/collections/font-collection
 collthemes /home/usuario/Workspace/collections/theme-collection
 devLua /home/usuario/Workspace/dev/lua
+devWeb /home/usuario/Workspace/dev/web
+Wall /home/usuario/Imagens/Wallpaper
+SC /home/usuario/Imagens/Screenshot
+logs /var/log

@@ -26,7 +26,8 @@ function echo () {
 # Short wikipedia description for a given keywork
 function wiki() { dig +short txt $1.wp.dg.cx; }
 # Weather from wttr.in
-function wttr(){ local LOCATION=$(curl -s ipinfo.io/loc); curl -4 http://wttr.in/${LOCATION}; }
+#function wttr(){ local LOCATION=$(curl -s ipinfo.io/loc); curl -4 http://wttr.in/${LOCATION}; }
+function wttr(){ curl -4 http://wttr.in; }
 # View HTTP traffic on a specific network interface
 function sniff(){ hash ngrep > /dev/null &&  sudo ngrep -d '${1}' -t '^(GET|POST) ' 'tcp and port 80'; }
 function httpdump(){ hash tcpdump > /dev/null && sudo tcpdump -i ${1} -n -s 0 -w - | grep -a -o -E "\"Host\: .*|GET \/.*\""; }
@@ -91,7 +92,7 @@ function tday(){ local dstr="date --date='+$1 day'"; eval "$dstr"; }
 # Top count lines
 function topcount(){ sort | uniq -c | sort -rn | head -n "${1:-10}"; }
 # Most color
-function mostcolor(){ cat "$1" | sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[%sm %s \x1b[0m",(i%7)+31,$i);print ""}' | most -RS; }
+function mostcolor(){ cat "$1" | sed 's/#fields\t\|#types\t/#/g' | awk 'BEGIN {FS="\t"};{for(i=1;i<=NF;i++) printf("\x1b[%sm %s \x1b[0m",(i%7)+31,$i);print ""}' | most -S; }
 # Uptime since
 function uptime_since(){ uptime -ps ; }
 # Free memory
@@ -133,7 +134,7 @@ function cm_fu_motd(){ curl http://www.commandlinefu.com/commands/random/plainte
 # Command line Calculations
 function calc(){ printf '%s\n' "scale=3;${*//[ ]}" | bc -l ; }
 # Run dig and display the most useful info
-function digga(){ dig +nocmd  any +multiline +noall +answer "$1"; }
+function digga(){ dig +nocmd +multiline +noall +answer "$1"; }
 # tre is a shorthand for tree with hidden files and color enabled, ignoring .git directory, listing directories first.
 function tre(){ tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | most -N; }
 # Pre append a path to the PATH
@@ -184,12 +185,27 @@ function upper(){ printf "%s\\n" "${1^^}"; }
 function get_xserver(){ echo "$(LC_ALL=C who am i | grep  '(' | awk '{print $NF}' | tr -d ')''(' )" ;}
 
 #==============================================
+# la - Better sorted ls using find and xargs
+#
+# Examples:
+#    la .
+#    la ~/Downloads
+#==============================================
+function la(){ 
+    local _nm="$@"
+    [ -z "$_nm" ] && _nm="."
+    LC_ALL=C find "$_nm" -maxdepth 1 -xdev -print0 | /bin/sed 's/\.\///g' | \
+            xargs -0 ls -dlavhF  --color=auto --time-style=long-iso --group-directories-first;
+}
+ 
+#==============================================
 # undup_bash_history - Remove all duplicated lines from bash_history file.
 #
 # Examples:
 #    undup_bash_history
 #==============================================
 function undup_bash_history(){
+    [ -z "$HISTFILE" ] && export HISTFILE="$HOME/.bash_history"
     tac $HISTFILE | awk '!x[$0]++' | tac | sponge $HISTFILE
     history -c
     history -r
@@ -204,15 +220,22 @@ function undup_bash_history(){
 # @param {String} $*  search string
 #==============================================
 function qh(){
-    if hash hstr; then
+    local _cmd="";
+    local _parm="$*"
+    if [ -z "$HISTFILE" ]; then 
+        export HISTFILE="$HOME/.bash_history"
+    fi
+    if hash fzy > /dev/null 2>&1 ; then
+        _cmd=$(grep "$*" "$HISTFILE" | fzy)
+        [ -n "$_cmd" ] && eval "$_cmd"
+    elif hash fzf > /dev/null 2>&1 ; then
+        _cmd=$(grep "$*" "$HISTFILE" | fzf)
+        [ -n "$_cmd" ] && eval "$_cmd"
+    elif hash pick > /dev/null 2>&1 ; then
+        _cmd=$(grep "$*" "$HISTFILE" | pick)
+        [ -n "$_cmd" ] && eval "$_cmd"
+    elif hash hstr > /dev/null 2>&1 ; then
         hstr "$*"
-    else
-        #          ┌─ enable colors for pipe
-        #          │  ("--color=auto" enables colors only if
-        #          │  the output is in the terminal)
-        grep --color=always "$*" "$HISTFILE" |       less -RXS#3M~g
-        # display ANSI color escape sequences in raw form ─┘│
-        #       don't clear the screen after quitting less ─┘
     fi 
 }
 
@@ -350,23 +373,6 @@ function cd(){
     { [ -d "$1" ] && builtin cd "$1";              } || \
     { [ -f "$1" ] && builtin cd "$(dirname "$1")"; } || \
     builtin cd "$1"
-}
-
-#==============================================
-# meteo - Weather from wttr
-#
-# Examples:
-#   meteo
-#==============================================
-function meteo(){
-    local LOCLANG=$(echo ${LANG:-en} | cut -c1-2)
-    clear
-    if [ $# -eq 0 ]; then
-        local LOCATION=$(curl -s ipinfo.io/loc)
-    else
-        local LOCATION=$1
-    fi
-    curl -s "$LOCLANG.wttr.in/$LOCATION"
 }
 
 #==============================================

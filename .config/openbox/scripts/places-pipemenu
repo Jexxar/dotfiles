@@ -40,7 +40,7 @@ fi
 # path to your "recent files" script, if you want to incorporate it:
 recent_script=$HOME/.config/openbox/scripts/recent-pipemenu
 # Command to open folders at "Browse here..." - any file manager
-open_folder_cmd=pcmanfm
+#open_folder_cmd=pcmanfm
 # Default command to open files with - others might be xdg-open, gnome-open, pcmanfm...
 default_open_cmd=xdg-open  # exo-open comes with thunar
 # Text editor of choice
@@ -55,8 +55,15 @@ shown_dotfiles='.config .conkyrc .local .cache .bashrc .bash_profile .wmdrawerrc
 function open_file() {
     #[ -x "$1" ] && exec "$text_editor" "$1" ;    # comment out this line if you don't want to edit executables instead of executing
     #[ -x "$1" ] && exec "terminator -e" "$1" ;    # uncomment this and comment out previous line to run executables in terminal instead of editing
-    [ "${1##*.}" = desktop ] && exec "$text_editor" "$1" ;    # comment out this line if you don't want to edit .desktop files instead of executing
+    [ "${1##*.}" == desktop ] && exec "$text_editor" "$1" ;    # comment out this line if you don't want to edit .desktop files instead of executing
     exec "$default_open_cmd" "$1" ;    # use default open command if above conditions not satisfied
+}
+
+# function to edit files with default text editor
+function edit_file() {
+    #[ -x "$1" ] && exec "$text_editor" "$1" ;    # comment out this line if you don't want to edit executables instead of executing
+    #[ -x "$1" ] && exec "terminator -e" "$1" ;    # uncomment this and comment out previous line to run executables in terminal instead of editing
+    exec "$text_editor" "$1" ;    # comment out this line if you don't want to edit .desktop files instead of executing
 }
 
 function doMenuRecent() {
@@ -138,7 +145,12 @@ function doMenu_files() {
         dname=$(esc_enc $shortname);
         [ -d "$path$shortname" ] && { subMenuExec "${dpath}${dname}" "${dname}" "$0 &quot;$path$dname&quot;"; }
         if [ -f "$path$shortname" ]; then
-            menuItem "${dname}" "<![CDATA[$0 --open \"${dpath}${dname}\"]]>"; 
+            if [ -x "$path$shortname" ]; then
+                local aux_pipe="$(dirname $0)/places-aux-pipemenu"
+                subMenuExec "${dpath}${dname}" "${dname}" "$aux_pipe &quot;$path$dname&quot;";
+            else
+                menuItem "${dname}" "<![CDATA[$0 --open \"${dpath}${dname}\"]]>";
+            fi
         fi
     done
     IFS=$old_IFS
@@ -158,6 +170,12 @@ function doMenu_files() {
 #######################################################################
 
 case $1 in
+    # if "--edit" option is sent as $1, edit file ($2) instead of generating menu
+    --edit)
+        edit_file "$2"
+        # in case exec command fails
+        echo "$0 : failed to edit $2" >&2
+        exit;;    
     # if "--open" option is sent as $1, open file ($2) instead of generating menu
     --open)
         open_file "$2"

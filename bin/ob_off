@@ -25,22 +25,35 @@ function doAction(){
 }
 
 function doMenu_en(){
-    gxmessage -font "Sans bold 16" "          Are you sure you want to leave?" -center -borderless -noescape -sticky -ontop \
-        -title "Pick a choice" -default "Cancel" -buttons "_Cancel":1,"_Lock":2,"_Exit":3,"_Reboot":4,"_Poweroff":5 >/dev/null
-    
+    if precheck "yad"; then
+        yad --text-align=center --fontname="Sans bold 18" --width=420 --height 85 \
+        --text='<span color=\"white\" font="Sans bold 18">Are you sure you want to leave?</span>' --fixed \
+        --undecorated --on-top --sticky --center --no-escape -title "Pick a choice" \
+        --button="Cancel":1 --button="Lock":2 --button="Logout":3 --button="Reboot":4 --button="Poweroff":5 >/dev/null
+    else
+        gxmessage -font "Sans bold 16" "          Are you sure you want to leave?" -center -borderless -noescape -sticky -ontop \
+        -title "Pick a choice" -default "Cancel" -buttons "_Cancel":1,"_Lock":2,"_Logout":3,"_Reboot":4,"_Poweroff":5 >/dev/null
+    fi
     doAction "$?"
     return 0
 }
 
 function doMenu_pt(){
-    gxmessage -font "Sans bold 16" "          Tem certeza que quer sair?" -center -borderless -noescape -sticky -ontop \
-        -title "Escolha uma ação" -default "Cancelar" -buttons "_Cancelar":1,"_Bloquear":2,"_Sair":3,"_Reiniciar":4,"_Desligar":5 >/dev/null
+    if precheck "yad"; then
+        yad --text-align=center --fontname="Sans bold 18" --width=420 --height 85 \
+        --text='<span color=\"white\" font="Sans bold 18">Tem certeza que quer sair?</span>' --fixed \
+        --undecorated --on-top --sticky --center --no-escape -title "Escolha uma ação" \
+        --button="Cancelar":1 --button="Bloquear":2 --button="Logout":3 --button="Reiniciar":4 --button="Desligar":5 >/dev/null
+    else
+        gxmessage -font "Sans bold 16" "          Tem certeza que quer sair?" -center -borderless -noescape -sticky -ontop \
+        -title "Escolha uma ação" -default "Cancelar" -buttons "_Cancelar":1,"_Bloquear":2,"_Logout":3,"_Reiniciar":4,"_Desligar":5 >/dev/null
+    fi
     doAction "$?"
     return 0
 }
 
 function main() {
-    precheck "gxmessage"
+    precheck "yad" || precheck "gxmessage"
     
     # Only works if X is running.
     ! is_running_X && log "X server is not running" && return 0

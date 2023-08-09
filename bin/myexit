@@ -24,11 +24,11 @@ function do_exit(){
         | sed 's|/bin/sh -c ||g' | sed 's|/bin/sh ||g' | sed -E 's|/usr/bin/python.? ||g' | grep -v "$filter"); do
         cml=$(awk '{print $5}' <<< $x)
         cml="${cml##*/}"
-        log "stop_it $x"
+        #log "stop_it $x"
         [ -n "$cml" ] && stop_it "$cml"
     done
     IFS=$OLD_IFS
-    log "$XDG_CURRENT_DESKTOP Exiting now..."
+    #log "$XDG_CURRENT_DESKTOP Exiting now..."
     if [ "$XDG_CURRENT_DESKTOP" == "Openbox" ]; then
         openbox --exit;
     else

@@ -18,7 +18,8 @@ function main(){
     #local at_least="$(LC_ALL=C type -a $orig_cmd 2> /dev/null | grep -v "alias\|keyword" | grep " is " | awk 'NR == 1 {print $1}')"
     #[ -z "$at_least" ] && log "Invalid command $orig_cmd" && echo -e "Invalid command $orig_cmd" && usage && return 1
     local cmd="$(findutil "$orig_cmd")"
-    [ -z "$cmd" ] && log "Invalid command $orig_cmd" && echo -e "Invalid command $orig_cmd" && usage && return 1
+    #[ -z "$cmd" ] && log "Invalid command $orig_cmd" && echo -e "Invalid command $orig_cmd" && usage && return 1
+    [ -z "$cmd" ] && echo -e "Invalid command $orig_cmd" && usage && return 1
     shift
     kill_them "but-me" "$orig_cmd"
 
@@ -36,15 +37,11 @@ function main(){
     #if [ $rc -eq 0 ]; then
     if [ $? -eq 0 ]; then
         disown
-        echo "Starting $cmd"
-        log "Starting $cmd"
-        #echo "Starting $cmd $@"
-        #log "Starting $cmd $@"
+        #echo "Starting $cmd"
+        #log "Starting $cmd"
     else
-        #echo "Failed [ $rc ] to start $cmd $@"
-        #log "Failed [ $rc ] to start $cmd $@"
         echo "Failed [ $rc ] to start $cmd"
-        log "Failed [ $rc ] to start $cmd"
+        #log "Failed [ $rc ] to start $cmd"
     fi
     exit 0
 }

@@ -19,7 +19,7 @@ function start_it(){
 function main(){
     local cmd=""
     # if we have x-terminal-emulator installed
-    cmd="$(LC_ALL=C type -a x-terminal-emulator 2> /dev/null | grep -v "$USER" | awk '/ is/ {print $3}')"
+    cmd="$(LC_ALL=C type -a x-terminal-emulator 2> /dev/null | grep -v "$USER" | awk '/ is/ {print $3}' | tail -1)"
     start_it "$cmd" "$@"
     # otherwise find for another suitable terminal emulator
     for t in $(compgen -c | grep "term\|tilix\|urxvt\|kitty\|alacritty\|tilda\|guake\|sakura\|konsole" | grep -v "setterm\|preexec\|intel\|rofi\|dh\|koi8\|_terms\|wrapper\|emu" | sort -u);do

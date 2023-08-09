@@ -201,6 +201,8 @@ function main() {
     local cmd=${1:-menu}
     if checkfor "gxmessage"; then
         local o="gxmessage -font \"Hack Nerd Font Mono 9\" -center -file - 2> /dev/null"
+    elif checkfor "yad"; then
+        local o="yad  --text-info --title \"Inxi information...\" --text-align=fill --center --width 900 --height 300 --fontname=\"Hack Nerd Font Mono 9\" 2> /dev/null"
     elif checkfor "zenity"; then
         local o="zenity  --text-info --title \"Inxi information...\" --width 900 --height 300 --font \"Hack Nerd Font Mono 9\" 2> /dev/null"
     else

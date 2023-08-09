@@ -20,9 +20,12 @@ alias rm='rm -i'
 alias ducks='du -cks * | sort -rn | head'
 
 # custom ls
-alias lf='ls -lah1FX --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
-alias ll='ls -lahXF --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
-alias ls='ls -ahXF --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
+#alias lf='/bin/ls -lah1FX --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
+#alias ll='/bin/ls -lahXF --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
+#alias ls='/bin/ls -ahXF --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
+alias lf='/bin/ls -lah1FX --group-directories-first --human-readable --time-style=long-iso --color=auto'
+alias ll='/bin/ls -lahXF --group-directories-first --human-readable --time-style=long-iso --color=auto'
+alias ls='/bin/ls -ahXF --group-directories-first --human-readable --time-style=long-iso --color=auto'
 
 # date and time
 alias nowtime='date +"%T"'

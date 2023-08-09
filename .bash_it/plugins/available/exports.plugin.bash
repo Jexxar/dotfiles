@@ -60,6 +60,7 @@ function do_exports() {
     export -f ifinfo
     export -f ip_inf
     export -f jobs_count
+    export -f la
     export -f laptop_battery
     export -f listeners
     export -f logs
@@ -67,7 +68,6 @@ function do_exports() {
     export -f lsr
     export -f lstrip
     export -f memw
-    export -f meteo
     export -f mostcolor
     export -f mouse_battery
     export -f msumm

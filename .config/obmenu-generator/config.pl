@@ -44,11 +44,9 @@
         * use qr/.../i for case insensitive mode
 
 =cut
-#my dist = `my_distro`;
 
 our $CONFIG = {
   "editor"              => "myedit",
-  #"distro"              => "$dist",
   "force_icon_size"     => 0,
   "generic_fallback"    => 0,
   "gtk_rc_filename"     => "$ENV{HOME}/.gtkrc-2.0",
@@ -70,6 +68,6 @@ our $CONFIG = {
                            },
   "locale_support"      => 1,
   "missing_icon"        => "gtk-missing-image",
-  "terminal"            => "tilix",
+  "terminal"            => "'x-terminal-emulator",
   "VERSION"             => 0.84,
 }

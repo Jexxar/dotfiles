@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
 
+#==============================================
+# Force loading .profile in non interative shell
+#==============================================
 if [[ ! $- == *i* ]]; then
     [ -f ~/.profile ] && . ~/.profile
     return
 fi
 
 #==============================================
-# workaround for some stubborn distros who never loads .profile
+# Workaround for some stubborn distros who never loads .profile
 #==============================================
-[ -z "$NOSTUBBORN" ] && . ~/.profile
+[ -z "$PSTUBBORN" ] && . ~/.profile
+unset PSTUBBORN
 
 #==============================================
 # <<< REMEMBER >>>
@@ -19,14 +23,15 @@ fi
 # 2) Shell options
 # 3) Basic exports
 # 4) Default colors
+# 5) Exported vars for the session
 #==============================================
 
 #===========================================
 # Start gpg-agent if not already running
 #===========================================
-if ! pgrep -x -u "${USER}" gpg-agent &> /dev/null; then
-    hash gpg-connect-agent && gpg-connect-agent /bye &> /dev/null
-fi
+#if ! pgrep -x -u "${USER}" gpg-agent &> /dev/null; then
+#    hash gpg-connect-agent && gpg-connect-agent /bye &> /dev/null
+#fi
 
 #===========================================
 # Reuse ssh-agent and/or gpg-agent between logins for some keys
@@ -41,12 +46,6 @@ fi
 # Source goto.sh to handle directories
 #==============================================
 [[ -s "${HOME}/bin/goto.sh" ]] && source ~/bin/goto.sh
-
-#==============================================
-# Set vcprompt executable path for scm advance info in prompt (bash_it demula theme)
-# https://github.com/djl/vcprompt
-#==============================================
-export VCPROMPT_EXECUTABLE="${HOME}/bin/vcprompt"
 
 #==============================================
 # Set this to false to turn off version control status checking within the prompt for all bash_it themes
@@ -80,9 +79,8 @@ fi
 # export BASH_IT_AUTOMATIC_RELOAD_AFTER_CONFIG_CHANGE=1
 
 #==============================================
-# Create a dynamic plugin to auto export all 
-# my custom functions (in plugins) for the session
-# if they are enabled
+# Create a dynamic plugin to auto export all functions (in my custom plugin) 
+# for the session if they are enabled
 #==============================================
 function exports_gen() {
     local cstfile="$BASH_IT/plugins/available/custom.plugin.bash"
