@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+#    cb-places-pipemenu - a places openbox pipe menu
+#    Copyright (C) 2010  John Crawley
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#    Version 2012/09/27-cb
+
+
+# Ported to #!++ <https://crunchbangplusplus.org>
+# by Ben Young <computermouth@crunchbangplusplus.org>
+
+#    NB The shell, not bash, is invoked in the hope that
+#    dash will be used, as it is much faster.
+
+# Usage: add
+# <menu id="places" label="Places" execute="/path/to/places-pipemenu ~/" />
+# to your .config/openbox/menu.xml
+
+# or, if you want the "recent files" menu incorporated at the top, use:
+# <menu id="places" label="Places" execute="/path/to/places-pipemenu --recent ~/" />
+# make sure you have recent-pipemenu somewhere, and enter its path below.
+
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/common-pipemenu"
+
+if [ -f "$COMMON_FUNCTIONS" ]; then
+    . "${COMMON_FUNCTIONS}" 2> /dev/null
+else
+    echo $"Error: Failed to locate $COMMON_FUNCTIONS" >&2
+    exit 1
+fi
+
+# path to your "recent files" script, if you want to incorporate it:
+recent_script=$HOME/.config/openbox/scripts/recent-pipemenu
+# Command to open folders at "Browse here..." - any file manager
+#open_folder_cmd=pcmanfm
+# Default command to open files with - others might be xdg-open, gnome-open, pcmanfm...
+default_open_cmd=xdg-open  # exo-open comes with thunar
+# Text editor of choice
+text_editor=~/bin/myedit
+
+# function to open files with default open command, or alternative command for certain files
+# - add other conditions to choice
+function open_file() {
+    [ "${1##*.}" == "desktop" ] && exec "/usr/bin/dex" "$1";    # comment out this line if you don't want to edit .desktop files instead of executing
+    [ -x "$1" ] && exec "$1" ;    # uncomment this and comment out previous line to run executables in terminal instead of editing
+    exec "$default_open_cmd" "$1" ;    # use default open command if above conditions not satisfied
+}
+
+function topen_file() {
+    exec "/usr/bin/x-terminal-emulator" "-e" "$1" ; 
+}
+
+# function to edit files with default text editor
+function edit_file() {
+    exec "$text_editor" "$1" ;    # comment out this line if you don't want to edit .desktop files instead of executing
+}
+
+function doMenu() {
+    local wpath="${*:-$HOME}"
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) doMenu_en $wpath ;; # Deutsch
+        da_* ) doMenu_en $wpath ;; # Danish
+        es_* ) doMenu_en $wpath ;; # Española
+        fr_* ) doMenu_en $wpath ;; # Français
+        id_* ) doMenu_en $wpath ;; # Bahasa Indonesia
+        it_* ) doMenu_en $wpath ;; # Italian
+        lv_* ) doMenu_en $wpath ;; # Latvian
+        pl_* ) doMenu_en $wpath ;; # Polish
+        pt_* ) doMenu_pt $wpath ;; # Português
+        ru_* ) doMenu_en $wpath ;; # Russian
+        * ) doMenu_en $wpath ;; # Default to English
+    esac
+}
+
+function doMenu_en() {
+    local wpath="$*"  
+    local dpath=""
+    dpath=$(esc_enc $wpath)
+    menuBegin
+    doMenu_files "en" "$wpath"
+    menuEnd
+}
+
+function doMenu_pt() {
+    local wpath="$*"  
+    local dpath=""
+    dpath=$(esc_enc $wpath)
+    menuBegin
+    doMenu_files "pt" "$wpath"
+    menuEnd
+}
+
+function doMenu_files() {
+    [ -z "$1" ] && return 0
+    local llang="$1"
+    shift
+    local path="$1"
+    local dpath=$(esc_enc $path)
+    local shortname="${path##*/}"
+    local dname=$(esc_enc $shortname)
+    if [ "$llang" == "pt" ]; then
+        menuItem "Editar ${dname}" "<![CDATA[$0 --edit \"${dpath}\"]]>";
+        menuItem "Rodar ${dname}" "<![CDATA[$0 --open \"${dpath}\"]]>";
+        menuItem "Terminal ${dname}" "<![CDATA[$0 --topen \"${dpath}\"]]>";
+    else
+        menuItem "Edit ${dname}" "<![CDATA[$0 --edit \"${dpath}\"]]>";
+        menuItem "Run ${dname}" "<![CDATA[$0 --open \"${dpath}\"]]>";
+        menuItem "Terminal ${dname}" "<![CDATA[$0 --topen \"${dpath}\"]]>";
+    fi
+}
+
+#######################################################################
+# By default, this script will display directories separately, before files.
+# To change this behaviour, see NOTE1, NOTE2 and NOTE3 below, near end of page.
+#######################################################################
+
+case $1 in
+    # if "--edit" option is sent as $1, edit file ($2) instead of generating menu
+    --edit)
+        edit_file "$2"
+        # in case exec command fails
+        echo "$0 : failed to edit $2" >&2
+        exit;;    
+    # if "--open" option is sent as $1, open file ($2) instead of generating menu
+    --open)
+        open_file "$2"
+        # in case exec command fails
+        echo "$0 : failed to open $2" >&2
+        exit;;    
+    # if "--open" option is sent as $1, open file ($2) instead of generating menu
+    --topen)
+        topen_file "$2"
+        # in case exec command fails
+        echo "$0 : failed to open $2" >&2
+        exit;;    
+    # if "--recent" option is sent, incorporate "recent files" menu
+    --recent)
+        doMenuRecent
+        exit;;
+esac
+
+#echo "$1" 
+
+doMenu "$*"
+
+exit

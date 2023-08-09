@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+[ $# -eq 0 ] && exit 1
+
+hash yad 2> /dev/null || { echo "yad is required" && exit 1; }
+
+yad --fixed --undecorated --on-top --sticky --center --no-escape --image-on-top --width=400 \
+    --image="gtk-dialog-question" --title="Confirmation" \
+    --text='<span font="Sans bold 12">Do you want to delete entries?</span>' \
+    --button="No":1 --button="Yes":2
+
+if [ $? -ne 2 ]; then
+    exit 0
+fi
+
+old_IFS=$IFS
+IFS=$'\n'
+
+if [ -z "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS" ]; then
+    NAUTILUS_SCRIPT_SELECTED_FILE_PATHS=$*
+fi
+
+# Loop through the list (from either Nautilus or the command line)
+for FullName in $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS; do
+    if file $FullName | grep -q "directory"; then
+        rm -rf ${FullName}
+    else
+        gio remove ${FullName}
+    fi
+done
+
+IFS=$old_IFS

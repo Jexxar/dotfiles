@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Action
+Name=Delete
+Tooltip=Remove files or directories
+ToolbarLabel=Delete
+Icon=remove
+Profiles=profile-zero;
+TargetToolbar=true
+
+[X-Action-Profile profile-zero]
+MimeTypes=all/all;
+Schemes=file;
+Exec=/home/usuario/bin/action_remove %F

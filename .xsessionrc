@@ -1,0 +1,4 @@
+### Exports for session ###
+if [ -f ~/.profile ]; then
+    . ~/.profile
+fi
