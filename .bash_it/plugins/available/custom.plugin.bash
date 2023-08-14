@@ -197,6 +197,15 @@ function la(){
     LC_ALL=C find "$_nm" -maxdepth 1 -xdev -print0 | /bin/sed 's/\.\///g' | \
             xargs -0 ls -dlavhF  --color=auto --time-style=long-iso --group-directories-first;
 }
+
+#==============================================
+# hstrnotiocsti - hstr helper function
+#==============================================
+function hstrnotiocsti(){
+#    { READLINE_LINE="$( { </dev/tty hstr ${READLINE_LINE}; } 2>&1 1>&3 3>&- )"; } 3>&1;
+    { READLINE_LINE="$( { </dev/tty hstr "$*"; } 2>&1 1>&3 3>&- )"; } 3>&1;
+    READLINE_POINT=${#READLINE_LINE}
+}
  
 #==============================================
 # undup_bash_history - Remove all duplicated lines from bash_history file.
@@ -215,28 +224,45 @@ function undup_bash_history(){
 # qh - Search bash history for a command.
 #
 # Examples:
-#    qh ls 
+#    qh ls
 #
 # @param {String} $*  search string
 #==============================================
 function qh(){
     local _cmd="";
     local _parm="$*"
-    if [ -z "$HISTFILE" ]; then 
+    if [ -z "$HISTFILE" ]; then
         export HISTFILE="$HOME/.bash_history"
     fi
-    if hash fzy > /dev/null 2>&1 ; then
+    if hash hstrnotiocsti > /dev/null 2>&1 ; then
+        hstrnotiocsti "$*"
+        if [ -n "$READLINE_LINE" ]; then
+            _cmd="$READLINE_LINE"
+            unset READLINE_LINE
+            eval "$_cmd"
+        fi
+    elif hash fzy > /dev/null 2>&1 ; then
         _cmd=$(grep "$*" "$HISTFILE" | fzy)
         [ -n "$_cmd" ] && eval "$_cmd"
     elif hash fzf > /dev/null 2>&1 ; then
         _cmd=$(grep "$*" "$HISTFILE" | fzf)
         [ -n "$_cmd" ] && eval "$_cmd"
-    elif hash pick > /dev/null 2>&1 ; then
-        _cmd=$(grep "$*" "$HISTFILE" | pick)
-        [ -n "$_cmd" ] && eval "$_cmd"
     elif hash hstr > /dev/null 2>&1 ; then
         hstr "$*"
-    fi 
+    fi
+}
+
+#==============================================
+# Make sure "view" as-is works when stdin is not a terminal and prevent the
+# normal ensuing keyboard input chaos.
+#==============================================
+function view {
+    local args=("$@");
+    if ! [ -t 0 ] && ! (($#)); then
+        echo 'Warning: Input is not from a terminal. Forcing "view -".';
+        args=('-');
+    fi;
+    command view "${args[@]}";
 }
 
 #==============================================

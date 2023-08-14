@@ -56,6 +56,7 @@ function do_exports() {
     export -f h24
     export -f hostname2ip
     export -f hosts_up
+    export -f hstrnotiocsti
     export -f httpdump
     export -f ifinfo
     export -f ip_inf

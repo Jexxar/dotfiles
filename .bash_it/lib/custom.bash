@@ -29,39 +29,57 @@ export HISTIGNORE="&:[ ]*:clear:exit:cls:ls:ll"
 export PROMPT_COMMAND="history -a; history -r"
 
 #===========================================
-# Add to History 
-#===========================================
-shopt -s histappend
-
+# Enable options:
 #===========================================
 # These two options are useful for debugging.
-#===========================================
 #set -o nounset
 #set -o xtrace
 
-#===========================================
-#
-#===========================================
 set -o notify
-set -o noclobber
 set -o ignoreeof
 
-#===========================================
-# Enable options:
-#===========================================
-shopt -s cdspell
-shopt -s cdable_vars
-shopt -s checkhash
-shopt -s checkwinsize
-shopt -s sourcepath
-shopt -s no_empty_cmd_completion
-shopt -s cmdhist
-shopt -s histappend histreedit histverify
+# Do not overwrite files when redirecting using ">".
+# Note that you can still override this with ">|".
+set -o noclobber
 
-#===========================================
+# When the command contains an invalid history operation (for instance when
+# using an unescaped "!" (I get that a lot in quick e-mails and commit
+# messages) or a failed substitution (e.g. "^foo^bar" when there was no "foo"
+# in the previous command line), do not throw away the command line, but let me
+# correct it.
+shopt -s histreedit;
+
+# append to the Bash history file, rather than overwriting it
+shopt -s histappend
+
+# review a command to make sure it's the one you expected and edit it
+shopt -s histverify
+
+# rezize the windows-size if needed
+shopt -s checkwinsize
+
+# check if the user isn't root
+if [ "$UID" != 0 ]; then
+  # case-insensitive globbing (used in pathname expansion)
+  shopt -s nocaseglob
+  # autocorrect typos in path names when using `cd`
+  shopt -s cdspell
+fi
+
+# Do not autocomplete when accidentally pressing Tab on an empty line. (It takes
+# forever and yields "Display all 15 gazillion possibilites?")
+shopt -s no_empty_cmd_completion;
+
 # Necessary for programmable completion.
-#===========================================
 shopt -s extglob
+
+shopt -s cdable_vars
+shopt -s autocd
+shopt -s globstar
+shopt -s checkhash
+shopt -s sourcepath
+shopt -s cmdhist
+
 
 #===========================================
 # Colors 

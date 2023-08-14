@@ -16,11 +16,32 @@
 uname -s | grep -q "_NT-" && export WINDOWS=1
 grep -q "Microsoft" /proc/version 2>/dev/null && export UBUNTU_ON_WINDOWS=1
 
-
 #===========================================
 # PATH settings
 #===========================================
 export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:/usr/local/sbin:$PATH"
+# remove duplicates from the path
+export PATH=`awk -F: '{for(i=1;i<=NF;i++){if(!($i in a)){a[$i];printf s$i;s=":"}}}'<<<$PATH`;
+
+#===========================================
+# Gtk3-nocsd settings
+#===========================================
+export GTK_CSD=0
+if hash locate 2> /dev/null; then
+    _nocsdpath="$(locate libgtk3-nocsd.so.0)"
+elif hash mlocate 2> /dev/null; then
+    _nocsdpath="$(mlocate libgtk3-nocsd.so.0)"
+elif [ -f /usr/lib/x86_64-linux-gnu/libgtk3-nocsd.so.0 ]; then
+    _nocsdpath="/usr/lib/x86_64-linux-gnu/libgtk3-nocsd.so.0"
+else
+    _nocsdpath=""
+fi
+[ $? -ne 0 ] && _nocsdpath=""
+if [ -n "$_nocsdpath" ]; then
+    export LD_PRELOAD=${_nocsdpath}
+    export STARTUP="env LD_PRELOAD=$_nocsdpath $STARTUP"
+fi
+unset _nocsdpath
 
 #===========================================
 # Export my defaults and create XDG vars if not
@@ -68,5 +89,3 @@ hash nano 2> /dev/null && export EDITOR="nano"
 # workaround for some stubborn distros
 #==============================================
 export PSTUBBORN="N"
-
-

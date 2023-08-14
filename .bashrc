@@ -2,10 +2,12 @@
 
 #==============================================
 # Force loading .profile in non interative shell
+# If not running interactively: exit immediately.
+# Note that 'return' works because the file is sourced, not executed.
 #==============================================
-if [[ ! $- == *i* ]]; then
+if [[ $- != *i* ]] || [ -z "$PS1" ]; then
     [ -f ~/.profile ] && . ~/.profile
-    return
+    return 0
 fi
 
 #==============================================
