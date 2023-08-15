@@ -184,19 +184,21 @@
                     <a class="bookmark" href="https://translate.google.com/" target="_blank" rel="noopener noreferrer">Translate</a>
                     <a class="bookmark" href="https://github.com/" target="_blank" rel="noopener noreferrer">Github</a>
                     <a class="bookmark" href="http://dotshare.it" target="_blank" rel="noopener noreferrer">Dotshare.It</a>
-                    <a class="bookmark" href="http://17.0.0.1/main.html" target="_blank" rel="noopener noreferrer">Router</a>
+                    <a class="bookmark" href="http://10.0.0.1/main.html" target="_blank" rel="noopener noreferrer">Router</a>
                 </div>
             </div>
             <div class="bookmark-set">
                 <div class="bookmark-title">Media</div>
                 <div class="bookmark-inner-container">
                     <a class="bookmark" href="https://www.youtube.com/feed/subscriptions" target="_blank" rel="noopener noreferrer">Youtube</a>
-                    <a class="bookmark" href="https://yayanimes.net/" target="_blank" rel="noopener noreferrer">Yay Animes</a>
-                    <a class="bookmark" href="https://animezeira.net/" target="_blank" rel="noopener noreferrer">Animezeira</a>
                     <a class="bookmark" href="https://www.anitube.biz/" target="_blank" rel="noopener noreferrer">Anitube</a>
                     <a class="bookmark" href="https://animeszone.net/" target="_blank" rel="noopener noreferrer">Animeszone</a>
+                    <a class="bookmark" href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a>
+                    <a class="bookmark" href="https://wallhaven.cc/" target="_blank" rel="noopener noreferrer">Wallhaven</a>
                     <a class="bookmark" href="https://www.readm.org/" target="_blank" rel="noopener noreferrer">Readm.org</a>
                     <a class="bookmark" href="https://www.mangaread.org/" target="_blank" rel="noopener noreferrer">MangaRead</a>
+                    <a class="bookmark" href="https://mangafire.to/home" target="_blank" rel="noopener noreferrer">MangaFire</a>
+                    <a class="bookmark" href="https://manhwafreak.com/" target="_blank" rel="noopener noreferrer">ManhwaFreak</a>
                     <a class="bookmark" href="https://netflix.com" target="_blank" rel="noopener noreferrer">Netflix</a>
                 </div>
             </div>
@@ -234,8 +236,6 @@
                     <a class="bookmark" href="https://mewe.com/group/57f8f6f0236a6e490f9a0a81" target="_blank" rel="noopener noreferrer">MeWe</a>
                     <a class="bookmark" href="https://fosstodon.org/web/getting-started" target="_blank" rel="noopener noreferrer">Fosstodon</a>
                     <a class="bookmark" href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-                    <a class="bookmark" href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a>
-                    <a class="bookmark" href="https://wallhaven.cc/" target="_blank" rel="noopener noreferrer">Wallhaven</a>
                     <a class="bookmark" href="https://plus.diolinux.com.br/" target="_blank" rel="noopener noreferrer">Dio Plus</a>
                     <a class="bookmark" href="http://vidadesuporte.com.br/" target="_blank" rel="noopener noreferrer">Suporte</a>
                     <a class="bookmark" href="https://naomesmo.com.br/" target="_blank" rel="noopener noreferrer">N Mesmo</a>
@@ -264,13 +264,14 @@
         function getTime() {
             let d = new Date()
             if (d.getTimezoneOffset() === 0) {
-                var date = new Date(d.getTime() - 180 * 60000)
+                var dte = new Date(d.getTime() - 180 * 60000)
             } else {
-                let date = new Date()
+                //let dte = new Date()
+                var dte = new Date()
             }
-            let min = date.getMinutes(),
-                sec = date.getSeconds(),
-                hour = date.getHours();
+            let min = dte.getMinutes(),
+                sec = dte.getSeconds(),
+                hour = dte.getHours();
 
             return  "" + 
                 (hour < 10 ? ("0" + hour) : hour) + ":" + 

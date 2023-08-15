@@ -102,6 +102,7 @@ function do_exports() {
     export -f upper
     export -f uptime_active
     export -f uptime_since
+    export -f view
     export -f wfcard
     export -f wiki
     export -f wttr

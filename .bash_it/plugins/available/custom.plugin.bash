@@ -253,15 +253,21 @@ function qh(){
 }
 
 #==============================================
-# Make sure "view" as-is works when stdin is not a terminal and prevent the
-# normal ensuing keyboard input chaos.
+# Make sure "view" works and prevent the normal ensuing keyboard input chaos.
 #==============================================
 function view {
+    if [ -p /dev/stdin ]; then 
+        local AS_FILE=$(mktemp)
+        cat /dev/stdin >| "$AS_FILE"
+        command view "$AS_FILE"
+        rm -f "$AS_FILE"
+        return 0
+    fi
+    if [ $# -eq 0 ]; then
+        echo "You must provide a file to view"
+        return 1
+    fi
     local args=("$@");
-    if ! [ -t 0 ] && ! (($#)); then
-        echo 'Warning: Input is not from a terminal. Forcing "view -".';
-        args=('-');
-    fi;
     command view "${args[@]}";
 }
 

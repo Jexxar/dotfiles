@@ -198,6 +198,31 @@ function qh() {
     fi 
 }
 
+function context() {
+    if [ -t 0 ];  then
+        if [ -t 1 ]; then
+            file $( readlink /proc/$$/fd/0 ) | grep -i "character special"
+            echo "no pipes"
+            echo "$@"
+            echo " "
+        else
+            echo "pipe out only"
+        fi
+    else
+        echo "$$"
+        readlink /proc/$$/fd/0 | grep -i "^pipe:"
+        if [ -t 1 ]; then
+            echo "pipe in only"
+            [ -p /dev/stdin ] && echo "dev/stdin is a pipe" && cat /dev/stdin
+            echo " "
+        else
+            echo "pipe in and out"
+            [ -p /dev/stdin ] && echo "dev/stdin is a pipe" && cat /dev/stdin
+            [ -p /dev/stout ] && echo "dev/stout is a pipe"
+            echo " "
+        fi
+    fi
+}
 
 function main() {
     #local OLD_IFS=$IFS
@@ -679,8 +704,9 @@ function main() {
     #uptime_active
     #psname "$@"
     #hosts_up
-    qh "$@"
+    #qh "$@"
     #_lsof
+    context "$@"
 }
 
 main "$@"
