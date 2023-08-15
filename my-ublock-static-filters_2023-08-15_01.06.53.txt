@@ -1,0 +1,104 @@
+*##+js(damoh-defuser)
+*##+js(adfly-defuser)
+*##+js(nobab)
+*##+js(nobab2)
+*##+js(nofab)
+*##+js(fingerprint2)
+*##+js(fingerprint3)
+*##+js(ampproject_v0)
+*##+js(nowebrtc)
+*##+js(no-floc)
+*##+js(bab-defuser)
+*##script:inject(bab-defuser.js)
+
+@@||*^$elemhide
+@@||*^$generichide
+
+||youtube.com/api/stats/ads?
+||youtube.com/player_204?
+||youtube.com/api/stats/qoe?
+||youtube.com/api/stats/watchtime?
+||youtube.com/ptracking
+||youtube.com/csi_204?
+||youtube.com/annotations_
+
+! www.youtube.com###dialog
+! youtube.com##ytd-popup-container
+youtube.com##ytd-consent-bump-lightbox.style-scope
+www.youtube.com##.opened
+
+www.google.com###lb
+www.google.com##:root:style(overflow-y: visible !important;)
+
+#@%#//scriptlet('ubo-acis.js', 'String.fromCharCode')
+@@||animeshouse.info^$generichide
+animeshouse.info##script:inject(bab-defuser.js)
+@@||browserleaks.com^$generichide
+browserleaks.com##script:inject(bab-defuser.js)
+@@||browserleaks.com^$script
+
+facebook.com##a[href^="https://l.facebook.com/l.php?"]
+facebook.com###pagelet_ego_pane_w
+facebook.com###pagelet_ego_pane
+facebook.com###pagelet_dock
+facebook.com##._52kx
+facebook.com##._52ky
+facebook.com##._5mym
+facebook.com###u_ps_0_0_1
+facebook.com##._1ifo
+facebook.com###jsc_c_f7
+
+! 12/7/2020, 2:53:20 PM https://www.facebook.com/?sk=h_chr
+www.facebook.com###mount_0_0 > div > div:nth-of-type(1) > .du4w35lb.l9j0dhe7.rq0escxv > .du4w35lb.l9j0dhe7.rq0escxv > .j83agx80.cbu4d94t.l9j0dhe7.du4w35lb > .j83agx80.cbu4d94t.jgljxmt5.l9j0dhe7.be9z9djy > .du4w35lb.l9j0dhe7.dp1hu0rb.d6urw2fd.cbu4d94t.j83agx80 > .p01isnhg.dp1hu0rb.btwxx1t3.owycx6da.gs1a9yip.taijpn5t.pfnyh3mw.j83agx80.du4w35lb.l9j0dhe7.rq0escxv > .msh19ytf.dp1hu0rb.ho3ac9xt.btwxx1t3.owycx6da.ll8tlv6m.i1fnvgqd.hpfvmrgz.buofh1pr.rj1gh0hx.g5gj957u.j83agx80.du4w35lb.l9j0dhe7.rq0escxv > .czl6b2yu.stjgntxs.ni8dbmo4.qbu88020.o387gat7.hlyrhctz.fer614ym.dp1hu0rb.rirtxc74.pad24vr5.du4w35lb.lpgh02oy.rq0escxv > .dp1hu0rb.qowsmv63.cbu4d94t.j83agx80.du4w35lb.l9j0dhe7.rq0escxv > .k4xni2cv.c3g1iek1.tgvbjcpo.g5gj957u.buofh1pr.d8ncny3e.du4w35lb.l9j0dhe7.eg9m0zos.ni8dbmo4.cbu4d94t.j83agx80.gvuykj2m.k7i0oixp.rpm2j7zs.o8kakjsu > .l9j0dhe7.buofh1pr.cbu4d94t.j83agx80 > .cxgpxx05 > div:nth-of-type(1) > div > .l9j0dhe7 > .aodizinl.e5nlhep0.pfnyh3mw.cbu4d94t.j83agx80.du4w35lb.l9j0dhe7.rq0escxv > .tgvbjcpo.buofh1pr.cbu4d94t.j83agx80.du4w35lb.l9j0dhe7.rq0escxv > .dati1w0a.hv4rvrfc.d2edcug0.pfnyh3mw.cbu4d94t.j83agx80.du4w35lb.l9j0dhe7.rq0escxv > .irj2b8pg.ew0dbk1b.cbu4d94t.j83agx80 > .knvmm38d.qzhwtbm6 > .hpfvmrgz.d2edcug0.lzcic4wl.p1ri9a11.l94mrbxd.gmql0nx0 > .hzawbc8m.m9osqain.lrazzd5p.g1cxx5fr.a5q79mjw.iv3no6db.c8b282yb.mau55g9w.fe6kdd0r.d3f4x2em.aigsh9s9.nxhoafnm.keod5gw0.a8c37x1j.rrkovp55.c1et5uql.qv66sw1b.hpfvmrgz.d2edcug0 > .ojkyduve.l9j0dhe7.stjgntxs.ni8dbmo4.a8c37x1j
+
+www.facebook.com##div[id^=hyperfeed_story_id_]:has(a[role^=button]:has(> span:has-text(/S/i):has-text(p):has-text(o):has-text(n):has-text(r):has-text(e):has-text(d):not(:has-text(0)):not(:has-text(1)):not(:has-text(2)):not(:has-text(3)):not(:has-text(4)):not(:has-text(5)):not(:has-text(6)):not(:has-text(7)):not(:has-text(8)):not(:has-text(9))))
+www.facebook.com##div[id^=hyperfeed_story_id_]:has(a[role^=button]:has(> span:has-text(/P/i):has-text(a):has-text(t):has-text(r):has-text(o):has-text(c):has-text(i):not(:has-text(0)):not(:has-text(1)):not(:has-text(2)):not(:has-text(3)):not(:has-text(4)):not(:has-text(5)):not(:has-text(6)):not(:has-text(7)):not(:has-text(8)):not(:has-text(9))))
+
+facebook.com#?##div[id^=hyperfeed_story_id_]:has(a[role^=button]:has(> span:has-text(/S/i):has-text(p):has-text(o):has-text(n):has-text(r):has-text(e):has-text(d):not(:has-text(0)):not(:has-text(1)):not(:has-text(2)):not(:has-text(3)):not(:has-text(4)):not(:has-text(5)):not(:has-text(6)):not(:has-text(7)):not(:has-text(8)):not(:has-text(9))))
+facebook.com#?##div[id^="hyperfeed_story_id_"]:not(div:contains(/^[class="timestampContent"]):not(span:contains(/^m$/)):not(span:contains(/^M$/)):not(span:contains(/^h$/)):not(span:contains(/^:$/)):not(span:contains(/^J$/)):has(span:contains(/^S$/))
+facebook.com#?##div[id^="hyperfeed_story_id_"]:has(div[data-testid="testid-story-subtilte"] > span[data-ft] > span > span)
+facebook.com#?##.userContentWrapper :has([id^="feed_subtitle_"]:has-text(Sp))
+facebook.com#?##div[id^=hyperfeed_story_id_]:has(span[data-ft="{\"tn\":\"j\"}"])
+facebook.com#?##.pagelet-group .pagelet:has(a:has-text(Sponsored))
+facebook.com#?##.pagelet-group .pagelet:has(a:has-text(Create ad))
+facebook.com#,facebookcorewwwi.onion#@#div.userContentWrapper:if-not(span>div a[role="link"]:matches-css(display: none))
+facebook.com#?#[id^=hyperfeed_story_id_]:-abp-has(a[href*="client_token"])
+facebook.com#?#[id^=hyperfeed_story_id_]:-abp-has(a[href*="utm_campaign"])
+facebook.com#?#[id^=hyperfeed_story_id_]:-abp-has([id^=u_fetchstream_2_1]:-abp-contains(Sp))
+facebook.com#?#@#body > .AdBox.Ad.advert { display:block!important; }
+facebook.com#?##[href^="/ads/"]
+facebook.com#?#[id^=hyperfeed_story_id_]:-abp-has(a[href*="client_token"])
+facebook.com#?#[id^=hyperfeed_story_id_]:-abp-has(a[href*="utm_campaign"])
+facebook.com#?##substream_1:-abp-has([id^="feed_subtitle_"]:-abp-contains(Sp))
+facebook.com#?##.fbUserStory:-abp-contains(Pessoas que)
+facebook.com#?##.userContentWrapper:-abp-contains(Pessoas que)
+facebook.com#?##.ego_section:-abp-contains(Pessoas que)
+facebook.com#?##div[id^=hyperfeed_story_id_]:-abp-has(a[role^=button]:-abp-has(> span:-abp-has([data-content="S"]):not(:-abp-has([data-content="1"])):not(:-abp-has([data-content="2"])):not(:-abp-has([data-content="3"])):not(:-abp-has([data-content="4"])):not(:-abp-has([data-content="5"])):not(:-abp-has([data-content="6"])):not(:-abp-has([data-content="7"])):not(:-abp-has([data-content="8"])):not(:-abp-has([data-content="9"])):not(:-abp-has([data-content="w"]))))
+facebook.com#?###pagelet_ego_pane
+facebook.com#?@@||scontent.xx.fbcdn.net/hads-ak-prn2/*.png,$domain=facebook.com
+facebook.com#?#div[id^="hyperfeed_story_id_"]:-abp-contains(Sponsored)
+facebook.com#?#div[id^="hyperfeed_story_id_"]:-abp-has(a:-abp-contains(Sponsored))
+facebook.com#?#div[id^="hyperfeed_story_id_"]:-abp-contains(Patrocinado)
+facebook.com#?#div[id^="hyperfeed_story_id_"]:-abp-has(a:-abp-contains(Patrocinado)
+
+! 5/8/2020, 10:36:35 AM https://www.facebook.com/
+www.facebook.com###u_jsonp_15_1r > .userContentWrapper._5pcr > ._q7o._1w_m._1dwg
+facebook.com#?#div[id^="sponsored_data"
+
+! 2021-07-30 https://gitlab.com
+@@||gitlab.com/assets/touch-icon-ipad-retina-8ebe416f5313483d9c1bc772b5bbe03ecad52a54eba443e5215a22caed2a16a2.png$image,1p
+@@||gitlab.com/uploads/-/system/project/avatar/12875785/proxy.duckduckgo.com.png?width=32$1p
+@@||gitlab.com/assets/webpack/pages.projects.issues.show.571212b2.chunk.js$script,1p
+
+! 2021-11-03 https://www.readm.org
+||app.podium-audio.com/$subdocument
+
+! 2022-03-07 https://yayanimes.net
+@@||arc.io/widget.min.js$script,domain=yayanimes.net
+
+! 2023-07-22 https://github.com
+@@||github.githubassets.com/assets/$script,domain=github.com
+
+! 2023-07-22 https://www.mangaread.org
+@@||www.mangaread.org/wp-content/uploads/$image,domain=www.mangaread.org
+
