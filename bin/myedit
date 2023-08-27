@@ -7,7 +7,7 @@ fi
 
 function _fX(){
     # list by priority from the left to the right
-    local Xl=('subl' 'subl3' 'subl4' 'sublime-text' 'geany' 'xed' 'gedit' 'pluma' 'kate' 'kwrite' 'medit' 'leafpad' 'atom' 'vscode' 'eclipse' 'brackets' 'gvim')
+    local Xl=('subl' 'subl3' 'subl4' 'sublime-text' 'geany' 'xed' 'gedit' 'pluma' 'kate' 'kwrite' 'medit' 'leafpad' 'mousepad' 'vscode' 'eclipse' 'brackets' 'gvim')
     local r=""
     for i in "${Xl[@]}"; do
         r=$(command -v "${i}")
@@ -31,10 +31,10 @@ function _fnoX(){
 }
 
 function main() {
-    [ -z "$1" ] && log "No target informed" && return 1
+    [ -z "$1" ] && echo "No target informed" && return 1
     local edt=""
     if is_running_X ; then
-        if [ "$2" = "cli" ]; then
+        if [ "$2" == "cli" ]; then
             edt="$(_fnoX)"
             if [ -n "$edt" ]; then
                 x-terminal-emulator -e $edt "$1" &
@@ -55,7 +55,7 @@ function main() {
             return 0
         fi
     fi
-    [ -z "$edt" ] && log "no editors found"
+    [ -z "$edt" ] && echo "No suitable editors found"
     return 0
 }
 
