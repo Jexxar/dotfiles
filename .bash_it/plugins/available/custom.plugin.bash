@@ -477,7 +477,7 @@ function du_short(){
 #==============================================
 function hosts_up(){
     local ip_local=$(ip -br -h -4 address | grep "UP" | awk '/UP/{print $3}' | sed -e 's/\/24//g')
-    local ip_neig=$(ip -br -h -4 neigh | awk '{print $1}')
+    local ip_neig=$(ip -br -h -4 neigh | grep -v "FAILED" | awk '{print $1}')
     echo -e "$ip_local\n$ip_neig" | sort
 }
 
