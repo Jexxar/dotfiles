@@ -20,11 +20,15 @@ grep -q "Microsoft" /proc/version 2>/dev/null && export UBUNTU_ON_WINDOWS=1
 # PATH settings
 #===========================================
 export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:/usr/local/sbin:$PATH"
+
 # remove duplicates from the path
-export PATH=`awk -F: '{for(i=1;i<=NF;i++){if(!($i in a)){a[$i];printf s$i;s=":"}}}'<<<$PATH`;
+if [[ -x /usr/bin/awk ]]; then 
+    export PATH=`echo "$PATH" | awk -F: '{for(i=1;i<=NF;i++){if(!($i in a)){a[$i];printf s$i;s=":"}}}'`;
+    #export PATH="$(echo "$PATH" | /usr/bin/awk 'BEGIN { RS=":"; } { sub(sprintf("%c$", 10), ""); if (A[$0]) {} else { A[$0]=1; printf(((NR==1) ?"" : ":") $0) }}')" ; 
+fi
 
 #===========================================
-# Gtk3-nocsd settings
+# Gtk3-nocsd workaround settings
 #===========================================
 export GTK_CSD=0
 if hash locate 2> /dev/null; then
@@ -38,14 +42,23 @@ else
 fi
 [ $? -ne 0 ] && _nocsdpath=""
 if [ -n "$_nocsdpath" ]; then
-    export LD_PRELOAD=${_nocsdpath}
-    export STARTUP="env LD_PRELOAD=$_nocsdpath $STARTUP"
+    echo $LD_PRELOAD | grep -q "libgtk3-nocsd\.so\.0"
+    if [ $? -ne 0 ]; then
+        export LD_PRELOAD=${_nocsdpath}
+    fi
+    echo $STARTUP | grep -q "libgtk3-nocsd\.so\.0"
+    if [ $? -ne 0 ]; then
+        export STARTUP="env LD_PRELOAD=$_nocsdpath $STARTUP"
+    fi
 fi
 unset _nocsdpath
 
 #===========================================
 # Export my defaults and create XDG vars if not
 #===========================================
+[ -z "$TERM" ] && TERM="xterm-256color"
+export GTK_OVERLAY_SCROLLING=0
+export MYPIPM_ICONS='n'
 export _JAVA_AWT_WM_NONREPARENTING=1
 export SDL_VIDEO_X11_DGAMOUSE=0
 export SWT_GTK3=0
@@ -63,7 +76,7 @@ export XDG_CONFIG_HOME="${HOME}/.config"
 [ -z "$XDG_CONFIG_DIRS" ] && export XDG_CONFIG_DIRS=/etc:/etc/xdg/xdg-openbox:/etc/xdg
 
 #===========================================
-# Force XDG dir locale based (/etc/xdg/user-dirs.conf not working)
+# Force XDG dir locale based (when /etc/xdg/user-dirs.conf not working)
 #===========================================
 if [ -f $XDG_CONFIG_HOME/user-dirs.dirs ]; then
     if hash xdg-user-dir 2> /dev/null; then
@@ -83,7 +96,7 @@ fi
 #===========================================
 hash nano 2> /dev/null && export EDITOR="nano"
 [ -z "$EDITOR" ] && { hash micro 2> /dev/null && export EDITOR="micro"; }
-[ -z "$EDITOR" ] && { hash myedit 2> /dev/null && export EDITOR="myedit"; }
+[ -z "$VISUAL" ] && { hash myedit 2> /dev/null && export VISUAL="myedit"; }
 
 #==============================================
 # workaround for some stubborn distros
