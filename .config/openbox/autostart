@@ -1,68 +1,63 @@
 #!/usr/bin/env bash
-[ -z "$HOSTNAME" ] && export HOSTNAME="$(hostname)"
+[ -z "$HOSTNAME" ] && export HOSTNAME="$(hostname)" &
 
-# If the XDG_CURRENT_DESKTOP is empty then fill it with background DE namd (MATE, GNOME, KDE, XFCE, LxQt, LXDE,etc)
-[ -z "$XDG_CURRENT_DESKTOP" ] && export XDG_CURRENT_DESKTOP="MATE"
+# If the XDG_CURRENT_DESKTOP is empty then fill it
+[ -z "$XDG_CURRENT_DESKTOP" ] && export XDG_CURRENT_DESKTOP="Openbox" &
 
-# If the .xsession-errors file is not a symbolic link, delete it and create it as such
-if [ ! -h "$HOME/.xsession-errors" ]; then
-    /bin/rm -f "$HOME/.xsession-errors"
-    ln -s /dev/null "$HOME/.xsession-errors"
+if [ -x "$(command -v xset)" ]; then
+    # ==================================
+    # Turn on/off system beep.
+    # ==================================
+    xset b off &
+    
+    # ==================================
+    # Set keyboard settings: ms delay and cps (characters per second) repeat rate.
+    # Adjust the values according to your preferances.
+    # ==================================
+    #xset r rate 250 25 &
+    xset r rate 175 30 &
 fi
 
 # ==================================
-# My touchpad controller - auto=off in presence of mouse and on otherwise
+# Keyboard layout
 # ==================================
-sleep 1
-dstart "touchpadctl" "-a" &
+if [ -x "$(command -v setxkbmap)" ]; then
+    setxkbmap -model abnt2 -layout br -variant abnt2 &
+fi
 
 # ==================================
-# Seek for and launches a session dbus instance if necessary
+# If the .xsession-errors file is not a symbolic link, 
+# delete it and create it as such
 # ==================================
-if [ -z "$DBUS_SESSION_BUS_ADDRESS" ] && type dbus-launch >/dev/null; then
-    sleep 1.5
-    dstart "dbus-launch" "--sh-syntax" "--exit-with-session" &
+if [ ! -h "$HOME/.xsession-errors" ]; then
+    /bin/rm -f "$HOME/.xsession-errors" &
+    ln -s /dev/null "$HOME/.xsession-errors" &
+fi
+
+# ==================================
+# Sync session data dbus instance if necessary
+# ==================================
+if hash dbus-launch >/dev/null 2>&1; then
+    if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
+        logger "DBUS_SESSION_BUS_ADDRESS empty by default" &
+        export DBUS_SESSION_BUS_ADDRESS="$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/*/environ 2> /dev/null | tr '\0' '\n' | awk -F[:] 'NR==1 {print $2":"$3}' | sed -e 's/DBUS_SESSION_BUS_ADDRESS=//g')"
+        [ -z "$DBUS_SESSION_BUS_ADDRESS" ] && logger "DBUS_SESSION_BUS_ADDRESS still empty" && dstart "dbus-launch" "--sh-syntax" "--exit-with-session" &
+        sleep 0.3
+    fi
+    dbus-update-activation-environment DISPLAY XAUTHORITY --all &
+    systemctl --user import-environment PATH DISPLAY XAUTHORITY &
 fi
 
 # ==================================
 # XDG Update user dirs
 # ==================================
-sleep 1
 dstart "xdg-user-dirs-gtk-update" &
+sleep 0.3
 
 # ==================================
-# Xsettingsd
+## Disable touchpad while typing
 # ==================================
-if [ $(pgrep -lfc mate-settings-daemon) -eq 0 ] ; then
-    sleep 1
-    [ -f "$HOME/.xsettings" ] && dstart xsettingsd -c "$HOME/.xsettings" &
-fi
-
-# ==================================
-# Turn on/off system beep.
-# ==================================
-xset b off &
-
-# ==================================
-# Start bitmap Font
-# ==================================
-#xset +fp $HOME/.local/share/fonts/misc/ &
-
-# ==================================
-## Set keyboard settings - 250 ms delay and 25 cps (characters per second) repeat rate.
-## Adjust the values according to your preferances.
-# ==================================
-#xset r rate 250 25 &
-
-# ==================================
-## Add keyboard mapping.
-# ==================================
-#xmodmap -e keysym Insert = Multi_key &
-
-# ==================================
-## Disable CapsLock
-# ==================================
-#setxkbmap -option ctrl:nocaps &
+#dstart "syndaemon" "-i .5 -K -t -R -d" &
 
 # ==================================
 ### TOUCHPAD: comment out the next two entries if you don't have one
@@ -72,111 +67,110 @@ xset b off &
 #synclient VertEdgeScroll=1 HorizEdgeScroll=1 TapButton1=1 TapButton2=3 2>/dev/null &
 
 # ==================================
-## Disable touchpad while typing
-# ==================================
-#dstart "syndaemon" "-i .5 -K -t -R -d" &
-
-# ==================================
 # Start gnome-keyring-daemon
 # ==================================
-dstart "gnome-keyring-daemon" "--start --components=pkcs11,secrets,ssh" &
+#dstart "gnome-keyring-daemon" "--start --components=pkcs11,secrets,ssh" &
+#sleep 0.3
 
 # ==================================
 # Start polkit deamon
 # ==================================
-if [ -f /usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1 ]; then
-    dstart "/usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1" &
+if [ -f /usr/bin/lxpolkit ]; then
+    if [ $(pgrep -lfc lxpolkit) -eq 0 ]; then
+        dstart "/usr/bin/lxpolkit" &
+    fi
+elif [ -f /usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1 ]; then
+    if [ $(pgrep -lfc polkit-mate-authentication-agent-1) -eq 0 ]; then
+        dstart "/usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1" &
+    fi
 elif [ -f /usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1 ]; then
-    dstart "/usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1" &
+    if [ $(pgrep -lfc polkit-mate-authentication-agent-1) -eq 0 ]; then
+        dstart "/usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1" &
+    fi
 fi
 
 # ==================================
 # X compositor
 # ==================================
-if [ $(command -v picom) ]; then
+if hash picom >/dev/null 2>&1; then
     dstart "picom" "-b" "--config" "~/.config/picom/picom.conf" &
-else
+elif hash compton >/dev/null 2>&1; then
     dstart "compton" "-b --config ~/.config/compton.conf" &
+elif hash fastcompmgr >/dev/null 2>&1; then
+    dstart "fastcompmgr" "-o 0.4 -r 12 -c -C" &
 fi
-sleep 2
 
 # ==================================
-# Daemon status
+# Daemon status - Only starts if not running
 # ==================================
-# Start mate settings - (moved to xdg-autostart)
-# Start power manager deamon from mate - (moved to xdg-autostart)
-# Start sound applet from mate - (moved to xdg-autostart)
-# Start network manager applet - (moved to xdg-autostart)
+# Start mate settings - (xdg-autostart)
+# Start power manager deamon from mate - (xdg-autostart)
+# Start sound applet from mate - (xdg-autostart)
+# Start network manager applet - (xdg-autostart)
+# Xsettingsd as fallback
+# Volumeicon as fallback
 # ==================================
 if [ $(pgrep -lfc xflux) -eq 0 ] ; then
-    sleep 1
     dstart "xflux" "-l -25.43, -g -49.27" &
+#    sleep 0.3
 fi
 if [ $(pgrep -lfc pulseaudio) -eq 0 ] ; then
-    sleep 1
     dstart "pulseaudio" "--start --log-target=syslog" &
+#    sleep 0.3
+fi
+if [ $(pgrep -lfc notification-daemon) -eq 0 ] ; then
+    dstart "/usr/lib/notification-daemon/notification-daemon" " --display=$DISPLAY -r" &
+#    sleep 0.3
 fi
 if [ $(pgrep -lfc mate-settings-daemon) -eq 0 ] ; then
-    sleep 1
-    dstart "mate-settings-daemon ativo" &
+    dstart "mate-settings-daemon" &
+    sleep 0.3
 fi
-if [ $(pgrep -lfc mate-power-manager) -eq 0 ] ; then
-    sleep 1
+if [ $(pgrep -lfc mate-settings-daemon) -eq 0 ] && [ $(pgrep -lfc xsettingsd) -eq 0 ]; then
+    if hash xsettingsd >/dev/null 2>&1; then
+        [ -f "$HOME/.xsettings" ] && dstart xsettingsd -c "$HOME/.xsettings" &
+#        sleep 0.3
+    fi
+fi
+if [ $(pgrep -lfc mate-power-manager) -eq 0 ]; then
     dstart "mate-power-manager" &
+#    sleep 0.3
 fi
-if [ $(pgrep -lfc mate-volume-control-applet) -eq 0 ] ; then
-    sleep 1
+if [ $(pgrep -lfc mate-volume-control-applet) -eq 0 ]; then
     dstart "mate-volume-control-applet" &
+#    sleep 0.3
 fi
-if [ $(pgrep -lfc volumeicon) -eq 0 ] && [ $(pgrep -lfc mate-volume-control-applet) -eq 0 ] ; then
-    sleep 1
+if [ $(pgrep -lfc volumeicon) -eq 0 ] && [ $(pgrep -lfc mate-volume-control-applet) -eq 0 ]; then
     dstart "volumeicon" &
+#    sleep 0.3
 fi
 if [ $(pgrep -lfc nm-applet) -eq 0 ] ; then
-    sleep 1
     dstart "nm-applet" &
+    sleep 0.3
 fi
-if [ $(pgrep -lfc wicd) -eq 0 ] && [ $(pgrep -lfc nm-applet) -eq 0 ]; then
-    sleep 1
-    dstart "wicd" &
-fi
-
-# ==================================
-# My touchpad controller - auto=off in presence of mouse and on otherwise
-# ==================================
-sleep 0.5
-dstart "touchpadctl" "-a" &
 
 # ==================================
 # My settings to prevent screen blanking when demanded
 # ==================================
-sleep 0.3
-dstart "mylightson" "50" &
+dstart "mylightson" "150" &
 
 # ==================================
 # My wallpaper changer
 # ==================================
-sleep 0.3
 dstart "mywallchng" &
 
 # ==================================
 # Orcsome WM_NET_ Window customizing
 # ==================================
-sleep 1
 orcsome -c ~/.config/orcsome/rc.py &
-
-# ==================================
-# Start Tint2 panel
-# ==================================
-sleep 1
-dstart "tint2" &
 
 # ==================================
 # Sound global volume at VOLUME
 # ==================================
-OB_VOLUME='50%'
-for OB_SINK in $(pacmd list-sinks | grep 'index:' | cut -b12-); do
-    pactl set-sink-volume $OB_SINK $OB_VOLUME
-done
+amixer -D pulse sset Master 55%,55% &
 
-unset OB_VOLUME OB_SINK &
+# ==================================
+# Start Tint2 panel
+# ==================================
+dstart "tint2" &
+

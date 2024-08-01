@@ -114,6 +114,7 @@ our $SCHEMA = [
 
     {sep => undef},
 
+    {item => ['~/bin/wttrmsg', 'Clima', 'weather-overcast-symbolic']},
     #{pipe => ['~/.config/openbox/scripts/obbrowser.pl', 'Disk', 'drive-harddisk']},
 
     #{pipe => ['~/.config/openbox/scripts/ob-places.pl', 'Locais', 'drive-harddisk']}, 
@@ -223,6 +224,7 @@ our $SCHEMA = [
 
     {sep => undef},
 
+    {item => ['~/bin/wttrmsg', 'Weather', 'weather-overcast-symbolic']},
     #{pipe => ['~/.config/openbox/scripts/ob-places.pl', 'Places', 'drive-harddisk']}, 
     #{pipe => ['~/.config/openbox/scripts/cb-places-pipemenu', 'Places', 'drive-harddisk']}, 
     {pipe => ['~/.config/openbox/scripts/places-pipemenu', 'Places', 'drive-harddisk']}, 

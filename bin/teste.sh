@@ -5,6 +5,16 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
+function necho() { for a; do printf '%s\n' "$a"; done; }
+function zecho() { for a; do printf '%s\0' "$a"; done; }
+function qecho() { for a; do printf '\302\273%s\302\253 ' "$a"; done; printf '\n'; }
+function jecho() { printf '%s' "$@"; }
+function secho() {
+  [ "$#" -ge 1 ] && { printf '%s' "$1"; shift; }
+  for a; do printf ' %s' "$a"; done
+  printf '\n'
+}
+
 # Check if active window is matched with user settings.
 # This function covers the standard way to check apps in LO_hasDelayApp
 function runcheck(){
@@ -223,6 +233,15 @@ function context() {
         fi
     fi
 }
+
+function remove-lines() {
+  local remove_lines="$1"
+  local all_lines="$2"
+  local tmp_file="$(mktemp)"
+  grep -Fvxf "$remove_lines" "$all_lines" > "$tmp_file"
+  mv "$tmp_file" "$all_lines"
+}
+
 
 function main() {
     #local OLD_IFS=$IFS
@@ -706,7 +725,34 @@ function main() {
     #hosts_up
     #qh "$@"
     #_lsof
-    context "$@"
+    #necho "Necho World"
+    #echo "----"
+    #zecho "Zecho World"
+    #echo "----"
+    #qecho "Qecho World"
+    #echo "----"
+    #jecho "Jecho World"
+    #context "$@"
+    #local tcon=""
+    #local state=""
+    #local hostnm=""
+    #tcon=$(LC_ALL=C nmcli con show | grep -v "UUID" | awk '{print $1}')
+    #for i in $tcon; do
+    #    state=$(LC_ALL=C nmcli con show $i | awk '/GENERAL.STATE/ {print $2}')
+    #    [ -z "$state" ] && state="inactive"
+    #    echo "connection: $i - $state"
+    #    if [ "$state" == "activated" ]; then
+    #        hostnm=$(LC_ALL=C nmcli con show $i | grep -v "\-\-" | awk '/ipv4.dhcp-hostname/ {print $2}')
+    #        if  [ -z "$hostnm" ]; then
+    #            hostnm=$(hostname)
+    #            LC_ALL=C nmcli con modify $i ipv4.dhcp-hostname "$hostnm"
+    #            echo "   hostname modified to $hostnm"
+    #        else
+    #            echo "   has hostname $hostnm attached"
+    #        fi
+    #    fi
+    #done
+    remove-lines "$HOME/matchln.txt" "$HOME/tif.txt"
 }
 
 main "$@"

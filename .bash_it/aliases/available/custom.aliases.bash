@@ -73,10 +73,7 @@ fi
 #    alias fgrep='fgrep --color=auto'
 #fi
 if hash grep &> /dev/null; then
-    alias grep='grep --color=auto'
-    alias egrep='egrep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias grp='grep -v "grep" | grep --color=auto'
+    alias grp='grep -v "grep" | grep'
 fi
 
 # Common misspellings of bash-it

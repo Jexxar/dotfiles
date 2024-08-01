@@ -61,7 +61,7 @@ function doMenu_en(){
     menuItem "Repositories" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Repositories]]>" "system-software-install"
     menuItem "Resolution" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Resolution]]>" "mate-preferences-desktop-display"
     menuItem "Temperature" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Temperature]]>" "hwinfo"
-    menuItem "Weather" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Weather]]>" "weather-overcast-symbolic"
+#    menuItem "Weather" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Weather]]>" "weather-overcast-symbolic"
     menuEnd
 }
 
@@ -83,7 +83,7 @@ function doMenu_pt() {
     menuItem "$(esc_enc Repositórios)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Repositories]]>" "system-software-install"
     menuItem "$(esc_enc Resolução)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Resolution]]>" "mate-preferences-desktop-display"
     menuItem "$(esc_enc Temperatura)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Temperature]]>" "hwinfo"
-    menuItem "$(esc_enc Clima)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Weather]]>" "weather-overcast-symbolic"
+#    menuItem "$(esc_enc Clima)" "<![CDATA[$HOME/.config/openbox/scripts/inxi-pipemenu Weather]]>" "weather-overcast-symbolic"
     menuEnd
 }
 
@@ -183,7 +183,7 @@ function doTemperature() {
 
 function doWeather() {
     #inxi -xxx -W 55051 -c0 | ....
-    eval "inxi -xxx -W curitiba,brazil -c0 | $@"
+    eval "inxi -xxx -w curitiba,brazil -c0 | $@"
     return 0
 }
 
@@ -200,9 +200,9 @@ function outinrofi(){
 function main() {
     local cmd=${1:-menu}
     if checkfor "gxmessage"; then
-        local o="gxmessage -font \"Hack Nerd Font Mono 9\" -center -file - 2> /dev/null"
+        local o="gxmessage -font \"Hack Nerd Font Mono 9\" -center -borderless -sticky -ontop -file - 2> /dev/null"
     elif checkfor "yad"; then
-        local o="yad  --text-info --title \"Inxi information...\" --text-align=fill --center --width 900 --height 300 --fontname=\"Hack Nerd Font Mono 9\" 2> /dev/null"
+        local o="yad  --text-info --title \"Inxi information...\" --text-align=fill --fixed --undecorated --on-top --sticky --center --width 900 --height 300 --fontname=\"Hack Nerd Font Mono 9\" 2> /dev/null"
     elif checkfor "zenity"; then
         local o="zenity  --text-info --title \"Inxi information...\" --width 900 --height 300 --font \"Hack Nerd Font Mono 9\" 2> /dev/null"
     else
@@ -257,13 +257,12 @@ function main() {
         Temperature)
             doTemperature $o
         ;;
-        Weather)
-            doWeather $o
-        ;;
+#        Weather)
+#            doWeather $o
+#        ;;
         *)
             doMenu
     esac
 }
 
 main "$@"
-

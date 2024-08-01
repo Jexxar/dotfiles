@@ -19,6 +19,7 @@ grep -q "Microsoft" /proc/version 2>/dev/null && export UBUNTU_ON_WINDOWS=1
 #===========================================
 # PATH settings
 #===========================================
+export CDPATH=".:$HOME:$HOME/.config/:$HOME/.local"
 export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:/usr/local/sbin:$PATH"
 
 # remove duplicates from the path

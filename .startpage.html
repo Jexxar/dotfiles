@@ -55,17 +55,23 @@
       }
       
       #search-field {
-          width: 90%;
-          padding: .75em 1em;
+          width: 89%;
+          /* padding: .75em 1em; */
           box-sizing: border-box;
           background-color: #272727;
           border: solid 0px #272727;
           font-family: "RobotoMono Nerd Font";
-          font-size: 4rem;
+          font-size: 3rem;
           color: #f2f2f2;
           outline: none;
+          position: absolute;
+          z-index: 2;
+          top: 39.55%;
+          left: 2%;
+          /*
           border-radius: 3px;
           margin-bottom: 1em;
+          */
           text-align: center;
       }
       
@@ -144,31 +150,58 @@
       .bookmark:hover {
           color: #fff;
       }
-
       #button {
-          padding: 1em;
-          line-height: 12px;
-          width: 65px;
-          margin-top: 10px;
-          margin-right: 1px;
+          border-radius: 4px;
+          padding: 0px 15px;
+          width: auto;
+          height: auto;
           position:absolute;
+          z-index: 2;
           top:0;
-          right:0;
+          right: 2%;
+          text-align: center;
           font-family: "RobotoMono Nerd Font";
-          font-size: 1.1rem;
-          font-weight: 600;
+          font-size: 2.5rem;
           color: #fff;
           background-color: #272727;
-          display:block;
+          display:inline-block;
+      }
+      #button:hover {
+          background-color: #2A2E38;
+          color: #fff;
+          transition: 0.7s;
+      }
+      #button2 {
+          border-radius: 4px;
+          padding: 0px 15px;
+          width: auto;
+          height: auto;
+          position:absolute;
+          z-index: 2;
+          top: 39.55%;
+          right: 2%;
+          text-align: center;
+          font-family: "RobotoMono Nerd Font";
+          font-size: 3rem;
+          color: #fff;
+          background-color: #272727;
+          display:inline-block;
+      }
+      #button2:hover {
+          background-color: #2A2E38;
+          color: #fff;
+          transition: 0.7s;
       }
     </style>
     <link href="favicon.png" rel="shortcut icon" type="image/x-icon" />
 </head>
 <body>
     <div id="search">
-        <input id="search-field" type="text" name="search-field" onkeypress="return search(event)"/>
+        <input type="text" id="search-field" name="search-field" onkeypress="return keysearch(event)" autofocus />
+        <div id="button" onclick="hideSearch()">⟲</div>
+        <div id="button2" onclick="return clicksearch(event)">⌕</div>
     </div>
-    <!-- <div id="button" onclick="showSearch()">Search</div> -->
+    
     <div class="container">
         <div id="clock"></div>     
         <div class="row"><br><br></div>
@@ -190,14 +223,15 @@
                 <div class="bookmark-title">Media</div>
                 <div class="bookmark-inner-container">
                     <a class="bookmark" href="https://www.youtube.com/feed/subscriptions" target="_blank" rel="noopener noreferrer">Youtube</a>
-                    <a class="bookmark" href="https://www.anitube.biz/" target="_blank" rel="noopener noreferrer">Anitube</a>
-                    <a class="bookmark" href="https://animeszone.net/" target="_blank" rel="noopener noreferrer">Animeszone</a>
+                    <a class="bookmark" href="https://animixplay.st/" target="_blank" rel="noopener noreferrer">AnimixPlay</a>
+                    <a class="bookmark" href="https://animesuge.com.in/" target="_blank" rel="noopener noreferrer">AnimeSuge</a>
                     <a class="bookmark" href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a>
                     <a class="bookmark" href="https://wallhaven.cc/" target="_blank" rel="noopener noreferrer">Wallhaven</a>
-                    <a class="bookmark" href="https://www.readm.org/" target="_blank" rel="noopener noreferrer">Readm.org</a>
+                    <a class="bookmark" href="https://batotoo.com/" target="_blank" rel="noopener noreferrer">Bato.to</a>
+                    <a class="bookmark" href="https://kunmanga.to/" target="_blank" rel="noopener noreferrer">Kunmanga.to</a>
+                    <a class="bookmark" href="https://www.manganelo.cc/" target="_blank" rel="noopener noreferrer">Manganelo.cc</a>
                     <a class="bookmark" href="https://www.mangaread.org/" target="_blank" rel="noopener noreferrer">MangaRead</a>
                     <a class="bookmark" href="https://mangafire.to/home" target="_blank" rel="noopener noreferrer">MangaFire</a>
-                    <a class="bookmark" href="https://manhwafreak.com/" target="_blank" rel="noopener noreferrer">ManhwaFreak</a>
                 </div>
             </div>
             <div class="bookmark-set">
@@ -206,7 +240,7 @@
                     <a class="bookmark" href="https://www.cyberciti.biz/faq/" target="_blank" rel="noopener noreferrer">nixCraft</a>
                     <a class="bookmark" href="https://www.noobslab.com/" target="_blank" rel="noopener noreferrer">Noobslab</a>
                     <a class="bookmark" href="http://www.webupd8.org/" target="_blank" rel="noopener noreferrer">Webupd8</a>
-                    <a class="bookmark" href="https://ubuntuhandbook.org/" target="_blank" rel="noopener noreferrer">UbuntuHandbook</a>
+                    <a class="bookmark" href="https://www.golinuxcloud.com/" target="_blank" rel="noopener noreferrer">GoLinuxCloud</a>
                     <a class="bookmark" href="https://xanmod.org/" target="_blank" rel="noopener noreferrer">Xanmod</a>
                     <a class="bookmark" href="https://itsfoss.com/" target="_blank" rel="noopener noreferrer">It's FOSS</a>
                     <a class="bookmark" href="https://www.phoronix.com/scan.php?page=home" target="_blank" rel="noopener noreferrer">Phoronix</a>
@@ -244,17 +278,30 @@
             var e = document.getElementById(id);
             e.style.display = (e.style.display == 'block') ? 'none' : 'block';
         }
-        // Search on enter key event
+        // Show Search form
         function showSearch() {
             document.getElementById('search').style.display = 'flex';
             document.getElementById('search-field').focus();
         }
+        // Hide Search form
+        function hideSearch() {
+            document.getElementById('search-field').value = '';
+            document.getElementById('search-field').blur();
+            document.getElementById('search').style.display = 'none';
+        }
         // Search on enter key event
-        function search(e) {
+        function keysearch(e) {
             if (e.keyCode == 13) {
                 var val = document.getElementById("search-field").value;
+                //window.open(" https://lite.duckduckgo.com/lite/?q=" + val);
                 window.open("https://duckduckgo.com/?q=" + val);
             }
+        }
+        // Search on enter key event
+        function clicksearch(e) {
+            var val = document.getElementById("search-field").value;
+            //window.open(" https://lite.duckduckgo.com/lite/?q=" + val);
+            window.open("https://duckduckgo.com/?q=" + val);
         }
         // Get current time and format
         function getTime() {
@@ -286,13 +333,14 @@
 
         document.addEventListener("keydown", event => {
             if (event.keyCode == 32) {          // Spacebar code to open search
-                document.getElementById('search').style.display = 'flex';
-                document.getElementById('search-field').focus();
-            } else if (event.keyCode == 27) {   // Esc to close search
-                document.getElementById('search-field').value = '';
-                document.getElementById('search-field').blur();
-                document.getElementById('search').style.display = 'none';
-            }
+                showSearch();
+            } else {
+                if (event.keyCode == 27) {   // Esc to close search
+                    hideSearch();
+                } else if (event.ctrlKey && event.keyCode == 188) {   // Ctrl+, to close search
+                    hideSearch();
+                } 
+            } 
         });
     </script>
 </body>

@@ -40,13 +40,13 @@ mandatoryApps=('etcher' 'cura' 'wineserver' 'dbgl' 'openscad' 'alarm-clock-apple
 delayMediaApps=('vlc' 'celluloid' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
 
 # Names of programs which, when using sound server, downloading files or gaming, you wish to delay the xautolock.
-delayWebApps=('firefox' 'qutebrowser' 'librewolf' 'chrome' 'vivaldi' 'brave' 'chromium' 'epiphany' 'webkit' 'opera' 'iceweasel' 'surf' 'yandex_browser' 'luakit'  'midori' 'min ' 'falkon' 'slimjet' 'steam')
+delayWebApps=('firefox' 'qutebrowser' 'librewolf' 'chrome' 'vivaldi' 'brave' 'chromium' 'epiphany' 'webkit' 'opera' 'iceweasel' 'surf' 'yandex_browser' 'luakit' 'midori' 'min ' 'falkon' 'slimjet' 'steam')
 
 # Names of programs which, when using massive transfer, you wish to delay the xautolock.
 delayBusyApps=('pcmanfm' 'pcmanfm-qt' 'nautilus' 'dolphin' 'nemo' 'thunar' 'caja' 'mc' 'fff' 'nnn' 'ranger' 'vifm')
 
 # Names of programs which, when in fullscreen mode, you wish to delay the xautolock.
-delayDndApps=('sublime_text' 'geany' )
+delayDndApps=('sublime_text' 'geany' 'vmplayer' 'vmware-vmx')
 
 # Display outputs available. Run xrandr to show current monitor config.
 lstoutdev="$(xrandr | grep 'conn' | awk '{print $1}' | sed 's/\"//g' | sed 's/\n//g')"
