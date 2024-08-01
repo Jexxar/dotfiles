@@ -1,0 +1,364 @@
+@Games @friv: https://www.friv.com/
+
+@Games @warpportal: https://warpportal.com/
+
+@Games @callofwar: https://www.callofwar.com/
+
+@Games @deltawars: https://www.5.deltawars.com/
+
+@Games @flare-mod-noname: https://github.com/igorko/flare-mod-noname
+
+@Desktop @conky-variables: http://conky.sourceforge.net/variables.html
+
+@Desktop @makeuseof: http://www.makeuseof.com/
+
+@Desktop @maketecheasier: https://www.maketecheasier.com/
+
+@Desktop @eti0-dots: https://github.com/eti0/dots
+
+@Desktop @addy-dclxvi/Openbox-Theme-Collections: https://github.com/addy-dclxvi/Openbox-Theme-Collections
+
+@Desktop @sempreupdate: https://sempreupdate.com.br/
+
+@Desktop @openbox-patched: https://github.com/dylanaraps/openbox-patched
+
+@Desktop @firefox-gnome-theme: https://github.com/rafaelmardojai/firefox-gnome-theme
+
+@Desktop @vinceliuice: https://github.com/vinceliuice
+
+@Desktop @urftopdf: https://github.com/superna9999/urftopdf
+
+@Desktop @bashmanager: https://github.com/lingtalfi/bashmanager
+
+@Desktop @python-awesome: https://github.com/gautam1858/python-awesome
+
+@Desktop @microhobby: https://github.com/microhobby
+
+@Desktop @elenapan-dotfiles: https://github.com/elenapan/dotfiles
+
+@Desktop @Touchpad-Synaptics: https://wiki.archlinux.org/index.php/Touchpad_Synaptics
+
+@Desktop @pyllyukko-user-js: https://github.com/pyllyukko/user.js/
+
+@Desktop @noobslab: http://www.noobslab.com/
+
+@Desktop @myce: https://www.myce.com/
+
+@Desktop @addictivetips: https://www.addictivetips.com/
+
+@Desktop @pseudo-tiling-en-openbox: https://paraisolinux.com/pseudo-tiling-en-openbox/
+
+@Desktop @force-firefox-to-not-cache: https://superuser.com/questions/900315/is-there-any-way-i-can-force-firefox-to-not-cache-redirects-301-and-302
+
+@Desktop @beginners-guide-to-conky: https://www.lifewire.com/beginners-guide-to-conky-4043352
+
+@Desktop @terminal-sexy: http://terminal.sexy/
+
+@Desktop @dotshare-it: http://dotshare.it/
+
+@Desktop @softpanorama: http://www.softpanorama.org/index.shtml
+
+@Desktop @wizbright @waybox: https://github.com/wizbright/waybox
+
+@Desktop @galihx11: https://github.com/galihx11
+
+@Desktop @dinoglava: https://dglava.github.io/en/category/linux.html
+
+@Desktop @zakariaGatter @Gatter-Linux: https://github.com/zakariaGatter/Gatter_Linux
+
+@Dev @matt-might-ssh-hacks: http://matt.might.net/articles/ssh-hacks/
+
+@Dev @firejail-features: https://firejail.wordpress.com/features-3/
+
+@Dev @krypted-linux-bash-commands: http://krypted.com/commands/linux-bash-commands/
+
+@Dev @greenend-shellmistakes: http://www.greenend.org.uk/rjk/tech/shellmistakes.html
+
+@Dev @aticleworld: https://aticleworld.com/
+
+@Dev @zhar: http://zhar.net/
+
+@Dev @bash-scripting-tutorial: https://linuxconfig.org/bash-scripting-tutorial
+
+@Dev @ibm-knowledgecenter: https://www.ibm.com/support/knowledgecenter/pt-br/SSEPGG_10.1.0/com.ibm.db2.luw.qb.server.doc/doc/t0008238.html
+
+@Dev @devpy: http://www.devpy.me/
+
+@Dev @opengroup-onlinepubs: http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02
+
+@Dev @coldattic: http://coldattic.info/post/7/
+
+@Dev @aticleworld-flexible-array-member: https://aticleworld.com/flexible-array-member/
+
+@Dev @html5-tests-video: https://www.quirksmode.org/html5/tests/video.html
+
+@Dev @famzah: https://blog.famzah.net/
+
+@Dev @ldp-org-LDP-index: http://tldp.org/LDP/abs/html/index.html
+
+@Dev @dns-sd-org-ServiceTypes: http://www.dns-sd.org/ServiceTypes.html
+
+@Dev @networkinghowtos: http://www.networkinghowtos.com/howto/category/linux/
+
+@Dev @software-carpentry: https://software-carpentry.org/lessons/
+
+@Dev @tekdefense: http://www.tekdefense.com/
+
+@Dev @open-cobol: https://open-cobol.sourceforge.io/faq/
+
+@Dev @thehackernews: http://thehackernews.com/
+
+@Dev @ibcomputing: https://ibcomputing.com/
+
+@Dev @get-modular-python-functions: https://opensource.com/article/19/7/get-modular-python-functions
+
+@Dev @your-first-qt-program-in-ubuntu: https://vitux.com/compiling-your-first-qt-program-in-ubuntu/
+
+@Dev @bytefreaks: http://bytefreaks.net/tag/bash
+
+@Dev @devhints: https://devhints.io/bash
+
+@Dev @bash-hackers: https://wiki.bash-hackers.org/commands/classictest
+
+@Dev @bash-tute: https://www.panix.com/~elflord/unix/bash-tute.html
+
+@Dev @shelldorado: http://www.shelldorado.com/scripts/categories.html
+
+@Dev @BashPitfalls: https://mywiki.wooledge.org/BashPitfalls
+
+@Dev @BashFAQ: http://mywiki.wooledge.org/BashFAQ/098
+
+@Dev @shellhacks: https://www.shellhacks.com/
+
+@Dev @stackpointer: https://stackpointer.io/
+
+@Dev @Qt-Program-compile: https://vitux.com/compiling-your-first-qt-program-in-ubuntu/
+
+@Distros @externos: https://externos.io/download
+
+@Distros @nixos: https://nixos.org/
+
+@Distros @linux-kodachi: https://www.digi77.com/linux-kodachi/
+
+@Distros @funtoo: https://www.funtoo.org/Install#Live_CD
+
+@Distros @radix: http://rauldipeas.gitlab.io/radix/
+
+@Distros @redis: https://redis.io/
+
+@Distros @lynxos-rtos: http://www.lynx.com/products/real-time-operating-systems/lynxos-rtos/
+
+@Distros @crunchbangplusplus: https://crunchbangplusplus.org/
+
+@Distros @bunsenlabs: https://www.bunsenlabs.org/installation.html
+
+@Distros @namib-linux: https://www.linux.com/learn/intro-to-linux/2018/2/namib-linux-makes-arch-linux-dream-new-users
+
+@Distros @Arcolinux: https://erikdubois.be/
+
+@Distros @Archlabs: https://forum.archlabslinux.com/
+
+@Distros @Voidlinux: https://voidlinux.org/
+
+@TechLinux @tutorial-linux: http://www.hardware.com.br/comunidade/tutorial-linux/801698/
+
+@TechLinux @xanmod: https://xanmod.org/
+
+@TechLinux @install-owncloud: https://www.tecmint.com/install-owncloud-to-create-personal-storage-in-linux/
+
+@TechLinux @ameacas-para-o-linux: https://www.welivesecurity.com/br/2017/08/10/ameacas-para-o-linux/
+
+@TechLinux @ubuntu-cuda-opencv: http://www.dobitaobyte.com.br/ubuntu-cuda-opencv-e-docker-em-um-dell-gaming-7000/
+
+@TechLinux @linuxboot: https://www.linuxboot.org/
+
+@TechLinux @how-to-use-systemctl-digitalocean: https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units
+
+@TechLinux @easylinuxtipsproject: https://sites.google.com/site/easylinuxtipsproject/
+
+@TechLinux @omgubuntu: http://www.omgubuntu.co.uk/
+
+@TechLinux @preload-and-prelink: http://www.cesareriva.com/speed-up-your-gnulinux-machine-with-preload-and-prelink/
+
+@TechLinux @cavepopo-hd-free: http://cavepopo.hd.free.fr/wordpress/
+
+@TechLinux @: https://www.logicaldoc.com/features
+
+@TechLinux @maquina-virtual-para-uma-maquina-real: https://timoteobrasil.wordpress.com/2012/11/18/clonando-uma-maquina-virtual-para-uma-maquina-real/
+
+@TechLinux @forums-linuxmint: https://forums.linuxmint.com/viewtopic.php?t=114904
+
+@TechLinux @proyectosbeta: https://proyectosbeta.net/
+
+@TechLinux @cnblogs: http://www.cnblogs.com/lizunicon/p/3556943.html
+
+@TechLinux @compartilhando-impressoras-linux: http://www.hardware.com.br/dicas/compartilhando-impressoras-linux.html
+
+@TechLinux @remote-linux-desktop-sharing: https://www.tecmint.com/best-remote-linux-desktop-sharing-software/
+
+@TechLinux @inux-file-manager-top-10: https://www.ubuntupit.com/linux-file-manager-top-10-reviewed-for-linux-users/
+
+@TechLinux @imagem-dmg-em-iso: http://www.cleuber.com.br/index.php/2015/07/29/como-converter-uma-imagem-dmg-em-iso-no-ubuntu
+
+@TechLinux @graphicsmagick-image-processing: https://www.tecmint.com/graphicsmagick-image-processing-cli-tool-for-linux/
+
+@TechLinux @trinitytuts: https://trinitytuts.com/tips/category/ubuntu/
+
+@TechLinux @things-to-do-after-installing-arch-linux: https://itsfoss.com/things-to-do-after-installing-arch-linux/
+
+@TechLinux @davidpashley: http://www.davidpashley.com/
+
+@TechLinux @UEFI-and-BIOS-ubuntu: https://help.ubuntu.com/community/Installation/UEFI-and-BIOS/stable-alternative
+
+@TechLinux @linuxtechlab: http://linuxtechlab.com/
+
+@TechLinux @cyrill-gremaud: http://www.cyrill-gremaud.ch/
+
+@TechLinux @linuxmint-br: http://www.linuxmint.com.br
+
+@TechLinux @schhp: https://scholar.google.com.br/schhp?hl=pt-BRas_sdt=0
+
+@TechLinux @geekpills: http://www.geekpills.com/
+
+@TechLinux @darknetmatrix: https://darknetmatrix.wixsite.com/website
+
+@TechLinux @opengl-4: https://www.linuxbuzz.com.br/2019/01/novo-recurso-do-mesa-permitira-que-gpus-mais-antigas-tenham-suporte-para-opengl-4-0.html
+
+@TechLinux @log-drm-inte-i915: https://ubuntuforums.org/showthread.php?t=2382293
+
+@TechLinux @: https://aurelio.net/shell/dialog/#menuloop
+
+@TechLinux @etc-nologin: https://4fasters.com.br/2019/02/13/etc-nologin-qual-a-sua-funcao/
+
+@TechLinux @fullcirclemagazine: https://fullcirclemagazine.org/
+
+@TechLinux @tipsonubuntu: http://tipsonubuntu.com/
+
+@TechLinux @inux-tips-pipe-commands-status: https://www.tiger-computing.co.uk/linux-tips-pipe-commands-status/
+
+@TechLinux @find-return-true: https://www.linuxquestions.org/questions/programming-9/find-command-return-true-if-a-file-was-found-881400/
+
+@TechLinux @linuxcommand: http://linuxcommand.org/lc3_wss0150.php
+
+@TechLinux @network-manager-bug: https://bugs.launchpad.net/ubuntu/+source/network-manager/+bug/241796
+
+@TechLinux @thelinuxrain: https://www.thelinuxrain.com/
+
+@TechLinux @sergioprado: https://sergioprado.org/
+
+@TechLinux @unixcl: http://www.unixcl.com/
+
+@TechLinux @remove-duplicate-lines-preserving: https://iridakos.com/how-to/2019/05/16/remove-duplicate-lines-preserving-order-linux.html
+
+@TechLinux @landoflinux: https://landoflinux.com/index.html
+
+@TechLinux @toontricks: http://www.toontricks.com/
+
+@TechLinux @ryanstutorials: https://ryanstutorials.net/
+
+@TechLinux @libssh-security-flaw: https://null-byte.wonderhowto.com/how-to/locate-exploit-devices-vulnerable-libssh-security-flaw-0189883/
+
+@TechLinux @exploit-db: https://www.exploit-db.com/exploits/40136
+
+@TechLinux @kwort: http://kwort.org/
+
+@TechLinux @pkgs: https://pkgs.org/
+
+@TechLinux @suckless: https://suckless.org/
+
+@TechLinux @workaround: https://workaround.org/
+
+@TechLinux @geekprudens: https://geekprudens.net/tec/
+
+@TechLinux @andrwe: http://andrwe.org/
+
+@TechLinux @ZFS-NFS-shares: https://petermolnar.net/avahi-nfs-zfs/
+
+@TechLinux @Mycroft-AI: https://mycroft-ai.gitbook.io/docs/
+
+@TechLinux @Printer-setup: https://www.reallinuxuser.com/how-to-setup-your-printer-in-linux-mint/
+
+@TechLinux @LinuxBabe @Linux-Sysadmin: https://www.linuxbabe.com/
+
+@TechLinux @checkmk: https://checkmk.com/
+
+@TechLinux @Lucas-F-Costa: https://lucasfcosta.com/
+
+@TechLinux @rofi @rofi-Basic: https://blog.wizardsoftheweb.pro/rofi-basic-configuration/
+
+@TechLinux @rofi @ManKier: https://www.mankier.com/1/rofi#Theming
+
+@TechLinux @Sysctl: https://sysctl-explorer.net/
+
+@Others @whoer: https://whoer.net/
+
+@Others @malware-traffic-analysis: http://www.malware-traffic-analysis.net/
+
+@Others @ipleak: https://ipleak.net/
+
+@Others @opencv: https://opencv.org/
+
+@Others @hays: https://www.hays.com.br/
+
+@Others @amsmeteors @meteors: https://www.amsmeteors.org/
+
+@Others @penSCAD-Tips-and-Tricks: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Tips_and_Tricks
+
+@Others @OpenSCAD-Language: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/The_OpenSCAD_Language#Values_and_Data_Types
+
+@Others @temperatura-velocidade-pla-abs: https://filament2print.com/pt/blog/9_duvidas-temperatura-velocidade-pla-abs.html
+
+@Others @bed-leveling-tramming: https://www.youmagine.com/designs/bed-leveling-tramming-paralleling-test
+
+@Others @materiais-para-impressora-3d: https://3dlab.com.br/propriedades-dos-materiais-para-impressora-3d/
+
+@TechLinuxmaers @3d-model-from-image: http://3dprintingninja.blogspot.com/2014/12/how-to-make-3d-mode
+
+@Others @calculo-tornado-facil-1: https://imaginariopuro.wordpress.com/2017/12/28/calculo-tornado-facil-1/
+
+@Others @Anti-Corrosion @Corrosion-X: https://www.marinestore.com/corrosionx
+
+@Others @My-Business-Card-Runs-Linux: https://www.thirtythreeforty.net/posts/2019/12/my-business-card-runs-linux/
+
+@Social @Facebook: http://facebook.com/
+
+@Social @fosstodon: https://fosstodon.org/web/getting-started
+
+@Social @mewe: https://mewe.com/group/57f8f6f0236a6e490f9a0a81
+
+@Social @linkedin: https://www.linkedin.com/
+
+@Social @unsplash: https://unsplash.com/
+
+@Social @wallhaven: https://wallhaven.cc/
+
+@Social @vidadesuporte: http://vidadesuporte.com.br/
+
+@Social @naomesmo: https://naomesmo.com.br/
+
+@Social @Diolinux @Diolinux-Plus: https://plus.diolinux.com.br/
+
+5 @Social @Google-Scholar https://scholar.google.com.br/schhp?hl=pt-BR&as_sdt=0: https://scholar.google.com.br/schhp?hl=pt-BRas_sdt=0 5
+
+@Social @Cancer @Cancer-Diets: https://www.cancertutor.com/cancer-diet/
+
+@Social @Music: https://www.ouvirmusica.com.br/blues-pills/high-class-woman/#472143
+
+@Reddit @photoshopbattles: https://reddit.com/r/photoshopbattles
+
+@Reddit @openbox: https://reddit.com/r/openbox
+
+@Reddit @archlinux: https://reddit.com/r/archlinux
+
+@Reddit @unixporn: https://reddit.com/r/unixporn
+
+@Reddit @news: https://reddit.com/r/news
+
+@search-engine @duckduckgo: https://duckduckgo.com/?t=canonical
+
+@search-engine @startpage: https://www.startpage.com/en/
+
+@search-engine @google: https://www.google.com.br/
+
+@Dev @wooledge @mywiki: http://mywiki.wooledge.org/EnglishFrontPage
+
