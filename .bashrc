@@ -14,7 +14,7 @@ fi
 # Workaround for some stubborn distros who never loads .profile
 #==============================================
 [ -z "$PSTUBBORN" ] && . ~/.profile
-unset PSTUBBORN
+#unset PSTUBBORN
 
 #==============================================
 # <<< REMEMBER >>>
@@ -25,7 +25,6 @@ unset PSTUBBORN
 # 2) Shell options
 # 3) Basic exports
 # 4) Default colors
-# 5) Exported vars for the session
 #==============================================
 
 #===========================================
@@ -45,9 +44,9 @@ if [ $UID -ne "0" ]; then
 fi
 
 #==============================================
-# Source goto.sh to handle directories
+# Source mygoto to handle directories
 #==============================================
-[[ -s "${HOME}/bin/goto.sh" ]] && source ~/bin/goto.sh
+[[ -s "${HOME}/bin/mygoto" ]] && source ~/bin/mygoto
 
 #==============================================
 # Set this to false to turn off version control status checking within the prompt for all bash_it themes

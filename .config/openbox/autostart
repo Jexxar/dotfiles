@@ -92,12 +92,12 @@ fi
 # ==================================
 # X compositor
 # ==================================
-if hash picom >/dev/null 2>&1; then
+if hash fastcompmgr >/dev/null 2>&1; then
+    dstart "fastcompmgr" "-o 0.4 -r 12 -c -C" &
+elif hash picom >/dev/null 2>&1; then
     dstart "picom" "-b" "--config" "~/.config/picom/picom.conf" &
 elif hash compton >/dev/null 2>&1; then
     dstart "compton" "-b --config ~/.config/compton.conf" &
-elif hash fastcompmgr >/dev/null 2>&1; then
-    dstart "fastcompmgr" "-o 0.4 -r 12 -c -C" &
 fi
 
 # ==================================

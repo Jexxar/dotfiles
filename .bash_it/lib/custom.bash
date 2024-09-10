@@ -125,22 +125,3 @@ else
     export _cl_white="\e[1;37m";
     export _cl_yellow="\e[1;33m";
 fi
-
-#=============================================
-# TERMCAP Setup
-#=============================================
-# enter blinking mode - red
-export LESS_TERMCAP_mb=$(printf '\e[5;31m')
-# enter double-bright mode - bold, magenta
-export LESS_TERMCAP_md=$(printf '\e[1;35m')
-# turn off all appearance modes (mb, md, so, us)
-export LESS_TERMCAP_me=$(printf '\e[0m')
-# leave standout mode
-export LESS_TERMCAP_se=$(printf '\e[0m')
-# enter standout mode - green
-export LESS_TERMCAP_so=$(printf '\e[1;32m')
-# leave underline mode
-export LESS_TERMCAP_ue=$(printf '\e[0m')
-# enter underline mode - blue
-export LESS_TERMCAP_us=$(printf '\e[4;34m')
-

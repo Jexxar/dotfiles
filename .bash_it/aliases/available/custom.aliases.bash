@@ -1,6 +1,5 @@
 #
 # -binaryanomaly
-
 cite 'about-alias'
 about-alias 'Custom aliases for this installation.'
 
@@ -10,11 +9,20 @@ about-alias 'Custom aliases for this installation.'
 alias shrld='source ~/.bashrc'
 alias bshrld='source ~/.bashrc'
 alias cd..='cd ..'
-alias cp="cp -i"                          # confirm before overwriting something
-alias debug="set -o nounset; set -o xtrace"
-alias df='df -h'                          # human-readable sizes
-alias dir='dir -lah1FX --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
+
+# confirm before doing something
+alias cp="cp -i"
 alias rm='rm -i'
+
+alias debug="set -o nounset; set -o xtrace"
+# human-readable sizes
+alias df='df -h'
+alias dir='dir -lah1FX --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto'
+
+# systemd shortcuts
+alias sdfail='sudo systemctl --no-pager --failed; sudo journalctl --no-pager -b -p4'
+alias jo='journalctl --no-pager -b -g"fail|emerg|alert|crit|error|warn"'
+alias dr='$EXEC_AS_USER systemctl daemon-reload; systemctl daemon-reload --user'
 
 # disk utiliztion
 alias ducks='du -cks * | sort -rn | head'
@@ -33,7 +41,7 @@ alias nowdate='date +"%d-%m-%Y"'
 
 # 
 alias reswap='sudo swapoff -a && sudo swapon -a'
-alias wget='wget -c'
+alias wgec='wget -c'
 
 # shortcut for iptables and pass it via sudo
 # and display all rules

@@ -55,6 +55,35 @@ fi
 unset _nocsdpath
 
 #===========================================
+# Less TERMCAP Setup
+#===========================================
+# enter blinking mode - red
+# export LESS_TERMCAP_mb=$(printf '\e[5;31m')
+# enter double-bright mode - bold, magenta
+# export LESS_TERMCAP_md=$(printf '\e[1;35m')
+# turn off all appearance modes (mb, md, so, us)
+# export LESS_TERMCAP_me=$(printf '\e[0m')
+# leave standout mode
+# export LESS_TERMCAP_se=$(printf '\e[0m')
+# enter standout mode - green
+# export LESS_TERMCAP_so=$(printf '\e[1;32m')
+# leave underline mode
+# export LESS_TERMCAP_ue=$(printf '\e[0m')
+# enter underline mode - blue
+# export LESS_TERMCAP_us=$(printf '\e[4;34m')
+
+#===========================================
+# Less default settings
+#===========================================
+# F: Quit if entire file fits on first screen.
+# R: Output "raw" control characters.
+# X: Don't use termcap init/deinit strings.
+# W: Highlight first new line after any forward movement.
+# S: Chop (truncate) long lines rather than wrapping.
+#===========================================
+export LESS=FRXWS
+
+#===========================================
 # Export my defaults and create XDG vars if not
 #===========================================
 [ -z "$TERM" ] && TERM="xterm-256color"
