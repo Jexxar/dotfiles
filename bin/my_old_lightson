@@ -1,0 +1,567 @@
+#!/usr/bin/env bash
+# mylightson
+
+# Description: Bash script that prevents the xautolock and display power
+# management (DPMS) to be activated when you are watching offline movies or Flash/HTML5 Videos.
+#
+# It can detect mpv, mplayer, minitube, and VLC when they are playing too.
+# Also, screensaver can be prevented when certain specified programs are running.
+# Optionally delay the screensaver when specific outputs are connected.
+
+# HOW TO USE: Start the script with the number of seconds you want the checks
+# for fullscreen to be done. Example:
+#
+# "./mylightson 120 &" will Check every 120 seconds if any of the supported
+# applications are fullscreen and delay screensaver and Power Management if so.
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+# For when an unexpected error occurs
+trap 'prevcmd=$thiscmd; thiscmd=$BASH_COMMAND' DEBUG
+
+# Perform cleanup on exception
+trap 'cleanup; exit' INT TERM EXIT ERR
+
+# DEBUG=0 for NO output
+# DEBUG=1 for state change events (YES)
+# DEBUG=2 for everything
+# DEBUG=3 sleeping for
+DEBUG=0
+
+# Modify these variables if you want this script to detect other apps
+# Names of programs which, when loaded, you wish to delay the xautolock.
+# For example ('ardour2' 'gmpc').
+mandatoryApps=('etcher' 'cura' 'wineserver' 'dbgl' 'openscad' 'alarm-clock-applet' 'dgen' 'lutris' 'playonlinux' 'avidemux' 'synaptic' 'scummvm' 'flare' 'frozen-bubble' '0ad' 'TeamViewer' 'remmina' 'dosbox' 'wine' 'wget' 'curl' 'rsync' 'scp' 'sftp' 'youtube-dl')
+
+# Names of programs which, when running (and only when de facto running), you wish to delay the xautolock.
+# For example ('ardour2' 'gmpc').
+delayMediaApps=('vlc' 'celluloid' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
+
+# Names of programs which, when using sound server, downloading files or gaming, you wish to delay the xautolock.
+delayWebApps=('firefox' 'qutebrowser' 'librewolf' 'chrome' 'vivaldi' 'brave' 'chromium' 'epiphany' 'webkit' 'opera' 'iceweasel' 'surf' 'yandex_browser' 'luakit' 'midori' 'min ' 'falkon' 'slimjet' 'steam')
+
+# Names of programs which, when using massive transfer, you wish to delay the xautolock.
+delayBusyApps=('pcmanfm' 'pcmanfm-qt' 'nautilus' 'dolphin' 'nemo' 'thunar' 'caja' 'mc' 'fff' 'nnn' 'ranger' 'vifm')
+
+# Names of programs which, when in fullscreen mode, you wish to delay the xautolock.
+delayDndApps=('sublime_text' 'geany' 'vmplayer' 'vmware-vmx')
+
+# Display outputs available. Run xrandr to show current monitor config.
+lstoutdev="$(xrandr | grep 'conn' | awk '{print $1}' | sed 's/\"//g' | sed 's/\n//g')"
+outputDevices=( $lstoutdev )
+
+# DPMS settings in seconds, 600 seconds = 10 minutes.
+# If you don't want to change DMPS settings, modify DPMSControl to 0.
+#DPMSStandbyTime=600
+#DPMSSuspendTime=600
+#DPMSOffTime=600
+DPMSControl=1
+DPMSStandbyTime=240
+DPMSSuspendTime=600
+DPMSOffTime=600
+
+# X11 Screen Saver Extension settings in seconds, 600 seconds = 10 minutes.
+# If you don't want to change these settings, modify X11ScvControl to 0.
+X11ScvControl=1
+X11ScvTimeout=600
+X11ScvCycle=600
+
+# Config vars
+scriptName="${0##*/}"
+scriptBaseName="${scriptName%%.*}"
+scriptFPath="$(dirname "$(readlink -f $0)")/${scriptName}"
+[ -n "$XDG_CACHE_HOME" ] && stateFile="${XDG_CACHE_HOME}/${scriptBaseName}_${USER}_state.txt" || stateFile="${HOME}./cache/${scriptBaseName}_${USER}_state.txt"
+
+# Enumerate all the attached screens
+mScreens=$(xvinfo | awk -F'#' '/^screen/ {print $2}' | xargs)
+
+# Defaults
+defaultSleepDelay=150
+delay=""
+scvpgm="xautolock"
+
+# Log feature
+function mlog(){
+    [ $DEBUG -eq 0 ] && return 0
+    if [ $DEBUG -eq 1 ]; then
+        [ "$(echo "$@" | grep -c 'YES\|sleeping for')" -eq 1 ] && echo "$@" && log "$@";
+        return 0;
+    fi
+    if [ $DEBUG -eq 2 ]; then
+        echo "$@" && log "$@";
+        return 0;
+    fi
+    [ "$(echo "$@" | grep -c 'sleeping for')" -eq 1 ] && echo "$@" && log "$@" && return 0
+}
+
+# Clean status file
+function state_clean(){
+    [ -f "$stateFile" ] && rm -f "$stateFile"
+    return 0
+}
+
+# Save current state
+function SaveState(){
+    local st="$1"
+    echo "$st" > "$stateFile" 
+    mlog "SaveState(): State: $st" 
+    return 0
+}
+
+# Enable dpms
+function EnableDpms(){
+    xset +dpms
+    # Setting DPMS.
+    if [ $DPMSControl -eq 1 ]; then
+        mlog "EnableDpms(): Setting DPMS Standby Time: $DPMSStandbyTime, Suspend: $DPMSSuspendTime, Off: $DPMSOffTime"
+        xset dpms $DPMSStandbyTime $DPMSSuspendTime $DPMSOffTime
+    fi
+    mlog "EnableDpms(): DPMS ENABLED"
+}
+
+# Disable dpms
+function DisableDpms(){
+    xset -dpms
+    # to make sure this will work
+    if [ $DPMSControl -eq 1 ]; then
+        mlog "DisableDpms(): Setting DPMS Standby Time: 0, Suspend: 0, Off: 0"
+        xset dpms 0 0 0
+    fi
+    mlog "DisableDpms(): DPMS DISABLED"
+}
+
+# Query state
+function ReadState(){
+    [ -f "$stateFile" ] && awk 'NR==1 { print $1 }' "$stateFile" || echo "ENABLED"
+}
+
+# Turn X11 Screensaver Extension to on
+function XSetX11ScvOn(){
+    xset s on
+    xset s blank
+    if [ $X11ScvControl -eq 1 ]; then
+        xset s $X11ScvTimeout $X11ScvCycle
+    fi
+    mlog "XSetX11ScvOn(): X11 Screensaver Extension ENABLED"
+}
+
+# Turn X11 Screensaver Extension to off
+function XSetX11ScvOff(){
+    xset s noblank
+    xset s off
+    if [ $X11ScvControl -eq 1 ]; then
+        xset s 0 0
+    fi
+    mlog "XSetX11ScvOff(): X11 Screensaver Extension DISABLED"
+}
+
+# Detect if soundcard is being used
+function isSndCardBeingUsed(){
+    grep RUNNING /proc/asound/card*/pcm*/sub*/status > /dev/null && mlog "isSndCardBeingUsed(): YES" && return 0
+    mlog "isSndCardBeingUsed(): NO"
+    return 1
+}
+
+# Find mandatory apps 
+function detectMandatoryDelay(){
+    for p1 in "${mandatoryApps[@]}"; do
+        [ $(pgrep -lfc "$p1") -gt 0 ] && mlog "detectMandatoryDelay(): YES Mandatory delay program $p1 found..." && return 0
+    done
+    return 1
+}
+
+# Find programs using pulseaudio
+function whichUsingPulseaudio(){
+    local nm_ps=""
+    local pidlist=""
+    pidlist=$(pacmd list-sink-inputs | grep "application.process.id" | awk '{print $3}' | sed 's/\"//g' | sed 's/\n//g')
+    if [ -n "$pidlist" ]; then 
+        local pidv=( $pidlist )
+        for i in "${pidv[@]}"; do
+            nm_ps=$(ps -p "$i" -o comm= | tr '[:upper:]' '[:lower:]')
+            [ $(grep -ic "$nm_ps" <<< "${delayMediaApps[@]}") -gt 0 ] && echo "$nm_ps" && return 0
+            #[[ " ${delayMediaApps[*]} " =~ $nm_ps} ]] && echo "$nm_ps" && return 0
+            [ $(grep -ic "$nm_ps" <<< "${delayWebApps[@]}") -gt 0 ] && echo "$nm_ps" && return 0
+            #[[ " ${delayWebApps[*]} " =~ $nm_ps} ]] && echo "$nm_ps" && return 0
+        done
+    fi
+    echo "$nm_ps"
+    return 0
+}
+
+# Find any online stream
+function getOnlineMediaWList(){
+    local _filt="lbry\|philo\|tubi\|tv\|fubo\|vrv\|disney\|prime vi\|hulu\|tube\|stream\|mp4\|mpeg\|mkv\|mpg\|webm\|vimeo\|anime\|divX\|flix\|rackle\|odcast\|cecast\|cine\|muu\|movie"
+    local wLst=$(wmctrl -lxp 2> /dev/null | grep -si "$_filt")
+    [ $? -ne 0 ] && wLst=""
+    echo "$wLst"
+    return 0
+}
+
+# Find any relevant media app running
+function whichOnlineMediaRunning(){
+    local wCls=""
+    local wLst="$(getOnlineMediaWList)"
+    if [ -n "$wLst" ]; then
+        local OLD_IFS=$IFS
+        IFS=$'\n'
+        local wv=( $wLst )
+        for i in "${wv[@]}"; do
+            wCls="$(awk '{ print $4 }' <<< "$i" | awk -F[.] '{print $2}' | tr '[:upper:]' '[:lower:]' | tr -d ' ')"
+            [ -n "$wCls" ] && IFS=$OLD_IFS && echo "$wCls" && return 0;
+        done
+        IFS=$OLD_IFS
+    fi
+    echo "$wCls"
+    return 0
+}
+
+# Detect any relevant media app in fullscreen mode
+function detectOnlineInList(){
+    local wLst="$(getOnlineMediaWList)"
+    local wCls=""
+    if [ -n "$wLst" ]; then
+        [ -n "$1" ] && wCls="$(awk -v i=$1 '{ if ($1 == i) { print $4 } }' <<< "$wLst" | awk -F[.] '{print $2}' | tr '[:upper:]' '[:lower:]')"
+        [ -n "$wCls" ] && mlog "detectOnlineInList(): YES $1 $wCls found..." && return 0
+    fi
+    return 1
+}
+
+# find a delay program for a given window ID
+function detectDelayApp(){
+    # active window ID must be passed as parameter
+    [ -z "$1" ] && mlog "detectDelayApp(): Active Win ID parameter needed" &&  return 1
+    # Get class/title of active window.
+    local wClass="$(xprop -id "$1" WM_CLASS | tr '[:upper:]' '[:lower:]' | awk -F[=,] '{gsub(/"/, "", $3);print $3}' | tr -d ' ')"
+    # detect media programs
+    [ $(grep -ic "$wClass" <<< "${delayMediaApps[@]}") -gt 0 ] && mlog "detectDelayApp(): YES $wClass fullscreen detected" && return 0
+    #[[ " ${delayMediaApps[*]} " =~ $wClass} ]] && mlog "detectDelayApp(): YES $wClass fullscreen detected" && return 0
+    # detect web based apps
+    [ $(grep -ic "$wClass" <<< "${delayWebApps[@]}") -gt 0 ] && mlog "detectDelayApp(): YES $wClass fullscreen detected" && return 0
+    #[[ " ${delayWebApps[*]} " =~ $wClass} ]] && mlog "detectDelayApp(): YES $wClass fullscreen detected" && return 0
+    # detect non disturb mode apps
+    [ $(grep -ic "$wClass" <<< "${delayDndApps[@]}") -gt 0 ] && mlog "detectDelayApp(): YES $wClass fullscreen detected" && return 0
+    #[[ " ${delayDndApps[*]} " =~ $wClass} ]] && mlog "detectDelayApp(): YES $wClass detected" && return 0
+    mlog "detectDelayApp(): NO applications detected"
+    return 1
+}
+
+# check for fullscreen app that trigger the delay
+function isFullScreenBeingUsed(){
+    local oldIFS=$IFS
+    local wLst=""
+    local wID=""
+    IFS=$'\n'
+    # Loop through every display looking for a fullscreen window.
+    for d in $mScreens; do
+        wLst="$(DISPLAY=:${d} wmctrl -l -p -x -G)"
+        for w in $wLst; do
+            wID="$(awk '{print $1}' <<< "$w")"
+            # Search only for any relevant app to return
+            [ $(DISPLAY=:${d} xprop -id "$wID" _NET_WM_STATE 2> /dev/null | grep -c _NET_WM_STATE_FULLSCREEN) -gt 0 ] && {
+                mlog "isFullScreenBeingUsed(): Fullscreen Win ID=$wID"
+                detectDelayApp "$wID" && IFS=$oldIFS && mlog "isFullScreenBeingUsed(): YES Fullscreen detected: Some app triggered the delay" && return 0
+                detectOnlineInList "$wID" && IFS=$oldIFS && mlog "isFullScreenBeingUsed(): YES Fullscreen detected: Online Media..."  && return 0
+            }
+        done
+    done
+    IFS=$oldIFS
+    mlog "isFullScreenBeingUsed(): NO fullscreen detected. Checking for Above windows..."
+    return 1
+}
+
+# check for above window app that trigger the delay
+function isAboveWindowBeingUsed(){
+    local oldIFS=$IFS
+    local wLst=""
+    local wID=""
+    local wCls=""
+    IFS=$'\n'
+    # Loop through every display looking for a fullscreen window.
+    for d in $mScreens; do
+        wLst="$(DISPLAY=:${d} wmctrl -l -p -x -G)"
+        for w in $wLst; do
+            wID="$(awk '{print $1}' <<< "$w")"
+            wCls="$(awk '{print $8}' <<< "$w" | awk -F[.] '{print $2}' | tr '[:upper:]' '[:lower:]')"
+            # Search only for any relevant app to return
+            [ $(DISPLAY=:${d} xprop -id "$wID" _NET_WM_STATE 2> /dev/null | grep -c _NET_WM_STATE_ABOVE) -gt 0 ] && {
+                mlog "isAboveWindowBeingUsed(): Above Window ID=$wID"
+                detectDelayApp "$wID" && IFS=$oldIFS && mlog "isAboveWindowBeingUsed(): YES Above window detected: Media app triggered the delay" && return 0
+                detectOnlineInList "$wID" && IFS=$oldIFS && mlog "isAboveWindowBeingUsed(): YES Above window detected: Online Media..." && return 0
+            }
+        done
+    done
+    IFS=$oldIFS
+    mlog "isAboveWindowBeingUsed(): NO above sceens detected"
+    return 1
+}
+
+# check for busy apps using massive transfer/downloads and other important tasks
+function hasDelayBusyApps(){
+    local tmp=""
+    for p in "${delayBusyApps[@]}" ; do
+        tmp="$(lsof_p "$p" | grep -v "$p-\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|/usr/share/${p}")"
+        [ -n "$tmp" ] && mlog "hasDelayBusyApps(): YES $p found for delaying" && return 0
+    done
+
+    tmp="$(_lsof | grep -i "Downloads")"
+    [ -n "$tmp" ] && mlog "hasDelayBusyApps(): YES Download in progress delaying" && return 0
+
+    for p in "${delayWebApps[@]}" ; do
+        case $p in
+            firefox*)
+                tmp="$(lsof_p "$p" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|xpi\|startupCache\|omni\|\.mozilla")"
+            ;;
+            chrome*)
+                tmp="$(lsof_p "$p" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|omni\|chrom\|\.pki\|\.cache\|google")"
+            ;;
+            chromium*)
+                tmp="$(lsof_p "$p" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|omni\|chrom\|\.pki\|\.cache")"
+            ;;
+            librewolf*)
+                tmp="$(lsof_p "$p" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse\|\.mozilla")"
+                [ -z "$tmp" ] && tmp="$(lsof_p "LibreWolf" | grep -v "/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse\|\.mozilla")"
+            ;;
+            *)
+                tmp="$(lsof_p "$p" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|omni\|\.pki\|\.cache")"
+            ;;
+        esac
+        [ -n "$tmp" ] && mlog "hasDelayBusyApps(): YES $p found for delaying" && return 0
+    done
+    mlog "hasDelayBusyApps(): NO busy apps found for delaying"
+    return 1
+}
+
+# check for output connections (others than primary) to disable/reset screensaver
+function hasDelayOutputConns(){
+    local connOut="$(xrandr | grep " connected" | grep -v "primary" | awk '{print $1}')"
+    # if other connections were found
+    [ -n "$connOut" ] && {
+        for out in "${outputDevices[@]}"; do
+            [ -z "${out##*$connOut*}" ] && mlog "hasDelayOutputConns(): YES $out Connection found for delaying" && return 0
+        done
+    }
+    mlog "hasDelayOutputConns(): NO output connections found for delaying"
+    return 1
+}
+
+# disable xautolock + Xset + dpms off
+function disableXautolock(){
+    if [ "${1}" == "force" ]; then
+        mlog "disableXautolock(): Shutting down xautolock daemon..."
+        stop_it "xautolock" "stop"
+    elif [ "$(ReadState)" == "DISABLED" ]; then
+        mlog "disableXautolock(): xautolock screensaver already DISABLED..."
+        return 0
+    else
+        mlog "disableXautolock(): delaying xautolock..."
+        xautolock -disable
+    fi
+    DisableDpms
+    XSetX11ScvOff
+    SaveState "DISABLED"
+}
+
+# enable xautolock + Xset + dpms on
+function enableXautolock(){
+    if [ "$(ReadState)" == "ENABLED" ] && [ $(pgrep -lfc xautolock) -gt 0 ] && [ "${1}" != "force" ]; then
+        mlog "enableXautolock(): xautolock screensaver already ENABLED..."
+        return 0
+    fi
+    if [ "${1}" == "force" ]; then
+        [ $(pgrep -lfc xautolock) -gt 0 ] && stop_it "xautolock"
+        mlog "enableXautolock(): (Re)/Starting xautolock daemon..."
+        # xautolock -detectsleep -noclose -time 5 -locker "\"$HOME/bin/mylock\"" -notify 30 -notifier "\"$HOME/bin/mynotify\"" -killtime 10 -killer "\"$HOME/bin/mysuspend\"" &
+        xautolock -detectsleep -noclose -time 3 -locker "\"$HOME/bin/mylock\"" -notify 30 -notifier "\"$HOME/bin/mynotify\"" &
+    else
+        xautolock -enable & disown
+        mlog "enableXautolock(): xautolock ENABLED..."
+    fi
+    snore 0.5
+    EnableDpms
+    XSetX11ScvOn
+    SaveState "ENABLED"
+}
+
+# This function is called when something goes wrong
+function cleanup(){
+    local wtf="$?"
+    mlog "Abnormal exit/Cleanup triggered..."
+    mlog "Received RC = $wtf / Last cmd = $prevcmd  / Screensaver = $scvpgm"
+    [ -z "$scvpgm" ] && scvpgm="xautolock"
+    mlog "Calling disableXautolock with force..."
+    disableXautolock "force"
+    wtf="$?"
+    mlog "After disableXautolock RC = $wtf "
+    mlog "Cleaning state..."
+    state_clean
+    wtf="$?"
+    mlog "After state_clean RC = $wtf"
+}
+
+# enable/disable xautolock according to presets
+function manageXautolock(){
+    # disable xautolock if mandatory delay progs were found
+    if detectMandatoryDelay; then
+        mlog "manageXautolock(): YES Mandatory delay programs running..."
+        disableXautolock "force"
+        return 0
+    else
+        mlog "manageXautolock(): NO Mandatory delay programs were found..."
+    fi
+    # disable xautolock if there are delay apps using sound card
+    if isSndCardBeingUsed; then
+        local progName="$(whichUsingPulseaudio)"
+        # if none found in pulseaudio sinks try to use this
+        [ -z "$progName" ] && progName="$(whichOnlineMediaRunning)"
+        if [ -n "$progName" ]; then
+            mlog "manageXautolock(): YES Delaying the xautolock because a delay program (or stream), \"$progName\", is running..."
+            disableXautolock "force"
+            return 0
+        #else
+        #    mlog "manageXautolock(): NO delay program using sound card. Unknown app is running..."
+        fi
+    fi
+    # disable xautolock if there are delay apps in fullscreen mode
+    if isFullScreenBeingUsed; then
+        mlog "manageXautolock(): YES Delaying the xautolock because a Fullscreen delay program is running..."
+        disableXautolock "force"
+        return 0
+    elif isAboveWindowBeingUsed; then
+        mlog "manageXautolock(): YES Delaying the xautolock because an Above window delay program is running..."
+        disableXautolock "force"
+        return 0
+    #else
+    #    mlog "manageXautolock(): NO delay program (or stream) in Fullscreen mode is running..."
+    fi
+    # disable xautolock if we have significant ouput connections
+    if hasDelayOutputConns; then
+        mlog "manageXautolock(): YES Delaying the xautolock because Output connections were found..."
+        disableXautolock "force"
+        return 0
+    #else
+    #    mlog "manageXautolock(): NO delay output connections detected..."
+    fi
+    # disable xautolock if we have relevant busy apps
+    if hasDelayBusyApps; then
+        mlog "manageXautolock(): YES Delaying the xautolock because Busy applications were found..."
+        disableXautolock "force"
+        return 0
+    #else
+    #    mlog "manageXautolock(): NO delay Busy applications detected..."
+    fi
+    
+    # Since NO delay situations were detected we must enable xautolock
+    mlog "manageXautolock(): NO delay programs were detected for suspending xautolock..."
+    local stt="$(ReadState)"
+    mlog "manageXautolock(): Current xautolock state = $stt "
+    if [ "$stt" == "DISABLED" ] || [ $(pgrep -lfc xautolock) -eq 0 ]; then
+        enableXautolock "force"
+        mlog "manageXautolock(): running xautolock ENABLED..."
+    fi
+    return 0
+}
+
+# sleep until the next iteration
+function sleepscv(){
+    if [ $1 -gt 0 ]; then
+        mlog "sleepscv(): sleeping for $1"
+        mlog "--------------- loop done! ---------------"
+        snore "$1"
+        return 0
+    fi
+    mlog "sleepscv(): sleeping for $defaultSleepDelay"
+    mlog "--------------- loop done! ---------------"
+    snore "$$defaultSleepDelay"
+}
+
+function main(){
+    if [ -n "$1" ]; then
+        # If passed argument is not integer quit.
+        if [[ $1 = *[^0-9]* ]]; then
+            echo "The Argument \"$1\" is not valid, not an integer"
+            echo "Please use the time in seconds you want the checks to repeat."
+            echo "You want it to be ~10 seconds less than the time it takes your xautolock or DPMS to activate"
+            mlog "The Argument \"$1\" is not valid, not an integer."
+            exit 1
+        else
+            delay=$1
+        fi
+    else
+        mlog "NO delay specified, assuming default value=$defaultSleepDelay"
+        delay=$defaultSleepDelay
+    fi
+
+    # required binaries that must be present in order to run
+    precheck "xset"
+    precheck "wmctrl"
+    precheck "xvinfo"
+    precheck "xprop"
+    precheck "xrandr"
+    precheck "bc"
+    precheck "xautolock"
+    precheck "pacmd"
+    precheck "pulseaudio"
+    precheck "awk"
+    precheck "grep"
+    precheck "xprintidle"
+    
+    # Kill older instances of this job
+    kill_older
+    
+    # clean state file
+    state_clean
+    
+    # On load kill all lockers remaining
+    reset_locker
+    
+    # start-up mlog messages
+    mlog "[ START ] $scriptName "
+    mlog "stateFile............: $stateFile"
+    mlog "scriptName...........: $scriptName"
+    mlog "scriptFPath..........: $scriptFPath"
+    mlog "defaultSleepDelay....: $defaultSleepDelay"
+    mlog "delay................: $delay"
+    
+    # Starting with ENABLED state
+    mlog "Saving initial state = DISABLED"
+    SaveState "DISABLED"
+    
+    # Starting procedures for xautolock daemon
+    #mlog "Starting xautolock daemon..."
+    #enableXautolock "force"
+    #snore 2
+    
+    # initial value for suspend pid
+    local SPID=""
+    local idle="0"
+    
+    # Initiate monitoring
+    while true; do
+        # workaround due to issues on xautolock
+        # if screen is already locked do proper suspend both on screen and laptop 
+        if locked; then
+            let idle=$(xprintidle)/1000
+            mlog "main(): Screen is already locked... Idle =  $idle / Timeout time = $X11ScvTimeout"
+            if [ -z "$SPID" ]; then
+                if [ $idle -gt $X11ScvTimeout ]; then
+                    mlog "main(): Timeout time elapsed. Suspending..."
+                    nice -3 $HOME/bin/mysuspend & disown
+                    SPID="$!"
+                    mlog "main(): Timeout PID=$SPID"
+                fi
+            fi
+        else
+            SPID=""
+            idle="0"
+            manageXautolock
+        fi
+        sleepscv $delay
+    done
+    #trap - INT TERM EXIT ERR
+    exit 0
+}
+
+main "$@"
