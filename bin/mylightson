@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # mylightson
 
-# Description: Bash script that prevents the xautolock and display power
-# management (DPMS) to be activated when you are watching offline movies or Flash/HTML5 Videos.
+# Description: Bash script that prevents autolock programs and display power
+# management (DPMS) to be activated when you are watching offline movies or streaming.
 #
 # It can detect mpv, mplayer, minitube, and VLC when they are playing too.
 # Also, screensaver can be prevented when certain specified programs are running.
@@ -31,21 +31,21 @@ trap 'cleanup; exit' INT TERM EXIT ERR
 DEBUG=0
 
 # Modify these variables if you want this script to detect other apps
-# Names of programs which, when loaded, you wish to delay the xautolock.
+# Names of programs which, when loaded, you wish to delay the Autolock.
 # For example ('ardour2' 'gmpc').
 mandatoryApps=('etcher' 'cura' 'wineserver' 'dbgl' 'openscad' 'alarm-clock-applet' 'dgen' 'lutris' 'playonlinux' 'avidemux' 'synaptic' 'scummvm' 'flare' 'frozen-bubble' '0ad' 'TeamViewer' 'remmina' 'dosbox' 'wine' 'wget' 'curl' 'rsync' 'scp' 'sftp' 'youtube-dl')
 
-# Names of programs which, when running (and only when de facto running), you wish to delay the xautolock.
+# Names of programs which, when running (and only when de facto running), you wish to delay the Autolock.
 # For example ('ardour2' 'gmpc').
 delayMediaApps=('vlc' 'celluloid' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
 
-# Names of programs which, when using sound server, downloading files or gaming, you wish to delay the xautolock.
+# Names of programs which, when using sound server, downloading files or gaming, you wish to delay the Autolock.
 delayWebApps=('firefox' 'qutebrowser' 'librewolf' 'chrome' 'vivaldi' 'brave' 'chromium' 'epiphany' 'webkit' 'opera' 'iceweasel' 'surf' 'yandex_browser' 'luakit' 'midori' 'min ' 'falkon' 'slimjet' 'steam')
 
-# Names of programs which, when using massive transfer, you wish to delay the xautolock.
+# Names of programs which, when using massive transfer, you wish to delay the Autolock.
 delayBusyApps=('pcmanfm' 'pcmanfm-qt' 'nautilus' 'dolphin' 'nemo' 'thunar' 'caja' 'mc' 'fff' 'nnn' 'ranger' 'vifm')
 
-# Names of programs which, when in fullscreen mode, you wish to delay the xautolock.
+# Names of programs which, when in fullscreen mode, you wish to delay the Autolock.
 delayDndApps=('sublime_text' 'geany' 'vmplayer' 'vmware-vmx')
 
 # Display outputs available. Run xrandr to show current monitor config.
@@ -54,11 +54,8 @@ outputDevices=( $lstoutdev )
 
 # DPMS settings in seconds, 600 seconds = 10 minutes.
 # If you don't want to change DMPS settings, modify DPMSControl to 0.
-#DPMSStandbyTime=600
-#DPMSSuspendTime=600
-#DPMSOffTime=600
 DPMSControl=1
-DPMSStandbyTime=240
+DPMSStandbyTime=600
 DPMSSuspendTime=600
 DPMSOffTime=600
 
@@ -80,7 +77,7 @@ mScreens=$(xvinfo | awk -F'#' '/^screen/ {print $2}' | xargs)
 # Defaults
 defaultSleepDelay=150
 delay=""
-scvpgm="xautolock"
+LighState=""
 
 # Log feature
 function mlog(){
@@ -104,9 +101,9 @@ function state_clean(){
 
 # Save current state
 function SaveState(){
-    local st="$1"
-    echo "$st" > "$stateFile" 
-    mlog "SaveState(): State: $st" 
+    LighState="$1"
+    echo "$LighState" > "$stateFile" 
+    mlog "SaveState(): State: $LighState" 
     return 0
 }
 
@@ -140,20 +137,20 @@ function ReadState(){
 # Turn X11 Screensaver Extension to on
 function XSetX11ScvOn(){
     xset s on
-    xset s blank
-    if [ $X11ScvControl -eq 1 ]; then
-        xset s $X11ScvTimeout $X11ScvCycle
-    fi
+    #xset s blank
+    #if [ $X11ScvControl -eq 1 ]; then
+    #    xset s $X11ScvTimeout $X11ScvCycle
+    #fi
     mlog "XSetX11ScvOn(): X11 Screensaver Extension ENABLED"
 }
 
 # Turn X11 Screensaver Extension to off
 function XSetX11ScvOff(){
-    xset s noblank
+    #xset s noblank
     xset s off
-    if [ $X11ScvControl -eq 1 ]; then
-        xset s 0 0
-    fi
+    #if [ $X11ScvControl -eq 1 ]; then
+    #    xset s 0 0
+    #fi
     mlog "XSetX11ScvOff(): X11 Screensaver Extension DISABLED"
 }
 
@@ -347,120 +344,95 @@ function hasDelayOutputConns(){
     return 1
 }
 
-# disable xautolock + Xset + dpms off
-function disableXautolock(){
-    if [ "${1}" == "force" ]; then
-        mlog "disableXautolock(): Shutting down xautolock daemon..."
-        stop_it "xautolock" "stop"
-    elif [ "$(ReadState)" == "DISABLED" ]; then
-        mlog "disableXautolock(): xautolock screensaver already DISABLED..."
+# disable dpms
+function disableAutolock(){
+    LighState="$(ReadState)"
+    if [ "$LighState" == "DISABLED" ]; then
+        mlog "disableAutolock(): Autolock already DISABLED..."
         return 0
-    else
-        mlog "disableXautolock(): delaying xautolock..."
-        xautolock -disable
     fi
     DisableDpms
     XSetX11ScvOff
     SaveState "DISABLED"
+    mlog "disableAutolock(): Autolock is now DISABLED..."
 }
 
-# enable xautolock + Xset + dpms on
-function enableXautolock(){
-    if [ "$(ReadState)" == "ENABLED" ] && [ $(pgrep -lfc xautolock) -gt 0 ] && [ "${1}" != "force" ]; then
-        mlog "enableXautolock(): xautolock screensaver already ENABLED..."
+# enable dpms
+function enableAutolock(){
+    LighState="$(ReadState)"
+    if [ "$LighState" == "ENABLED" ]; then
+        mlog "enableAutolock(): Autolock screensaver already ENABLED..."
         return 0
     fi
-    if [ "${1}" == "force" ]; then
-        [ $(pgrep -lfc xautolock) -gt 0 ] && stop_it "xautolock"
-        mlog "enableXautolock(): (Re)/Starting xautolock daemon..."
-        # xautolock -detectsleep -noclose -time 5 -locker "\"$HOME/bin/mylock\"" -notify 30 -notifier "\"$HOME/bin/mynotify\"" -killtime 10 -killer "\"$HOME/bin/mysuspend\"" &
-        xautolock -detectsleep -noclose -time 3 -locker "\"$HOME/bin/mylock\"" -notify 30 -notifier "\"$HOME/bin/mynotify\"" &
-    else
-        xautolock -enable & disown
-        mlog "enableXautolock(): xautolock ENABLED..."
-    fi
-    snore 0.5
     EnableDpms
     XSetX11ScvOn
     SaveState "ENABLED"
+    mlog "enableAutolock(): Autolock is now ENABLED..."
 }
 
 # This function is called when something goes wrong
 function cleanup(){
     local wtf="$?"
-    log "Abnormal exit/Cleanup triggered..."
-    log "Received RC = $wtf / Last cmd = $prevcmd  / Screensaver = $scvpgm"
-    [ -z "$scvpgm" ] && scvpgm="xautolock"
-    log "Calling disableXautolock with force..."
-    disableXautolock "force"
-    wtf="$?"
-    log "After disableXautolock RC = $wtf "
-    log "Cleaning state..."
+    mlog "Abnormal exit/Cleanup triggered..."
+    mlog "Received RC = $wtf / Last cmd = $prevcmd "
+    mlog "Cleaning state..."
     state_clean
     wtf="$?"
-    log "After state_clean RC = $wtf"
+    mlog "After state_clean RC = $wtf"
 }
 
-# enable/disable xautolock according to presets
-function manageXautolock(){
-    # disable xautolock if mandatory delay progs were found
+# enable/disable Autolock according to presets
+function manageAutolock(){
+    # disable Autolock if mandatory delay progs were found
     if detectMandatoryDelay; then
-        mlog "manageXautolock(): YES Mandatory delay programs running..."
-        disableXautolock "force"
+        mlog "manageAutolock(): YES Mandatory delay programs running..."
+        disableAutolock 
         return 0
     else
-        mlog "manageXautolock(): NO Mandatory delay programs were found..."
+        mlog "manageAutolock(): NO Mandatory delay programs were found..."
     fi
-    # disable xautolock if there are delay apps using sound card
+    # disable Autolock if there are delay apps using sound card
     if isSndCardBeingUsed; then
         local progName="$(whichUsingPulseaudio)"
         # if none found in pulseaudio sinks try to use this
         [ -z "$progName" ] && progName="$(whichOnlineMediaRunning)"
         if [ -n "$progName" ]; then
-            mlog "manageXautolock(): YES Delaying the xautolock because a delay program (or stream), \"$progName\", is running..."
-            disableXautolock "force"
+            mlog "manageAutolock(): YES Delaying the Autolock because a delay program (or stream), \"$progName\", is running..."
+            disableAutolock 
             return 0
-        #else
-        #    mlog "manageXautolock(): NO delay program using sound card. Unknown app is running..."
         fi
     fi
-    # disable xautolock if there are delay apps in fullscreen mode
+    # disable Autolock if there are delay apps in fullscreen mode
     if isFullScreenBeingUsed; then
-        mlog "manageXautolock(): YES Delaying the xautolock because a Fullscreen delay program is running..."
-        disableXautolock "force"
+        mlog "manageAutolock(): YES Delaying the Autolock because a Fullscreen delay program is running..."
+        disableAutolock 
         return 0
     elif isAboveWindowBeingUsed; then
-        mlog "manageXautolock(): YES Delaying the xautolock because an Above window delay program is running..."
-        disableXautolock "force"
+        mlog "manageAutolock(): YES Delaying the Autolock because an Above window delay program is running..."
+        disableAutolock 
         return 0
-    #else
-    #    mlog "manageXautolock(): NO delay program (or stream) in Fullscreen mode is running..."
     fi
-    # disable xautolock if we have significant ouput connections
+    # disable Autolock if we have significant ouput connections
     if hasDelayOutputConns; then
-        mlog "manageXautolock(): YES Delaying the xautolock because Output connections were found..."
-        disableXautolock "force"
+        mlog "manageAutolock(): YES Delaying the Autolock because Output connections were found..."
+        disableAutolock 
         return 0
-    #else
-    #    mlog "manageXautolock(): NO delay output connections detected..."
     fi
-    # disable xautolock if we have relevant busy apps
+    # disable Autolock if we have relevant busy apps
     if hasDelayBusyApps; then
-        mlog "manageXautolock(): YES Delaying the xautolock because Busy applications were found..."
-        disableXautolock "force"
+        mlog "manageAutolock(): YES Delaying the Autolock because Busy applications were found..."
+        disableAutolock 
         return 0
-    #else
-    #    mlog "manageXautolock(): NO delay Busy applications detected..."
     fi
     
-    # Since NO delay situations were detected we must enable xautolock
-    mlog "manageXautolock(): NO delay programs were detected for suspending xautolock..."
-    local stt="$(ReadState)"
-    mlog "manageXautolock(): Current xautolock state = $stt "
-    if [ "$stt" == "DISABLED" ] || [ $(pgrep -lfc xautolock) -eq 0 ]; then
-        enableXautolock "force"
-        mlog "manageXautolock(): running xautolock ENABLED..."
+    # Since NO delay situations were detected we must enable Autolock
+    mlog "manageAutolock(): NO delay programs were detected for suspending Autolock..."
+    [ -z "$LighState" ] && LighState="$(ReadState)"
+    if [ "$LighState" == "DISABLED" ]; then
+        enableAutolock 
+        mlog "manageAutolock(): Autolock ENABLED..."
     fi
+    mlog "manageAutolock(): Current Autolock state = $LighState"
     return 0
 }
 
@@ -483,7 +455,7 @@ function main(){
         if [[ $1 = *[^0-9]* ]]; then
             echo "The Argument \"$1\" is not valid, not an integer"
             echo "Please use the time in seconds you want the checks to repeat."
-            echo "You want it to be ~10 seconds less than the time it takes your xautolock or DPMS to activate"
+            echo "You want it to be ~10 seconds less than the time it takes your Autolock or DPMS to activate"
             mlog "The Argument \"$1\" is not valid, not an integer."
             exit 1
         else
@@ -500,8 +472,6 @@ function main(){
     precheck "xvinfo"
     precheck "xprop"
     precheck "xrandr"
-    precheck "bc"
-    precheck "xautolock"
     precheck "pacmd"
     precheck "pulseaudio"
     precheck "awk"
@@ -524,43 +494,49 @@ function main(){
     mlog "scriptFPath..........: $scriptFPath"
     mlog "defaultSleepDelay....: $defaultSleepDelay"
     mlog "delay................: $delay"
-    
-    # Starting with ENABLED state
+    mlog "DPMSControl..........: $DPMSControl"
+    mlog "DPMSStandbyTime......: $DPMSStandbyTime"
+    mlog "DPMSSuspendTime......: $DPMSSuspendTime"
+    mlog "DPMSOffTime..........: $DPMSOffTime"
+    mlog "X11ScvControl........: $X11ScvControl"
+    mlog "X11ScvTimeout........: $X11ScvTimeout"
+    mlog "X11ScvCycle..........: $X11ScvCycle"
+
+    # Starting with DISABLED state
     mlog "Saving initial state = DISABLED"
     SaveState "DISABLED"
     
-    # Starting procedures for xautolock daemon
-    #mlog "Starting xautolock daemon..."
-    #enableXautolock "force"
-    #snore 2
-    
     # initial value for suspend pid
-    local SPID=""
-    local idle="0"
+    local idle=0
+    local tout=0
     
     # Initiate monitoring
     while true; do
-        # workaround due to issues on xautolock
-        # if screen is already locked do proper suspend both on screen and laptop 
+        # if screen is already locked do proper suspend (implies state ENABLED)
         if locked; then
-            let idle=$(xprintidle)/1000
-            mlog "main(): Screen is already locked... Idle =  $idle / Timeout time = $X11ScvTimeout"
-            if [ -z "$SPID" ]; then
-                if [ $idle -gt $X11ScvTimeout ]; then
-                    mlog "main(): Timeout time elapsed. Suspending..."
-                    nice -3 $HOME/bin/mysuspend & disown
-                    SPID="$!"
-                    mlog "main(): Timeout PID=$SPID"
-                fi
+            let tout=$(xprintidle)/1000
+            mlog "main(): Screen is already locked... Idle =  $tout / Timeout time = $X11ScvTimeout"
+            if [ $tout -gt $X11ScvTimeout ]; then
+                mlog "main(): Timeout time elapsed. Suspending..."
+                nice -3 $HOME/bin/mysuspend & disown
             fi
         else
-            SPID=""
-            idle="0"
-            manageXautolock
+            manageAutolock
+            if [ "$LighState" == "ENABLED" ]; then
+                # Get the amount of idle time before lock
+                let idle=$(xprintidle)/1000
+                mlog "main(): Idle time = $idle"
+                if [ $idle -gt $X11ScvCycle ]; then
+                    nice -3 $HOME/bin/mynotify & disown
+                    snore 30
+                    # chech for X activity meantime
+                    let idle=$(xprintidle)/1000
+                    [ $idle -gt $X11ScvCycle ] && nice -3 $HOME/bin/mylock & disown
+                fi
+            fi
         fi
         sleepscv $delay
     done
-    #trap - INT TERM EXIT ERR
     exit 0
 }
 

@@ -5,15 +5,12 @@
 # user for input if there is none.
 
 # Source: http://www.linuxquestions.org/questions/linux-software-2/bash-scripting-pipe-input-to-script-vs.-1-570945/
-
-if readlink /proc/$$/fd/0 | grep -q "^pipe:"; then
+if test -p /dev/stdin; then
+    cat /dev/stdin | sed -e "s/\b\(.\)/\u\1/g"
+elif readlink /proc/$$/fd/0 | grep -q "^pipe:"; then
     cat /dev/stdin | sed -e "s/\b\(.\)/\u\1/g"
 elif file $( readlink /proc/$$/fd/0 ) | grep -q "character special"; then
     if [ $# -gt 0 ]; then
         echo "$@" | sed -e "s/\b\(.\)/\u\1/g"
-    fi
-else
-    if test -s /dev/stdin; then
-        cat /dev/stdin | sed -e "s/\b\(.\)/\u\1/g"
     fi
 fi

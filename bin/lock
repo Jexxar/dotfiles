@@ -2,22 +2,40 @@
 # Author: Dolores Portalatin <hello@doloresportalatin.info>
 # Dependencies: imagemagick, i3lock-color-git, scrot, wmctrl (optional)
 set -o errexit -o noclobber -o nounset
+if ! xset -q &>/dev/null; then
+    echo "X server is not running or not detected."
+    exit 1
+fi
+if ! hash wmctrl >/dev/null 2>&1; then
+    echo "wmctrl is not installed."
+    exit 1
+fi
+if ! hash convert >/dev/null 2>&1; then
+    echo "convert is not installed."
+    exit 1
+fi
+if ! hash i3lock >/dev/null 2>&1; then
+    echo "i3lock is not installed."
+    exit 1
+fi
+if ! hash import >/dev/null 2>&1; then
+    echo "import is not installed."
+    exit 1
+fi
 
 # get path where the script is located to find the lock icon
 scriptpath=$(readlink -f -- "$0")
 scriptpath=${scriptpath%/*}
-
-hue=(-level "0%,100%,0.6")
-effect=(-filter Gaussian -resize 20% -define "filter:sigma=1.5" -resize 500.5%)
-# default system sans-serif font
-font=$(convert -list font | awk "{ a[NR] = \$2 } /family: $(fc-match sans -f "%{family}\n")/ { print a[NR-1]; exit }")
 image=$(mktemp --suffix=.png)
-
-shot=(import -window root)
 desktop=""
+effect=(-filter Gaussian -resize 20% -define "filter:sigma=1.5" -resize 500.5%)
+hue=(-level "0%,100%,0.6")
+color="91"
+#brightness value to compare to
+value="85"
 #i3lock_cmd=(i3lock -n -e -f --ignore-empty-password --beep --inactivity-timeout=10 -i "$image" -t --nofork)
 i3lock_cmd=(i3lock -e -f --ignore-empty-password --beep --inactivity-timeout=10 -i "$image" -t )
-shot_custom=false
+shot_custom="false"
 
 options="Options:
     -h, --help       This help menu.
@@ -69,8 +87,8 @@ esac
 while true ; do
     case "$1" in
         -h|--help)
-            printf "Usage: %s [options]\n\n%s\n\n" "${0##*/}" "$options"; exit 1 ;;
-        -d|--desktop) desktop=$(command -V wmctrl) ; shift ;;
+            printf "Usage: %s [options]\n\n%s\n\n" "${0##*/}" "$options"; exit 0 ;;
+        -d|--desktop) desktop=$(command -v wmctrl 2>/dev/null) ; shift ;;
         -g|--greyscale) hue=(-level "0%,100%,0.6" -set colorspace Gray -average) ; shift ;;
         -p|--pixelate) effect=(-scale 10% -scale 1000%) ; shift ;;
         -f|--font)
@@ -83,52 +101,66 @@ while true ; do
 	    convert -list font | awk -F: '/Font: / { print $2 }' | sort -du | command -- ${PAGER:-less}
 	    exit 0 ;;
 	    -n|--nofork) i3lock_cmd+=(--nofork) ; shift ;;
-        --) shift; shot_custom=true; break ;;
+        --) shift; shot_custom="true"; break ;;
         *) echo "error" ; exit 1 ;;
     esac
 done
 
-if "$shot_custom" && [[ $# -gt 0 ]]; then
+# If invoked with -d/--desktop, we'll attempt to minimize all windows (ie. show
+# the desktop) before locking.
+[ -n "$desktop" ] && "${desktop}" -k on
+
+# If invoked with -- <command-line> at the end, we'll attempt 
+# to use it as a custom screenshot app
+if [[ $shot_custom == *"true"* ]] && [[ $# -gt 0 ]]; then
     shot=("$@");
+else
+    if hash scrot >/dev/null 2>&1; then
+        shot=(scrot)
+    elif hash import >/dev/null 2>&1; then
+        shot=(import -window root)
+    else
+        [ -f /usr/share/backgrounds/default.png ] && shot=(/bin/cp /usr/share/backgrounds/default.png)
+    fi
 fi
 
 command -- "${shot[@]}" "$image"
 
-value="90" #brightness value to compare to
-
-color=$(convert "$image" -gravity center -crop 100x100+0+0 +repage -colorspace hsb \
-    -resize 1x1 txt:- | awk -F '[%$]' 'NR==2{gsub(",",""); printf "%.0f\n", $(NF-1)}');
-
-
-if [[ $color -gt $value ]]; then #white background image and black text
-    bw="black"
-    icon="$scriptpath/icons/lockdark.png"
-    param=("--textcolor=00000000" "--insidecolor=0000001c" "--ringcolor=0000003e" \
-        "--linecolor=00000000" "--keyhlcolor=ffffff80" "--ringvercolor=ffffff00" \
-        "--separatorcolor=22222260" "--insidevercolor=ffffff1c" \
-        "--ringwrongcolor=ffffff55" "--insidewrongcolor=ffffff1c")
-else #black
-    bw="white"
-    icon="$scriptpath/icons/lock.png"
-    param=("--textcolor=ffffff00" "--insidecolor=ffffff1c" "--ringcolor=ffffff3e" \
-        "--linecolor=ffffff00" "--keyhlcolor=00000080" "--ringvercolor=00000000" \
-        "--separatorcolor=22222260" "--insidevercolor=0000001c" \
-        "--ringwrongcolor=00000055" "--insidewrongcolor=0000001c")
-fi
-
-convert "$image" "${hue[@]}" "${effect[@]}" -font "$font" -pointsize 26 -fill "$bw" -gravity center \
-    -annotate +0+160 "$text" "$icon" -gravity center -composite "$image"
-
-# If invoked with -d/--desktop, we'll attempt to minimize all windows (ie. show
-# the desktop) before locking.
-${desktop} ${desktop:+-k on}
+if hash convert >/dev/null 2>&1; then
+    # default system sans-serif font
+    if [ -z "$font" ]; then
+        font=$(convert -list font | awk "{ a[NR] = \$2 } /family: $(fc-match sans -f "%{family}\n")/ { print a[NR-1]; exit }")
+    fi
+    # color sample
+    color=$(convert "$image" -gravity center -crop 700x700+0+0 +repage -colorspace hsb -resize 1x1 txt:- | awk -F '[%$]' 'NR==2{gsub(",",""); printf "%.0f\n", $(NF-1)}');
+    #white background image and black text and vice-versa
+    if [[ $color -gt $value ]]; then
+        bw="black"
+        icon="$scriptpath/icons/lockdark.png"
+        param=("--textcolor=00000000" "--insidecolor=0000001c" "--ringcolor=0000003e" \
+            "--linecolor=00000000" "--keyhlcolor=ffffff80" "--ringvercolor=ffffff00" \
+            "--separatorcolor=22222260" "--insidevercolor=ffffff1c" \
+            "--ringwrongcolor=ffffff55" "--insidewrongcolor=ffffff1c")
+    else 
+        bw="white"
+        icon="$scriptpath/icons/lock.png"
+        param=("--textcolor=ffffff00" "--insidecolor=ffffff1c" "--ringcolor=ffffff3e" \
+            "--linecolor=ffffff00" "--keyhlcolor=00000080" "--ringvercolor=00000000" \
+            "--separatorcolor=22222260" "--insidevercolor=0000001c" \
+            "--ringwrongcolor=00000055" "--insidewrongcolor=0000001c")
+    fi
+    convert "$image" "${hue[@]}" "${effect[@]}" -font "$font" -pointsize 26 -fill "$bw" -gravity center -annotate +0+160 "$text" "$icon" -gravity center -composite "$image"
+fi 
 
 # try to use i3lock with prepared parameters
-if ! "${i3lock_cmd[@]}" "${param[@]}" >/dev/null 2>&1; then
-    # We have failed, lets get back to stock one
-    "${i3lock_cmd[@]}"
-fi
+ if ! "${i3lock_cmd[@]}" "${param[@]}" >/dev/null 2>&1; then
+     # We have failed, lets get back to stock one
+     "${i3lock_cmd[@]}"
+ fi
+#"${i3lock_cmd[@]}" "${param[@]}" >/dev/null 2>&1
+# We have failed, lets get back to stock one
+#[ $? -ne 0 ] && "${i3lock_cmd[@]}"
 
 # As above, if we were passed -d/--desktop, we'll attempt to restore all windows
 # after unlocking.
-${desktop} ${desktop:+-k off}
+[ -n "$desktop" ] && "${desktop}" -k off

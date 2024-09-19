@@ -9,92 +9,94 @@ fi
 
 # Lock screen if possible.
 function do_lock() {
-    [ $# -ge 1 ] && shift
     # Only works if X is running.
     ! is_running_X && log "X server is not running" && return 0
-    
     # Already locked
-    locked && log "do_lock(): already locked" && return 0;
-
+    if locked; then
+        log "do_lock(): already locked" 
+        # wait until (screen lock) ends up
+        lock_wait
+        # reset all still running lockers 
+        reset_locker
+        return 0;
+    fi
     # Find locker
-    if pidof light-locker >/dev/null; then
-        light-locker-command -l >/dev/null 2>&1
+    if hash lock >/dev/null 2>&1; then
+        $HOME/bin/lock -n -dgpf Roboto &
         return 0
-    elif pidof xscreensaver >/dev/null; then
-        xscreensaver-command -lock >/dev/null 2>&1
+    elif hash i3lock >/dev/null 2>&1; then
+        [ -f "$XDG_PICTURES_DIR"/Wallpaper/wallhaven-476623.png ] && {
+            i3lock -d -i "$XDG_PICTURES_DIR"/Wallpaper/wallhaven-476623.png &
+            return 0
+        } 
+        i3lock -d 
         return 0
-    elif pidof gnome-screensaver >/dev/null; then
-        gnome-screensaver-command --lock
+    elif hash light-locker >/dev/null; then
+        light-locker-command -l >/dev/null 2>&1 &
         return 0
-    elif pidof mate-screensaver >/dev/null; then
-        mate-screensaver-command -l >/dev/null 2>&1
+    elif hash xscreensaver >/dev/null; then
+        xscreensaver-command -lock >/dev/null 2>&1 &
         return 0
-    elif pidof cinnamon-screensaver-pam-helper >/dev/null; then
-        cinnamon-screensaver-command -l >/dev/null 2>&1
+    elif hash gnome-screensaver >/dev/null; then
+        gnome-screensaver-command --lock &
         return 0
-    elif hash lock >/dev/null 2>&1; then
-        $HOME/bin/lock -n -gpf Roboto  &
-        pid="$!"
+    elif hash mate-screensaver >/dev/null; then
+        mate-screensaver-command -l >/dev/null 2>&1 &
+        return 0
+    elif hash cinnamon-screensaver-pam-helper >/dev/null; then
+        cinnamon-screensaver-command -l >/dev/null 2>&1 &
+        return 0
     elif hash slock >/dev/null 2>&1; then
         slock &
-        pid="$!"
-    elif hash xlock >/dev/null 2>&1; then
-        xlock $* &
-        pid="$!"
-    elif hash i3lock >/dev/null 2>&1; then
-        i3lock -d &
-        pid="$!"
+        return 0
     elif hash slimlock >/dev/null; then
         slimlock &
-        pid="$!"
     else
-        # Try to fallback to xscreensaver
-        if hash xscreensaver >/dev/null; then
-            xscreensaver -nosplash >/dev/null 2>&1 &
-            xscreensaver-command -lock >/dev/null 2>&1
-            return 0
-        fi
+        log "No suitable screen locker found"
+        return 0
     fi
-    
-    #log "Locked and Waiting until (screen lock) PID $pid ends up..."
-    while 2>/dev/null kill -0 "$pid"; do
-        snore 2
-    done
-    
-    # reset all running lockers
-    reset_locker
 }
 
 function do_test() {
-    [ $# -ge 1 ] && shift
-    is_running_X && log "do_test(): X is running" || log "do_test(): X server down"
-    locked && log "do_test(): Screen already locked" || log "do_test(): Screen not locked";
-    if pidof light-locker >/dev/null; then
-        log "light-locker-command -l"
-    elif pidof xscreensaver >/dev/null; then
-        log "xscreensaver-command -lock"
-    elif pidof gnome-screensaver >/dev/null; then
-        log "gnome-screensaver-command --lock"
-    elif pidof mate-screensaver >/dev/null; then
-        log "mate-screensaver-command -l"
-    elif pidof cinnamon-screensaver-pam-helper >/dev/null; then
-        log "cinnamon-screensaver-command -l"
-    elif hash lock >/dev/null 2>&1; then
-        precheck "convert"
-        precheck "import"
-        precheck "i3lock"
-        log "$HOME/bin/lock -n -gpf Roboto"
+    ! is_running_X && log "do_test(): X server down" && return 0
+    log "do_test(): X is running"
+    if locked; then 
+        log "do_test(): Screen already locked"
+        if pidof light-locker >/dev/null; then
+            log "do_test(): light-locker-command -l"
+        elif pidof xscreensaver >/dev/null; then
+            log "do_test(): xscreensaver-command -lock"
+        elif pidof gnome-screensaver >/dev/null; then
+            log "do_test(): gnome-screensaver-command --lock"
+        elif pidof mate-screensaver >/dev/null; then
+            log "do_test(): mate-screensaver-command -l"
+        elif pidof cinnamon-screensaver-pam-helper >/dev/null; then
+            log "do_test(): cinnamon-screensaver-command -l"
+        elif pidof lock >/dev/null 2>&1; then
+            log "do_test(): $HOME/bin/lock -n -gpf Roboto"
+        fi
+    else
+        log "do_test(): Screen not locked";
+    fi
+    if hash lock >/dev/null 2>&1; then
+        checkfor "convert" && {
+          log "do_test(): Has $(type convert | awk '{print $3}')"  
+        } 
+        checkfor "import" && { 
+            log "do_test(): Has $(type import | awk '{print $3}')"
+        }
+        checkfor "i3lock" && {
+            log "do_test(): Has $(type i3lock | awk '{print $3}')"
+        }
+        log "do_test(): Has $HOME/bin/lock -n -gpf Roboto"
     elif hash slock >/dev/null 2>&1; then
-        log "slock"
-    elif hash xlock >/dev/null 2>&1; then
-        log "xlock $@" 
+        log "do_test(): Has $(type slock | awk '{print $3}')"
     elif hash i3lock >/dev/null 2>&1; then
-        log "i3lock -d"
+        log "do_test(): Has $(type i3lock | awk '{print $3}')"
     elif hash slimlock >/dev/null; then
-        log "slimlock"
+        log "do_test(): Has $(type slimlock | awk '{print $3}')slimlock"
     elif hash xscreensaver >/dev/null; then
-        log "xscreensaver -nosplash"
-        log "xscreensaver-command -lock"
+        log "do_test(): Has $(type xscreensaver | awk '{print $3}') -nosplash"
     fi
     return 0
 }

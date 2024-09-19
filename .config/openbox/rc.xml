@@ -975,6 +975,14 @@
       <shade>no</shade>
     </application>
 -->
+    <application name="lxpolkit">
+      <skip_pager>yes</skip_pager>
+      <skip_taskbar>yes</skip_taskbar>
+      <focus>yes</focus>
+      <layer>above</layer>
+      <fullscreen>no</fullscreen>
+      <maximized>no</maximized>
+    </application>
     <application name="polkit-mate-authentication-agent-1">
       <skip_pager>yes</skip_pager>
       <skip_taskbar>yes</skip_taskbar>
@@ -1038,6 +1046,9 @@
       <layer>above</layer>
       <fullscreen>no</fullscreen>
       <maximized>no</maximized>
+    </application>
+    <application title="Blur Scope*">
+      <decor>no</decor>
     </application>
     <application title="qiv*">
       <decor>no</decor>

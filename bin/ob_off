@@ -10,16 +10,19 @@ function doAction(){
             echo "Cancel"
         ;;
         2)
-            mylock lock
+            "$HOME"/bin/mylock lock
         ;;
         3)
-            myexit
+            "$HOME"/bin/myexit
         ;;
         4)
-            myreboot
+            "$HOME"/bin/mysuspend
         ;;
         5)
-            myshutdown
+            "$HOME"/bin/myreboot
+        ;;
+        5)
+            "$HOME"/bin/myshutdown
         ;;
     esac
 }
@@ -29,10 +32,10 @@ function doMenu_en(){
         yad --text-align=center --fontname="Sans bold 18" --width=420 --height 85 \
         --text='<span color=\"white\" font="Sans bold 18">Are you sure you want to leave?</span>' --fixed \
         --undecorated --on-top --sticky --center --no-escape -title "Pick a choice" \
-        --button="Cancel":1 --button="Lock":2 --button="Logout":3 --button="Reboot":4 --button="Poweroff":5 >/dev/null
+        --button="Cancel":1 --button="Lock":2 --button="Logout":3 --button="Reboot":4 --button="Suspend":5 --button="Poweroff":6 >/dev/null
     else
         gxmessage -font "Sans bold 16" "          Are you sure you want to leave?" -center -borderless -noescape -sticky -ontop \
-        -title "Pick a choice" -default "Cancel" -buttons "_Cancel":1,"_Lock":2,"_Logout":3,"_Reboot":4,"_Poweroff":5 >/dev/null
+        -title "Pick a choice" -default "Cancel" -buttons "_Cancel":1,"_Lock":2,"_Logout":3,"_Suspend":4,"_Reboot":5,"_Poweroff":6 >/dev/null
     fi
     doAction "$?"
     return 0
@@ -43,10 +46,10 @@ function doMenu_pt(){
         yad --text-align=center --fontname="Sans bold 18" --width=420 --height 85 \
         --text='<span color=\"white\" font="Sans bold 18">Tem certeza que quer sair?</span>' --fixed \
         --undecorated --on-top --sticky --center --no-escape -title "Escolha uma ação" \
-        --button="Cancelar":1 --button="Bloquear":2 --button="Logout":3 --button="Reiniciar":4 --button="Desligar":5 >/dev/null
+        --button="Cancelar":1 --button="Bloquear":2 --button="Logout":3 --button="Suspender":4 --button="Reiniciar":5 --button="Desligar":6 >/dev/null
     else
         gxmessage -font "Sans bold 16" "          Tem certeza que quer sair?" -center -borderless -noescape -sticky -ontop \
-        -title "Escolha uma ação" -default "Cancelar" -buttons "_Cancelar":1,"_Bloquear":2,"_Logout":3,"_Reiniciar":4,"_Desligar":5 >/dev/null
+        -title "Escolha uma ação" -default "Cancelar" -buttons "_Cancelar":1,"_Bloquear":2,"_Logout":3,"_Suspender":4,"_Reiniciar":5,"_Desligar":6 >/dev/null
     fi
     doAction "$?"
     return 0
@@ -60,16 +63,7 @@ function main() {
     
     # l10n support
     case "${LANG:-}" in
-        de_* ) doMenu_en ;; # Deutsch
-        da_* ) doMenu_en ;; # Danish
-        es_* ) doMenu_en ;; # Española
-        fr_* ) doMenu_en ;; # Français
-        id_* ) doMenu_en ;; # Bahasa Indonesia
-        it_* ) doMenu_en ;; # Italian
-        lv_* ) doMenu_en ;; # Latvian
-        pl_* ) doMenu_en ;; # Polish
         pt_* ) doMenu_pt ;; # Português
-        ru_* ) doMenu_en ;; # Russian
         * ) doMenu_en ;; # Default to English
     esac
 }

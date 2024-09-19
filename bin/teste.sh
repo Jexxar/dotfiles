@@ -242,6 +242,38 @@ function remove-lines() {
   mv "$tmp_file" "$all_lines"
 }
 
+function XorgIDproc(){
+    local WINDOW_IDS=$(xwininfo -tree -root | grep -o -P '\b0x[0-9a-f]+' | sort -u)
+
+    local PIDS=""
+    local PID=""
+    for ID in $WINDOW_IDS; do
+        if [ "$ID" = "0x0" ]; then
+            continue
+        fi
+        #printf "Window %s PID=" "$ID" 
+        PID=$(LC_ALL=C xprop -id "$ID" _NET_WM_PID | cut -d' ' -f3-)
+        if [ "$PID" = "not found." ]; then
+            printf "%s\n" "$ID is unknown)"
+        #   See also: https://unix.stackexchange.com/a/84981
+            true;
+        else
+        #   printf "%s\n" "$PID"
+            PIDS="$PIDS $PID"
+        fi
+    done
+    
+    PIDS=$(printf "%s\n" $PIDS | sort -u)
+    
+    # go through the list of processes connected to Xorg:
+    for P in $PIDS; do
+        printf "%s: %s\n" "$P" "$(cat /proc/$P/cmdline)"
+        # wait for the previous line to get on the screen before stopping e.g. compositing manager
+        sleep 0.1s 
+        # Stop the process for 5 secs and let the process continue after that.
+        kill -STOP "$P" && sleep 5s && kill -CONT "$P"
+    done
+}
 
 function main() {
     #local OLD_IFS=$IFS
@@ -752,7 +784,11 @@ function main() {
     #        fi
     #    fi
     #done
-    remove-lines "$HOME/matchln.txt" "$HOME/tif.txt"
+
+    #remove-lines "$HOME/matchln.txt" "$HOME/tif.txt"
+
+
+    XorgIDproc
 }
 
 main "$@"

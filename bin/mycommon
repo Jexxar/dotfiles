@@ -18,6 +18,9 @@ myLogSctiptBase="${myLogScriptName%%.*}"
 myLogPath=$(findLogPath)
 myLogFile="$myLogPath/$myLogSctiptBase.log"
 
+# Default screensavers list
+mySclist=('i3lock' 'slock' 'xlock' 'light-locker' 'mate-screensaver-dialog' 'cinnamon-screensaver-pam-helper' 'slimlock' 'gnome-screensaver-dialog' 'xscreensaver')
+
 # Print the given message with a timestamp.
 function info(){
     printf '%s %s\n' "$(date +%F_%H:%M:%S | tr '_' ' ') $HOSTNAME" "$*"
@@ -534,17 +537,28 @@ function _wm(){
 
 # Is the screen already locked?
 function locked(){
-    local sclist=('i3lock' 'slock' 'xlock' 'light-locker' 'mate-screensaver-dialog' 'cinnamon-screensaver-pam-helper' 'slimlock' 'gnome-screensaver-dialog' 'xscreensaver')
-    for p in "${sclist[@]}"; do
+    for p in "${mySclist[@]}"; do
         [ $(pgrep -lfc "${p}") -gt 0 ] && return 0;
     done
     return 1;
 }
 
+# Wait locker to end
+function lock_wait(){
+    local pid=""
+    for p in "${mySclist[@]}"; do
+        pid=$(pgrep -f "${p}")
+        [ -n "$pid" ] && break;
+    done
+    while 2>/dev/null kill -0 "$pid"; do
+        snore 1
+    done
+    return 0;
+}
+
 # Reset locker kill running lock apps
 function reset_locker(){
-    local sclist=('i3lock' 'slock' 'xlock' 'light-locker' 'mate-screensaver-dialog' 'cinnamon-screensaver-pam-helper' 'slimlock' 'gnome-screensaver-dialog' 'xscreensaver')
-    for p in "${sclist[@]}"; do
+    for p in "${mySclist[@]}"; do
         [ $(pgrep -lfc "${p}") -gt 0 ] && stop_it "${p}"
     done
     return 0;

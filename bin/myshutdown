@@ -7,49 +7,53 @@ if [ -f "$HOME/bin/mycommon" ]; then
 fi
 
 function do_shutdown() {
-    if is_session_active; then
-        # try systemd version first
-        checkfor "systemctl" && systemctl poweroff && exit 0
-        # try elogind version
-        checkfor "loginctl" && loginctl poweroff && exit 0
-        # try for dbus freedesktop service to interact with logind
-        if is_running_X; then
-            if can_poweroff; then
-                dbus_poweroff 
-                exit 0
-            fi
+    if is_running_X; then
+        if is_session_active; then
+            # try for dbus freedesktop service to interact with logind
+            can_poweroff && dbus_poweroff && exit 0
+            # try elogind version
+            checkfor "loginctl" && {
+                if loginctl -h | grep -q "poweroff"; then
+                    loginctl poweroff
+                    exit 0
+                fi
+            }
         fi
     fi
-    # if there is nor active session neither login manager
     local su_no_pw="$(sudo -l | grep "NOPASSWD")"
-    # make sure systemctl poweroff is in sudoers file
-    [ -z "${su_no_pw##*systemctl poweroff*}" ] && checkfor "systemctl" && sudo systemctl poweroff && exit 0
-    # make sure poweroff is in sudoers file
-    [ -z "${su_no_pw##*poweroff*}" ] && checkfor "poweroff" && sudo poweroff && exit 0
+    # make sure systemctl reboot is in sudoers file
+    [[ $su_no_pw == *"systemctl"* ]] && checkfor "systemctl" && sudo systemctl poweroff && exit 0
+    # make sure reboot is in sudoers file
+    [[ $su_no_pw == *"poweroff"* ]] && checkfor "poweroff" && sudo poweroff && exit 0
     # make sure shutdown is in sudoers file
-    [ -z "${su_no_pw##*shutdown*}" ] && checkfor "shutdown" && sudo shutdown -h now && exit 0
+    [[ $su_no_pw == *"shutdown"* ]] && checkfor "shutdown" && sudo shutdown -h now && exit 0
     # make sure halt is in sudoers file
-    [ -z "${su_no_pw##*halt*}" ] && checkfor "halt" && sudo halt && exit 0
+    [[ $su_no_pw == *"halt"* ]] && checkfor "halt" && sudo halt && exit 0
     log "No suitable poweroff command found. Check your installation." && exit 0
 }
 
 function do_test() {
-    if is_session_active; then
-        log "User $USER has an active session. Polkit allow to poweroff"
-        checkfor "systemctl" && log "Found: systemctl poweroff"
-        checkfor "loginctl" && log "Found: loginctl poweroff"
-        if is_running_X ; then
-            log "X is running"
+    if is_running_X ; then
+        log "X is running"
+        if is_session_active; then
+            log "User $USER has an active session. Polkit allow to poweroff"
             can_poweroff && log "User $USER can poweroff using Dbus"
+            checkfor "loginctl" && {
+                if loginctl -h | grep -q "poweroff"; then
+                    log "loginctl allowed to poweroff"
+                else
+                    log "loginctl not allowed to poweroff"
+                fi
+            };
+        else
+            log "user $USER does NOT have an active session"
         fi
-    else
-        log "User $USER does NOT have an active session"
-        local su_no_pw="$(sudo -l | grep "NOPASSWD")"
-        [ -z "${su_no_pw##*systemctl poweroff*}" ] && checkfor "systemctl" && log "Found: sudo systemctl poweroff"
-        [ -z "${su_no_pw##*poweroff*}" ] && checkfor "poweroff" && log "Found: sudo poweroff"
-        [ -z "${su_no_pw##*shutdown*}" ] && checkfor "shutdown" && log "Found: sudo shutdown"
-        [ -z "${su_no_pw##*halt*}" ] && checkfor "halt" && log "Found: sudo halt"
     fi
+    local su_no_pw="$(sudo -l | grep "NOPASSWD")"
+    [[ $su_no_pw == *"systemctl"* ]] && checkfor "systemctl" && log "Found: sudo systemctl poweroff"
+    [[ $su_no_pw == *"poweroff"* ]] && checkfor "poweroff" && log "Found: sudo poweroff"
+    [[ $su_no_pw == *"shutdown"* ]] && checkfor "shutdown" && log "Found: sudo shutdown"
+    [[ $su_no_pw == *"halt"* ]] && checkfor "halt" && log "Found: sudo halt"
     return 0
 }
 
