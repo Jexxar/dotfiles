@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="46"
+   height="22"
+   id="svg4188"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="toggle-off-dark.svg">
+  <metadata
+     id="metadata4206">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="766"
+     id="namedview4204"
+     showgrid="false"
+     inkscape:zoom="19.043478"
+     inkscape:cx="31.086758"
+     inkscape:cy="11"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4188" />
+  <defs
+     id="defs4190">
+    <linearGradient
+       id="a">
+      <stop
+         offset="0"
+         stop-color="#39393a"
+         id="stop4193" />
+      <stop
+         offset="1"
+         stop-color="#2f2f30"
+         id="stop4195" />
+    </linearGradient>
+    <linearGradient
+       xlink:href="#a"
+       id="b"
+       x1="53"
+       y1="294.429"
+       x2="53"
+       y2="309.804"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-42.444931,-291.49507)" />
+  </defs>
+  <g
+     id="g4252"
+     transform="translate(-0.36757991,0.31506849)">
+    <rect
+       style="fill:#0b1016;fill-opacity:1;stroke:#151515;stroke-width:1.08500004;marker:none"
+       width="44.445999"
+       height="20.910999"
+       x="1.0450913"
+       y="0.27243924"
+       rx="10.455"
+       ry="10.073"
+       id="rect4200" />
+    <rect
+       ry="10.455"
+       rx="10.455"
+       y="0.21992783"
+       x="0.85806775"
+       height="20.910999"
+       width="21.143"
+       style="fill:url(#b);stroke:#151515;stroke-width:1.08500004;marker:none"
+       id="rect4202" />
+  </g>
+</svg>

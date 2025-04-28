@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Show a message of the day quotation(via fortune)
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+function main() {
+    local fcmd="$(findutil fortune)"
+    [ -z "$fcmd" ] && return 0
+    [ -f ~/.plan ] && rm -f ~/.plan &>/dev/null
+    ${fcmd} -a > ~/.plan
+    while [ $(wc -l < ~/.plan) -ge 3 ]; do
+        rm -f ~/.plan &>/dev/null
+        ${fcmd} -a > ~/.plan
+    done
+    # awk '{ print $0 }' ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1' | cowsay -f $(random_cow_file)
+    awk '{ print $0 }' ~/.plan | sed -e 's/^[ \t]*//' | awk '{$1=$1}1'
+    return 0
+}
+
+main "$@"

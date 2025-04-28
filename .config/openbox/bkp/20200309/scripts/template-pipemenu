@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# template-pipemenu
+# Adapted from a script by damo <damo@bunsenlabs.org>
+
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/pipe-common.sh"
+
+if [ -f "$COMMON_FUNCTIONS" ]; then
+    . "${COMMON_FUNCTIONS}" 2> /dev/null
+else
+    echo $"Error: Failed to locate $COMMON_FUNCTIONS" >&2
+    exit 1
+fi
+
+function main(){
+    local d=""
+    local fext=""
+    local fname=""
+    local fbase=""
+    local files
+    d=$(grep XDG_TEMPLATES_DIR "$HOME/.config/user-dirs.dirs" | cut -f 2 -d'=' | tr -d '\"')
+    printf -v cmd '%s' "mapfile -t files < <(find $d -type f -name '*' | xargs -0)"
+    eval "$cmd"
+    menuBegin
+    for fname in "${files[@]}"; do
+        fbase="${fname##*/}"
+        fbase="${fbase%.*}"
+        fext="${fname##*.}"
+        fname=$(echo -en "$fname")
+        fbase=$(echo -en "$fbase")
+        fbase=$(esc_enc "$fbase")
+        if [ ! -z "$fbase" ]; then
+            case "$fext" in
+              db)  menuItem "$fbase" "xdg-open \"file://$fname\"" "libreoffice-base"
+                ;;
+            docx)  menuItem "$fbase" "xdg-open \"file://$fname\"" "libreoffice-writer"
+                ;;
+             png)  menuItem "$fbase" "xdg-open \"file://$fname\"" "graphics-image-viewer"
+                ;;
+            pptx)  menuItem "$fbase" "xdg-open \"file://$fname\"" "libreoffice-impress"
+                ;;
+            xlsx)  menuItem "$fbase" "xdg-open \"file://$fname\"" "libreoffice-calc"
+                ;;
+             zip)  menuItem "$fbase" "xdg-open \"file://$fname\"" "accessories-archiver"
+                ;;
+               *)  menuItem "$fbase" "xdg-open \"file://$fname\"" "text"
+                ;;
+            esac
+        fi
+    done;
+    menuEnd
+}
+
+main

@@ -1,0 +1,2 @@
+ACTION=="add|change", SUBSYSTEM=="net", KERNEL=="eth*|en*", RUN+="/sbin/ethtool -K $name tso off gro off" 
+ACTION=="add|change", SUBSYSTEM=="net", KERNEL=="wla*|wl*", RUN+="/sbin/ethtool -K $name tso off gro offhistory -r"

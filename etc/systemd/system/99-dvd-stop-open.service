@@ -1,0 +1,11 @@
+[Unit]
+Description=Disable DVD auto-open
+Documentation=man:setcd(1)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/setcd -o0 /dev/sr0
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

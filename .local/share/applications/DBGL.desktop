@@ -1,0 +1,23 @@
+[Desktop Entry]
+Type=Application
+Name=DBGL DOSBox Emulator
+Name[ca]=Emulador DBGL DOSBox
+Name[de]=DBGL DOSBox Emulator
+Name[es]=Emulador DBGL DOSBox
+Name[nl]=DBGL DOSBox Simulator
+Name[ru]=Эмулятор DBGL DOSBox
+Name[it]=DBGL DOSBox emulatore
+Name[ua]=Емулятор DBGL DOSBox
+Comment=Run old DOS applications
+Comment[ca]=Executeu antigues aplicacions DOS
+Comment[de]=Ein Emulator für alte DOS Programme
+Comment[es]=Un emulador para ejecutar antiguas aplicaciones DOS
+Comment[nl]=Een simulator om oude DOS-spellen te spelen
+Comment[ru]=Запуск старых DOS-приложений
+Comment[it]=Un emulatore per far girare vecchi giochi DOS
+Comment[ua]=Запуск старих DOS-застосувань
+Icon=dosbox
+Exec=/home/usuario/Jog/dbgl/dbgl
+Terminal=false
+Categories=Game;Emulator;
+Keywords=DOS Emulator;

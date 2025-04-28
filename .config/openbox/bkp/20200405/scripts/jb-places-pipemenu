@@ -1,0 +1,177 @@
+#!/usr/bin/env bash
+#    cb-places-pipemenu - a places openbox pipe menu
+#    Copyright (C) 2010  John Crawley
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#    Version 2012/09/27-cb
+
+
+# Ported to #!++ <https://crunchbangplusplus.org>
+# by Ben Young <computermouth@crunchbangplusplus.org>
+
+#    NB The shell, not bash, is invoked in the hope that
+#    dash will be used, as it is much faster.
+
+# Usage: add
+# <menu id="places" label="Places" execute="/path/to/cbpp-places-pipemenu ~/" />
+# to your .config/openbox/menu.xml
+
+# or, if you want the "recent files" menu incorporated at the top, use:
+# <menu id="places" label="Places" execute="/path/to/cbpp-places-pipemenu --recent ~/" />
+# make sure you have cbpp-recent-files-pipemenu somewhere, and enter its path below.
+
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/pipe-common.sh"
+
+if [ -f "$COMMON_FUNCTIONS" ]; then
+    . "${COMMON_FUNCTIONS}" 2> /dev/null
+else
+    echo $"Error: Failed to locate $COMMON_FUNCTIONS" >&2
+    exit 1
+fi
+
+# path to your "recent files" script, if you want to incorporate it:
+recent_script=$HOME/.config/openbox/scripts/recent-pipemenu
+# Command to open folders at "Browse here..." - any file manager
+open_folder_cmd=pcmanfm
+# Default command to open files with - others might be xdg-open, gnome-open, pcmanfm...
+default_open_cmd=xdg-open  # exo-open comes with thunar
+# Text editor of choice
+text_editor=~/bin/myedit
+
+# extra dotfiles to display in HOME folder (dotfiles are hidden by default)
+# edit the list (space separated, surrounded by single quotes) or comment this line out, to taste:
+shown_dotfiles='.config .conkyrc .local .cache .bashrc .bash_profile .wmdrawerrc .bash_history'
+
+# function to open files with default open command, or alternative command for certain files
+# - add other conditions to choice
+function open_file() {
+    #[ -x "$1" ] && exec "$text_editor" "$1" ;    # comment out this line if you don't want to edit executables instead of executing
+    #[ -x "$1" ] && exec "terminator -e" "$1" ;    # uncomment this and comment out previous line to run executables in terminal instead of editing
+    [ "${1##*.}" = desktop ] && exec "$text_editor" "$1" ;    # comment out this line if you don't want to edit .desktop files instead of executing
+    exec "$default_open_cmd" "$1" ;    # use default open command if above conditions not satisfied
+}
+
+function doMenuRecent() {
+    if [ -x "$recent_script" ]; then
+        "$recent_script"
+    fi
+}
+
+function doMenu() {
+    local wpath="${*:-$HOME}"  
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) doMenu_en $wpath ;; # Deutsch
+        da_* ) doMenu_en $wpath ;; # Danish
+        es_* ) doMenu_en $wpath ;; # Española
+        fr_* ) doMenu_en $wpath ;; # Français
+        id_* ) doMenu_en $wpath ;; # Bahasa Indonesia
+        it_* ) doMenu_en $wpath ;; # Italian
+        lv_* ) doMenu_en $wpath ;; # Latvian
+        pl_* ) doMenu_en $wpath ;; # Polish
+        pt_* ) doMenu_pt $wpath ;; # Português
+        ru_* ) doMenu_en $wpath ;; # Russian
+        * ) doMenu_en $wpath ;; # Default to English
+    esac
+}
+
+function doMenu_en() {
+    local wpath="$*"  
+    local dpath=""
+    dpath=$(esc_enc $wpath)
+    menuBegin
+    menuSep  "Places"
+    #menuItem "Open ..." "$0 --open $dpath" "inode-directory"
+    menuItem "Open ..." "$0 --open &quot;$dpath&quot;" 
+    menuSep
+    doMenu_files "en" "$wpath"
+    menuEnd
+}
+
+function doMenu_pt() {
+    local wpath="$*"  
+    local dpath=""
+    dpath=$(esc_enc $wpath)
+    menuBegin
+    #menuSep  "$Locais"
+    #menuItem "Abrir ..." "$0 --open $dpath" "inode-directory"
+    menuItem "Abrir ..." "$0 --open &quot;$dpath&quot;"
+    menuSep
+    doMenu_files "pt" "$wpath"
+    menuEnd
+}
+
+function doMenu_files() {
+    local old_IFS=$IFS
+    [ -z "$1" ] && return 0
+    shift
+    local llang="$1"
+    local extra_entries=""
+    local directories_menu=""
+    local files_menu=""
+    local shortname=""
+    local dname=""
+    local dpath=""
+    local path=""
+    local sdname=""
+    path="${*:-$HOME}"  # default starting place is ~, otherwise $2
+    path="$(echo "${path}"/ | tr -s '/')"    # ensure one final slash
+    local tmp=$(realpath $path)
+    [ -d "$path" ] || { menuSep  "$0 : $path is not a directory"; return 1; }
+    #[ -d '$tmp' ] || { menuSep  "$0 : $path tmp is not a directory"; return 1; }
+    [ "$path" = "$HOME"/ ] && extra_entries="$shown_dotfiles"
+    IFS=$'\n'
+    lstfile=$(/bin/ls $path -L1h --group-directories-first )
+    dpath=$(esc_enc $path)
+    #for i in "$path"* $extra_entries; do
+    for i in $lstfile; do
+        #[ -e "$i" ] || continue;    # only output code if file exists
+        shortname="${i##*/}";
+        dname=$(esc_enc $shortname);
+        [ -d "$path$shortname" ] && { subMenuExec "${dpath}${dname}" "${dname}" "$0 &quot;$path$dname&quot;"; }
+        if [ -f "$path$shortname" ]; then
+            menuItem "${dname}" "<![CDATA[$0 --open \"${dpath}${dname}\"]]>"; 
+        fi
+    done
+    IFS=$old_IFS
+    #for i in $extra_entries; do
+    #    #[ -e "$i" ] || continue;    # only output code if file exists
+    #    shortname="${i##*/}";
+    #    #echo "$dpath$dname"
+    #    dname=$(esc_enc $shortname);
+    #    [ -d "$path$shortname" ] && { menuItem "${dname}" "$0 --open '${dpath}${dname}'" "inode-directory"; }
+    #    [ -f "$path$shortname" ] && { menuItem "${dname}" "$0 --open '${dpath}${dname}'" "gtk-file"; }
+    #done
+}
+
+#######################################################################
+# By default, this script will display directories separately, before files.
+# To change this behaviour, see NOTE1, NOTE2 and NOTE3 below, near end of page.
+#######################################################################
+
+case $1 in
+    # if "--open" option is sent as $1, open file ($2) instead of generating menu
+    --open)
+        open_file "$2"
+        # in case exec command fails
+        echo "$0 : failed to open $2" >&2
+        exit;;    
+    # if "--recent" option is sent, incorporate "recent files" menu
+    --recent)
+        doMenuRecent
+        exit;;
+esac
+
+#echo "$1" 
+
+doMenu "$*"
+
+exit

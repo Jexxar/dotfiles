@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+hasGraph="N"
+
+if is_running_X; then
+    hasGraph="Y"
+fi
+
+##trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
+
+# Play an alarm sound
+function playAlarm(){
+    local dir=""
+    local playfile=""
+    local inputKey=""
+
+    if [ -z "$XDG_MUSIC_DIR" ]; then
+        dir="/usr/share/sounds/freedesktop/stereo/"
+        playfile="alarm-clock-elapsed.oga"
+    else
+        dir="$XDG_MUSIC_DIR/Ringtones"
+        playfile="Charpentier.ogg"
+    fi
+    if checkfor "ffplay"; then
+        if [ "$hasGraph" == "Y" ]; then
+            ffplay -loop 0 -loglevel quiet "$dir/$playfile"
+            return 0
+        fi
+        ffplay -nodisp -exitonkeydown -autoexit -loglevel quiet "$dir/$playfile" &
+        cpid=$!
+        while true; do
+            read -t 0.1 -rsn1 inputKey <&1
+            if [ "${inputKey,,}" == "q" ]; then
+                [ -n "$cpid" ] && kill $cpid
+                break
+            else
+                if ps -aux | grep "ffplay" | grep -q "$cpid"; then
+                    read -t 0.1 -rsn1 inputKey <&1
+                else
+                    ffplay -nodisp -exitonkeydown -autoexit -loglevel quiet "$dir/$playfile" &
+                    cpid=$!
+                fi
+            fi
+        done
+        return 0
+    fi
+    if checkfor "mpv"; then
+        if [ "$hasGraph" == "Y" ]; then
+            mpv -loop --really-quiet "$dir/$playfile"
+        fi
+        return 0
+    fi
+    if checkfor "play"; then
+        play -q "$dir/$playfile" &
+        cpid=$!
+        while true; do
+            read -t 0.1 -rsn1 inputKey <&1
+            if [ "${inputKey,,}" == "q" ]; then
+                [ -n "$cpid" ] && kill $cpid
+                break
+            else
+                if ps -aux | grep "play" | grep -q "$cpid"; then
+                    read -t 0.1 -rsn1 inputKey <&1
+                else
+                    play -q "$dir/$playfile" &
+                    cpid=$!
+                fi
+            fi
+        done
+        return 0
+    fi
+}
+
+# Print an alarm message
+function notifAlarm(){
+    local msg="$@"
+    local scriptName="${0##*/}"
+    local scriptBase="${scriptName%%.*}"
+    if [ "$hasGraph" == "Y" ]; then
+        if checkfor "notify-send"; then
+            notify-send -t 9000 --urgency="normal" --app-name="$scriptBase" --icon="$(iconPath alarm-clock)" "$(date +'%H:%M') - $msg" "$scriptBase"
+            return 0
+        elif checkfor "gxmessage"; then
+            local o="gxmessage -font \"Hack Nerd Font Mono 9\" -center -borderless -sticky -ontop -file - 2> /dev/null"
+        elif checkfor "yad"; then
+            local o="yad  --text-info --title \"Alarm Notification\" --text-align=fill --fixed --undecorated --on-top --sticky --posx=960 --posy=10 --width 400 --height 150 --fontname=\"Hack Nerd Font Mono 9\" 2> /dev/null"
+        elif checkfor "zenity"; then
+            local o="zenity  --text-info --title \"Alarm Notification\" --no-interaction --modal --width 400 --height 150 --font \"Hack Nerd Font Mono 9\" 2> /dev/null"
+        else
+            local o="cat -"
+        fi
+    else
+        local o="cat -"
+    fi
+    eval "echo '$msg' | $o"
+}
+
+# Print a help message
+function usage() {
+    echo "Usage: ${0##*/} <date> [ <text-message> ]" 1>&2
+    echo "    Trigger an alarm upon a future date"
+}
+
+function main() {
+    local nArgs=$#
+    if [ $nArgs -eq 0 ]; then
+        usage
+        bailout "No parameter provided."
+    fi
+    local aDt=$(date -d "${1}" '+%Y-%m-%d %_T');
+    if [ $nArgs -gt 1 ]; then
+        shift
+        local aMsg="$@"
+    else
+        local aMsg="Alarm Notification"
+    fi
+    snoreUntil "$aDt"
+    notifAlarm "$aMsg" &
+    playAlarm
+    unset hasGraph
+    return 0
+}
+
+main "$@"

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+function main() {
+    if [ $# -gt 0 ]; then
+        local __args=("$@");
+        local len=$#
+        for (( i = 1; i <= $len; i++ )); do
+            if [ "${__args[$i]}" == "--download-result=hide" ]; then
+                __args[$i]="--download-result=full"
+            fi
+        done
+    fi
+    exec aria2c2 "${__args[@]}"
+}
+
+main "$@"
+

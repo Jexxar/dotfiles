@@ -1,0 +1,7 @@
+This is the info for the last game you ran.
+
+File: Sim City (U) [!].smc Header: Yes
+SIMCITY                   TYPE:NORMAL   
+INTERLEAVED:No               CHKSUM:OK  
+VIDEO:NTSC    BANK:Lo     CRC32:8AEDD3A1
+                                        

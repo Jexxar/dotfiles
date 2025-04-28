@@ -1,0 +1,16 @@
+# Save all videos under YouTube directory in your home directory
+-o ~/Downloads/%(title)s_%(uploader)s.%(ext)s
+--downloader aria2c
+--downloader "dash,m3u8:native"
+#--downloader-args "aria2c:-c -j 16 -x 16 -s 16 -k 1M"
+#--downloader-args "aria2c:--download-result=default"
+
+--concurrent-fragments 5
+
+--compat-options youtube-dlc
+
+# Always extract audio
+-x
+
+# Do not copy the mtime
+--no-mtime

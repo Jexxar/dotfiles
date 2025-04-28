@@ -1,0 +1,9 @@
+/var/log/lightdm/*.log {
+    daily
+    missingok
+    rotate 3
+    compress
+    notifempty
+    maxsize 100K
+    copytruncate
+}

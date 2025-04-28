@@ -1,0 +1,148 @@
+#!/usr/bin/env bash
+#
+# Copyright (C) 2009-2013 "isomorph"
+# All Rights Reserved.
+#
+# BSD 3-Clause License
+#
+# ----
+#
+# OpenBox "VirtualBox" pipe-menu
+# Outputs a menu roughly akin to:
+#
+#    VirtualBox
+#    ----------
+#    <Virtual Machine>
+#    <Virtual Machine>
+#    <Virtual Machine>
+#    ...
+#
+# Usage:
+#
+# 1. Copy this file somewhere on your path and make it executable
+# 2. Add the following line somewhere to your /.config/openbox/menu.xml
+#
+#    <menu id="vms" label="Virtual Machines" execute="virtualbox-pipemenu" />
+#
+# 3. Reconfigure openbox
+#
+# Feel free to change this script as you like.
+# Probably, it's not so hard to make rhythembox or other media player control menus like this,
+# as far as these media players support the CUI control commands.
+
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/pipe-common.sh"
+
+if [ -f "$COMMON_FUNCTIONS" ]; then
+    . "${COMMON_FUNCTIONS}" 2> /dev/null
+else
+    echo $"Error: Failed to locate $COMMON_FUNCTIONS" >&2
+    exit 1
+fi
+
+function doMenuDownVB() {
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) doMenuDownVB_en ;; # Deutsch
+        da_* ) doMenuDownVB_en ;; # Danish
+        es_* ) doMenuDownVB_en ;; # Española
+        fr_* ) doMenuDownVB_en ;; # Français
+        id_* ) doMenuDownVB_en ;; # Bahasa Indonesia
+        it_* ) doMenuDownVB_en ;; # Italian
+        lv_* ) doMenuDownVB_en ;; # Latvian
+        pl_* ) doMenuDownVB_en ;; # Polish
+        pt_* ) doMenuDownVB_pt ;; # Português
+        ru_* ) doMenuDownVB_en ;; # Russian
+        * ) doMenuDownVB_en ;; # Default to English
+    esac
+}
+
+# Virtualbox not found in the system
+function doMenuDownVB_en(){
+    menuBegin
+    menuSep "Virtualbox cannot be found"
+    menuItem "How to install Virtualbox" "<![CDATA[x-www-browser https://www.virtualbox.org/wiki/Linux_Downloads]]>" 'text-html' 
+    menuEnd
+}
+
+function doMenuDownVB_pt(){
+    menuBegin
+    menuSep "Virtualbox não Encontrado"
+    menuItem "Como instalar o Virtualbox" "<![CDATA[x-www-browser https://www.virtualbox.org/wiki/Linux_Downloads]]>" 'text-html' 
+    menuEnd
+}
+
+function doMenuRun() {
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) doMenuRun_en ;; # Deutsch
+        da_* ) doMenuRun_en ;; # Danish
+        es_* ) doMenuRun_en ;; # Española
+        fr_* ) doMenuRun_en ;; # Français
+        id_* ) doMenuRun_en ;; # Bahasa Indonesia
+        it_* ) doMenuRun_en ;; # Italian
+        lv_* ) doMenuRun_en ;; # Latvian
+        pl_* ) doMenuRun_en ;; # Polish
+        pt_* ) doMenuRun_pt ;; # Português
+        ru_* ) doMenuRun_en ;; # Russian
+        * ) doMenuRun_en ;; # Default to English
+    esac
+}
+
+function doMenuRun_en(){
+    menuItem "Run Virtualbox" "VirtualBox" 'virtualbox'
+}
+
+function doMenuRun_pt(){
+    menuItem "Rodar Virtualbox" "VirtualBox" 'virtualbox'
+}
+
+function doMenuControl() {
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) doMenuControl_en ;; # Deutsch
+        da_* ) doMenuControl_en ;; # Danish
+        es_* ) doMenuControl_en ;; # Española
+        fr_* ) doMenuControl_en ;; # Français
+        id_* ) doMenuControl_en ;; # Bahasa Indonesia
+        it_* ) doMenuControl_en ;; # Italian
+        lv_* ) doMenuControl_en ;; # Latvian
+        pl_* ) doMenuControl_en ;; # Polish
+        pt_* ) doMenuControl_pt ;; # Português
+        ru_* ) doMenuControl_en ;; # Russian
+        * ) doMenuControl_en ;; # Default to English
+    esac
+}
+
+function doMenuControl_en(){
+    [ -z "$(command -v vboxmanage)" ] && return 0
+    menuSep ""
+    # output the list of virtual machines
+    vboxmanage list vms | cut -f 2 -d "\"" | sort -f | while read vm
+    do
+        menuItem "Start $vm" "<![CDATA[vboxmanage startvm $vm]]>" 'virt-viewer'
+    done;
+}
+
+function doMenuControl_pt(){
+    [ -z "$(command -v vboxmanage)" ] && return 0
+    menuSep ""
+    # output the list of virtual machines
+    vboxmanage list vms | cut -f 2 -d "\"" | sort -f | while read vm
+    do
+        menuItem "Inicia $vm" "<![CDATA[vboxmanage startvm $vm]]>" 'virt-viewer'
+    done;
+}
+
+function main(){
+    which "virtualbox" > /dev/null
+    if [ $? -ne 0 ]; then
+        doMenuDownVB
+        exit 0
+    fi
+    menuBegin
+    doMenuRun
+    doMenuControl
+    menuEnd
+}
+
+main "$@"

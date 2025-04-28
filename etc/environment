@@ -1,0 +1,14 @@
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+MOZ_LOG="PlatformDecoderModule:5"
+MOZ_DISABLE_RDD_SANDBOX=1
+CLUTTER_PAINT=disable-clipped-redraws:disable-culling
+CLUTTER_VBLANK=True
+GDK_NATIVE_WINDOWS=1
+VDPAU_DRIVER=va_gl
+COGL_ATLAS_DEFAULT_BLIT_MODE=framebuffer
+QT_QPA_PLATFORMTHEME=qt5ct
+QT_AUTO_SCREEN_SCALE_FACTOR=0
+NO_AT_BRIDGE=1
+TMPDIR=/tmp
+TMP=/tmp
+TEMP=/tmp

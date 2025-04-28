@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+#
+set -u
+
+if [ -f "$HOME/bin/mycommon" ]; then
+    . "$HOME/bin/mycommon"
+fi
+
+# Print a help message
+function usage() {
+    echo "Usage: ${0##*/} <iso filename>" 1>&2
+    echo "    Mount an ISO image as filesystem"
+    echo " "
+}
+
+#
+function loop_dev_filtered(){
+    #local bf=""
+    #local dv=$(lsblk 2> /dev/null | grep loop | sed -e "s/├─//g;s/└─//g" | awk '{ value=$7; if (value == "" ) { print $1};}' | sort)
+    local uri="$1"
+    for l in $(lsblk 2> /dev/null | grep loop | sed -e "s/├─//g;s/└─//g" | awk '{ value=$7; if (value == "" ) { print $1};}' | sort); do
+        #echo "loop-device = $l"
+        #bf="$(udisksctl info --block-device "/dev/$l" | grep "BackingFile:" | awk '{ print $2}')"
+        #[ "$bf" == "$uri" ] && echo "$l" && break
+        udisksctl info --block-device "/dev/$l" 2> /dev/null | grep -q "$uri" && echo "$l" && break
+    done
+    #[ $? -ne 0 ] && bailout "${0##*/} : loop_dev_filtered : after loop udisksctl"
+    return 0
+}
+
+# 
+function losetup_gdisk() {
+    gnome-disk-image-mounter "$1" 2> /dev/null
+    [ $? -ne 0 ] && bailout "${0##*/} : losetup_gdisk : gnome-disk-image-mounter"
+    return 0
+}
+
+# 
+function losetup_udisk() {
+    udisksctl loop-setup -f "$1" 2> /dev/null
+    [ $? -ne 0 ] && bailout "${0##*/} : losetup_udisk : udisksctl"
+    return 0
+}
+
+# 
+function mount_gio() {
+    [ -z "$1" ] && bailout "${0##*/} : mount_gio : no device found"
+    local dev="/dev/$1"
+    gio mount -d "$dev" 2> /dev/null
+    [ $? -ne 0 ] && bailout "${0##*/} : mount_gio : gio"
+    return 0
+}
+
+# 
+function mount_udisk() {
+    [-z "$1" ]  && bailout "${0##*/} : mount_udisk : no device found"
+    local dev="/dev/$1"
+    udisksctl mount -b "$dev" 2> /dev/null
+    [ $? -ne 0 ] && bailout "${0##*/} : mount_udisk : udisksctl"
+    return 0
+}
+
+function main(){
+    if [ $# -eq 0 ]; then
+        usage
+        echo "Error: No parameter provided to mount."
+        exit 1
+    fi
+    precheck "lsblk"
+    precheck "udisksctl"
+    local uri="$@"
+    #echo "main:uri = $uri"
+    uri=$(realpath $uri) 
+    #echo "main:uri_realpath = $uri"
+    local mntapp=""
+    local losapp=""
+    local lodev=""
+    checkfor "gnome-disk-image-mounter" && losapp="gnome-disk-image-mounter"
+    [ -z "$losapp" ] && {
+        checkfor "udisksctl" && losapp="udisksctl"
+    }
+    checkfor "gio" && mntapp="gio"
+    [ -z "$mntapp" ] && {
+        checkfor "udisksctl" && mntapp="udisksctl"
+    }
+    case "$losapp" in
+        gnome-disk-image-mounter)
+            #echo "gnome-disk-image-mounter $uri"
+            losetup_gdisk "$uri"
+        ;;
+        udisksctl)
+            #echo "udisksctl $uri"
+            losetup_udisk "$uri"
+        ;;
+    esac
+    lodev="$(loop_dev_filtered $uri)"
+    if [ -n "$lodev" ]; then
+        case "$mntapp" in
+            gio)
+                mount_gio "$lodev"
+            ;;
+            udisksctl)
+                mount_udisk "$lodev"
+            ;;
+        esac
+    fi
+    exit 0
+}
+
+main "$@"

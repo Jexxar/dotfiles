@@ -1,0 +1,3 @@
+include ~/.config/remind/birthdays.rem
+include ~/.config/remind/holidays.rem
+#include birthdays.rem

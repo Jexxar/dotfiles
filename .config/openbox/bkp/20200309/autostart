@@ -1,0 +1,442 @@
+#!/usr/bin/env bash
+# Script in $HOME/.config/openbox/autostart
+# to run user-specific things.
+#
+#GLOBALAUTOSTART="/etc/xdg/openbox/autostart"
+
+#. $GLOBALAUTOSTART
+
+export OB_rc=0
+[ -z "$XDG_CURRENT_DESKTOP"] && export XDG_CURRENT_DESKTOP="mate"
+
+if [ -e ~/.config/openbox/log/ob.log ]; then
+    mv ~/.config/openbox/log/ob.log ~/.config/openbox/log/ob.2.log > /dev/null
+    touch ~/.config/openbox/log/ob.log &>/dev/null
+fi
+
+# If the .xsession-errors file is not a symbolic link, delete it and create it as such
+if [ ! -h $HOME/.xsession-errors ]; then
+    /bin/rm $HOME/.xsession-errors
+    ln -s /dev/null $HOME/.xsession-errors
+fi
+
+### SETTINGS START
+
+##Start bitmap Font
+##xset +fp ~/.fonts/misc/
+
+##DUNST
+#dunst -config ~/.config/dunst/dunstrc
+
+## XsetD
+#xsettingsd &
+
+## Turn on/off system beep.
+#xset b off
+
+## Set keyboard settings - 250 ms delay and 25 cps (characters per second) repeat rate.
+## Adjust the values according to your preferances.
+#xset r rate 250 25
+
+## Add keyboard mapping.
+#xmodmap -e "keysym Insert = Multi_key"
+
+## Disable CapsLock
+#setxkbmap -option ctrl:nocaps
+# alternative: use as compose key
+#setxkbmap -option compose:caps
+
+# Alias Super key to Super+Space for single-key menu.
+# See 'man xcape' for other possibilities.
+#xcape -e 'Super_L=Super_L|space'
+
+### TOUCHPAD: comment out the next two entries if you don't have one
+
+## Configure touchpad. See 'man synaptics' for more info.
+## (Now might be using libinput instead of synaptics.)
+#synclient VertEdgeScroll=1 HorizEdgeScroll=1 TapButton1=1 TapButton2=3 2>/dev/null
+
+## Disable touchpad while typing
+#syndaemon -i .5 -K -t -R -d &
+
+### TOUCHPAD END
+
+#
+
+# launches a session dbus instance
+OB_str="dbus-launch session"
+OB_stts=""
+
+if [ -z "$DBUS_SESSION_BUS_ADDRESS" ] && type dbus-launch >/dev/null; then
+    dbus-launch --sh-syntax --exit-with-session &
+    OB_rc=$?
+    if [ $OB_rc -eq 0 ]; then
+        OB_stts="Ok  "
+    else
+        OB_stts="Erro"
+    fi
+    echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+    sleep 1
+else
+    echo "["`date +%F-%H:%M:%S`"] - dbus-launch ja ativo" >> ~/.config/openbox/log/ob.log
+fi
+
+
+# gnome-keyring-daemon
+if [ $(pgrep -lfc gnome-keyring-daemon) -ge 1 ] ; then
+    while 2>/dev/null killall gnome-keyring-daemon; do
+        sleep 1
+    done
+fi
+
+OB_str="/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh"
+OB_stts=""
+
+/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+
+# compton
+if [ $(pgrep -lfc compton) -ge 1 ] ; then
+    while 2>/dev/null killall compton; do
+        sleep 1
+    done
+fi
+
+OB_str="compton -b --config ~/.config/compton.conf"
+OB_stts=""
+
+compton -b --config ~/.config/compton.conf &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+
+# Keyboard
+
+
+# Start mate settings
+if [ $(pgrep -lfc mate-settings-daemon) -ge 1 ] ; then
+    while 2>/dev/null killall mate-settings-daemon; do
+        sleep 1
+    done
+fi
+
+OB_str="mate-settings-daemon"
+OB_stts=""
+
+mate-settings-daemon &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+
+# Start polkit deamon
+if [ $(pgrep -lfc polkit-mate-authentication-agent-1) -ge 1 ] ; then
+    while 2>/dev/null killall polkit-mate-authentication-agent-1; do
+        sleep 1
+    done
+fi
+
+OB_str="polkit-mate-authentication-agent-1"
+OB_stts=""
+if [ -f /usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1 ]; then
+    /usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1 &
+elif [ -f /usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1 ]; then
+    /usr/lib/x86_64-linux-gnu/polkit-mate-authentication-agent-1 &
+fi
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+
+# Start power manager deamon
+if [ $(pgrep -lfc mate-power-manager) -ge 1 ] ; then
+    while 2>/dev/null killall mate-power-manager; do
+        sleep 1
+    done
+fi
+
+OB_str="mate-power-manager"
+OB_stts=""
+
+mate-power-manager &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+#Sound global volume at VOLUME
+VOLUME='115%'
+OB_str="pactl set-sink-volume <index> $VOLUME"
+OB_stts=""
+
+for SINK in `pacmd list-sinks | grep 'index:' | cut -b12-`
+do
+    pactl set-sink-volume $SINK $VOLUME
+    OB_rc=$?
+    if [ $OB_rc -eq 0 ]; then
+        OB_stts="Ok  "
+    else
+        OB_stts="Erro"
+    fi
+    echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+done
+
+#Sound Applet
+if [ $(pgrep -lfc mate-volume-control-applet) -ge 1 ] ; then
+    while 2>/dev/null killall mate-volume-control-applet; do
+        sleep 1
+    done
+fi
+
+OB_str="mate-volume-control-applet"
+OB_stts=""
+
+mate-volume-control-applet &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+
+#screensaver (mate-screensaver)
+if [ $(pgrep -lfc cinnamon-screensaver) -ge 1 ] ; then
+    while 2>/dev/null killall cinnamon-screensaver; do
+        sleep 1
+    done
+fi
+if [ $(pgrep -lfc mate-screensaver) -ge 1 ] ; then
+    while 2>/dev/null killall mate-screensaver; do
+        sleep 1
+    done
+fi
+if [ $(pgrep -lfc gnome-screensaver) -ge 1 ] ; then
+    while 2>/dev/null killall gnome-screensaver; do
+        sleep 1
+    done
+fi
+if [ $(pgrep -lfc xscreensaver) -ge 1 ] ; then
+    while 2>/dev/null killall xscreensaver; do
+        sleep 1
+    done
+fi
+
+#OB_str="mate-screensaver"
+#OB_stts=""
+
+#mate-screensaver &
+
+#OB_rc=$?
+#if [ $OB_rc -eq 0 ]; then
+#    OB_stts="Ok  "
+#else
+#    OB_stts="Erro"
+#fi
+#echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+
+# Start network manager applet
+if [ $(pgrep -lfc nm-applet) -ge 1 ] ; then
+    while 2>/dev/null killall nm-applet; do
+        sleep 1
+    done
+fi
+
+OB_str="/usr/bin/nm-applet"
+OB_stts=""
+
+/usr/bin/nm-applet &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+
+# Update user dirs
+sleep 1
+OB_str="xdg-user-dirs-gtk-update"
+OB_stts=""
+
+xdg-user-dirs-gtk-update &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+
+# xautolock
+OB_str="~/bin/delayctl 30"
+OB_stts=""
+
+~/bin/delayctl 30 &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+
+# Conky
+#if [ $(pgrep -lfc conky) -ge 1 ] ; then
+#    killall conky > /dev/null
+#fi
+
+#sleep 1
+#OB_str="~/bin/conky/conky-startup.sh"
+#OB_stts=""
+
+#~/bin/conky/conky-startup.sh &
+
+#OB_rc=$?
+#if [ $OB_rc -eq 0 ]; then
+#    OB_stts="Ok  "
+#else
+#    OB_stts="Erro"
+#fi
+#echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+
+# Tint2 panel
+sleep 1
+
+if [ $(pgrep -lfc tint2) -ge 1 ] ; then
+    while 2>/dev/null killall tint2; do
+        sleep 1
+    done
+fi
+
+OB_str="tint2"
+OB_stts=""
+
+tint2 &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+
+# lightsOn
+#if [ $(pgrep -lfc lightsOn.sh) -ge 1 ] ; then
+#  while 2>/dev/null killall lightsOn.sh; do
+#    sleep 1
+#  done
+#fi
+
+#OB_str="~/bin/lightsOn.sh 20"
+#OB_stts=""
+
+#~/bin/lightsOn.sh 20 &
+
+#OB_rc=$?
+#if [ $OB_rc -eq 0 ]; then
+#    OB_stts="Ok  "
+#else
+#    OB_stts="Erro"
+#fi
+#echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+# redshift
+if [ $(pgrep -lfc redshift-gtk) -ge 1 ] ; then
+    killall redshift-gtk > /dev/null
+fi
+if [ $(pgrep -lfc redshift) -ge 1 ] ; then
+    killall redshift > /dev/null
+fi
+sleep 1
+OB_str="redshift-gtk"
+OB_stts=""
+
+redshift-gtk &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+export OB_rc
+
+# changer
+if [ $(pgrep -lfc changer.sh) -ge 1 ] ; then
+    while 2>/dev/null killall changer.sh; do
+        sleep 1
+    done
+fi
+
+OB_str="~/bin/changer.sh"
+OB_stts=""
+
+~/bin/changer.sh &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+export OB_rc
+
+OB_str="~/bin/touchpadctl"
+OB_stts=""
+
+~/bin/touchpadctl -d &
+
+OB_rc=$?
+if [ $OB_rc -eq 0 ]; then
+    OB_stts="Ok  "
+else
+    OB_stts="Erro"
+fi
+echo "["`date +%F-%H:%M:%S`"] - $OB_stts - $OB_rc - $OB_str" >> ~/.config/openbox/log/ob.log
+
+export OB_rc

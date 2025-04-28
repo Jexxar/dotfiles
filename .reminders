@@ -1,0 +1,2 @@
+include /home/usuario/.config/remind/holidays.rem
+include /home/usuario/.config/remind/birthdays.rem

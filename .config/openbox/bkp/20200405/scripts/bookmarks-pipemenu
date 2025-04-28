@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# -pipemenu
+
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/pipe-common.sh"
+
+if [ -f "$COMMON_FUNCTIONS" ]; then
+    . "${COMMON_FUNCTIONS}" 2> /dev/null
+else
+    echo $"Error: Failed to locate $COMMON_FUNCTIONS" >&2
+    exit 1
+fi
+
+function doMenu() {
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) doMenu_en ;; # Deutsch
+        da_* ) doMenu_en ;; # Danish
+        es_* ) doMenu_en ;; # Española
+        fr_* ) doMenu_en ;; # Français
+        id_* ) doMenu_en ;; # Bahasa Indonesia
+        it_* ) doMenu_en ;; # Italian
+        lv_* ) doMenu_en ;; # Latvian
+        pl_* ) doMenu_en ;; # Polish
+        pt_* ) doMenu_pt ;; # Português
+        ru_* ) doMenu_en ;; # Russian
+        * ) doMenu_en ;; # Default to English
+    esac
+}
+
+function doMenu_en() {
+    local bkmdir="$HOME/.config/gtk-3.0/bookmarks"
+    [ ! -f $bkmdir ] && return 0
+    menuBegin
+    menuSep "Bookmarks GTK"
+    for bookmark in $(sed 's/[ ][^ ]*$//' "$bkmdir"); do
+        menuItem "`basename ${bookmark}`" "xdg-open ${bookmark}" "inode-directory"
+    done
+    menuEnd
+}
+
+function doMenu_pt() {
+    local bkmdir="$HOME/.config/gtk-3.0/bookmarks"
+    [ ! -f $bkmdir ] && return 0
+    menuBegin
+    menuSep "Locais GTK"
+    for bookmark in $(sed 's/[ ][^ ]*$//' "$bkmdir"); do
+        menuItem "`basename ${bookmark}`" "xdg-open ${bookmark}" "inode-directory"
+    done
+    menuEnd
+}
+
+doMenu "$*"
+
+exit

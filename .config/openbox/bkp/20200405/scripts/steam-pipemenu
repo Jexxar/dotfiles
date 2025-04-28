@@ -1,0 +1,113 @@
+#!/bin/bash
+#
+# STEAM by Derek Taylor (DistroTube)
+# A simple script that creates an openbox pipemenu that launches Steam games.
+#
+# This program is free software: you can redistribute it and/or modify it under the terms of
+# the GNU General Public License version 3 as published by the Free Software Foundation.
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program. If not, see: http://www.gnu.org/licenses
+#
+# Copy this file somewhere on your path and make it executable.
+# Add the following line somewhere to your /.config/openbox/menu.xml
+#       <menu execute="/PATH/TO/steam.sh" id="steam" label="Steam"/>
+# Be sure to change the PATH/TO to the correct path to this file.
+#
+# Reconfigure openbox.
+
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/pipe-common.sh"
+
+if [ -f "$COMMON_FUNCTIONS" ]; then
+    . "${COMMON_FUNCTIONS}" 2> /dev/null
+else
+    echo $"Error: Failed to locate $COMMON_FUNCTIONS" >&2
+    exit 1
+fi
+
+function doMenuDownST() {
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) doMenuDownST_en ;; # Deutsch
+        da_* ) doMenuDownST_en ;; # Danish
+        es_* ) doMenuDownST_en ;; # Española
+        fr_* ) doMenuDownST_en ;; # Français
+        id_* ) doMenuDownST_en ;; # Bahasa Indonesia
+        it_* ) doMenuDownST_en ;; # Italian
+        lv_* ) doMenuDownST_en ;; # Latvian
+        pl_* ) doMenuDownST_en ;; # Polish
+        pt_* ) doMenuDownST_pt ;; # Português
+        ru_* ) doMenuDownST_en ;; # Russian
+        * ) doMenuDownST_en ;; # Default to English
+    esac
+}
+
+# Steam not found in the system
+function doMenuDownST_en(){
+    menuBegin
+    menuSep "Steam client cannot be found"
+    menuItem "How to install Steam" "<![CDATA[x-www-browser https://steamcommunity.com/linux]]>" 'text-html'
+    menuEnd
+}
+
+function doMenuDownST_pt(){
+    menuBegin
+    menuSep "Cliente Steam não Encontrado"
+    menuItem "Como instalar o Steam" "<![CDATA[x-www-browser https://steamcommunity.com/linux]]>" 'text-html'
+    menuEnd
+}
+
+function doMenu() {
+    # l10n support
+    case "${LANG:-}" in
+        de_* ) doMenu_en ;; # Deutsch
+        da_* ) doMenu_en ;; # Danish
+        es_* ) doMenu_en ;; # Española
+        fr_* ) doMenu_en ;; # Français
+        id_* ) doMenu_en ;; # Bahasa Indonesia
+        it_* ) doMenu_en ;; # Italian
+        lv_* ) doMenu_en ;; # Latvian
+        pl_* ) doMenu_en ;; # Polish
+        pt_* ) doMenu_pt ;; # Português
+        ru_* ) doMenu_en ;; # Russian
+        * ) doMenu_en ;; # Default to English
+    esac
+}
+
+function doMenu_en(){
+    local ID=""
+    local NAME=""
+    menuBegin
+    menuItem "Run Steam" "steam" 'steam'
+    for f in $(find ~/.steam/steam/steamapps -maxdepth 1 -type f -name '*.acf' | xargs -0 | grep home); do
+        ID=$(cat "$f" | grep -i '"appID"' | tr '[:upper:]' '[:lower:]' | head -1 | sed -r 's/[^"]*"appid"[^"]*"([^"]*)"/\1/')
+        NAME=$(cat "$f" | grep -i '"name"' | head -1 | sed -r 's/[^"]*"name"[^"]*"([^"]*)"/\1/')
+        menuItem "$NAME" "<![CDATA[steam steam://run/$ID]]>" 'steam'
+    done
+    menuEnd
+}
+
+function doMenu_pt(){
+    menuBegin
+    menuItem "Rodar Steam" "steam" 'steam'
+    for f in $(find ~/.steam/steam/steamapps -maxdepth 1 -type f -name '*.acf' | xargs -0 | grep home); do
+        ID=$(cat "$f" | grep -i '"appid"' | tr '[:upper:]' '[:lower:]' | head -1 | sed -r 's/[^"]*"appid"[^"]*"([^"]*)"/\1/')
+        NAME=$(cat "$f" | grep -i '"name"' | head -1 | sed -r 's/[^"]*"name"[^"]*"([^"]*)"/\1/')
+        menuItem "$NAME" "<![CDATA[steam steam://run/$ID]]>" 'steam'
+    done
+    menuEnd
+}
+
+function main(){
+    which "steam" > /dev/null
+    if [ $? -ne 0 ]; then
+        doMenuDownST
+        exit 0
+    fi
+    doMenu
+}
+
+main "$@"

@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# help-pipemenu
+# Adapted from a script by damo <damo@bunsenlabs.org> 
+
+COMMON_FUNCTIONS="$HOME/.config/openbox/scripts/pipe-common.sh"
+
+if [ -f "$COMMON_FUNCTIONS" ]; then
+    . "${COMMON_FUNCTIONS}" 2> /dev/null
+else
+    echo $"Error: Failed to locate $COMMON_FUNCTIONS" >&2
+    exit 1
+fi
+
+function main(){
+	menuBegin
+
+    menuSep "Geral"
+    menuItem "Indice Local" "xdg-open \"file:///$HOME//bin/help/index.html\"" "text-html"
+
+    # menuSep "Debian"
+    # menuItem "Debian Documentation" 'xdg-open "https://www.debian.org/doc/"' "text-html"
+    # menuItem "Forum" 'xdg-open "http://forums.debian.net/"' "text-html"
+    # menuItem "Package Search" 'xdg-open "https://www.debian.org/distrib/packages"' "text-html"
+    # menuItem "Packages Sid" 'xdg-open "https://packages.debian.org/sid/allpackages"'
+    # menuItem "Packages Testing" 'xdg-open "https://packages.debian.org/testing/allpackages"' "text-html"
+    # menuItem "Package Tracker" 'xdg-open "https://tracker.debian.org/"' "text-html"
+    # menuItem "Security Tracker" 'xdg-open "https://security-tracker.debian.org/tracker/"' "text-html"
+    # menuItem "Wiki" 'xdg-open "https://wiki.debian.org/"' "text-html"
+
+    menuSep "Util"
+    menuItem "Arch Wiki" 'xdg-open "https://wiki.archlinux.org/index.php/Table_of_contents"' "text-html"
+    # menuItem "Classical Stations" 'xdg-open "http://classicalwebcast.com/"' "text-html"
+    menuItem "Crontab" 'xdg-open "http://code.tutsplus.com/tutorials/scheduling-tasks-with-cron-jobs--net-8800"' "text-html"
+    menuItem "E2fsprogs" 'xdg-open "https://en.wikipedia.org/wiki/E2fsprogs"' "text-html"
+    menuItem "Internet Tools" 'xdg-open "http://www.infobyip.com/internettools.php"' "text-html"
+    menuItem "I Forgot" '~/bin/iforgot' "text-html"
+    # menuItem 'Xwd Screenshot' 'xdg-open "http://blog.tordeu.com/?p=135"' "text-html"
+
+    menuSep  "Conky"
+    menuItem "Conky Configuration Settings" 'xdg-open "http://conky.sourceforge.net/config_settings.html"' "text-html"
+    menuItem "Conky Variables" 'xdg-open "http://conky.sourceforge.net/variables.html"' "text-html"
+    menuItem "Conky man pages" 'x-terminal-emulator -T "Conky man page" -e man conky' "text-html"
+
+    # menuSep  "Fbpanel"
+    # menuItem "Fbpanel About" 'xdg-open "http://fbpanel.sourceforge.net/index.html"' "text-html"
+    # menuItem "Fbpanel-Lxlinux" 'xdg-open "http://lxlinux.com/fbpanel.html"' "text-html"
+    # menuItem "Fbpanel man page" 'x-terminal-emulator -T "fbpanel man page" -e man fbpanel' "text-html"
+
+    menuSep "Openbox"
+    menuItem "ArchWiki Openbox Guide" 'xdg-open "http://wiki.archlinux.org/index.php/Openbox"' "text-html"
+    # menuItem "Debian Wiki Openbox Guide" 'xdg-open "https://wiki.debian.org/Openbox"' "text-html"
+    menuItem "Openbox Lxlinux" 'xdg-open "http://lxlinux.com"' "text-html"
+    menuItem "Openbox Homepage" 'xdg-open "http://openbox.org/"' "text-html"
+    menuItem "Openbox Rc.xml-PCMag" 'xdg-open "http://pclosmag.com/html/Issues/201107/page08.html"' "text-html"
+    menuItem "Urukramas Openbox Guide" 'xdg-open "https://urukrama.wordpress.com/openbox-faq/"' "text-html"
+
+    # menuSep "Pcmanfm"
+    # menuItem "Archlinux Pcmanfm Guide" 'xdg-open "https://wiki.archlinux.org/index.php/PCManFM"' "text-html"
+    # menuItem "Lxde Pcmanfm Guide" 'xdg-open "https://wiki.lxde.org/en/PCManFM"' "text-html"
+
+    # menuSep "Theme"
+    # menuItem "Box-Look.org" 'xdg-open "http://www.box-look.org"' "text-html"
+    # menuItem "Gnome-look.org" 'xdg-open "http://gnome-look.org/"' "text-html"
+    
+	menuEnd
+}
+
+main
+
+

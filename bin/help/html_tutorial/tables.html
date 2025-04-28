@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Tables in HTML</title>
+<meta name="KEYWORDS" content="HTML Codes Tutor , website design ,  tables HTML tips, beginner,  definition">
+<!--html tips for beginners using lists-->
+<meta name="DESCRIPTION" content="HTML Codes Tutor for Easy Website Design - Tables for beginners.  A basic but informative HTML Codes Tutor.">
+<META NAME="robots" CONTENT="index, follow">
+<link rel="stylesheet" href="html40.css" type="text/css">
+<style type="text/css">
+#toc a{ font-family: Verdana;font-style : normal ;font-size : 8pt; font-weight :bold;text-decoration : none}
+#toc a {color :#ffffff}
+#toc a:hover{color :#DFDFDF }
+#toc p{font-family: Verdana;font-style : normal ;font-size : 9pt; font-weight :bold;text-align :center;color :#FFFFFF}
+#links2 ul li a{ font-family: Arial;font-style : normal ;font-size : 12pt; font-weight :bold;text-decoration : none; color :#000000}
+#links2 ul li a:hover{ font-family: Arial;font-style : normal ;font-size : 12pt; font-weight :bold;text-decoration : none; color :#ff0000}
+#links2 ul{ list-style:none}
+</style>
+</head>
+
+<body>
+<div align="center">
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr align="center" valign="top">
+<td valign="top">
+<h1>Responsive Tables in HTML5 for Beginners</h1>
+<p>The accepted purpose of tables is to present data in rows and columns on a web page.</p>
+<p>There was a time when tables were used to structure webpages.</p>
+<p>With improvements in CSS and the way browsers handle it, the practice is no longer necessary.</p>
+<p>Learn to structure your web pages the right way using divisions and CSS.</p>
+<p>Use tables for presenting data on your pages.</p>
+<h2>Basic Table Tags</h2>
+<pre>&lt;table&gt;&lt;/table&gt;Table
+&lt;tr&gt;&lt;/tr&gt;Table Row
+&lt;th&gt;&lt;/th&gt;Table Heading Cell or Column
+&lt;td&gt;&lt;/td&gt; Table Data Cell or Column
+</pre>
+<p></p>
+<p><strong>Note:</strong> We present only the most basic tags for 
+beginners. If you want to build very sophisticated tables you should 
+consult other sources for additional information.</p>
+
+<p>This is the basic code for the following table: (single row - 2 column)
+</p><pre>&lt;table style="max-width:50%; border: solid 1px #000000; margin: 0 auto";&gt;
+&lt;tr&gt;
+&lt;td&gt;Column One&lt;/td&gt;
+&lt;td&gt;Column Two&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+</pre>
+<p class="clear">&nbsp;</p>
+<table class="demo2">
+<tbody><tr><td>Column One</td>
+<td>Column Two</td></tr></tbody></table>
+<p>Closing tags are required for all table related tags.</p>
+<p> Beginners should also avoid nesting tables. <span>(Building a table within a table.)</span></p>
+<p>All table structures begin with the table tag. Remember the closing tag.</p>
+
+<h2>Row Tag</h2>
+<p>The &lt;tr&gt; or row tag is used to define rows in a table.  Do not omit the closing tag.</p>
+<p> A row can contain numerous cells defined by the &lt;th&gt; and  &lt;td&gt; tags.</p>
+
+
+<h2>Table Heading Tag </h2>
+<pre> &lt;th&gt;</pre>
+<p>Column headings are placed in a separate row above the associated row of data cells.
+</p><pre>&lt;tr&gt;&lt;th&gt;Column 1&lt;/th&gt;&lt;th&gt;Column 2&lt;/th&gt;&lt;/tr&gt;</pre>
+<h2>Table Data Tag</h2>
+<p>The &lt;td&gt; tag is used to define the cells in a row that contain actual data.</p>
+<p>The attributes of the td ,th tag are:</p>
+<dl>
+<dt>Column Heading &lt;th&gt;&lt;/th&gt;</dt>
+<dd>colspan ; rowspan</dd>
+<dt>Column Data &lt;td&gt;&lt;/td&gt;</dt>
+<dd>colspan ; rowspan</dd>
+<dt>Horizontal alignment. </dt><dt>
+</dt><dd>text-align: left, right, center</dd>
+<dt>Vertical alignment. </dt>
+<dd>vertical-align : top, middle, bottom</dd>
+</dl>
+<p class="clear">&nbsp;</p>
+<p><strong>Note:</strong> There are other table tags that could be 
+presented here.  Learn these to get a basic understanding of how tables 
+work. Later on you can add the other tags to your library of knowledge. 
+ If you are already beyond the level of learning given here we have  
+compiled a collection of really great tuorials and reference sites that 
+may give you what you need. <a href="https://www.createafreewebsite.net/webdev-information.html">Check Them Out</a>.</p>
+<pre>&lt;table style="max-width: 50%; border : solid 1px #000000; margin: 0 auto"&gt;
+&lt;tr&gt;
+&lt;td  style="text-align:center;padding: 2px 2px"&gt;Column One&lt;/td&gt;
+&lt;td  style="text-align:center;padding: 2px 2px"&gt;Column Two&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+</pre>
+<p class="clear">&nbsp;</p>
+<table class="demo2">
+<tbody><tr><th>Column 1</th><th>Column 2</th></tr>
+<tr>
+<td style="text-align:center;padding: 8px">Column One Data</td>
+<td style="text-align:center;padding: 8px">Column Two Data</td></tr></tbody></table>
+<p class="clear">&nbsp;</p>
+
+<h2>Making Tables Responsive</h2>
+<p>For very small tables use the techniques displayed in our <a href="colors.html">Tables and Color</a> and <a href="tables_background.html">Tables and Background Images</a> pages.</p>
+<p>For large data filled tables like the one shown below check out our <a href="https://www.createafreewebsite.net/responsive-table.html">Beginners Solution</a> demo which displays a table with actual data and includes the CSS and HTML code used to build it.</p>
+
+
+<div class="responsivetbl">
+<table class="demo2">
+<tbody><tr>
+</tr><tr>
+<th>Column 1</th>
+<th>Column 2</th>
+<th>Column 3</th>
+<th>Column 4</th>
+<th>Column 5</th>
+<th>Column 6</th>
+<th>Column 7</th>
+<th>Column 8</th>
+<th>Column 9</th>
+<th>Column 10</th>
+<th>Column 11</th>
+<th>Column 12</th>
+</tr>
+
+
+<tr>
+<td>Column 1 Data RW1</td>
+<td>Column 2 Data</td>
+<td>Column 3 Data</td>
+<td>Column 4 Data</td>
+<td>Column 5 Data</td>
+<td>Column 6 Data</td>
+<td>Column 7 Data</td>
+<td>Column 8 Data</td>
+<td>Column 9 Data</td>
+<td>Column 10 Data</td>
+<td>Column 11 Data</td>
+<td>Column 12 Data</td>
+</tr>
+
+<tr>
+<td>Column 1 Data RW2</td>
+<td>Column 2 Data</td>
+<td>Column 3 Data</td>
+<td>Column 4 Data</td>
+<td>Column 5 Data</td>
+<td>Column 6 Data</td>
+<td>Column 7 Data</td>
+<td>Column 8 Data</td>
+<td>Column 9 Data</td>
+<td>Column 10 Data</td>
+<td>Column 11 Data</td>
+<td>Column 12 Data</td>
+</tr>
+
+<tr>
+<td>Column 1 Data RW3</td>
+<td>Column 2 Data</td>
+<td>Column 3 Data</td>
+<td>Column 4 Data</td>
+<td>Column 5 Data</td>
+<td>Column 6 Data</td>
+<td>Column 7 Data</td>
+<td>Column 8 Data</td>
+<td>Column 9 Data</td>
+<td>Column 10 Data</td>
+<td>Column 11 Data</td>
+<td>Column 12 Data</td>
+</tr>
+
+</tbody></table>
+<td align="left" colspan="1" rowspan="2">
+<div ID="toc">
+<table   bgcolor="#004f9d" width="160" border="0" cellspacing="0" cellpadding="5">
+    <tr align="center"><td align="left" valign="top">
+<p>Page Structure</p>
+<a href="basic_html_page.html"> Basic HTML Page</a>
+<br>
+<a href="body_tag.html"> The Body Tag</a>
+<br>
+<a href="division_tag.html">The Division Tag</a>
+<br>
+<a href="horizontal_rule.html">Horizontal Rule</a>
+<br>
+<a href="anchor_tag.html">Anchor Tag</a>
+<br>
+<a href="anchor_tag_intra.html">Anchor Tag - Intradocument</a>
+<br>
+<a href="anchor_tag_image.html">Anchor Tag - Image</a>
+<br>
+<a href="borders.html">Using Borders</a>
+<br>
+<a href="id_attribute.html">The ID Attribute</a>
+<br>
+<a href="meta_tags.html">Meta Tags</a>
+<br>
+<p>Text Controls</p>
+<a href="style_sheets.html">Style Sheets</a>
+<br>
+<a href="fonts.htm">Working With Fonts</a>
+<br>
+<a href="paragraph_tag.html">The Paragraph Tag</a>
+<br>
+<a href="paragraph_images.html">Paragraphs-Images</a>
+<br>
+<a href="lists.html">Using Lists</a>
+<br>
+<a href="pre_tag.html">The Pre Tag</a>
+<br>
+<a href="line_break.html">Line Break Tag</a>
+<br>
+<p>Tables</p>
+<a href="tables.html">Basics of Tables</a>
+<br>
+<a href="formscheckbox.html">Check Boxes</a>
+<br>
+<a href="formselections.html">Selection Boxes</a>
+<p>Frames</p>
+<a href="frames.html">Basic Frames</a>
+<br>
+<a href="frames_search_engines.html">Search Engines</a>
+<p>Miscellaneous</p>
+<a href="color.html">Using Color</a>
+</td></tr></table>
+</div>
+</td></tr>
+
+</body>
+</html>
