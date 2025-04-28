@@ -27,20 +27,20 @@ function doMenuInstInxi_pt(){
 
 function doMenuInstInxi() {
     # l10n support
-    case "${LANG:-}" in
-        de_* ) doMenuInstInxi_en ;; # Deutsch
-        da_* ) doMenuInstInxi_en ;; # Danish
-        es_* ) doMenuInstInxi_en ;; # Española
-        fr_* ) doMenuInstInxi_en ;; # Français
-        id_* ) doMenuInstInxi_en ;; # Bahasa Indonesia
-        it_* ) doMenuInstInxi_en ;; # Italian
-        lv_* ) doMenuInstInxi_en ;; # Latvian
-        pl_* ) doMenuInstInxi_en ;; # Polish
-        pt_* ) doMenuInstInxi_pt ;; # Português
-        ru_* ) doMenuInstInxi_en ;; # Russian
-        * ) doMenuInstInxi_en ;; # Default to English
-    esac
-    return 0
+    #case "${LANG:-}" in
+    #    de_* ) doMenuInstInxi_en ;; # Deutsch
+    #    da_* ) doMenuInstInxi_en ;; # Danish
+    #    es_* ) doMenuInstInxi_en ;; # Española
+    #    fr_* ) doMenuInstInxi_en ;; # Français
+    #    id_* ) doMenuInstInxi_en ;; # Bahasa Indonesia
+    #    it_* ) doMenuInstInxi_en ;; # Italian
+    #    lv_* ) doMenuInstInxi_en ;; # Latvian
+    #    pl_* ) doMenuInstInxi_en ;; # Polish
+    #    pt_* ) doMenuInstInxi_pt ;; # Português
+    #    ru_* ) doMenuInstInxi_en ;; # Russian
+    #    * ) doMenuInstInxi_en ;; # Default to English
+    #esac
+    doMenuInstInxi_en
 }
 
 function doMenu_en(){
@@ -90,20 +90,20 @@ function doMenu_pt() {
 function doMenu() {
     ! checkfor "inxi" && doMenuInstInxi && return 0
     # l10n support
-    case "${LANG:-}" in
-        de_* ) doMenu_en ;; # Deutsch
-        da_* ) doMenu_en ;; # Danish
-        es_* ) doMenu_en ;; # Española
-        fr_* ) doMenu_en ;; # Français
-        id_* ) doMenu_en ;; # Bahasa Indonesia
-        it_* ) doMenu_en ;; # Italian
-        lv_* ) doMenu_en ;; # Latvian
-        pl_* ) doMenu_en ;; # Polish
-        pt_* ) doMenu_pt ;; # Português
-        ru_* ) doMenu_en ;; # Russian
-        * ) doMenu_en ;; # Default to English
-    esac
-    return 0
+    #case "${LANG:-}" in
+    #    de_* ) doMenu_en ;; # Deutsch
+    #    da_* ) doMenu_en ;; # Danish
+    #    es_* ) doMenu_en ;; # Española
+    #    fr_* ) doMenu_en ;; # Français
+    #    id_* ) doMenu_en ;; # Bahasa Indonesia
+    #    it_* ) doMenu_en ;; # Italian
+    #    lv_* ) doMenu_en ;; # Latvian
+    #    pl_* ) doMenu_en ;; # Polish
+    #    pt_* ) doMenu_pt ;; # Português
+    #    ru_* ) doMenu_en ;; # Russian
+    #    * ) doMenu_en ;; # Default to English
+    #esac
+    doMenu_en
 }
 
 function doAudio() {

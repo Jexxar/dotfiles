@@ -14,8 +14,9 @@ if [ -x "$(command -v xset)" ]; then
     # Set keyboard settings: ms delay and cps (characters per second) repeat rate.
     # Adjust the values according to your preferances.
     # ==================================
-    #xset r rate 250 25 &
-    xset r rate 175 30 &
+    xset r rate 250 30 &
+    #xset r rate 175 30 &
+    xset mouse 3 6 &
 fi
 
 # ==================================
@@ -114,39 +115,38 @@ if [ $(pgrep -lfc xflux) -eq 0 ] ; then
     dstart "xflux" "-l -25.43, -g -49.27" &
 #    sleep 0.3
 fi
-if [ $(pgrep -lfc pulseaudio) -eq 0 ] ; then
-    dstart "pulseaudio" "--start --log-target=syslog" &
-#    sleep 0.3
-fi
 if [ $(pgrep -lfc notification-daemon) -eq 0 ] ; then
     dstart "/usr/lib/notification-daemon/notification-daemon" " --display=$DISPLAY -r" &
 #    sleep 0.3
 fi
-if [ $(pgrep -lfc mate-settings-daemon) -eq 0 ] ; then
-    dstart "mate-settings-daemon" &
-    sleep 0.3
-fi
-if [ $(pgrep -lfc mate-settings-daemon) -eq 0 ] && [ $(pgrep -lfc xsettingsd) -eq 0 ]; then
+#if [ $(pgrep -lfc mate-settings-daemon) -eq 0 ] ; then
+#    dstart "mate-settings-daemon" &
+#    sleep 0.3
+#fi
+if [ $(pgrep -lfc xsettingsd) -eq 0 ]; then
     if hash xsettingsd >/dev/null 2>&1; then
-        [ -f "$HOME/.xsettings" ] && dstart xsettingsd -c "$HOME/.xsettings" &
-#        sleep 0.3
+        [ -f "$HOME/.xsettings" ] && dstart "xsettingsd" "-c $HOME/.xsettings" &
     fi
 fi
-if [ $(pgrep -lfc mate-power-manager) -eq 0 ]; then
-    dstart "mate-power-manager" &
+#if  [ $(pgrep -lfc mate-power-manager) -eq 0 ]; then
+#    dstart "mate-power-manager" &
 #    sleep 0.3
+#fi
+if [ $(pgrep -lfc pulseaudio) -eq 0 ] ; then
+    dstart "pulseaudio" "--start --log-target=syslog" &
+    sleep 0.3
 fi
-if [ $(pgrep -lfc mate-volume-control-applet) -eq 0 ]; then
-    dstart "mate-volume-control-applet" &
-#    sleep 0.3
-fi
-if [ $(pgrep -lfc volumeicon) -eq 0 ] && [ $(pgrep -lfc mate-volume-control-applet) -eq 0 ]; then
-    dstart "volumeicon" &
-#    sleep 0.3
+if  [ $(pgrep -lfc pulseaudio) -gt 0 ]; then 
+    if [ $(pgrep -lfc mate-volume-control-applet) -eq 0 ]; then
+        dstart "mate-volume-control-applet" &
+    fi
+    if [ $(pgrep -lfc volumeicon) -eq 0 ] && [ $(pgrep -lfc mate-volume-control-applet) -eq 0 ]; then
+        dstart "volumeicon" &
+    fi
 fi
 if [ $(pgrep -lfc nm-applet) -eq 0 ] ; then
     dstart "nm-applet" &
-    sleep 0.3
+#    sleep 0.3
 fi
 
 # ==================================

@@ -18,19 +18,18 @@ function start_it(){
 
 function main(){
     local cmd=""
-    # if we have x-terminal-emulator installed
+    # if we have the real x-terminal-emulator installed
     cmd="$(LC_ALL=C type -a x-terminal-emulator 2> /dev/null | grep -v "$USER" | awk '/ is/ {print $3}' | tail -1)"
     start_it "$cmd" "$@"
     # otherwise find for another suitable terminal emulator
-    for t in $(compgen -c | grep "term\|tilix\|urxvt\|kitty\|alacritty\|tilda\|guake\|sakura\|konsole" | grep -v "lxsession\|setterm\|preexec\|intel\|rofi\|dh\|koi8\|_terms\|wrapper\|emu" | sort -u);do
+    for t in $(compgen -c | grep "term\|tilix\|urxvt\|kitty\|alacritty\|guake\|sakura\|konsole" | grep -v "lxsession\|setterm\|stterm\|preexec\|intel\|rofi\|dh\|koi8\|_terms\|wrapper\|emu" | sort -u);do
         cmd="$(command -v "$t")"
-        echo "$t is $cmd"
-        start_it "$cmd" "$@"
+        if [ -x $cmd ]; then
+            echo "$t is $cmd"
+            start_it "$cmd" "$@"
+            break;
+        fi
     done
-    # look for st
-    cmd="$(command -v st)"
-    [ -z "$cmd" ] && exit 1
-    start_it "$cmd" "$@"
     exit 0
 }
 

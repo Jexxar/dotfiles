@@ -29,32 +29,6 @@ if [[ -x /usr/bin/awk ]]; then
 fi
 
 #===========================================
-# Gtk3-nocsd workaround settings
-#===========================================
-export GTK_CSD=0
-if hash locate 2> /dev/null; then
-    _nocsdpath="$(locate libgtk3-nocsd.so.0)"
-elif hash mlocate 2> /dev/null; then
-    _nocsdpath="$(mlocate libgtk3-nocsd.so.0)"
-elif [ -f /usr/lib/x86_64-linux-gnu/libgtk3-nocsd.so.0 ]; then
-    _nocsdpath="/usr/lib/x86_64-linux-gnu/libgtk3-nocsd.so.0"
-else
-    _nocsdpath=""
-fi
-[ $? -ne 0 ] && _nocsdpath=""
-if [ -n "$_nocsdpath" ]; then
-    echo $LD_PRELOAD | grep -q "libgtk3-nocsd\.so\.0"
-    if [ $? -ne 0 ]; then
-        export LD_PRELOAD=${_nocsdpath}
-    fi
-    echo $STARTUP | grep -q "libgtk3-nocsd\.so\.0"
-    if [ $? -ne 0 ]; then
-        export STARTUP="env LD_PRELOAD=$_nocsdpath $STARTUP"
-    fi
-fi
-unset _nocsdpath
-
-#===========================================
 # Less TERMCAP Setup
 #===========================================
 # enter blinking mode - red
@@ -87,6 +61,7 @@ export LESS=FRXWS
 # Export my defaults and create XDG vars if not
 #===========================================
 [ -z "$TERM" ] && TERM="xterm-256color"
+export MOZ_REQUIRE_SIGNING=0
 export GTK_OVERLAY_SCROLLING=0
 export MYPIPM_ICONS='n'
 export _JAVA_AWT_WM_NONREPARENTING=1

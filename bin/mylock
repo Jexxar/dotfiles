@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# This script is intended to be run as the xautolock locker and notifier.
-# It requires i3lock, and dunst is optional.
+# This script is also intended to be run as the xautolock locker
 #set -eu
 
 if [ -f "$HOME/bin/mycommon" ]; then
@@ -10,7 +9,7 @@ fi
 # Lock screen if possible.
 function do_lock() {
     # Only works if X is running.
-    ! is_running_X && log "X server is not running" && return 0
+    ! is_running_X && log "do_lock(): X server is not running" && return 0
     # Already locked
     if locked; then
         log "do_lock(): already locked" 
@@ -21,35 +20,31 @@ function do_lock() {
         return 0;
     fi
     # Find locker
-    if hash lock >/dev/null 2>&1; then
+    if checkfor lock; then
         $HOME/bin/lock -n -dgpf Roboto &
         return 0
-    elif hash i3lock >/dev/null 2>&1; then
-        [ -f "$XDG_PICTURES_DIR"/Wallpaper/wallhaven-476623.png ] && {
-            i3lock -d -i "$XDG_PICTURES_DIR"/Wallpaper/wallhaven-476623.png &
-            return 0
-        } 
-        i3lock -d 
+    elif checkfor i3lock; then
+        i3lock -d -e -f --inactivity-timeout=10 -i $(shuf -ezn 1 $XDG_PICTURES_DIR/Wallpaper/*.png* | xargs -0 -n1 echo) &
         return 0
-    elif hash light-locker >/dev/null; then
+    elif checkfor light-locker; then
         light-locker-command -l >/dev/null 2>&1 &
         return 0
-    elif hash xscreensaver >/dev/null; then
+    elif checkfor xscreensaver; then
         xscreensaver-command -lock >/dev/null 2>&1 &
         return 0
-    elif hash gnome-screensaver >/dev/null; then
+    elif checkfor gnome-screensaver; then
         gnome-screensaver-command --lock &
         return 0
-    elif hash mate-screensaver >/dev/null; then
+    elif checkfor mate-screensaver; then
         mate-screensaver-command -l >/dev/null 2>&1 &
         return 0
-    elif hash cinnamon-screensaver-pam-helper >/dev/null; then
+    elif checkfor cinnamon-screensaver-pam-helper; then
         cinnamon-screensaver-command -l >/dev/null 2>&1 &
         return 0
-    elif hash slock >/dev/null 2>&1; then
+    elif checkfor slock  2>&1; then
         slock &
         return 0
-    elif hash slimlock >/dev/null; then
+    elif checkfor slimlock ; then
         slimlock &
     else
         log "No suitable screen locker found"
@@ -78,24 +73,18 @@ function do_test() {
     else
         log "do_test(): Screen not locked";
     fi
-    if hash lock >/dev/null 2>&1; then
-        checkfor "convert" && {
-          log "do_test(): Has $(type convert | awk '{print $3}')"  
-        } 
-        checkfor "import" && { 
-            log "do_test(): Has $(type import | awk '{print $3}')"
-        }
-        checkfor "i3lock" && {
-            log "do_test(): Has $(type i3lock | awk '{print $3}')"
-        }
+    if checkfor lock; then
+        checkfor "convert" && log "do_test(): Has $(type convert | awk '{print $3}')"  
+        checkfor "import"  && log "do_test(): Has $(type import  | awk '{print $3}')"
+        checkfor "i3lock"  && log "do_test(): Has $(type i3lock  | awk '{print $3}')"
         log "do_test(): Has $HOME/bin/lock -n -gpf Roboto"
-    elif hash slock >/dev/null 2>&1; then
+    elif checkfor slock; then
         log "do_test(): Has $(type slock | awk '{print $3}')"
-    elif hash i3lock >/dev/null 2>&1; then
+    elif checkfor i3lock; then
         log "do_test(): Has $(type i3lock | awk '{print $3}')"
-    elif hash slimlock >/dev/null; then
+    elif checkfor slimlock; then
         log "do_test(): Has $(type slimlock | awk '{print $3}')slimlock"
-    elif hash xscreensaver >/dev/null; then
+    elif checkfor xscreensaver; then
         log "do_test(): Has $(type xscreensaver | awk '{print $3}') -nosplash"
     fi
     return 0

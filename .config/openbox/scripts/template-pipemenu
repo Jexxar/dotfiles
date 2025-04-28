@@ -20,19 +20,20 @@ function doMenu() {
         return 0    
     fi
     # l10n support
-    case "${LANG:-}" in
-        de_* ) doMenu_en "$d";; # Deutsch
-        da_* ) doMenu_en "$d";; # Danish
-        es_* ) doMenu_en "$d";; # Española
-        fr_* ) doMenu_en "$d";; # Français
-        id_* ) doMenu_en "$d";; # Bahasa Indonesia
-        it_* ) doMenu_en "$d";; # Italian
-        lv_* ) doMenu_en "$d";; # Latvian
-        pl_* ) doMenu_en "$d";; # Polish
-        pt_* ) doMenu_pt "$d";; # Português
-        ru_* ) doMenu_en "$d";; # Russian
-        * ) doMenu_en "$d";; # Default to English
-    esac
+    #case "${LANG:-}" in
+    #    de_* ) doMenu_en "$d";; # Deutsch
+    #    da_* ) doMenu_en "$d";; # Danish
+    #    es_* ) doMenu_en "$d";; # Española
+    #    fr_* ) doMenu_en "$d";; # Français
+    #    id_* ) doMenu_en "$d";; # Bahasa Indonesia
+    #    it_* ) doMenu_en "$d";; # Italian
+    #    lv_* ) doMenu_en "$d";; # Latvian
+    #    pl_* ) doMenu_en "$d";; # Polish
+    #    pt_* ) doMenu_pt "$d";; # Português
+    #    ru_* ) doMenu_en "$d";; # Russian
+    #    * ) doMenu_en "$d";; # Default to English
+    #esac
+    doMenu_en
 }
 
 function doMenu_en(){

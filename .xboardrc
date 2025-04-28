@@ -5,7 +5,7 @@
 ; but if you add other options, the next Save Settings will not save them.
 ; Use a shortcut, an @indirection file, or a .bat file instead.
 ;
--saveDate 1496125299
+-saveDate 1743497074
 -whitePieceColor #FFFFCC
 -blackPieceColor #202020
 -lightSquareColor #C8C365
@@ -147,8 +147,8 @@ Open Chat Box (name);$chat;
 "Fruit 2.1" -fcp fruit -fUCI
 "Crafty" -fcp crafty
 "GNU Chess" -fcp gnuchess
-shamax
 maxqi
+shamax
 }
 -themeNames {"native" -ubt false -pid "" -trueColors false -flipBlack false -overrideLineGap -1
 "classic" -ubt false -lsc #c8c365 -dsc #77a26d -pid "" -wpc #ffffcc -bpc #202020 -hsc #ffff00 -phc #ff0000 -overrideLineGap -1 -flipBlack false
@@ -241,41 +241,41 @@ maxqi
 -memoHeaders true
 -timeOddsMode 0
 -keepLineBreaksICS false
--winWidth 424
--winHeight 494
--x 476
--y 130
+-winWidth 414
+-winHeight 490
+-x 479
+-y 124
 -icsUp false
--icsX 2147483172
--icsY 2147483518
+-icsX 2147483169
+-icsY 2147483524
 -icsW -2147483648
 -icsH -2147483648
--commentX 2147483172
--commentY 2147483518
+-commentX 2147483169
+-commentY 2147483524
 -commentW -2147483648
 -commentH -2147483648
--tagsX 2147483172
--tagsY 2147483518
+-tagsX 2147483169
+-tagsY 2147483524
 -tagsW -2147483648
 -tagsH -2147483648
--gameListX 2147483172
--gameListY 2147483518
+-gameListX 2147483169
+-gameListY 2147483524
 -gameListW 500
 -gameListH 300
--slaveX 2147483172
--slaveY 2147483518
+-slaveX 2147483169
+-slaveY 2147483524
 -moveHistoryUp false
--moveHistoryX 2147483172
--moveHistoryY 2147483518
+-moveHistoryX 2147483169
+-moveHistoryY 2147483524
 -moveHistoryW -2147483648
 -moveHistoryH -2147483648
 -evalGraphUp false
--evalGraphX 2147483172
--evalGraphY 2147483518
+-evalGraphX 2147483169
+-evalGraphY 2147483524
 -evalGraphW 300
 -evalGraphH 150
 -engineOutputUp false
--engineOutputX 2147483172
--engineOutputY 2147483518
+-engineOutputX 2147483169
+-engineOutputY 2147483524
 -engineOutputW -2147483648
 -engineOutputH -2147483648

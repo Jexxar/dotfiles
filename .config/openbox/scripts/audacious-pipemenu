@@ -64,19 +64,20 @@ function doMenuRun_pt(){
 function doMenuRun(){
     ! checkfor "audacious" && doMenuInstAudacious && return 0
     # l10n support
-    case "${LANG:-}" in
-        de_* ) doMenuRun_en ;; # Deutsch
-        da_* ) doMenuRun_en ;; # Danish
-        es_* ) doMenuRun_en ;; # Española
-        fr_* ) doMenuRun_en ;; # Français
-        id_* ) doMenuRun_en ;; # Bahasa Indonesia
-        it_* ) doMenuRun_en ;; # Italian
-        lv_* ) doMenuRun_en ;; # Latvian
-        pl_* ) doMenuRun_en ;; # Polish
-        pt_* ) doMenuRun_pt ;; # Português
-        ru_* ) doMenuRun_en ;; # Russian
-        * ) doMenuRun_en ;; # Default to English
-    esac
+    #case "${LANG:-}" in
+    #    de_* ) doMenuRun_en ;; # Deutsch
+    #    da_* ) doMenuRun_en ;; # Danish
+    #    es_* ) doMenuRun_en ;; # Española
+    #    fr_* ) doMenuRun_en ;; # Français
+    #    id_* ) doMenuRun_en ;; # Bahasa Indonesia
+    #    it_* ) doMenuRun_en ;; # Italian
+    #    lv_* ) doMenuRun_en ;; # Latvian
+    #    pl_* ) doMenuRun_en ;; # Polish
+    #    pt_* ) doMenuRun_pt ;; # Português
+    #    ru_* ) doMenuRun_en ;; # Russian
+    #    * ) doMenuRun_en ;; # Default to English
+    #esac
+    doMenuRun_en
 }
 
 function doMenuControl_en(){

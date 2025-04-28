@@ -13,7 +13,7 @@ Gtk/FontName "Noto Sans 9"
 Gtk/IMModule ""
 Gtk/IMPreeditStyle "callback"
 Gtk/IMStatusStyle "callback"
-Gtk/KeyThemeName "Adapta-Nokto-Eta"
+Gtk/KeyThemeName "BL-Empire"
 Gtk/MenuBarAccel "F10"
 Gtk/MenuImages 1
 Gtk/ShellShowsAppMenu 0
@@ -31,7 +31,7 @@ Net/EnableInputFeedbackSounds 1
 Net/FallbackIconTheme "mate"
 Net/IconThemeName "JS-Dark"
 Net/SoundThemeName "ubuntu"
-Net/ThemeName "Adapta-Nokto-Eta"
+Net/ThemeName "BL-Empire"
 Xft/Antialias 1
 Xft/DPI 98304
 Xft/HintStyle "hintfull"

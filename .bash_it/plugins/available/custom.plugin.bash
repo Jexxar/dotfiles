@@ -62,9 +62,9 @@ function decrypt(){ gpg --no-options "$1" ; }
 # Number of CPUs
 function ncpu(){ grep -c 'processor' /proc/cpuinfo ; }
 # Custom ps my user processes
-function my_ps(){ ps -eo etimes,ruser,pid,ppid,cmd --sort=start_time | awk 'BEGIN{now=systime()} {$1=strftime("%Y-%m-%d-%H:%M:%S", now-$1); print $0}' | awk -v u=$USER '$2 == u { print $0 }' | grep -v "grep\|awk\|ps -e"; }
+function myps(){ ps -eo etimes,ruser,pid,ppid,cmd --sort=start_time | awk 'BEGIN{now=systime()} {$1=strftime("%Y-%m-%d-%H:%M:%S", now-$1); print $0}' | awk -v u=$USER '$2 == u { print $0 }' | grep -v "grep\|awk\|ps -e"; }
 # Custom my user processes tree
-function psgrep(){ my_ps | awk '!/awk/ && $0~var' var="${1:-".*"}" | grep -v "grep\|awk" ; }
+function psgrep(){ myps | awk '!/awk/ && $0~var' var="${1:-".*"}" | grep -v "grep\|awk" ; }
 # Color tree of current dir
 function lsr(){ tree -ChvugapfF --dirsfirst | most -ct4 +82 +s ; }
 # Reset terminal
@@ -638,7 +638,7 @@ function greetings(){
     fi
     printf "\e[1;33m\n"
 
-    hash my-motd 2> /dev/null && my-motd
+    hash mymotd 2> /dev/null && mymotd
 
     echo -e "\n"
     #echo -e "$(you_have_mail)\n"

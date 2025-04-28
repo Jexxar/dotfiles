@@ -9,7 +9,6 @@ fi
 
 function external_ip ()
 {
-    precheck "curl"
     local list=("ifconfig.me" "http://myip.dnsomatic.com/" "http://checkip.dyndns.com/" "http://checkip.dyndns.org/");
     local res=""
     local url=""
@@ -24,16 +23,14 @@ function external_ip ()
 }
 
 function main(){
+    precheck "curl"
     #The file that contains the current pubic IP
-    local EXT_IP_FILE="/tmp/.ipaddress"
-    
+    local EXT_IP_FILE="$HOME/.cache/ipaddress"
     #Get the current public IP
     local CURRENT_IP="$(external_ip)"
-    
     #Check file for previous IP address
     local KNOWN_IP=""
     [ -f "$EXT_IP_FILE" ] && KNOWN_IP=$(awk '{ print $0 }' $EXT_IP_FILE)
-    
     #See if the IP has changed
     if [ -z "$KNOWN_IP" ]; then
         echo "$CURRENT_IP" > "$EXT_IP_FILE"

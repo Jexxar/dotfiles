@@ -141,7 +141,6 @@ osd.unhilight.bg: flat solid
 osd.unhilight.bg.color: #888A85
 
 
-
 # Fonts
 window.active.label.text.font:shadow=n
 window.inactive.label.text.font:shadow=n

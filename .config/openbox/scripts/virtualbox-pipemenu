@@ -41,19 +41,20 @@ fi
 
 function doMenuInstVB() {
     # l10n support
-    case "${LANG:-}" in
-        de_* ) doMenuInstVB_en ;; # Deutsch
-        da_* ) doMenuInstVB_en ;; # Danish
-        es_* ) doMenuInstVB_en ;; # Española
-        fr_* ) doMenuInstVB_en ;; # Français
-        id_* ) doMenuInstVB_en ;; # Bahasa Indonesia
-        it_* ) doMenuInstVB_en ;; # Italian
-        lv_* ) doMenuInstVB_en ;; # Latvian
-        pl_* ) doMenuInstVB_en ;; # Polish
-        pt_* ) doMenuInstVB_pt ;; # Português
-        ru_* ) doMenuInstVB_en ;; # Russian
-        * ) doMenuInstVB_en ;; # Default to English
-    esac
+    #case "${LANG:-}" in
+    #    de_* ) doMenuInstVB_en ;; # Deutsch
+    #    da_* ) doMenuInstVB_en ;; # Danish
+    #    es_* ) doMenuInstVB_en ;; # Española
+    #    fr_* ) doMenuInstVB_en ;; # Français
+    #    id_* ) doMenuInstVB_en ;; # Bahasa Indonesia
+    #    it_* ) doMenuInstVB_en ;; # Italian
+    #    lv_* ) doMenuInstVB_en ;; # Latvian
+    #    pl_* ) doMenuInstVB_en ;; # Polish
+    #    pt_* ) doMenuInstVB_pt ;; # Português
+    #    ru_* ) doMenuInstVB_en ;; # Russian
+    #    * ) doMenuInstVB_en ;; # Default to English
+    #esac
+    doMenuInstVB_en
 }
 
 # Virtualbox not found in the system

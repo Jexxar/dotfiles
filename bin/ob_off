@@ -16,18 +16,18 @@ function doAction(){
             "$HOME"/bin/myexit
         ;;
         4)
-            "$HOME"/bin/mysuspend
-        ;;
-        5)
             "$HOME"/bin/myreboot
         ;;
         5)
+            "$HOME"/bin/mysuspend
+        ;;
+        6)
             "$HOME"/bin/myshutdown
         ;;
     esac
 }
 
-function doMenu_en(){
+function doMenu(){
     if precheck "yad"; then
         yad --text-align=center --fontname="Sans bold 18" --width=420 --height 85 \
         --text='<span color=\"white\" font="Sans bold 18">Are you sure you want to leave?</span>' --fixed \
@@ -35,37 +35,18 @@ function doMenu_en(){
         --button="Cancel":1 --button="Lock":2 --button="Logout":3 --button="Reboot":4 --button="Suspend":5 --button="Poweroff":6 >/dev/null
     else
         gxmessage -font "Sans bold 16" "          Are you sure you want to leave?" -center -borderless -noescape -sticky -ontop \
-        -title "Pick a choice" -default "Cancel" -buttons "_Cancel":1,"_Lock":2,"_Logout":3,"_Suspend":4,"_Reboot":5,"_Poweroff":6 >/dev/null
+        -title "Pick a choice" -default "Cancel" -buttons "_Cancel":1,"_Lock":2,"_Logout":3,"_Reboot":4,"_Suspend":5,"_Poweroff":6 >/dev/null
     fi
     doAction "$?"
     return 0
 }
 
-function doMenu_pt(){
-    if precheck "yad"; then
-        yad --text-align=center --fontname="Sans bold 18" --width=420 --height 85 \
-        --text='<span color=\"white\" font="Sans bold 18">Tem certeza que quer sair?</span>' --fixed \
-        --undecorated --on-top --sticky --center --no-escape -title "Escolha uma ação" \
-        --button="Cancelar":1 --button="Bloquear":2 --button="Logout":3 --button="Suspender":4 --button="Reiniciar":5 --button="Desligar":6 >/dev/null
-    else
-        gxmessage -font "Sans bold 16" "          Tem certeza que quer sair?" -center -borderless -noescape -sticky -ontop \
-        -title "Escolha uma ação" -default "Cancelar" -buttons "_Cancelar":1,"_Bloquear":2,"_Logout":3,"_Suspender":4,"_Reiniciar":5,"_Desligar":6 >/dev/null
-    fi
-    doAction "$?"
-    return 0
-}
 
 function main() {
-    precheck "yad" || precheck "gxmessage"
-    
     # Only works if X is running.
     ! is_running_X && log "X server is not running" && return 0
-    
-    # l10n support
-    case "${LANG:-}" in
-        pt_* ) doMenu_pt ;; # Português
-        * ) doMenu_en ;; # Default to English
-    esac
+    precheck "yad" || precheck "gxmessage"
+    doMenu
 }
 
 main "$@"

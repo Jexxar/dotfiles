@@ -569,7 +569,41 @@ function snore(){
     [ -z "$1" ] && return 0
     local IFS
     [[ -n "${_snore_fd:-}" ]] || exec {_snore_fd}<> <(:)
+    #[[ -n "${_snore_fd:-}" ]] || { exec {_snore_fd}<> <(:); } 2>/dev/null ||
+    #{
+    #    # workaround for MacOS and similar systems
+    #    local fifo
+    #    fifo=$(mktemp -u)
+    #    mkfifo -m 700 "$fifo"
+    #    exec {_snore_fd}<>"$fifo"
+    #    rm "$fifo"
+    #}
     read ${1:+-t "$1"} -u $_snore_fd || :
+}
+
+# Diff between dates in seconds
+function dateDiffS() {
+    local d1=$(date -d "$1" +%s)
+    local d2=$(date -d "$2" +%s)
+    echo $(( (((d1-d2) > 0 ? (d1-d2) : (d2-d1))) ))
+}
+
+# Diff between dates in days
+function dateDiffD() {
+    local d1=$(date -d "$1" +%s)
+    local d2=$(date -d "$2" +%s)
+    echo $(( (((d1-d2) > 0 ? (d1-d2) : (d2-d1)) + 43200) / 86400 ))
+}
+
+# Snores until a date/time has come
+function snoreUntil {
+    local seconds=0
+    # Use $* to eliminate need for quotes
+    seconds=$(( $(date -d "$*" +%s) - $(date +%s) ))
+    [ $? -ne 0 ] && echo "Invalid date/time specification" && return 1
+    [ $seconds -le 0 ] && echo "Date/time must be greater than current date/time" && return 1
+    echo "Sleeping for $seconds seconds"
+    snore $seconds
 }
 
 # helper find normal icon fullname file path

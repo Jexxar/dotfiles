@@ -66,19 +66,20 @@ function edit_file() {
 function doMenu() {
     local wpath="${*:-$HOME}"
     # l10n support
-    case "${LANG:-}" in
-        de_* ) doMenu_en $wpath ;; # Deutsch
-        da_* ) doMenu_en $wpath ;; # Danish
-        es_* ) doMenu_en $wpath ;; # Española
-        fr_* ) doMenu_en $wpath ;; # Français
-        id_* ) doMenu_en $wpath ;; # Bahasa Indonesia
-        it_* ) doMenu_en $wpath ;; # Italian
-        lv_* ) doMenu_en $wpath ;; # Latvian
-        pl_* ) doMenu_en $wpath ;; # Polish
-        pt_* ) doMenu_pt $wpath ;; # Português
-        ru_* ) doMenu_en $wpath ;; # Russian
-        * ) doMenu_en $wpath ;; # Default to English
-    esac
+    #case "${LANG:-}" in
+    #    de_* ) doMenu_en $wpath ;; # Deutsch
+    #    da_* ) doMenu_en $wpath ;; # Danish
+    #    es_* ) doMenu_en $wpath ;; # Española
+    #    fr_* ) doMenu_en $wpath ;; # Français
+    #    id_* ) doMenu_en $wpath ;; # Bahasa Indonesia
+    #    it_* ) doMenu_en $wpath ;; # Italian
+    #    lv_* ) doMenu_en $wpath ;; # Latvian
+    #    pl_* ) doMenu_en $wpath ;; # Polish
+    #    pt_* ) doMenu_pt $wpath ;; # Português
+    #    ru_* ) doMenu_en $wpath ;; # Russian
+    #    * ) doMenu_en $wpath ;; # Default to English
+    #esac
+    doMenu_en $wpath
 }
 
 function doMenu_en() {

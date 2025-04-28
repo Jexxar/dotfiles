@@ -11,10 +11,10 @@ export HISTTIMEFORMAT="%h %d %H:%M:%S "
 export HISTIGNORE="&:[ ]*:clear:exit:cls:ls:ll"
 
 #===========================================
-# Define PROMPT_COMMAND and Unifies history 
+# Define PROMPT_COMMAND and Unifies history
 # files thru bash sessions
 #===========================================
-export PROMPT_COMMAND="history -a; history -r"
+export PROMPT_COMMAND="history -a; history -r;echo -e '\033]0;Terminal\007'"
 
 #===========================================
 # 2) Shell options

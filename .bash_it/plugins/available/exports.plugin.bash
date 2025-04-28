@@ -73,7 +73,7 @@ function do_exports() {
     export -f mouse_battery
     export -f msumm
     export -f mydistro
-    export -f my_ps
+    export -f myps
     export -f ncpu
     export -f ns
     export -f pgca

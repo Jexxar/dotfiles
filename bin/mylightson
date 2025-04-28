@@ -33,11 +33,11 @@ DEBUG=0
 # Modify these variables if you want this script to detect other apps
 # Names of programs which, when loaded, you wish to delay the Autolock.
 # For example ('ardour2' 'gmpc').
-mandatoryApps=('etcher' 'cura' 'wineserver' 'dbgl' 'openscad' 'alarm-clock-applet' 'dgen' 'lutris' 'playonlinux' 'avidemux' 'synaptic' 'scummvm' 'flare' 'frozen-bubble' '0ad' 'TeamViewer' 'remmina' 'dosbox' 'wine' 'wget' 'curl' 'rsync' 'scp' 'sftp' 'youtube-dl')
+mandatoryApps=('etcher' 'cura' 'wineserver' 'dbgl' 'openscad' 'alarm-clock-applet' 'dgen' 'lutris' 'playonlinux' 'avidemux' 'synaptic' 'scummvm' 'flare' 'frozen-bubble' '0ad' 'rt2' 'TeamViewer' 'remmina' 'dosbox' 'wine' 'wget' 'curl' 'rsync' 'scp' 'sftp' 'youtube-dl' 'ffmpeg')
 
 # Names of programs which, when running (and only when de facto running), you wish to delay the Autolock.
 # For example ('ardour2' 'gmpc').
-delayMediaApps=('vlc' 'celluloid' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
+delayMediaApps=('vlc' 'audacious' 'celluloid' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffplay')
 
 # Names of programs which, when using sound server, downloading files or gaming, you wish to delay the Autolock.
 delayWebApps=('firefox' 'qutebrowser' 'librewolf' 'chrome' 'vivaldi' 'brave' 'chromium' 'epiphany' 'webkit' 'opera' 'iceweasel' 'surf' 'yandex_browser' 'luakit' 'midori' 'min ' 'falkon' 'slimjet' 'steam')

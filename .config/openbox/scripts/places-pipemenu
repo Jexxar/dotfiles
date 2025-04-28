@@ -46,6 +46,9 @@ default_open_cmd=xdg-open  # exo-open comes with thunar
 # Text editor of choice
 text_editor=~/bin/myedit
 
+# File mounter of choice
+file_mounter=~/bin/myisomount
+
 # extra dotfiles to display in HOME folder (dotfiles are hidden by default)
 # edit the list (space separated, surrounded by single quotes) or comment this line out, to taste:
 shown_dotfiles='.config .conkyrc .local .cache .bashrc .bash_profile .wmdrawerrc .bash_history'
@@ -55,6 +58,7 @@ shown_dotfiles='.config .conkyrc .local .cache .bashrc .bash_profile .wmdrawerrc
 function open_file() {
     #[ -x "$1" ] && exec "$text_editor" "$1" ;    # comment out this line if you don't want to edit executables instead of executing
     #[ -x "$1" ] && exec "terminator -e" "$1" ;    # uncomment this and comment out previous line to run executables in terminal instead of editing
+    [ "${1##*.}" == iso ] && exec "$file_mounter" "$1" ;  
     [ "${1##*.}" == desktop ] && exec "$text_editor" "$1" ;    # comment out this line if you don't want to edit .desktop files instead of executing
     exec "$default_open_cmd" "$1" ;    # use default open command if above conditions not satisfied
 }
@@ -74,24 +78,6 @@ function doMenuRecent() {
 
 function doMenu() {
     local wpath="${*:-$HOME}"  
-    # l10n support
-    case "${LANG:-}" in
-        de_* ) doMenu_en $wpath ;; # Deutsch
-        da_* ) doMenu_en $wpath ;; # Danish
-        es_* ) doMenu_en $wpath ;; # Española
-        fr_* ) doMenu_en $wpath ;; # Français
-        id_* ) doMenu_en $wpath ;; # Bahasa Indonesia
-        it_* ) doMenu_en $wpath ;; # Italian
-        lv_* ) doMenu_en $wpath ;; # Latvian
-        pl_* ) doMenu_en $wpath ;; # Polish
-        pt_* ) doMenu_pt $wpath ;; # Português
-        ru_* ) doMenu_en $wpath ;; # Russian
-        * ) doMenu_en $wpath ;; # Default to English
-    esac
-}
-
-function doMenu_en() {
-    local wpath="$*"  
     local dpath=""
     dpath=$(esc_enc $wpath)
     menuBegin
@@ -103,24 +89,11 @@ function doMenu_en() {
     menuEnd
 }
 
-function doMenu_pt() {
-    local wpath="$*"  
-    local dpath=""
-    dpath=$(esc_enc $wpath)
-    menuBegin
-    #menuSep  "$Locais"
-    #menuItem "Abrir ..." "$0 --open $dpath" "inode-directory"
-    menuItem "Abrir ..." "$0 --open &quot;$dpath&quot;"
-    menuSep
-    doMenu_files "pt" "$wpath"
-    menuEnd
-}
-
 function doMenu_files() {
     local old_IFS=$IFS
     [ -z "$1" ] && return 0
-    shift
     local llang="$1"
+    shift
     local extra_entries=""
     local directories_menu=""
     local files_menu=""
@@ -138,8 +111,9 @@ function doMenu_files() {
     IFS=$'\n'
     lstfile=$(/bin/ls $path -L1h --group-directories-first )
     dpath=$(esc_enc $path)
+    for i in "$path"*; do
     #for i in "$path"* $extra_entries; do
-    for i in $lstfile; do
+    #for i in $lstfile; do
         #[ -e "$i" ] || continue;    # only output code if file exists
         shortname="${i##*/}";
         dname=$(esc_enc $shortname);

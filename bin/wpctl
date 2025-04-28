@@ -51,6 +51,16 @@ function usage(){
     echo
 }
 
+# Choose an bacground setter for X
+function appsetter(){
+    local file="$1"
+    checkfor "nitrogen" && nitrogen --set-scaled --save "$file" && return 0
+    checkfor "setroot" && setroot -s "$file" && return 0
+    checkfor "hsetroot" && hsetroot -fill "$file" && return 0
+    checkfor "feh" && feh --no-fehbg --bg-fill "$file" && return 0
+    precheck "feh"
+}
+
 # Sets a wallpaper
 function set(){
     [ -z "$1" ] && echo "Specify filename to set" && return 1
@@ -58,7 +68,7 @@ function set(){
     local f="$(readlink -f $file)"
     mkdir -p "${XDG_CACHE_HOME}/wp"
     echo "Setting wallpaper: ${f##*/}"
-    checkfor "nitrogen" && nitrogen --set-scaled --save "$file" || feh --no-fehbg --bg-fill "$file"
+    appsetter "$f"
     banner
     local ts="${XDG_CACHE_HOME}/.wp.selection.${USER}"
     echo "Temporarily storing wallpaper selection: $ts"
@@ -91,9 +101,15 @@ function get(){
 
 # Restores the last saved wallpaper
 function restore(){
-    checkfor "nitrogen" && nitrogen --restore && return 0
+    if [ -f "${XDG_CACHE_HOME}/wp/current" ]; then
+        local f="$(tail -n 1 ${XDG_CACHE_HOME}/wp/current)"
+        appsetter "$f"
+        echo "Setting wallpaper: ${f##*/}"
+    else
+        checkfor "nitrogen" && nitrogen --restore
+    fi
     banner
-    set "$(tail -n 1 ${XDG_CACHE_HOME}/wp/current)"
+    return 0
 }
 
 # Sets a random wallpaper
@@ -152,7 +168,6 @@ function interactive(){
 }
 
 function main(){
-    precheck "feh"
     precheck "tail"
     
     # Path to wallpaper directory (this is likely the only thing you need to change...)

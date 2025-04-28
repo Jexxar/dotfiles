@@ -4,14 +4,14 @@
 #-------------------------------------
 # Gradients
 #-------------------------------------
-# Backgrounds
+# Backgrounds  
 # Background 1: Panel
 rounded = 6
 border_width = 0
 border_sides = 
 border_content_tint_weight = 0
 background_content_tint_weight = 0
-background_color = #060101 27
+background_color =  #060101 27
 border_color = #000000 30
 background_color_hover = #000000 60
 border_color_hover = #000000 30
@@ -24,7 +24,7 @@ border_width = 0
 border_sides = TBLR
 border_content_tint_weight = 0
 background_content_tint_weight = 0
-background_color = #d8dee8 78
+background_color = #D8DEE8 78
 border_color = #777777 30
 background_color_hover = #aaaaaa 22
 border_color_hover = #eaeaea 44
@@ -50,7 +50,7 @@ border_width = 0
 border_sides = TBLR
 border_content_tint_weight = 0
 background_content_tint_weight = 0
-background_color = #ebcb8b 100
+background_color = #EBCB8B 100
 border_color = #aa7733 100
 background_color_hover = #cc7700 100
 border_color_hover = #aa7733 100
@@ -70,13 +70,26 @@ border_color_hover = #000000 100
 background_color_pressed = #ffffaa 100
 border_color_pressed = #000000 100
 
+# Background 6: 
+rounded = 6
+border_width = 1
+border_sides = TBLR
+border_content_tint_weight = 0
+background_content_tint_weight = 0
+background_color = #131B26 100
+border_color = #131B26 100
+background_color_hover = #22373F 100
+border_color_hover = #000000 100
+background_color_pressed = 22373F 100
+border_color_pressed = #000000 100
+
 #-------------------------------------
 # Panel
 panel_items = L:TSC
 panel_size = 658 22
 panel_margin = 0 0
 panel_padding = 7 0 7
-panel_background_id = 1
+panel_background_id = 6
 wm_menu = 1
 panel_dock = 0
 panel_position = bottom center horizontal
@@ -84,16 +97,16 @@ panel_position = bottom center horizontal
 panel_layer = bottom
 panel_monitor = all
 panel_shrink = 0
-autohide = 0
-autohide_show_timeout = 0
-autohide_hide_timeout = 0.5
+autohide = 1
+autohide_show_timeout = 0.3
+autohide_hide_timeout = 2
 autohide_height = 2
 strut_policy = follow_size
 panel_window_name = tint2
 disable_transparency = 1
 mouse_effects = 1
 font_shadow = 0
-mouse_hover_icon_asb = 100 0 10
+mouse_hover_icon_asb = 100 0 0
 mouse_pressed_icon_asb = 100 0 0
 scale_relative_to_dpi = 0
 scale_relative_to_screen_height = 0
@@ -147,7 +160,7 @@ systray_padding = 0 4 2
 systray_background_id = 0
 systray_sort = right2left
 systray_icon_size = 16
-systray_icon_asb = 80 0 0
+systray_icon_asb = 100 0 100
 systray_monitor = primary
 systray_name_filter = 
 
@@ -157,19 +170,18 @@ launcher_padding = 4 0 7
 launcher_background_id = 0
 launcher_icon_background_id = 0
 launcher_icon_size = 16
-launcher_icon_asb = 100 0 0
+launcher_icon_asb = 100 20 0
 launcher_icon_theme_override = 0
 startup_notifications = 1
 launcher_tooltip = 1
 launcher_item_app = ~/.local/share/applications/start_menu.desktop
-launcher_item_app = /usr/share/applications/matecc.desktop
-launcher_item_app = /usr/share/applications/messengerfordesktop.desktop
-launcher_item_app = /usr/share/applications/firefox.desktop
+#launcher_item_app = /usr/share/applications/matecc.desktop
+launcher_item_app = /usr/share/applications/librewolf.desktop
 launcher_item_app = /usr/share/applications/thunderbird.desktop
-launcher_item_app = /usr/share/applications/com.gexperts.Tilix.desktop
+launcher_item_app = /usr/share/applications/lxterminal.desktop
 launcher_item_app = /usr/share/applications/pcmanfm-qt.desktop
 launcher_item_app = /usr/share/applications/sublime_text.desktop
-launcher_item_app = /usr/share/applications/mate-search-tool.desktop
+launcher_item_app = /usr/share/applications/galculator.desktop
 
 #-------------------------------------
 # Clock
@@ -181,11 +193,11 @@ time2_timezone =
 clock_font_color = #ffffff 100
 clock_padding = 1 0
 clock_background_id = 0
-clock_tooltip = 
-clock_tooltip_timezone = 
-clock_lclick_command = gsimplecal
+#clock_tooltip = %a, %d. %b %Y
+clock_tooltip_timezone = :UTC
+clock_lclick_command = pgrep gsimplecal && killall gsimplecal || gsimplecal
 clock_rclick_command = osmo
-clock_mclick_command = gnome-clocks
+clock_mclick_command = gnome-calendar
 clock_uwheel_command = 
 clock_dwheel_command = 
 
@@ -194,7 +206,7 @@ clock_dwheel_command =
 battery_tooltip = 1
 battery_low_status = 10
 battery_low_cmd = notify-send "battery low"
-battery_full_cmd = 
+battery_full_cmd = notify-send "battery full"
 battery_font_color = #ffffff 100
 bat1_format = 
 bat2_format = 
@@ -216,4 +228,3 @@ tooltip_hide_timeout = 0.1
 tooltip_padding = 4 4
 tooltip_background_id = 0
 tooltip_font_color = #dddddd 100
-

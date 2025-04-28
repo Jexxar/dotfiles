@@ -5,6 +5,28 @@ if [ -f "$HOME/bin/mycommon" ]; then
     . "$HOME/bin/mycommon"
 fi
 
+# path to your "recent files" script, if you want to incorporate it:
+recent_script=$HOME/.config/openbox/scripts/recent-pipemenu
+# Command to open folders at "Browse here..." - any file manager
+#open_folder_cmd=pcmanfm
+# Default command to open files with - others might be xdg-open, gnome-open, pcmanfm...
+default_open_cmd=xdg-open  # exo-open comes with thunar
+# Text editor of choice
+text_editor=~/bin/myedit
+
+# File mounter of choice
+file_mounter=~/bin/myisomount
+
+# extra dotfiles to display in HOME folder (dotfiles are hidden by default)
+# edit the list (space separated, surrounded by single quotes) or comment this line out, to taste:
+shown_dotfiles='.config .local .cache .bashrc .bash_profile .bash_history'
+
+runDesktop () {
+  comm=( $(awk -F= '$1=="Exec"{$1=""; print}' "$1") )
+  "${comm[0]}" "${comm[@]:1}" &
+  disown
+}
+
 function necho() { for a; do printf '%s\n' "$a"; done; }
 function zecho() { for a; do printf '%s\0' "$a"; done; }
 function qecho() { for a; do printf '\302\273%s\302\253 ' "$a"; done; printf '\n'; }
@@ -275,520 +297,212 @@ function XorgIDproc(){
     done
 }
 
+# Diff between dates in seconds
+function dateDiffS() {
+    local d1=$(date -d "$1" +%s)
+    local d2=$(date -d "$2" +%s)
+    echo $(( (((d1-d2) > 0 ? (d1-d2) : (d2-d1))) ))
+}
+
+# Diff between dates in days
+function dateDiffD() {
+    local d1=$(date -d "$1" +%s)
+    local d2=$(date -d "$2" +%s)
+    echo $(( (((d1-d2) > 0 ? (d1-d2) : (d2-d1)) + 43200) / 86400 ))
+}
+
+# Snores until a date/time has come
+function snoreUntil {
+    local seconds=0
+    # Use $* to eliminate need for quotes
+    seconds=$(( $(date -d "$*" +%s) - $(date +%s) ))
+    [ $? -ne 0 ] && echo "Invalid date/time specification" && return 1
+    [ $seconds -le 0 ] && echo "Date/time must be greater than current date/time" && return 1
+    echo "Sleeping for $seconds seconds"
+    snore $seconds
+}
+
+# Sleep for a really small fraction of time
+#  Ex: to sleep for 250 milliseconds ==> select(undef, undef, undef, 0.25);
+function sleep_fraction() {
+  /usr/bin/perl -e "select(undef, undef, undef, $1)"
+}
+
+# Waits while adjusting overhead until a certain date/time has come
+# this function takes in account system date/time changes
+function sleepUntil() {
+    local wDt=$(date -d "$*"  +"%Y%m%d%H%M%S")
+    [ $? -ne 0 ] && echo "Invalid date/time specification" && return 1
+    local wScs=$(date -d "$*"  +"%s")
+    local cDt=$(date +"%Y%m%d%H%M%S")
+    local cScs=0
+    local dScs=0
+    echo "Sleeping until $wDt"
+    while (( $cDt < $wDt )); do
+        # Snores in amounts of seconds
+        if [ $dScs -gt 600 ]; then
+            #echo "snore 600: time = $cDt"
+            snore 600
+        elif [ $dScs -gt 300 ]; then
+            #echo "snore 300: time = $cDt"
+            snore 300
+        elif [ $dScs -gt 150 ]; then
+            #echo "snore 150: time = $cDt"
+            snore 150
+        elif [ $dScs -gt 60 ]; then
+            #echo "snore 60: time = $cDt"
+            snore 60
+        elif [ $dScs -gt 30 ]; then
+            #echo "snore 30: time = $cDt"
+            snore 30
+        elif [ $dScs -gt 15 ]; then
+            #echo "snore 15: time = $cDt"
+            snore 15
+        elif [ $dScs -gt 7 ]; then
+            #echo "snore 7: time = $cDt"
+            snore 7
+        elif [ $dScs -gt 5 ]; then
+            #echo "snore 5: time = $cDt"
+            snore 5
+        elif [ $dScs -gt 3 ]; then
+            #echo "snore 3: time = $cDt"
+            snore 3
+        elif [ $dScs -gt 2 ]; then
+            #echo "snore 2: time = $cDt"
+            snore 2
+        fi
+        cDt=$(date +"%Y%m%d%H%M%S");
+        cScs=$(date +"%s")
+        dScs=$((wScs - cScs))
+        #echo "here again secs = $dScs"
+        snore 0.45
+    done
+}
+
+function doMenu() {
+    local wpath="${*:-$HOME}"  
+    local dpath=""
+    dpath=$(esc_enc $wpath)
+    echo " ini - wpath = $wpath ==> dpath = $dpath ..."
+    doMenu_files "en" "$wpath"
+}
+
+function doMenu_files() {
+    local old_IFS=$IFS
+    [ -z "$1" ] && return 0
+    local llang="$1"
+    shift
+    local extra_entries=""
+    local directories_menu=""
+    local files_menu=""
+    local shortname=""
+    local dname=""
+    local dpath=""
+    local path=""
+    local sdname=""
+
+    path="${*:-$HOME}"  # default starting place is ~, otherwise $2
+    path="$(echo "${path}"/ | tr -s '/')"    # ensure one final slash
+    local tmp=$(realpath $path)
+    [ -d "$path" ] || { echo  "$0 : $path is not a directory"; return 1; }
+    [ "$path" = "$HOME"/ ] && extra_entries="$shown_dotfiles"
+    [ "$path" = "$HOME"/ ] && echo "$0 : path is home directory and extra_entries = $extra_entries"
+    IFS=$'\n'
+    lstfile=$(/bin/ls $path -L1h --group-directories-first )
+    dpath=$(esc_enc $path)
+
+    echo "llang = $llang"
+    echo "path = $path"
+    echo "dpath = $dpath"
+    #echo "tmp = $tmp"
+    #echo "lstfile = $lstfile"
+    echo "$path"
+
+    for i in "$path"*; do
+    #for i in $lstfile; do
+        #[ -e "$i" ] || continue;    # only output code if file exists
+        shortname="${i##*/}";
+        dname=$(esc_enc $shortname);
+        echo "shortname = $shortname"
+        #echo "dname = $dname"
+        [ -d "$path$shortname" ] && echo "$path$shortname is a directory - menu ==> ${dpath}${dname} ${dname} $0 &quot;$path$dname&quot;"
+        if [ -f "$path$shortname" ]; then
+            if [ -x "$path$shortname" ]; then
+                echo "$path$shortname is an executable file - menu ==> ${dpath}${dname} ${dname} $aux_pipe &quot;$path$dname&quot;"
+            else
+                echo "$path$shortname is a normal file - menu ==> ${dname} <![CDATA[$0 --open ${dpath}${dname}]]>"
+            fi
+        fi
+        #echo "directories_menu = $directories_menu"
+        #echo "files_menu = $files_menu"
+        #echo "sdname = $sdname"
+    done
+    IFS=$old_IFS
+    echo "extra_entries = $extra_entries"
+    for i in $extra_entries; do
+        #[ -e "$i" ] || continue;    # only output code if file exists
+        shortname="${i##*/}";
+        #echo "$dpath$dname"
+        dname=$(esc_enc $shortname);
+        [ -d "$path$shortname" ] && echo "$path$shortname is a directory - menu ==> ${dpath}${dname} ${dname} $0 &quot;$path$dname&quot;"
+        [ -f "$path$shortname" ] && echo "$path$shortname is a normal file - menu ==> ${dname} <![CDATA[$0 --open ${dpath}${dname}]]>"
+    done
+}
+
 function main() {
-    #local OLD_IFS=$IFS
-    #IFS=$'\n'
-    #for f in $(grep -lIi -E "bash" * 2> /dev/null | sort -t: -${reverse}n -k 2); do
-    #    str="$(grep -Hi -c -E "bash" "$f")"
-    #    echo "file: $f string: $str count: ${str##*:}"
-    #done
-    #IFS=$OLD_IFS
-    #return 0
-    
-    #echo "======================================"
-    #precheck "dump_xsettings"
-    #precheck "gsettings"
-    
-    #echo "======================================"
-    #echo " ------ now logging whith tee for log files ----------"
-    #echo "$myLogPath"
-    #echo "$myLogFile"
-    #info "info - do some logging1 $(timestamp)"
-    #log "log  - do some logging1 $(timestamp)"
-    #info "tee  - do some logging1 $(timestamp)" | tee -a "$myLogFile" > /dev/null
-    #echo
-    #echo
-    #echo " ------ dstart testing ----------"
-    #if [ $(pgrep -lfc volumeicon) -eq 0 ] && [ $(pgrep -lfc mate-volume-control-applet) -eq 0 ] ; then
-    #    echo "dstart volumeicon"
-    #else
-    #    echo "volume ok"
-    #fi
-    #echo "======================================"
-    #echo " ------ stopit xautolock ----------"
-    #stop_it "xautolock"
-    #log "enableScrXautolock(): (Re)/Starting xautolock daemon..."
-    #xautolock -detectsleep -noclose -time 5 -locker "\"$HOME/bin/mylock\"" -notify 30 -notifier "\"$HOME/bin/mynotify\"" -killtime 10 -killer "\"$HOME/bin/mysuspend\"" &
-    #snore 0.5
-    #stop_it "xautolock"
-    #echo "======================================"
-    #yad --width 300 --title "System Logout" --image=gnome-shutdown --button="Cancel:6" --button="Lock:5" --button="Power Off:4" --button="Reboot:3" --button="Suspend:2" --button="Logout:1" --fontname="Sans bold 16" --text='<span font="26">'"    Pick up a choice"'</span>' --center --on-top --undecorated
-    #local yrc=$?
-    #echo "$yrc"
-    #echo "======================================"
-    #echo " ------ url decoding ----------"
-    #echo "original=V%C3%ADdeos urldecode=$(urldecode "V%C3%ADdeos")"
-    #echo "======================================"
-    #echo " ------ checkfor ----------"
-    #checkfor "inxi" && echo "inxi encontrado"  || echo "inxi nao encontrado"
-    #checkfor "firefox" && echo "firefox encontrado" || echo "firefox nao encontrado"
-    #echo "======================================"
-    #echo " ------ findutil ----------"
-    #echo "$(findutil inxi)"
-    #echo "$(findutil firefox)"
-    #echo "======================================"
-    #echo " ---- iconPath icon_name=\"error\" ----"
-    #local tn="$(findIconThemeName)"
-    #echo "findIconThemeName......: $tn"
-    #local tpt="$(findIconThemePath "$tn")"
-    #echo "findIconThemePath......: $tpt"
-    #ipt=$(findNrmIconHelper "$tpt" "error.svg")
-    #echo "from findNrmIconHelper.: $ipt"
-    #ipt=$(findStatIconHelper "$tpt" "error.svg")
-    #echo "from findStatIconHelper: $ipt"
-    #echo "iconPath file..........: $(iconPath "error")"
-    #ipt=$(FallbackiconPath "error" "$tpt")
-    #echo "from FallbackiconPath..: $ipt"
-    #echo "======================================"
-    #echo " ------ trim_spaces ---"
-    #echo "trim_spaces \"   example   string    \""
-    #trim_spaces "   example   string    "
-    #echo "trim \"   example   string    \""
-    #trim "   example   string    "
-    #echo "rtrim \"   example   string    \""
-    #rtrim "   example   string    "
-    #echo "ltrim \"   example   string    \""
-    #ltrim "   example   string    "
-    #echo "======================================"
-    #echo "\$\$ outside of subshell = $$"                              # 9602
-    #echo "\$BASH_SUBSHELL  outside of subshell = $BASH_SUBSHELL"      # 0
-    #echo "\$BASHPID outside of subshell = $BASHPID"                   # 9602
-    
-    #echo
-    #( echo "\$\$ inside of subshell = $$"                             # 9602
-    #    echo "\$BASH_SUBSHELL inside of subshell = $BASH_SUBSHELL"    # 1
-    #echo "\$BASHPID inside of subshell = $BASHPID" )                  # 9603
-    # Note that $$ returns PID of parent process.
-    #echo "======================================"
-    #echo " ------ ps_ISO testing ---"
-    #ps_ISO
-    #echo "======================================"
-    #echo " ------ ps_ISO testing script name 001 ---"
-    #ps_ISO "${0##*/}"
-    #echo " ------ ps_ISO testing script name 002 ---"
-    #ridic=`ps_ISO "${0##*/}"`
-    #echo "$ridic"
-    #echo " ------ ps_ISO testing script name 003 ---"
-    #ridic=$(ps_ISO "${0##*/}")
-    #echo "$ridic"
-    #echo "$ridic" | awk '{print $3}'
-    #echo " ------ ps_ISO testing script name 004 ---"
-    #ps_ISO "${0##*/}" | awk '{print $3}'
-    #echo " ------ ps_ISO testing script name 005 ---"
-    #ps_ISO "${0##*/}" | grep "$USER" | grep -P "bash" | grep -v "grep" | awk '{print $3}'
-    #echo " ------ ps_ISO testing script name 006 ---"
-    #ps_ISO "${0##*/}" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}' | grep "${0##*/}" | awk '{print $1}'
-    #echo "-------------------------"
-    #echo "======================================"
-    #echo " mywallchng -- ps_ISO use of in kill_them"
-    #ps_ISO "mywallchng"
-    #ps_ISO "mywallchng" | sed 's/bash //g' | awk '{print $3}'
-    #ps_ISO "mywallchng" | sed 's/bash //g'
-    #ps_ISO "mywallchng" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}'
-    #ps_ISO "mywallchng" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}' | grep "mywallchng" | awk '{print $1}'
-    #echo "======================================"
-    #echo "/usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1"
-    #echo "----- ps_ISO ---"
-    #ps_ISO "/usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1"
-    #echo "------ kill_them  ---"
-    #kill_them "check" "/usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1"
-    #kill_them "sh-c" "/usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1"
-    #kill_them "strict" "/usr/lib/x86_64-linux-gnu/polkit-mate/polkit-mate-authentication-agent-1"
-    #echo "======================================"
-    #echo "pcmanfm-qt -- ps_ISO 001"
-    #ps_ISO "pcmanfm-qt"
-    #echo "pcmanfm-qt -- ps_ISO 002"
-    #ps_ISO "pcmanfm-qt" | sed 's/bash //g' | grep -v "bash\|sh -c\|grep"
-    #echo "pcmanfm-qt -- ps_ISO 003"
-    #ps_ISO "pcmanfm-qt" | sed 's/bash //g' | awk '!/sh -c/ && $0~".*"'
-    ##echo "======================================"
-    #echo "----- kill_them ---"
-    #kill_them "check" "pcmanfm-qt"
-    #kill_them "sh-c" "pcmanfm-qt"
-    #kill_them "strict" "pcmanfm-qt"
-    #echo "======================================"
-    #echo "autoping"
-    #echo "----- ps_ISO ---"
-    #ps_ISO "autoping"
-    #echo "----- kill_them ---"
-    #kill_them "check" "autoping" "s"
-    #kill_them "sh-c" "autoping" "s"
-    #kill_them "strict" "autoping"
-    #echo "======================================"
-    #echo "tilix"
-    #echo "----- ps_ISO ---"
-    #ps_ISO "tilix"
-    #echo "----- kill_them ---"
-    ##kill_them "check" "tilix" "s"
-    #kill_them "sh-c" "tilix" "s"
-    #echo "======================================"
-    #echo "bash"
-    #echo "----- ps_ISO ---"
-    #ps_ISO "bash"
-    #echo "----- kill_them ---"
-    #kill_them "check" "bash" "s"
-    #echo "======================================"
-    #echo "firefox"
-    #echo "----- ps_ISO ---"
-    #ps_ISO "firefox"
-    #echo "----- kill_them ---"
-    #kill_them "check" "firefox" "s"
-    #kill_them "sh-c" "firefox" "s"
-    #echo
-    #echo "======================================"
-    #echo "lsof_p firefox -- no filter"
-    #lsof_p "firefox"
-    #echo "======================================"
-    #echo "lsof_p firefox -- filtered"
-    #lsof_p "firefox" | grep -v "xpi\|startupCache\|omni\|\.mozilla"
-    #echo "======================================"
-    #echo "lsof_p sublime_text"
-    #lsof_p "sublime_text"
-    #echo "======================================"
-    #echo "lsof_p pcmanfm -- no filter"
-    #lsof_p "pcmanfm"
-    #echo "lsof_p pcmanfm -- filtered"
-    #lsof_p "pcmanfm" | grep -v "pcmanfm-\|fonts\|/proc\|/dev/pts\|/sys/dev\|/usr/share/pcmanfm"
-    #echo "======================================"
-    #echo "lsof_p pcmanfm-qt -- no filter"
-    #lsof_p "pcmanfm-qt"
-    #echo "lsof_p pcmanfm-qt -- filtered"
-    #lsof_p "pcmanfm-qt" | grep -v "pcmanfm-qt-\|fonts\|/proc\|/dev/pts\|/sys/dev\|/usr/share/pcmanfm"
-    #echo "======================================"
-    #echo "lsof_p chrome"
-    ##ps_ISO "chrome" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}' | grep "chrome" | awk '{print $1}'
-    #lsof_p "chrome" | grep -v "fonts\|/proc\|/dev/pts\|omni\|chrome\|\.pki\|/sys/dev"
-    #echo "======================================"
-    #echo "lsof_p wget"
-    ##ps_ISO "wget" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}' | grep "wget" | awk '{print $1}'
-    #lsof_p "wget" | grep -v "fonts\|/proc\|/dev/pts\|/sys/dev"
-    #echo "======================================"
-    #echo "lsof_p curl"
-    #ps_ISO "curl" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}' | grep "curl" | awk '{print $1}'
-    #lsof_p "curl" | grep -v "fonts\|/proc\|/dev/pts\|/sys/dev"
-    #echo "======================================"
-    #echo "lsof_p transmission"
-    #ps_ISO "transmission" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}' | grep "transmission" | awk '{print $1}'
-    #lsof_p "transmission" | grep -v "fonts\|/proc\|/dev/pts\|/sys/dev"
-    #echo "======================================"
-    #echo "lsof_p nautilus"
-    #ps_ISO "nautilus" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}' | grep "nautilus" | awk '{print $1}'
-    #lsof_p "nautilus" | grep -v "nautilus-\|fonts\|/proc\|/dev/pts\|/sys/dev"
-    #echo "======================================"
-    #echo "lsof_p caja"
-    #ps_ISO "caja" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}' | grep "caja" | awk '{print $1}'
-    #lsof_p "caja" | grep -v "caja-\|fonts\|/proc\|/dev/pts\|/sys/dev"
-    #echo "======================================"
-    #echo "lsof_p sftp"
-    #ps_ISO "sftp" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}' | grep "sftp" | awk '{print $1}'
-    #lsof_p "sftp" | grep -v "caja-\|fonts\|/proc\|/dev/pts\|/sys/dev"
-    #echo "======================================"
-    #echo "lsof_p synaptic"
-    #ps_ISO "synaptic" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}' | grep "synaptic" | awk '{print $1}'
-    #lsof_p "synaptic" | grep -v "caja-\|fonts\|/proc\|/dev/pts\|/sys/dev"
-    #echo "======================================"
-    #echo "lsof_p alarm-clock-applet"
-    #ps_ISO "alarm-clock-applet" | sed 's/bash //g' | grep -v "grep" | awk '{print $3" "$5}' | grep "alarm-clock-applet" | awk '{print $1}'
-    #lsof_p "alarm-clock-applet" | grep -v "caja-\|fonts\|/proc\|/dev/pts\|/sys/dev"
-    #echo "_lsof alarm-clock-applet"
-    #echo "======================================"
-    #_lsof
-    #echo "_lsof - all"
-    #echo "======================================"
-    #echo "lsof_p librewolf - no filter"
-    #echo "---librewolf----------------------------------------"
-    #lsof_p "librewolf"
-    #echo "---LibreWolf----------------------------------------"
-    #lsof_p "LibreWolf"
-    #echo "======================================"
-    #echo "lsof_p librewolf - filtered"
-    #echo "---librewolf----------------------------------------"
-    #lsof_p "librewolf" | grep -v "/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse"
-    #echo "---LibreWolf----------------------------------------"
-    #lsof_p "LibreWolf" | grep -v "/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse"
-    #echo "======================================"
-    #echo "ps_ISO of caja"
-    #ps_ISO "caja"
-    #echo "-----------"
-    #echo "lsof_p caja -- no filter"
-    #lsof_p "caja"
-    #echo "lsof_p caja -- filtered"
-    #lsof_p "caja" | grep -v "caja-\|fonts\|/proc\|/dev/pts\|/sys/dev\|/usr/share/caja"
-    #echo "======================================"
-    #echo "ps_ISO of nautilus"
-    #ps_ISO "nautilus"
-    #echo "-----------"
-    #echo "lsof_p nautilus -- no filter"
-    #lsof_p "nautilus"
-    #echo "======================================"
-    #echo "ps_ISO of mc"
-    #ps_ISO "mc"
-    #echo "-----------"
-    #echo "lsof_p mc -- no filter"
-    #lsof_p "mc"
-    #echo "======================================"
-    #echo "lsof_p LibreWolf -- no filter"
-    #lsof_p "LibreWolf"
-    #lsof_p "libreWolf"
-    #echo "======================================"
-    #echo "lsof_p LibreWolf -- filtered .mozilla"
-    #lsof_p "LibreWolf" | grep -v "xpi\|startupCache\|omni\|\.mozilla\|AppImage\|fuse"
-    #echo "lsof_p libreWolf -- filtered .librewolf"
-    ##lsof_p "libreWolf" | grep -v "xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse"
-    #lsof_p "librewolf" | grep -v "fonts\|/proc\|/dev/pts\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse"
-    #echo "======================================"
-    #echo "_lsof - search for Downloads"
-    #_lsof  | grep -i "Downloads"
-    #echo "======================================"
-    #echo "======================================"
-    #echo "_lsofdown"
-    #_lsofdown
-    #echo
-    #echo "_lsof - virtualbox"
-    #_lsof | grep -i "virtual"
-    #echo "batata is $(findutil "batata")"
-    #echo "$?"
-    #echo "ping is $(findutil "ping")"
-    #echo "launching xautolock"
-    #xautolock -detectsleep -noclose -time 5 -locker "\"$HOME/bin/mylock\"" -notify 30 -notifier "\"$HOME/bin/mynotify\"" -killtime 10 -killer "\"$HOME/bin/mysuspend\"" &
-    #sleep 2
-    #echo "teste stop_it"
-    #stop_it "xautolock" "stop"
-    #echo "======================================"
-    #echo "ps_ISO of $USER"
-    #echo " "
-    #local OLD_IFS=$IFS
-    #local cml=""
-    #IFS=$'\n'
-    #for f in $(ps_ISO | grep "^[0-9].* $USER" | sed 's/bash/###/g' | sed 's/### //g' | sed 's|/usr/bin/python ||g' | sed 's|/usr/bin/python3 ||g' | grep -v "$0\|###\|openbox\|dbus\|keeptty\|ssh-agent\|sd-pam\|gpg-agent\|sed\|grep\|dbus\|gvfs\|systemd --user\|/ps -aux\|contentproc"); do
-    #    cml="$(awk '{print $5}' <<< "$f")"
-    #    #echo "$f"
-    #    cml="${cml##*/}"
-    #    echo "$cml"
-    #done
-    #IFS=$OLD_IFS
-    #exit 0
-    # Stop this session and user daemon running processes.
-    #stop_it "pulseaudio"
-    #echo "======================================"
-    #echo "ps_ISO of $USER"
-    #local app_filter="${0##*/}\|###\|gconf\|dconf\|openbox\|dbus\|keeptty\|ssh-agent\|sd-pam\|gpg-agent\|sed\|grep\|dbus\|gvfs\|systemd --user\|/ps -aux\|contentproc\|plugin_host"
-    #local OLD_IFS=$IFS
-    #local cml=""
-    #IFS=$'\n'
-    #for x in $(ps_ISO | grep "^[0-9].* $USER" | sed 's/bash/###/g' | sed 's/### //g' | sed 's/ sh -c//g' | sed 's|/bin/sh -c ||g' | sed 's|/bin/sh ||g' | sed -E 's|/usr/bin/python.? ||g' | grep -v "$app_filter"); do
-    #    cml=$(awk '{print $5}' <<< $x)
-    #    cml="${cml##*/}"
-    #    #[ -n "$cml" ] && stop_it "$cml" || true
-    #    #[ -n "$cml" ] && log "stopping $cml" && stop_it "$cml" || true
-    #    [ -n "$cml" ] && log "stop_it $cml" && echo "stop_it $cml    => $x" || true
-    #done
-    #IFS=$OLD_IFS
-    #[ -z "$XDG_CURRENT_DESKTOP" ] && export XDG_CURRENT_DESKTOP="$(wmctrl -m | awk '/Name:/ {print $2}')" && echo "xdg desktop = $XDG_CURRENT_DESKTOP"
-    #log "Exiting now..."
-    #[ "$XDG_CURRENT_DESKTOP" == "Openbox" ] && openbox --exit;
-    #ls "${BASH_IT}/plugins/enabled/"
-    #echo "1) BASH_IT/plugins/enabled pure"
-    #echo "${BASH_IT}/plugins/enabled/*${BASH_IT_LOAD_PRIORITY_SEPARATOR}"
-    #echo "2) foo simple assign BASH_IT"
-    #foo="${BASH_IT}/plugins/enabled/*${BASH_IT_LOAD_PRIORITY_SEPARATOR}"
-    #echo "$foo"
-    #ls $foo${BASH_IT_LOAD_PRIORITY_SEPARATOR}"custom.plugin.bash"
-    #echo "3) bar = echo BASH_IT/plugins/enabled/*"
-    #bar=$(echo "${BASH_IT}/plugins/enabled/*")
-    #echo $bar
-    #echo "4) foo concat -e option"
-    #ls $foo${BASH_IT_LOAD_PRIORITY_SEPARATOR}"custom.plugin.bash"
-    #[ -e $foo${BASH_IT_LOAD_PRIORITY_SEPARATOR}"custom.plugin.bash" ] && echo "OK did it"
-    #if [ -e "${BASH_IT}/plugins/enabled/custom.plugin.bash" ] || [ -e "${BASH_IT}/plugins/enabled/*"${BASH_IT_LOAD_PRIORITY_SEPARATOR}"custom.plugin.bash" ]; then
-    #    printf '%s\n' 'custom found'
-    #else
-    #    printf '%s\n' 'custom not found'
-    #fi
-    #local tmp="https://github.com/LukeSmithxyz/dwmblocks.git"
-    #local aux="${tmp##*/}"
-    #local repodir="${aux%}"
-    #local progname="${aux%.git}"
-    #local dir="$progname"
-    #echo "aux $aux"
-    #echo "progname $progname"
-    #echo "repodir $repodir"
-    #echo "dir $dir"
-    #local _DISTRIB_ID="$(grep 'DISTRIB_ID' /etc/*-release  2> /dev/null | awk -F[=] '/DISTRIB_ID/ {print $2}' | sed -e "s/\"//g" | tr '[:upper:]' '[:lower:]')"
-    #local _DISTRIB_ID="ret"
-    #echo $_DISTRIB_ID
-    #case $_DISTRIB_ID in
-    #    mint*)  echo " " ;;
-    #    arc*)  echo " " ;;
-    #    debian*)  echo " " ;;
-    #    ubunt*)  echo " " ;;
-    #    fedora*)  echo " " ;;
-    #    manjaro*)  echo " " ;;
-    #    *suse*)  echo " " ;;
-    #    gentoo*)  echo " " ;;
-    #    *hat*)  echo " " ;;
-    #    void*)  echo " " ;;
-    #      *) echo " " ;;
-    #esac
-    #case $_DISTRIB_ID in
-    #    mint*) echo "22" ;;
-    #    arc*) echo "18" ;;
-    #    debian*) echo "53" ;;
-    #    ubunt*) echo "88" ;;
-    #    fedora*) echo "104" ;;
-    #    manjaro*) echo "22" ;;
-    #    *suse*) echo "29" ;;
-    #    gentoo*) echo "56" ;;
-    #    *hat*) echo "16" ;;
-    #    void*) echo "64" ;;
-    #    *) echo "0" ;;
-    #esac
-    # enumerate all the attached screens
-    #local _displays=$(xvinfo | awk -F'#' '/^screen/ {print $2}' | xargs)
-    ##echo "$_displays"
-    #local wlist=""
-    #local dlApps=('vlc' 'celluloid' 'xplayer' 'bino' 'curlew' 'avidemux' 'mpv' 'smplayer' 'smtube' 'gmpc' 'ardour2' 'xine' 'totem' 'parole' 'qmmp' 'kaffeine' 'kmplayer' 'kdenlive' 'ffmpeg')
-    #local ft="$(echo "${dlApps[@]}" | sed -e 's/ /\\\|/g')"
-    #echo "$ft"
-    #local dndApps=('sublime_text' 'geany' 'vim' 'nano' 'micro' 'vscode')
-    #local dlWebBasedApps=('firefox' 'qutebrowser' 'librewolf' 'chrome' 'vivaldi' 'brave' 'chromium' 'epiphany' 'webkit' 'opera' 'iceweasel' 'surf' 'yandex_browser' 'luakit'  'midori' 'min ' 'falkon' 'slimjet' 'steam')
-    #local OLD_IFS=$IFS
-    #IFS=$'\n'
-    #for d in $_displays; do
-    #    wlist="$(DISPLAY=:${d} wmctrl -l -p -x -G)"
-    #    for w in $wlist; do
-    #        #echo "$w"
-    #        local wid="$(awk '{print $1}' <<< $w)"
-    #        local wpid="$(awk '{print $3}' <<< $w)"
-    #        local wcls="$(awk '{print $8}' <<< $w | awk -F[.] '{print $2}' | tr '[:upper:]' '[:lower:]')"
-    #        if [ $(DISPLAY=:${d} xprop -id "$wid" _NET_WM_STATE 2> /dev/null | grep -c _NET_WM_STATE_FULLSCREEN) -gt 0 ]; then
-    #            #echo "$wcls"
-    #            if [[ " ${dlApps[*]} " =~ ${wcls} ]]; then
-    #                echo "$wcls in dlApps is in fullscreen mode"
-    #            fi
-    #            if [[ " ${dndApps[*]} " =~ ${wcls} ]]; then
-    #                echo "$wcls in dndApps is in fullscreen mode"
-    #            fi
-    #            if [[ " ${dlWebBasedApps[*]} " =~ ${wcls} ]]; then
-    #                echo "$wcls in dlWebBasedApps is in fullscreen mode"
-    #            fi
-    #        fi
-    #        if [ $(DISPLAY=:${d} xprop -id "$wid" _NET_WM_STATE 2> /dev/null | grep -c _NET_WM_STATE_ABOVE) -gt 0 ]; then
-    #            #echo "$wcls"
-    #            if [[ " ${dlApps[*]} " =~ ${wcls} ]]; then
-    #                echo "$wcls in dlApps is in Above screen mode"
-    #            fi
-    #            if [[ " ${dndApps[*]} " =~ ${wcls} ]]; then
-    #                echo "$wcls in dndApps is in Above screen mode"
-    #            fi
-    #            if [[ " ${dlWebBasedApps[*]} " =~ ${wcls} ]]; then
-    #                echo "$wcls in dlWebBasedApps in Above ullscreen mode"
-    #            fi
-    #        fi
-    #    done
-    #done
-    #IFS=$OLD_IFS
-    #local _pid="$(xprop -id "0x01600003" _NET_WM_PID 2> /dev/null | awk '{print $3}')"
-    #local class="$(xprop -id "0x02a00003" WM_CLASS | tr '[:upper:]' '[:lower:]' | awk -F[=,] '{gsub(/"/, "", $3);print $3}')"
-    #[ -z "${class##*sublime_text*}" ] && echo "WOW it works class=$class"
-    #local p="$(ps -p $_pid -o comm=)"
-    #p="$(grep -o "$p" <<< ${dndApps[@]})"
-    #echo "p=$p"
-    #runcheck "$class" "$p" && echo "YES $p fullscreen detected" || echo "No fullscreen detected"
-    #local su_no_pw="$(sudo -l | grep "NOPASSWD")"
-    #[ -z "${su_no_pw##*pm-suspend*}" ] && echo "su_no_pw contain pm-suspend"
-    #[ -z "${su_no_pw##*systemctl suspend*}" ] && echo "su_no_pw contain systemctl suspend"
-    #local string='echo "My string"'
-    #for reqsubstr in 'o "M' 'alt' 'str';do
-    #    if [ -z "${string##*$reqsubstr*}" ] ;then
-    #        echo "String '$string' contain substring: '$reqsubstr'."
-    #    else
-    #        echo "String '$string' don't contain substring: '$reqsubstr'."
-    #    fi
-    #done
-    #echo "getOnlineMediaWList"
-    #local wlst="$(getOnlineMediaWList)"
-    #echo "$wlst"
-    #echo "---------------"
-    #echo "whichOnlineMediaRunning"
-    #wlst="$(whichOnlineMediaRunning)"
-    #echo "$wlst"
-    #overkill "$@"
-    #stop_it "$@"
-    #echo "$0"
-    #LC_ALL=C pkill --euid "$(id -u)" --exact "$@"
-    #LC_ALL=C pkill -USR1 --euid "$(id -u)" --exact "$@"
-    #local tmp=""
-    #echo "------ tmp - no filter --------------------"
-    #tmp="$(ps_ISO "$1")"
-    #echo "$tmp"
-    #awk '{print $3}' <<< $tmp
-    #echo "------ tmp - filter $0 --------------------"
-    #tmp="$(ps_ISO "$1" | grep -v "$0")"
-    #echo "$tmp"
-    #awk '{print $3}' <<< $tmp
-    #echo "------ ps_ISO - no filter -------------------"
-    #ps_ISO "$1"
-    #echo "------ ps_ISO - filter $0 --------------------"
-    #ps_ISO "$1" | grep -v "$0"
-    #ps_ISO "$1" | grep -v "$0" | awk '{print $3}'
     #echo "--------------------------"
-    #kill_them "all" "$@" "y"
-    #for i in $(ps_ISO "$1" | grep -v "$0" | awk '{print $3}'); do
-    #    echo "entrou i=$i"
-    #    if [ "$i" != "$$" ]; then
-    #        [ -n "$i" ] && proper_kill "$i"
-    #        [ $? -eq 0 ] && log "Stopping instance(kill): pid=$i name=$1"
-    #    fi
+    #echo " teste snore"
+    #echo "--------------------------"
+    #echo $(date +"%H:%M")
+    #for i in {0..600}; do
+    #    snore 0.1
     #done
-    #precheck xrandr
-    #local lstoutdev="$(xrandr | grep 'conn' | awk '{print $1}' | sed 's/\"//g' | sed 's/\n//g')"
-    #local outputDevices=( $lstoutdev )
-    #local cdv="LVDS1"
-    #for out in "${outputDevices[@]}" ; do
-    #    [ -z "${out##*$cdv*}" ] && echo "active=$out" || echo "inactiv=$out"
-    #    [ -z "${out##*LVDS1*}" ] && echo "wow active=$out"
+    #echo $(date +"%H:%M")
+    #echo "--------------------------"
+    #echo " teste sleep"
+    #echo "--------------------------"
+    #echo $(date +"%H:%M")
+    #for i in {0..600}; do
+    #    sleep 0.1
     #done
-    #lsof_p "librewolf" #| grep -v "librewolf\|/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse\|\.mozilla"
-    #lsof_p "librewolf" | grep -v "$p\|/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse\|\.mozilla"
-    #lsof_p "LibreWolf" | grep -v "/tmp\|fonts\|/proc\|/dev/pts\|/dev/tty\|/sys/dev\|xpi\|startupCache\|omni\|\.librewolf\|AppImage\|fuse\|\.mozilla"
-    #uptime_active
-    #psname "$@"
-    #hosts_up
-    #qh "$@"
-    #_lsof
-    #necho "Necho World"
-    #echo "----"
-    #zecho "Zecho World"
-    #echo "----"
-    #qecho "Qecho World"
-    #echo "----"
-    #jecho "Jecho World"
-    #context "$@"
-    #local tcon=""
-    #local state=""
-    #local hostnm=""
-    #tcon=$(LC_ALL=C nmcli con show | grep -v "UUID" | awk '{print $1}')
-    #for i in $tcon; do
-    #    state=$(LC_ALL=C nmcli con show $i | awk '/GENERAL.STATE/ {print $2}')
-    #    [ -z "$state" ] && state="inactive"
-    #    echo "connection: $i - $state"
-    #    if [ "$state" == "activated" ]; then
-    #        hostnm=$(LC_ALL=C nmcli con show $i | grep -v "\-\-" | awk '/ipv4.dhcp-hostname/ {print $2}')
-    #        if  [ -z "$hostnm" ]; then
-    #            hostnm=$(hostname)
-    #            LC_ALL=C nmcli con modify $i ipv4.dhcp-hostname "$hostnm"
-    #            echo "   hostname modified to $hostnm"
-    #        else
-    #            echo "   has hostname $hostnm attached"
-    #        fi
-    #    fi
+    #echo $(date +"%H:%M")
+    #echo "--------------------------"
+    #echo " teste dateDiffS"
+    #echo "--------------------------"
+    #date -d "now"
+    #date -d "tomorrow 12:40"
+    #local tmp=$(dateDiffS "now" "tomorrow 12:40")
+    #echo "dateDiffS = $tmp seconds"
+    #echo "--------------------------"
+    #echo " teste dateDiffD"
+    #echo "--------------------------"
+    #date -d "now"
+    #date -d "2024/09/29 15:50"
+    #local tmp=$(dateDiffD "now" "2024/09/29 15:50")
+    #echo "dateDiffD = $tmp days"
+    #echo "--------------------------"
+    #echo " teste snoreUntil"
+    #echo "--------------------------"
+    #echo "examples:"
+    #echo "  snoreUntil 8:24"
+    #echo "  Sleeping for 35 seconds"
+    #echo "  snoreUntil '23:00'"
+    #echo "  Sleeping for 52489 seconds"
+    #echo "  snoreUntil 'tomorrow 1:00'"
+    #echo "  Sleeping for 59682 seconds"
+    #echo "Running:  "
+    #snoreUntil "2024/09/28 15:50"
+    #sleepUntil "$@"; date +"Now, it is: %T";
+    #time sleep_fraction 0.10
+    #for i in $(pgrep -u usuario | grep -v "gvfs\|systemd\|(sd-pam)\|gconf\|dconf\|dbus\|openbox"); do
+    #    echo "$i" 
     #done
-
-    #remove-lines "$HOME/matchln.txt" "$HOME/tif.txt"
-
-
-    XorgIDproc
+    #local OLD_IFS=$IFS
+    #IFS=$'\n'
+    #for i in $(pgrep -lf -u usuario | grep "zathura"); do
+    #    overkill $(awk '{print $1}' <<< $i)
+    #done
+    doMenu
 }
 
 main "$@"

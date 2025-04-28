@@ -34,7 +34,7 @@ color="91"
 #brightness value to compare to
 value="85"
 #i3lock_cmd=(i3lock -n -e -f --ignore-empty-password --beep --inactivity-timeout=10 -i "$image" -t --nofork)
-i3lock_cmd=(i3lock -e -f --ignore-empty-password --beep --inactivity-timeout=10 -i "$image" -t )
+i3lock_cmd=(i3lock -n -e -f --inactivity-timeout=10 -i "$image" -t )
 shot_custom="false"
 
 options="Options:

@@ -91,3 +91,5 @@ alias batbsh='bash-it'
 alias babsh='bash-it'
 alias bash_it='bash-it'
 alias bash_ti='bash-it'
+
+alias speedtest="curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -"
